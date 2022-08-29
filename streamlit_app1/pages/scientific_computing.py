@@ -30,8 +30,8 @@ with st.expander('Bounding Errors', expanded=False):
 
 	st.latex(r'''
 	\begin{align*}
-	\text{total error} &= \hat{f(\hat{x})-f(x)}\\
-	&= \hat{f(\hat{x})-f(\hat{x})} &+(f(\hat{x})-f(x)\\
+	\text{total error} &= \hat{f}(\hat{x})-f(x)\\
+	&= \hat{f}(\hat{x})-f(\hat{x}) &+(f(\hat{x})-f(x)\\
 	&= \text{computational error} & \text{prpagated data error}\\
 	\end{align*}''')
 
