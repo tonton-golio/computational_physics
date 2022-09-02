@@ -1,0 +1,42 @@
+,start,end,text
+1,16,20,True or false: A problem is ill-conditioned if its solution is highly sensitive to small changes in the problem data.
+2,137,141,True or false: Using higher-precision arithmetic will make an ill-conditioned problem better conditioned.
+3,246,250,True or false: The conditioning of a problem depends on the algorithm used to solve it.
+4,337,341,True or false: A good algorithm will produce an accurate solution regardless of the condition of the problem being solved.
+5,463,467,True or false: The choice of algorithm for solving a problem has no effect on the propagated data error.
+6,571,575,"True or false: If two real numbers are exactly representable as floating-point numbers, then the result of a real arithmetic operation on them will also be representable as a floatingpoint number."
+7,771,775,True or false: Floating-point numbers are distributed uniformly throughout their range.
+8,862,866,True or false: Floating-point addition is associative but not commutative.
+9,940,944,"True or false: In a floating-point number system, the underflow level is the smallest positive number that perturbs the number 1 when added to it."
+10,1090,1095,Explain the distinction between truncation (or discretization) and rounding.
+11,1171,1176,Explain the distinction between absolute error and relative error.
+12,1242,1247,Explain the distinction between computational error and propagated data error.
+13,1325,1330,(a) What is meant by the conditioning of a problem?(b) Is it affected by the algorithm used to solve the problem?(c) Is it affected by the precision of the arithmetic used to solve the problem?
+14,1523,1528,"If a computational problem has a condition number of 1, is this good or bad? Why?"
+15,1609,1614,When is an approximate solution to a given problem considered to be good according to backward error analysis?
+16,1724,1729,"For a given floating-point number system, describe in words the distribution of machine numbers along the real line."
+17,1845,1850,"In floating-point arithmetic, which is generally more harmful, underflow or overflow? Why?"
+18,1940,1945,"Infloating-pointarithmetic,whichofthe following operations on two positive floatingpoint operands can produce an overflow?(a) Addition(b) Subtraction (c) Multiplication (d) Division"
+19,2126,2131,"Infloating-pointarithmetic,whichofthe following operations on two positive floatingpoint operands can produce an underflow?(a) Addition(b) Subtraction (c) Multiplication (d) Division"
+20,2313,2318,List of reasons  why floating-point number systems are usually normalized.
+21,2392,2397,"In a floating-point system, what quantity determines the maximum relative error in representing a given real number by a machine number?"
+22,2533,2538,(a) Explain the difference between the rounding rules “round toward zero” and “round to nearest” in a floating-point system.(b) Which of these two rounding rules is more accurate?(c) What quantitative difference does this make in the unit roundoff εmach?
+23,2792,2797,"In a t-digit binary floating-point system with rounding to nearest, what is the value of the unit roundoff εmach ?"
+24,2911,2916,"In a floating-point system with gradual underflow (subnormal numbers), is the representation of each number still unique? Why?"
+25,3042,3047,"Inafloating-pointsystem,istheproduct of two machine numbers usually exactly representable in the floating-point system? Why?"
+26,3171,3176,"In a floating-point system, is the quotient of two nonzero machine numbers always exactly representable in the floating-point system? Why?"
+27,3314,3319,(a) Give an example to show that floating-point addition is not necessarily associative.(b) Give an example to show that floatingpoint multiplication is not necessarily associative.
+28,3500,3505,"Give an example of a number whose decimal representation is finite (i.e., it has only a finite number of nonzero digits) but whose binary representation is not."
+29,3665,3670,Give examples of floating-point arithmetic operations that would produce each of the exceptional values Inf and NaN.
+30,3786,3791,Explainwhythecancellationthatoccurs when two numbers of similar magnitude are subtracted is often bad even though the result may be exactly correct for the actual operands involved.
+31,3972,3977,Assume a decimal (base 10) floatingpoint system having machine precision $\epsilon_\text{mach} = 10^{−5}$ and an exponent range of ±20. What is the result of each of the following floating-point arithmetic operations?(a) 1 + 10−7(b) 1 + 103 (c)1+107(d) 1010 + 103(e) 1010/10−15(f ) 10−10 × 10−15
+32,4272,4277,"In a floating-point number system having an underflow level of UFL = 10−38, which of the following computations will incur an underflow?"
+33,4413,4418,"In floating-point arithmetic, if you are computing the sum of a convergent infinite se-(a) a = √b2 + c2, with b = 1, c = 10−25. √(b)a= b2+c2,withb=c=10−25.(c) u = (v×w)/(y×z), with v = 10−15,of positive terms in the natural order, what stopping criterion would you use to attain the maximum possible accuracy using the smallest number of terms?"
+34,4762,4767,"Explain why an alternating infinite series, such asx x2x3e =1+x+2!+3!+···for x < 0, is difficult to evaluate accurately in floating-point arithmetic."
+35,4916,4921,"If f is a real-valued function of a real variable, the truncation error of the finite difference approximation to the derivativef′(x)≈ f(x+h)−f(x) hgoes to zero as h → 0. If we use floatingpoint arithmetic, list two factors that limit how small a value of h we can use in practice."
+36,5202,5207,"For computing the midpoint m of an interval [x, y], which of the following two formulas is preferable in floating-point arithmetic? Why?(a) m = (x + y)/2.0(b) m = x + (y − x)/2."
+37,5384,5390,"List at least two ways in which evaluation of the quadratic formula−b±√b2 −4ac x= 2amay suffer numerical difficulties in floatingpoint arithmetic.over a large population and then rounding to three significant digits. In fact, however, 98.6 is simply the Fahrenheit equivalent of 37 degrees Celsius, which is accurate to only twow = 10−30, y = 10−20, and z = 10−25.In each case where underflow occurs, is it reasonable simply to set to zero the quantity that underflows?"
+38,5859,5864,"(a) Explain in words the difference between the unit roundoff, εmach, and the underflow level, UFL, in a floating-point system.Of these two quantities,(b) Which one depends only on the number of digits in the mantissa field?(c) Which one depends only on the number of digits in the exponent field?(d) Which one does not depend on the rounding rule used?(e) Which one is not affected by allowing subnormal numbers?"
+39,6277,6282,"Let xk be a monotonically decreasing, finite sequence of positive numbers (i.e., xk > xk+1 for each k). Assuming it is practical to take the numbers in any order we choose, in what order should the sequence be summed to minimize rounding error?"
+40,6526,6531,Is cancellation an example of rounding error? Why?
+41,6581,6586,"(a) Explain why a divergent infinite series, such as ∞􏰑 n1 ,n=1can have a finite sum in floating-point arith-metic.(b) At what point will the partial sums cease to change?"
