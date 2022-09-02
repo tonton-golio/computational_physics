@@ -8,13 +8,13 @@ def get_data():
     return []
 
 
-df = pd.read_csv('../assets/scientific_computing/review_questions_ch1.csv',
+df = pd.read_csv('streamlit_app1/assets/scientific_computing/review_questions_ch1.csv',
 	index_col=0)
 question_numbers = list(df.index)
 
 
 try:
-    df_answers = pd.read_csv('../assets/scientific_computing/review_questions_ch1_answers.csv',
+    df_answers = pd.read_csv('streamlit_app1/assets/scientific_computing/review_questions_ch1_answers.csv',
         index_col=0)
 except:
     df_answers = pd.DataFrame()
