@@ -7,7 +7,10 @@ st.set_page_config(page_title="Computational Physics",
 	menu_items=None)
 st.title("Computational Physics")
 'Welcome to the notes!'
-st.image('streamlit_app1/assets/images/cover.jpg')
+try:
+	st.image('streamlit_app1/assets/images/cover.jpg')
+except:
+	st.image('assets/images/cover.jpg')
 
 '''Use the sidebar to navigate
 between courses. Note; the sidebar can

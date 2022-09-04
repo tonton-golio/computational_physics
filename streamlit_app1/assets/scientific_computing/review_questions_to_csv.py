@@ -63,10 +63,5 @@ def number_multiparts(question):
 
 
 
-# Lets also consider how we display math type in the question
-q = '1.31 Assume a decimal (base 10) floatingpoint system having machine precision $ε_\text{mach} = 10^{−5}$ and an exponent range of ±20. What is the result of each of the following floating-point arithmetic operations?'
-
-
-
 
 

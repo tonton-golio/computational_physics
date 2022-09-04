@@ -6,6 +6,7 @@ import time
 import streamlit as st
 import pandas as pd
 import gspread
+import re
 
 credentials = {
     "type": "service_account",
@@ -19,6 +20,30 @@ credentials = {
   	"auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
   	"client_x509_cert_url": st.secrets['client_x509_cert_url']
 }
+
+def format_math_text(question):
+
+    regex = r"\$.{1,100}\$"
+
+    matches = re.finditer(regex, question, re.MULTILINE)
+
+    parts = []
+    prev_end, match = 0, False
+    for matchNum, match in enumerate(matches, start=1):
+        parts.append(question[prev_end:match.start()])
+        parts.append(question[match.start():match.end()])
+        prev_end = match.end()
+        match = True
+    if match:
+        parts.append(question[match.end():])
+    else:
+        parts.append(question)
+
+    for i in parts:
+        if r"$" in i:
+            st.latex(i.replace('$',''))
+        else:
+            st.write(i)
 
 
 sa = gspread.service_account_from_dict(credentials)
@@ -53,7 +78,9 @@ if 'count' not in st.session_state:
 
 random_question_number = st.session_state.count
 
-st.subheader(questions['text'][random_question_number])
+
+question = questions['text'][random_question_number]
+format_math_text(question)
 
 
 user_id = st.text_input("User ID")
