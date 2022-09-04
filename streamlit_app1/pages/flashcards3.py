@@ -1,7 +1,11 @@
+# flashcards3.py
+
+import numpy as np
+import matplotlib.pyplot as plt
+import time
 import streamlit as st
 import pandas as pd
 import gspread
-
 
 credentials = {
     "type": "service_account",
@@ -19,16 +23,66 @@ credentials = {
 
 sa = gspread.service_account_from_dict(credentials)
 sh = sa.open('reviewQuestions')
-
 wks = sh.worksheet('Sheet1')
-
-
-#print("Rows: ", wks.row_count)
-#print("Cols: ", wks.col_count)
-
-
 records = wks.get_all_records()
+answers = pd.DataFrame.from_dict(records)
 
-df = pd.DataFrame.from_dict(records)
-df
-#records
+
+@st.cache(allow_output_mutation=True)
+def get_data():
+    return []
+
+course = 'scientific computing'
+chapter = 'Bounding Errors'
+
+try: # Github path
+    questions = pd.read_csv('streamlit_app1/assets/scientific_computing/review_questions_ch1.csv',
+        index_col=0)
+except: # local path
+    questions = pd.read_csv('assets/scientific_computing/review_questions_ch1.csv',
+        index_col=0)
+
+question_numbers = list(questions.index)
+
+
+st.title('Flashcards')
+
+
+if 'count' not in st.session_state:
+    st.session_state.count = int(question_numbers[np.random.randint(0,len(question_numbers))])
+
+random_question_number = st.session_state.count
+
+st.subheader(questions['text'][random_question_number])
+
+
+user_id = st.text_input("User ID")
+answer = st.text_input('Answer')
+certainty = st.slider("certainty", 0, 5)
+
+if st.button("Submit answer"):
+    new_answers = {
+        "Course" : course,
+        "Chapter" : chapter,
+        "QuestionNumber":st.session_state.count,
+        "UserID": user_id, 
+        "Certainty": certainty,
+        "Answer": answer, 
+        'DateTime' : time.time(), # Getting the current date and time
+        }
+    new_answers = list(new_answers.values())
+    loc = f"A{len(answers)+2}:G{len(answers)+2}"
+    #st.write(loc, new_answers)
+    wks.update(loc,[new_answers])
+
+    records = wks.get_all_records()
+    answers = pd.DataFrame.from_dict(records)
+    answers[answers["Course"]==course][answers["Chapter"]==chapter][answers["QuestionNumber"]==random_question_number]
+
+
+
+
+# Button to obtain new question by refreshing:
+if st.button('New Question'):
+   st.session_state.count = int(question_numbers[np.random.randint(0,len(question_numbers))])
+
