@@ -1,10 +1,5 @@
 # streamlit_app.py
 
-import streamlit as st
-from gsheetsdb import connect
-
-# Create a connection object.
-conn = connect()
 
 import pandas as pd
 import streamlit as st
@@ -65,24 +60,6 @@ df0
 # Button to obtain new question by refreshing:
 if st.button('New Question'):
    st.session_state.count = int(question_numbers[np.random.randint(0,len(question_numbers))])
-
-
-# Perform SQL query on the Google Sheet.
-# Uses st.cache to only rerun when the query changes or after 10 secs.
-@st.cache(ttl=10)
-def run_query(query):
-    rows = conn.execute(query, headers=1)
-    rows = rows.fetchall()
-    return rows
-
-sheet_url = st.secrets["public_gsheets_url"]
-rows = run_query(f'SELECT * FROM "{sheet_url}"')
-
-# Print results.
-#for row in rows:
-#    st.write(f"{row.name} has a :{row.pet}:")
-
-
 
 
 df = pd.DataFrame(rows)
