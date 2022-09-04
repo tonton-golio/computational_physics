@@ -61,6 +61,3 @@ df0
 if st.button('New Question'):
    st.session_state.count = int(question_numbers[np.random.randint(0,len(question_numbers))])
 
-
-df = pd.DataFrame(rows)
-df 
