@@ -66,6 +66,7 @@ with st.expander('Bounding Errors', expanded=False):
 
 with st.expander('Linear Equations', expanded=False):
 	st.markdown('Linear Equations')
+	
 with st.expander('Linear Least Squares', expanded=False):
 	st.markdown('Linear Equations')
 with st.expander('Eigensystems', expanded=False):
