@@ -51,10 +51,10 @@ with st.expander('Bounding Errors', expanded=False):
 	''')
 	st.latex(r'''
 	\begin{align*}
-	f'(x) \approx \frac{f(x+h)-f(x)}{h}\def\hat{f'(x)}\\
+	f'(x) \approx \frac{f(x+h)-f(x)}{h}\equiv\hat{f'(x)}\\
 	f(x+h) = f(x)+hf'(x)+ \frac{h^2}{2}f''(\theta), |\theta-x|\leq h\\
 	\frac{f(x+h)-f(x)}{h} = f'(x) + \frac{h}{2}f''(\theta)\\
-	\hat{f'(x)} - f'(x) = \frac{h}{2}f''(\theta), \text{let} \def \text{Sup}_{|\theta-x|\leq h} (f''(\theta))\\
+	\hat{f'(x)} - f'(x) = \frac{h}{2}f''(\theta), \text{let} \equiv \text{Sup}_{|\theta-x|\leq h} (f''(\theta))\\
 	E_\text{trunc} = \hat{f'(x)}-f'(x)\leq \frac{M}{2}h\sim O(h)
 	\end{align*}''')
 
@@ -67,11 +67,11 @@ with st.expander('Bounding Errors', expanded=False):
 		E_\text{comp} = \frac{M}{2}h + \frac{2\epsilon}{h}\\
 		0 = \frac{d}{dh}E_\text{comp} = \frac{M}{2}-\frac{2\epsilon}{h^2}\\
 		\frac{M}{2} = \frac{2\epsilon}{h^2} 
-		\Rightarrow h^2 = \frac{4\epsilon}{M}\rightarrow h = 2\sqrt{\frac{\epsilon}{M}}
+		\Rightarrow h^2 = \frac{4\epsilon}{M}\rightarrow h_\text{optimal} = 2\sqrt{\frac{\epsilon}{M}}
 	\end{align*}''')
 
 	try:
-		st.image('streamlit_app1/assets/images/errors.png')
+		st.image('https://farside.ph.utexas.edu/teaching/329/lectures/img320.png')
 	except:
 		st.image('assets/images/errors.png')
 
@@ -79,7 +79,11 @@ with st.expander('Bounding Errors', expanded=False):
 	st.markdown(r'''
 	**Forward vs. backward error**
 
+	foward error is the error in the output, backward error is the error in the input.
+
 	**Sensitivity and conditioning**
+
+	Condition number: $COND(f) \equiv \frac{|\frac{\Delta y}{y}|}{|\frac{\Delta x}{x}|} = \frac{|x\Delta y|}{|y\Delta x|}$
 
 	**Stability and accuracy**
 
