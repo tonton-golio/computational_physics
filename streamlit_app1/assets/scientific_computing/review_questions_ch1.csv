@@ -44,32 +44,33 @@
 (b) Give an example to show that floatingpoint multiplication is not necessarily associative."
 28,3536,3541,"Give an example of a number whose decimal representation is finite (i.e., it has only a finite number of nonzero digits) but whose binary representation is not."
 29,3701,3706,Give examples of floating-point arithmetic operations that would produce each of the exceptional values Inf and NaN.
-30,3822,3827,Explainwhythecancellationthatoccurs when two numbers of similar magnitude are subtracted is often bad even though the result may be exactly correct for the actual operands involved.
-31,4008,4013,"Assume a decimal (base 10) floatingpoint system having machine precision $\epsilon_\text{mach} = 10^{−5}$ and an exponent range of $\pm20$. What is the result of each of the following floating-point arithmetic operations?
+30,3822,3827,Explain why the cancellation that occurs when two numbers of similar magnitude are subtracted is often bad even though the result may be exactly correct for the actual operands involved.
+31,4013,4018,"Assume a decimal (base 10) floatingpoint system having machine precision $\epsilon_\text{mach} = 10^{−5}$ and an exponent range of $\pm20$. What is the result of each of the following floating-point arithmetic operations?
 (a) $1 + 10^{−7}$
 (b) $1 + 10^3$
 (c) $1+10^7$
 (d) $10^{10} + 10^3$
-(e) $10^{10}/10^{−15}$(f) $10^{−10} \times 10^{−15}$"
-32,4349,4354,"In a floating-point number system having an underflow level of $\text{UFL} = 10^{−38}$, which of the following computations will incur an underflow?"
-33,4502,4507,"
+(e) $10^{10}/10^{−15}$
+(f) $10^{−10} \times 10^{−15}$"
+32,4354,4359,"In a floating-point number system having an underflow level of $\text{UFL} = 10^{−38}$, which of the following computations will incur an underflow?
+(a) $a = \sqrt{b^2 + c^2}\text{, with} b = 1, c = 10^{−25}.$
+(b) $a = \sqrt{b^2 + c^2}\text{, with} b = c = 10^{−25}.$
+(c) $u = (v\times w)/(y\times z)\text{, with} v = 10^{−15}$,"
+33,4684,4689,"
 (a) Explain in words the difference between the unit roundoff, $\epsilon_\text{mach}$, and the underflow level, UFL, in a floating-point system.Of these two quantities,
 (b) Which one depends only on the number of digits in the mantissa field?
 (c) Which one depends only on the number of digits in the exponent field?
 (d) Which one does not depend on the rounding rule used?
 (e) Which one is not affected by allowing subnormal numbers?"
-34,4937,4942,"Let xk be a monotonically decreasing, finite sequence of positive numbers (i.e., xk > xk+1 for each k). Assuming it is practical to take the numbers in any order we choose, in what order should the sequence be summed to minimize rounding error?"
-35,5186,5191,Is cancellation an example of rounding error? Why?
-36,5241,5246,"
-(a) Explain why a divergent infinite series, such as $$\sum_{n=1}^\infty\frac{1}{n},$can have a finite sum in floating-point arithmetic.
+34,5119,5124,"Let xk be a monotonically decreasing, finite sequence of positive numbers (i.e., xk > xk+1 for each k). Assuming it is practical to take the numbers in any order we choose, in what order should the sequence be summed to minimize rounding error?"
+35,5368,5373,Is cancellation an example of rounding error? Why?
+36,5423,5428,"
+(a) Explain why a divergent infinite series, such as $\sum_{n=1}^\infty\frac{1}{n},$can have a finite sum in floating-point arithmetic.
 (b) At what point will the partial sums cease to change?"
-37,5438,5443,"In floating-point arithmetic, if you are computing the sum of a convergent infinite se-
-(a) a = √b2 + c2, with b = 1, c = 10−25. √
-(b)a= b2+c2,withb=c=10−25.
-(c) u = (v×w)/(y×z), with v = 10−15,of positive terms in the natural order, what stopping criterion would you use to attain the maximum possible accuracy using the smallest number of terms?"
-38,5787,5792,"Explain why an alternating infinite series, such as$e^x = 1+x+\frac{x^2}{2!}+\frac{x^3}{3!}+\ldots$for $x < 0$, is difficult to evaluate accurately in floating-point arithmetic."
-39,5969,5974,"If f is a real-valued function of a real variable, the truncation error of the finite difference approximation to the derivative$f′(x)\approx \frac{f(x+h)−f(x)}{h}$goes to zero as $h \rightarrow 0$. If we use floatingpoint arithmetic, list two factors that limit how small a value of h we can use in practice."
-40,6283,6288,"For computing the midpoint m of an interval [x, y], which of the following two formulas is preferable in floating-point arithmetic? Why?
+37,5619,5624,"In floating-point arithmetic, if you are computing the sum of a convergent infinite series$S = \sum_{i=1}^\infty x_i$of positive terms in the natural order, what stopping criterion would you use to attain the maximum possible accuracy using the smallest number of terms?"
+38,5894,5899,"Explain why an alternating infinite series, such as$e^x = 1+x+\frac{x^2}{2!}+\frac{x^3}{3!}+\ldots$for $x < 0$, is difficult to evaluate accurately in floating-point arithmetic."
+39,6076,6081,"If f is a real-valued function of a real variable, the truncation error of the finite difference approximation to the derivative$f′(x)\approx \frac{f(x+h)−f(x)}{h}$goes to zero as $h \rightarrow 0$. If we use floatingpoint arithmetic, list two factors that limit how small a value of h we can use in practice."
+40,6390,6395,"For computing the midpoint m of an interval [x, y], which of the following two formulas is preferable in floating-point arithmetic? Why?
 (a) m = (x + y)/2.0
 (b) m = x + (y − x)/2."
-41,6465,6471,"List at least two ways in which evaluation of the quadratic formula−b±√b2 −4ac x= 2amay suffer numerical difficulties in floatingpoint arithmetic.over a large population and then rounding to three significant digits. In fact, however, 98.6 is simply the Fahrenheit equivalent of 37 degrees Celsius, which is accurate to only twow = 10−30, y = 10−20, and z = 10−25.In each case where underflow occurs, is it reasonable simply to set to zero the quantity that underflows?"
+41,6572,6578,"List at least two ways in which evaluation of the quadratic formula−b±√b2 −4ac x= 2amay suffer numerical difficulties in floatingpoint arithmetic.over a large population and then rounding to three significant digits. In fact, however, 98.6 is simply the Fahrenheit equivalent of 37 degrees Celsius, which is accurate to only twow = 10−30, y = 10−20, and z = 10−25.In each case where underflow occurs, is it reasonable simply to set to zero the quantity that underflows?"

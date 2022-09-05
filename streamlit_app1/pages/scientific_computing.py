@@ -36,10 +36,16 @@ with st.expander('Bounding Errors', expanded=False):
 	E_\text{tot} &= E_\text{comp} &+& E_\text{data}
 	\end{align*}''')
 
-	st.markdown('''
+	st.markdown(r'''
 	**Truncaiton error and rounding error** are the two parts of computational error. 
 	Truncation error stems from truncating infinite series, or replacing derivatives 
 	with finite differences. Rounding error is like the error from like floating point accuracy.
+
+	Truncation error, $E_\text{trunc}$ can stem from; 
+	* simplification of physical model
+	* finite basis sets
+	* truncations of infinite series
+	* ...r
 
 	**Forward vs. backward error**
 

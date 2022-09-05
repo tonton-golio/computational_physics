@@ -44,6 +44,9 @@ REVIEW QUESTIONS
 (e) $10^{10}/10^{−15}$
 (f) $10^{−10} \times 10^{−15}$
 1.32 In a floating-point number system having an underflow level of $\text{UFL} = 10^{−38}$, which of the following computations will incur an underflow?
+(a) $a = \sqrt{b^2 + c^2}\text{, with} b = 1, c = 10^{−25}.$
+(b) $a = \sqrt{b^2 + c^2}\text{, with} b = c = 10^{−25}.$
+(c) $u = (v\times w)/(y\times z)\text{, with} v = 10^{−15}$,
 1.33 (a) Explain in words the difference between the unit roundoff, $\epsilon_\text{mach}$, and the underflow level, UFL, in a floating-point system.
 Of these two quantities,
 (b) Which one depends only on the number of digits in the mantissa field?
@@ -52,13 +55,11 @@ Of these two quantities,
 (e) Which one is not affected by allowing subnormal numbers?
 1.34 Let xk be a monotonically decreasing, finite sequence of positive numbers (i.e., xk > xk+1 for each k). Assuming it is practical to take the numbers in any order we choose, in what order should the sequence be summed to minimize rounding error?
 1.35 Is cancellation an example of rounding error? Why?
-1.36 (a) Explain why a divergent infinite series, such as $$\sum_{n=1}^\infty\frac{1}{n},$
+1.36 (a) Explain why a divergent infinite series, such as $\sum_{n=1}^\infty\frac{1}{n},$
 can have a finite sum in floating-point arithmetic.
 (b) At what point will the partial sums cease to change?
-1.37 In floating-point arithmetic, if you are computing the sum of a convergent infinite se-
-(a) a = √b2 + c2, with b = 1, c = 10−25. √
-(b)a= b2+c2,withb=c=10−25.
-(c) u = (v×w)/(y×z), with v = 10−15,
+1.37 In floating-point arithmetic, if you are computing the sum of a convergent infinite series
+$S = \sum_{i=1}^\infty x_i$
 of positive terms in the natural order, what stopping criterion would you use to attain the maximum possible accuracy using the smallest number of terms?
 1.38 Explain why an alternating infinite series, such as
 $e^x = 1+x+\frac{x^2}{2!}+\frac{x^3}{3!}+\ldots$
