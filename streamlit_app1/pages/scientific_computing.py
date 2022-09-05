@@ -67,7 +67,7 @@ with st.expander('Bounding Errors', expanded=False):
 		E_\text{comp} = \frac{M}{2}h + \frac{2\epsilon}{h}\\
 		0 = \frac{d}{dh}E_\text{comp} = \frac{M}{2}-\frac{2\epsilon}{h^2}\\
 		\frac{M}{2} = \frac{2\epsilon}{h^2} 
-		\Rightarrow h^2 = \frac{4\epsilon}{M}\rightarrow h_\text{optimal} = 2\sqrt{\frac{\epsilon}{M}}
+		\Leftrightarrow h^2 = \frac{4\epsilon}{M}\Leftrightarrow h_\text{optimal} = 2\sqrt{\frac{\epsilon}{M}}
 	\end{align*}''')
 
 	try:

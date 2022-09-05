@@ -47,7 +47,7 @@ REVIEW QUESTIONS
 (a) $a = \sqrt{b^2 + c^2}\text{, with} b = 1, c = 10^{−25}.$
 (b) $a = \sqrt{b^2 + c^2}\text{, with} b = c = 10^{−25}.$
 (c) $u = (v\times w)/(y\times z)\text{, with} v = 10^{−15}$,
-1.33 (a) Explain in words the difference between the unit roundoff, $\epsilon_\text{mach}$, and the underflow level, UFL, in a floating-point system.
+1.33 (a) Explain in words the difference between the unit roundoff, $\epsilon_\text{mach},$ and the underflow level, UFL, in a floating-point system.
 Of these two quantities,
 (b) Which one depends only on the number of digits in the mantissa field?
 (c) Which one depends only on the number of digits in the exponent field?
