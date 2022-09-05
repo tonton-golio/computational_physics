@@ -19,7 +19,7 @@ for matchNum in questions.keys():
 		next_beginning = questions[matchNum+1]['start'] 
 	except KeyError:
 		next_beginning = 99999999
-	questions[matchNum]['text'] = text[my_end:next_beginning]
+	questions[matchNum]['text'] = text[my_end:next_beginning].replace('(a)','\n(a)').replace('(b)','\n(b)').replace('(c)','\n(c)').replace('(d)','\n(d)').replace('(e)','\n(e)').replace('(f)','\n(f)')
 
 #print(questions[32])
 df = pd.DataFrame.from_dict(questions).T

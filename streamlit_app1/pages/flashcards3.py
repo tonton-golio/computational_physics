@@ -28,13 +28,13 @@ def format_math_text(question):
     matches = re.finditer(regex, question, re.MULTILINE)
 
     parts = []
-    prev_end, match = 0, False
+    prev_end, match_found = 0, False
     for matchNum, match in enumerate(matches, start=1):
         parts.append(question[prev_end:match.start()])
         parts.append(question[match.start():match.end()])
         prev_end = match.end()
-        match = True
-    if match:
+        match_found = True
+    if match_found:
         parts.append(question[match.end():])
     else:
         parts.append(question)

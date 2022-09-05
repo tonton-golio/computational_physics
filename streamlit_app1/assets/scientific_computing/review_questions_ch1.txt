@@ -26,7 +26,7 @@ REVIEW QUESTIONS
 1.21 In a floating-point system, what quantity determines the maximum relative error in representing a given real number by a machine number?
 1.22 (a) Explain the difference between the rounding rules “round toward zero” and “round to nearest” in a floating-point system.
 (b) Which of these two rounding rules is more accurate?
-(c) What quantitative difference does this make in the unit roundoff εmach?
+(c) What quantitative difference does this make in the unit roundoff $\epsilon_\text{mach}$?
 1.23 In a t-digit binary floating-point system with rounding to nearest, what is the value of the unit roundoff $\epsilon_\text{mach}$?
 1.24 In a floating-point system with gradual underflow (subnormal numbers), is the representation of each number still unique? Why?
 1.25 Inafloating-pointsystem,istheproduct of two machine numbers usually exactly representable in the floating-point system? Why?
@@ -35,7 +35,7 @@ REVIEW QUESTIONS
 (b) Give an example to show that floatingpoint multiplication is not necessarily associative.
 1.28 Give an example of a number whose decimal representation is finite (i.e., it has only a finite number of nonzero digits) but whose binary representation is not.
 1.29 Give examples of floating-point arithmetic operations that would produce each of the exceptional values Inf and NaN.
-1.30 Explainwhythecancellationthatoccurs when two numbers of similar magnitude are subtracted is often bad even though the result may be exactly correct for the actual operands involved.
+1.30 Explain why the cancellation that occurs when two numbers of similar magnitude are subtracted is often bad even though the result may be exactly correct for the actual operands involved.
 1.31 Assume a decimal (base 10) floatingpoint system having machine precision $\epsilon_\text{mach} = 10^{−5}$ and an exponent range of $\pm20$. What is the result of each of the following floating-point arithmetic operations?
 (a) $1 + 10^{−7}$
 (b) $1 + 10^3$
@@ -44,7 +44,7 @@ REVIEW QUESTIONS
 (e) $10^{10}/10^{−15}$
 (f) $10^{−10} \times 10^{−15}$
 1.32 In a floating-point number system having an underflow level of $\text{UFL} = 10^{−38}$, which of the following computations will incur an underflow?
-1.33 (a) Explain in words the difference between the unit roundoff, εmach, and the underflow level, UFL, in a floating-point system.
+1.33 (a) Explain in words the difference between the unit roundoff, $\epsilon_\text{mach}$, and the underflow level, UFL, in a floating-point system.
 Of these two quantities,
 (b) Which one depends only on the number of digits in the mantissa field?
 (c) Which one depends only on the number of digits in the exponent field?
@@ -61,12 +61,11 @@ can have a finite sum in floating-point arithmetic.
 (c) u = (v×w)/(y×z), with v = 10−15,
 of positive terms in the natural order, what stopping criterion would you use to attain the maximum possible accuracy using the smallest number of terms?
 1.38 Explain why an alternating infinite series, such as
-x x2x3
-e =1+x+2!+3!+···
-for x < 0, is difficult to evaluate accurately in floating-point arithmetic.
+$e^x = 1+x+\frac{x^2}{2!}+\frac{x^3}{3!}+\ldots$
+for $x < 0$, is difficult to evaluate accurately in floating-point arithmetic.
 1.39 If f is a real-valued function of a real variable, the truncation error of the finite difference approximation to the derivative
-f′(x)≈ f(x+h)−f(x) h
-goes to zero as h → 0. If we use floatingpoint arithmetic, list two factors that limit how small a value of h we can use in practice.
+$f′(x)\approx \frac{f(x+h)−f(x)}{h}$
+goes to zero as $h \rightarrow 0$. If we use floatingpoint arithmetic, list two factors that limit how small a value of h we can use in practice.
 1.40 For computing the midpoint m of an interval [x, y], which of the following two formulas is preferable in floating-point arithmetic? Why?
 (a) m = (x + y)/2.0
 (b) m = x + (y − x)/2.0

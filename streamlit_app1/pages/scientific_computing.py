@@ -31,8 +31,9 @@ with st.expander('Bounding Errors', expanded=False):
 	st.latex(r'''
 	\begin{align*}
 	\text{total error} &= \hat{f}(\hat{x})-f(x)\\
-	&= \hat{f}(\hat{x})-f(\hat{x}) &+(f(\hat{x})-f(x)\\
-	&= \text{computational error} & \text{prpagated data error}\\
+	&= \left(\hat{f}(\hat{x})-f(\hat{x})\right) &+&\left(f(\hat{x})-f(x)\right)\\
+	&= \text{computational error} &+& \text{propagated data error}\\
+	E_\text{tot} &= E_\text{comp} &+& E_\text{data}
 	\end{align*}''')
 
 	st.markdown('''
