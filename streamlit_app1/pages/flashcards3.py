@@ -82,8 +82,6 @@ random_question_number = st.session_state.count
 question = questions['text'][random_question_number]
 format_math_text(question)
 
-
-@st.cache(allow_output_mutation=True)
 user_id = st.sidebar.text_input("User ID")
 
 
