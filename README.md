@@ -1,6 +1,6 @@
 # Computational Physics
 
-This is a **web app** designed to store notes and resources from the University of Copenhagen's M.Sc. Computational Physics course. We'd appreciate it if people from other speciaizations could chip in too!
+This is a **web app** designed to store notes and resources from the University of Copenhagen's M.Sc. Computational Physics course. We'd appreciate it if people from other speciaizations could chip in too! 
 
 [Website link](https://tonton-golio-computational-physics-streamlit-app1home-0d1p3s.streamlitapp.com/)
 
