@@ -54,9 +54,8 @@ answers = pd.DataFrame.from_dict(records)
 
 
 @st.cache(allow_output_mutation=True)
-
-with st.sidebar:
-    user_id = st.text_input("User ID")
+def get_data():
+    return []
 
 course = 'scientific computing'
 chapter = 'Bounding Errors'
@@ -83,7 +82,7 @@ random_question_number = st.session_state.count
 question = questions['text'][random_question_number]
 format_math_text(question)
 
-
+user_id = st.sidebar.text_input("User ID")
 
 
 answer = st.text_input('Answer')
