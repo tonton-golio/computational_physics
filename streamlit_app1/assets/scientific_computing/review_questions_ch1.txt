@@ -62,14 +62,13 @@ can have a finite sum in floating-point arithmetic.
 $S = \sum_{i=1}^\infty x_i$
 of positive terms in the natural order, what stopping criterion would you use to attain the maximum possible accuracy using the smallest number of terms?
 1.38 Explain why an alternating infinite series, such as
-$e^x = 1+x+\frac{x^2}{2!}+\frac{x^3}{3!}+\ldots$
-for $x < 0$, is difficult to evaluate accurately in floating-point arithmetic.
+$e^x = 1+x+\frac{x^2}{2!}+\frac{x^3}{3!}+\ldots \text{for} x < 0$, is difficult to evaluate accurately in floating-point arithmetic.
 1.39 If f is a real-valued function of a real variable, the truncation error of the finite difference approximation to the derivative
 $f′(x)\approx \frac{f(x+h)−f(x)}{h}$
 goes to zero as $h \rightarrow 0$. If we use floatingpoint arithmetic, list two factors that limit how small a value of h we can use in practice.
 1.40 For computing the midpoint m of an interval [x, y], which of the following two formulas is preferable in floating-point arithmetic? Why?
-(a) m = (x + y)/2.0
-(b) m = x + (y − x)/2.0
+(a) $m = (x + y)/2.0$
+(b) $m = x + (y − x)/2.0$
 1.41 List at least two ways in which evaluation of the quadratic formula
 −b±√b2 −4ac x= 2a
 may suffer numerical difficulties in floatingpoint arithmetic.

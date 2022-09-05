@@ -45,8 +45,38 @@ with st.expander('Bounding Errors', expanded=False):
 	* simplification of physical model
 	* finite basis sets
 	* truncations of infinite series
-	* ...r
+	* ...
 
+	*Example:* computational error of $1^\text{st}$ order finite difference
+	''')
+	st.latex(r'''
+	\begin{align*}
+	f'(x) \approx \frac{f(x+h)-f(x)}{h}\def\hat{f'(x)}\\
+	f(x+h) = f(x)+hf'(x)+ \frac{h^2}{2}f''(\theta), |\theta-x|\leq h\\
+	\frac{f(x+h)-f(x)}{h} = f'(x) + \frac{h}{2}f''(\theta)\\
+	\hat{f'(x)} - f'(x) = \frac{h}{2}f''(\theta), \text{let} \def \text{Sup}_{|\theta-x|\leq h} (f''(\theta))\\
+	E_\text{trunc} = \hat{f'(x)}-f'(x)\leq \frac{M}{2}h\sim O(h)
+	\end{align*}''')
+
+	st.markdown(r'''But what about the rounding error? 
+		(assume R.E. for $f$ is $\epsilon \Rightarrow E_\text{ronud} \leq \frac{2\epsilon}{h}\sim 0(\frac{1}{h})$
+		''')
+
+	st.latex(r'''
+	\begin{align*}
+		E_\text{comp} = \frac{M}{2}h + \frac{2\epsilon}{h}\\
+		0 = \frac{d}{dh}E_\text{comp} = \frac{M}{2}-\frac{2\epsilon}{h^2}\\
+		\frac{M}{2} = \frac{2\epsilon}{h^2} 
+		\Rightarrow h^2 = \frac{4\epsilon}{M}\rightarrow h = 2\sqrt{\frac{\epsilon}{M}}
+	\end{align*}''')
+
+	try:
+		st.image('streamlit_app1/assets/images/errors.png')
+	except:
+		st.image('assets/images/errors.png')
+
+
+	st.markdown(r'''
 	**Forward vs. backward error**
 
 	**Sensitivity and conditioning**
