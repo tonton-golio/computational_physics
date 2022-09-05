@@ -16,14 +16,20 @@ After cloning the repository, you need to install the required libraries. We rec
 
 Next, you want to move inside the `streamlit_app1` directory with
 
-```cd streamlit_app1```
+```bash
+cd streamlit_app1
+```
 
 Once that's done, install the required libraries with
 
-```pip install -r requirements.txt```
+```bash
+pip install -r requirements.txt
+```
 
 and start it up with
 
-```streamlit run home.py```
+```python
+streamlit run home.py
+```
 
 It should automatically start up, and give you a local url. Paste that in your browser, and you're good to go!
