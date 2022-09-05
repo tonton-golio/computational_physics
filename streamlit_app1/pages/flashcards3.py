@@ -83,7 +83,10 @@ question = questions['text'][random_question_number]
 format_math_text(question)
 
 
-user_id = st.text_input("User ID")
+@st.cache(allow_output_mutation=True)
+user_id = st.sidebar.text_input("User ID")
+
+
 answer = st.text_input('Answer')
 certainty = st.slider("certainty", 0, 5)
 
