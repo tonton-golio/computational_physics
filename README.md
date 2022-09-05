@@ -6,7 +6,7 @@ This is a **web app** designed to store notes and resources from the University 
 
 ## Contribution
 
-Please help us fill in information! Be it lecture notes on the subject, or your answers to the questions, we'd love contributions. The app is open source, so feel free to put in a PR, or contact [Anton](github.com/tonton-golio).
+Please help us fill in information! Be it lecture notes on the subject, or your answers to the questions, we'd love contributions. The app is open source, so feel free to put in a PR, or contact <a href="mailto:aggolles97@gmail.com">Anton</a>.
 
 ## Development
 
