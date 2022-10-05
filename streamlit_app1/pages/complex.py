@@ -27,18 +27,22 @@ def accumulate(x):
     return X
 
 def randomWalk(nsteps,
-                sigma2=1,
+                sigma2=1, seed=42,
                 xscale='linear', yscale='log'
                 ):
     (dx_f, dy_f) = (lambda theta, r=1: r*trig(theta) for trig in (np.cos, np.sin)) 
     dx_f = lambda theta, r = 1: r*np.cos(theta)
     dy_f = lambda theta, r = 1: r*np.sin(theta)
 
-
+    np.random.seed(seed)
     thetas_uniform = np.random.uniform(0,2*np.pi,nsteps)
     thetas_randn = np.random.randn(nsteps)*sigma2
     thetas_bimodal = np.concatenate([ np.random.randn(nsteps//2) * sigma2-1, 
                                       np.random.randn(nsteps//2) * sigma2+1 ])
+
+    thetas_uniform[0] = 0
+    thetas_randn[0] = 0
+    thetas_bimodal[0] = 0
 
     rands = [thetas_uniform, thetas_randn, thetas_bimodal]
     rands_names = 'uniform, normal, bimodal'.split(', ')
@@ -84,11 +88,11 @@ def run_random_walk():
     nsteps = st.sidebar.slider('nsteps',5,100)
     seed = st.sidebar.slider('seed',0,100)
     sigma2 = st.sidebar.slider('$\simga^2$',0.2,1.)
-    xscale = st.sidebar.radio('xscale', ['linear', 'log'])
-    yscale = st.sidebar.radio('yscale', ['linear', 'log'])
+    xscale = st.sidebar.radio('xscale', ['linear', 'symlog'])
+    yscale = st.sidebar.radio('yscale', ['linear', 'symlog'])
 
 
-    randomWalk(nsteps,sigma2, xscale, yscale)
+    randomWalk(nsteps,sigma2, seed, xscale, yscale)
 
 # -----------
 # percolation
@@ -154,12 +158,13 @@ def percolation(size,p):
 
         # colors
         colors = sns.color_palette("hls", len(domains))
+        np.random.shuffle(colors)
         colors = np.concatenate([[colors[i]]*len(domains[i]) for i in domains])
-
 
         # plot
         xx = np.concatenate([list(domains[i]) for i in domains])
         plt.scatter(xx[:,0], xx[:,1], c=colors)
+        plt.xticks([]); plt.yticks([])
         st.pyplot(fig)
     with st.sidebar:
         size = st.slider('size',10,100)
