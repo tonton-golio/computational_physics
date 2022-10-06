@@ -254,9 +254,43 @@ def bereaucrats():
     st.pyplot(fig)
     
 
+def bakSneppen():
+
+    def run(size, nsteps):
+        chain = np.random.rand(size)
+
+        X = np.empty((nsteps,size))
+        L = np.empty(nsteps)
+        for i in range(nsteps):
+            lowest = np.argmin(chain)
+            chain[(lowest-1+size)%size] = np.random.rand()
+            chain[lowest] = np.random.rand()
+
+            chain[(lowest+1)%size] = np.random.rand()
+            X[i] = chain
+            L[i] = lowest
+        
+
+        fig, ax = plt.subplots(2,1)
+        ax[0].imshow(X.T, aspect  = nsteps/size*.5, vmin=0, vmax=1)
+        ax[1].plot(L)
+        st.pyplot(fig)
+
+    with st.sidebar:
+        nsteps = st.slider('nsteps',1,30)
+        size = st.slider('size',10,31)
+        st.write(size)
+        run_ = st.radio('run', ['yes', 'no'])
+
+    if run_=="yes":
+        run(size, nsteps)
+
+
+
+
 viz = st.sidebar.selectbox('viz', ['choose', 'RandomWalk 2d', 
                                     'Percolation', 'mandelbroth',
-                                    'bereaucrats'])
+                                    'bereaucrats', 'bakSneppen'])
 if viz =='RandomWalk 2d':
     run_random_walk()
 elif viz =='Percolation':
@@ -265,6 +299,9 @@ elif viz =='mandelbroth':
     mandelbroth()
 elif viz =='bereaucrats':
     bereaucrats()
+
+elif viz =='bakSneppen':
+    bakSneppen()
 
 
 
