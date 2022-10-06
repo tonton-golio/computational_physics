@@ -58,7 +58,8 @@ def randomWalk(nsteps,
         lims = {'xl':0, 'xh':0, 'yl':0, 'yh':0}
         for i, (r, n) in enumerate(zip(rands, rands_names)):
             dx, dy = dx_f(r), dy_f(r)
-
+            dx = np.vstack([np.zeros(len(dx)), dx]).T.flatten()
+            dy = np.vstack([np.zeros(len(dy)), dy]).T.flatten()
             
             ax1[i].plot(dx,dy, lw=1, c=colors[i])
             ax1[i].set(ylim=(-1,1), xlim=(-1,1), 
