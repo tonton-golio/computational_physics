@@ -7,3 +7,4 @@ streamlit==1.12.2
 scipy==1.6.2
 click==7.1.2
 gspread==5.5.0
+celluloid==0.2.0
