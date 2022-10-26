@@ -8,3 +8,4 @@ scipy==1.6.2
 click==7.1.2
 gspread==5.5.0
 networkx==2.8.7
+pygraphviz==2.42
