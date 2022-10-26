@@ -8,9 +8,28 @@ st.set_page_config(page_title="Scientific Computing",
 	layout="wide", 
 	initial_sidebar_state="collapsed", 
 	menu_items=None)
-st.title("Scientific Computing")
 
-with st.expander('Bounding Errors', expanded=False):
+
+
+
+def home():
+	st.markdown(r"""
+	# Scientific Computing
+
+	Welcome to scientific computing!
+
+	In this course, we;
+	* learned about the errors arrising in computation.
+	* wrote equation solvers for linear and non-linear systems of equations.
+	* implemented methods for matrix diagonalization.
+	* time evolved initial value problems.
+	* looked at partial differential equations
+	
+	Use the sidebar to navigate!
+	""")
+
+
+def boundingErrors():
 	cols = st.columns(4)
 
 	cols[0].markdown(r"[youtube: errors](https://www.youtube.com/watch?v=GFhhRdF54eI)")
@@ -154,7 +173,7 @@ with st.expander('Bounding Errors', expanded=False):
 	\end{align*}""")
 
 
-with st.expander('Linear Equations', expanded=False):
+def linearEquations():
 	st.markdown(r"""
 	Linear systems are special: It's something we can solve really well, and it covers an enourmous amount of problems. Even when you've got a non-linear system, you can isolate the linearity and solve that, and treat the non-linearity in another way.
 
@@ -285,7 +304,8 @@ with st.expander('Linear Equations', expanded=False):
 	**So:** residueal of least square is perpendicular to Im(A)
 	""")
 	
-with st.expander('Linear Least Squares', expanded=False):
+
+def linearLeastSquares():
 	st.markdown("""
 	with given data and a desired function, determine the paramters of the 
 	function to minimize the distance to data points.""")
@@ -406,7 +426,9 @@ with st.expander('Linear Least Squares', expanded=False):
 		A -= v[:, NA] * S[NA, :]
 
 	the last line RHS is the same as `np.outer(S,V)`""")
-with st.expander('Eigensystems', expanded=False):
+
+
+def eigenSystems():
 	st.markdown(r"""
 # Eigensystems
 
@@ -500,7 +522,9 @@ $$ =T\left(\lim_{d\to\infty}P(\Lambda_A)\right)T^{-1} $$
 * rayleigh quotient
 * power iterate (gives us the greatest eigenvalue)
 * rayleigh iterate""")
-with st.expander('Nonlinear Equations	Optimization', expanded=False):
+
+
+def nonlinearEquationsOptimization():
 	st.markdown(r"""# Nonlinear equations
 
 [Get notes from fabri, I can't take stuff down properly]
@@ -909,9 +933,28 @@ Ideas $f:\mathbb{R}^{3N}\to\mathbb{R}$ representing $N$ particle position in spa
 
 	
 	""")
-with st.expander('Initial Value Problems for Ordinary Differential Equations', expanded=False):
-	st.markdown('Linear Equations')
-with st.expander('Partial Differential Equations	FFT and Spectral Methods', expanded=False):
-	st.markdown('Linear Equations')
 
 
+def initialValueProblems():
+	st.markdown(r"""Initial Value Problems for Ordinary Differential Equations""")
+
+
+def partialDifferentialEquations():
+	st.markdown(r"""Partial Differential Equations - FFT and Spectral Methods""")
+
+
+func_dict = {
+	'Home' : home,
+	'Bounding Errors' : boundingErrors,
+	'Linear Equations': linearEquations,
+	'Linear Least Squares' : linearLeastSquares,
+	"Eigensystems" : eigenSystems,
+	"Nonlinear Equations Optimization" : nonlinearEquationsOptimization,
+	"Initial Value Problems" : initialValueProblems,
+	"Partial Differential Equations":partialDifferentialEquations
+}
+
+with st.sidebar:
+	topic = st.selectbox("topic" , list(func_dict.keys()))
+
+a = func_dict[topic] ; a()
