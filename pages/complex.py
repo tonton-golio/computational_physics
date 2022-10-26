@@ -284,15 +284,28 @@ def run_fractals():
     
     $$z_{i+1} = z^a + c$$
     
-    after successive iterations.
+    after successive iterations. We let $z_0$ be 0.
     """)
     cols[1].code(r"""
-def randomWalk(nsteps):
-    for i in range(nsteps):
-        theta = random()
-        dx = np.cos(theta) ; x += dx
-        dy = np.sin(theta) ; y += dy 
-    """)
+def stable(z):
+    try:
+        return False if abs(z) > 2 else True
+    except OverflowError:
+        return False
+stable = np.vectorize(stable)
+
+
+def mandelbrot(c, a, n=50):
+    z = 0
+    for i in range(n):
+        z = z**a + c
+    return z
+
+def makeGrid(resolution, lims=[-1.85, 1.25, -1.25, 1.45]):
+    re = np.linspace(lims[0], lims[1], resolution)[::-1]
+    im = np.linspace(lims[2], lims[3], resolution)
+    re, im = np.meshgrid(re,im)
+    return re+im*1j    """)
 
 
 # -----------
