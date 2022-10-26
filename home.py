@@ -6,14 +6,11 @@ st.set_page_config(page_title="Computational Physics",
 	initial_sidebar_state="collapsed", 
 	menu_items=None)
 st.title("Computational Physics")
-'Welcome to the notes!'
 try:
 	st.image('streamlit_app1/assets/images/cover.jpg')
 except:
 	st.image('assets/images/cover.jpg')
 
-'''Use the sidebar to navigate
-between courses. Note; the sidebar can
-be expanded using the arrow in the top-left
-corner.'''
-
+st.markdown("""
+[github](https://www.github.com/tonton-golio/computational_physics)
+""")

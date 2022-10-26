@@ -341,7 +341,7 @@ def bereaucrats():
                     except: pass
                 arr[i,j] -= 4
             results['mean'].append(np.mean(arr)) 
-            results['arr'].append(arr) 
+            results['arr'].append(arr.copy()) 
 
         return results
 
@@ -349,25 +349,51 @@ def bereaucrats():
         cols_sidebar = st.columns(2)
         size = cols_sidebar[0].slider(r'size',5,40, 10)
         nsteps = cols_sidebar[1].slider('nsteps',1,5000,1000)
-        a = cols_sidebar[1].slider('a',0.01,13.,2.3)
-    
     
     results = run()
 
-    
+    # plot 1
     c = st.empty()
-    for i in np.linspace(0,len(results['arr']), 20, dtype=int)[:-1]:
-        #results['arr'][i]
-        fig = plt.figure()
-        plt.imshow(results['arr'][i])
-        c.pyplot(fig)
-        time.sleep(.2)
-    fig = plt.figure()
-    plt.plot(results['mean'])
-    #lt.savefig('bureaucrats.png')
-    #plt.close()
-    st.pyplot(fig)
+    progress_bar = st.progress(0)
+    status_text = st.empty()
+    chart = st.line_chart()
+    fig, ax = plt.subplots(1,5, figsize=(12,2.5))
+    fig.patch.set_facecolor('black')
+    a = [ax[idx].set(xticks=[], yticks=[], 
+                facecolor='black') for idx in range(5)]
     
+    steps = range(nsteps)[::nsteps//10]
+    
+    for val, (i, next) in enumerate(zip(steps, steps[1:])):
+        
+        progress_bar.progress(int((i + 1)/nsteps))  # Update progress bar.
+
+        if val%2==0:  # plot imshow the grid
+            idx = 0 if val==0 else idx+1 
+            ax[idx].imshow(results['arr'][i], cmap="inferno")
+            ax[idx].set(xticks=[], yticks=[])
+            c.pyplot(fig)
+            
+        
+        new_rows = results['mean'][i:next]
+
+        # Append data to the chart.
+        chart.add_rows(new_rows)
+
+        # Pretend we're doing some computation that takes time.
+        time.sleep(0.01)
+
+    status_text.text('Done!')
+
+    st.markdown(r"""
+    The problem with beraucrats, is that they dont finish tasks. When a task 
+    lands on the desk of one, the set a side to start a pile. When that pile contains 
+    4 tasks, its time to distribute them amongst the nieghbors. If a
+    beraucrat neighbours an edge, they may dispose of the task headed in that direction. 
+    """)
+
+
+
 # -----------
 # bakSneppen
 def bakSneppen():
@@ -480,14 +506,6 @@ a = func_dict[topic] ; a()
 
 
 #plt.style.available
-
-
-
-
-
-
-
-
 
 
 
