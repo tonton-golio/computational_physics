@@ -381,7 +381,7 @@ def bereaucrats():
         chart.add_rows(new_rows)
 
         # Pretend we're doing some computation that takes time.
-        time.sleep(0.01)
+        time.sleep(.1)
 
     status_text.text('Done!')
 
