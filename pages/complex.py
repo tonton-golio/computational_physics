@@ -349,35 +349,53 @@ def bereaucrats():
 # -----------
 # bakSneppen
 def bakSneppen():
-
+    st.markdown(r"# Bak-Sneppen")
     def run(size, nsteps):
         chain = np.random.rand(size)
 
         X = np.empty((nsteps,size))
-        L = np.empty(nsteps)
+        L = np.zeros(nsteps)
         for i in range(nsteps):
-            lowest = np.argmin(chain)
-            chain[(lowest-1+size)%size] = np.random.rand()
-            chain[lowest] = np.random.rand()
-
-            chain[(lowest+1)%size] = np.random.rand()
+            lowest = np.argmin(chain)  # determine lowest
+            chain[(lowest-1+size)%size] = np.random.rand() # change left neighbour
+            chain[lowest] = np.random.rand() # change ego
+            chain[(lowest+1)%size] = np.random.rand() # change right neighbour
             X[i] = chain
-            L[i] = lowest
-        
+            L[i] = np.mean(chain)
 
-        fig, ax = plt.subplots(2,1)
-        ax[0].imshow(X.T, aspect  = nsteps/size*.5, vmin=0, vmax=1)
-        ax[1].plot(L)
+        fig, ax = plt.subplots()
+        ax.imshow(X, aspect  = size/nsteps, vmin=0, vmax=1, cmap='gist_rainbow')
+        ax.tick_params(axis='x', colors='white')
+        ax.tick_params(axis='y', colors='white')
+        fig.patch.set_facecolor((.04,.065,.03))
         st.pyplot(fig)
+        return L
 
     with st.sidebar:
-        nsteps = st.slider('nsteps',1,30)
-        size = st.slider('size',10,31)
-        st.write(size)
-        run_ = st.radio('run', ['yes', 'no'])
+        nsteps = st.slider('nsteps',1,30000,5000)
+        size = st.slider('size',10,1000,300)
 
-    if run_=="yes":
-        run(size, nsteps)
+    L = run(size, nsteps)
+    cols = st.columns(2)
+
+    cols[0].markdown(r"""
+    The Bak-Sneppen method starts with a random vector. At each
+    timestep the smallest element and its two neighbors, are each 
+    replaced with new random numbers.
+
+    The figure on the right depicts the mean magnitude of elements in
+    the vector.
+    """)
+
+    fig, ax = plt.subplots()
+    ax.plot(range(len(L)), L, c='purple')
+    fig.patch.set_facecolor((.04,.065,.03))
+    ax.set(facecolor=(.04,.065,.03))
+    ax.tick_params(axis='x', colors='white')
+    ax.tick_params(axis='y', colors='white')
+
+    cols[1].pyplot(fig)
+
 
 # -----------
 # networkGenerator
@@ -429,7 +447,7 @@ func_dict = {
     'Percolation'   :run_percolation,
     'Fractals'    : run_fractals,
     'Bereaucrats'   : bereaucrats,
-    'BakSneppen'    : bakSneppen,
+    'Bak-Sneppen'    : bakSneppen,
     'Networks'       : network,
 }
 
