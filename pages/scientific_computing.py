@@ -546,14 +546,17 @@ $$E^k_{rel} = \frac{e_k}{x^*}  = \frac{x_k - x^*}{x^*}$$
 
 We need to look at the number of significant bits, because it's exact unlike significant decimal digits.
 
-$$\text{bits/step} = -\log_2(E^{k+1}_{rel}) - \left(-\log_2(E^k_{rel}) \right) $$
-
-$$ = \log_2\left(\frac{\frac{x_k - x^*}{x^*}}{\frac{x_{k+1} - x^*}{x^*}} \right) $$
-$$ = \log_2\left(\frac{\vert x_k - x^*\vert}{\vert 
-x_{k+1} - x^*\vert} \right) $$
-$$ = \log_2\left(\frac{\vert e_k\vert}{\vert e_{k+1}\vert}\right) $$
-$$ = -\log_2\left(\frac{\vert e_{k+1}\vert}{\vert e_k\vert}\right) $$
-
+	""")
+	st.latex(r"""
+\begin{align*}
+\text{bits/step} &= -\log_2(E^{k+1}_{rel}) - \left(-\log_2(E^k_{rel}) \right)   \\
+& = \log_2\left(\frac{\frac{x_k - x^*}{x^*}}{\frac{x_{k+1} - x^*}{x^*}} \right) \\
+& = \log_2\left(\frac{\vert x_k - x^*\vert}{\vert x_{k+1} - x^*\vert} \right)   \\
+& = \log_2\left(\frac{\vert e_k\vert}{\vert e_{k+1}\vert}\right) 				\\
+& = -\log_2\left(\frac{\vert e_{k+1}\vert}{\vert e_k\vert}\right) 
+\end{align*}
+""")
+	st.markdown(r"""
 If $\lim_{k\to 0} \frac{\vert e_{k+1}\vert}{\vert e_k\vert^r} = c$, and $0 \leq c \lt 1$, method converges with rate r=1 $\implies$ linear, r=2 $\implies$ quadratic, etc
 
 ## Fixed point solvers
