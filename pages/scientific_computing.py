@@ -7,100 +7,25 @@ st.set_page_config(page_title="Scientific Computing",
 st.title("Scientific Computing")
 
 with st.expander('Bounding Errors', expanded=False):
-	st.markdown(r'''# Approximations & Errors
-Take in inputs (measurements/ prior computation/ physical constants), do something with a computer (finite no. representations), and return an output. 
+	st.markdown(r"""
+	* [youtube: errors](https://www.youtube.com/watch?v=GFhhRdF54eI)
+	* [youtube: Floating point numbers](https://www.youtube.com/watch?v=PZRI1IfStY0)
+	* [youtube: fp ]( https://www.youtube.com/watch?v=f4ekifyijIg)
+	* [youtube: fp addition](https://www.youtube.com/watch?v=782QWNOD_Z0) 
 
-Computer representations include _Floating point numbers_: $(-1)^{\text{sign}} * 2^{\text{exponent}} * \text{mantissa}$
+	Take in inputs (measurements/ prior computation/ physical constants), do something with a computer (finite no. representations), and return an output. 
 
-**Notation**: the input is our computer representation is \hat{x}, the true input is x (note: x is a vector). \Delta x is the difference. The problem we solve has an _ideal solution_, f(x); we use an algorithm which is an approximation to this called \hat{f}. We end up with \hat{f}(\hat{x}) as the _actual solution_. We want to analyze the relation between the actual and ideal solutions.
-$$
-\text{(total forward error): } E_{tot}  = \hat{f}(\hat{x}) - f(x)\\
-= \hat{f}(\hat{x}) + (- f(\hat{x}) + f(\hat{x})) - f(x)\\
-= E_{Comp} (Computational Error) - E_{Data} (Propogated Data Error)
-$$
-
-Computational error can be split int truncation error $E_{trunc}$ and rounding error E_{round}.
-
-**Truncation error** contains:
-* Simplifications of the physciial model (frictionless, etc)
-* Finite basis sets
-* Truncations of infinite series
-
-etc: call the things you do to take your abstract problem to something you can actually solve.
-
-**Rounding error** contains everything that comes from working on a finite computer
-* Accumulated rounding error (from finite arithmetic)
-
-## Example
-
-Computational error of first order finite difference: $$ f'(x) = \frac{f(x+h) - f(x)}{h} \def \hat{f'}(x) $$
-Taylor expand:
-$$ f(x+h) = f(x) + h*f'(x) + \frac{h^2}{2} f''(\theta), \qquad \lvert \theta - x \rvert \leq h $$
-$$ \frac{f(x+h) - f(x)}{h} = f'(x) + \frac{h}2 f''(\theta) $$
-$$ \hat{f'}(x) - f'(x) = \frac{h}2 f''(\theta) $$
-$$ M \def \sup{\theta - x = h} \lvert f''(\theta) \rvert $$
-$$ E_{trunc} = \hat{f'}(x) - f'(x) \leq \frac{M}2 h \quad \sim O(h) $$
-
-What about rounding error? Assume that for $f$, it's bounded by $\epsilon$
-$$ E_{round} \leq \frac{2\epsilon}h \quad \sim O\left(\frac1h\right) $$ 
-(comes from floating point somehow... use significant digits?)
-
-If you decrease $h$, you decrease truncation error but increase rounding error
-
-$$ E_{comp} = \frac{M}2 h + \frac{2\epsilon}h $$
-What value of $h$ minimizes it? Differentiate
-
-$$ 0 = \frac{M}2 - \frac{2\epsilon}{h^2} $$
-$$ h^2 = \frac{4\epsilon}M $$
-$h$ can't be negative, so
-$$ h = \frac{2 \sqrt{\epsilon}}{\sqrt{M}} $$
-(Note that $\epsilon$ is a bound)
-
-**Propagated Data Error**: The problem can either expand or contract the error from your data, and it's importat to understand what it does
-
-Absolute forward data error = $f(\hat{x}) - f(x) \equiv \Delta y$
-
-Relative forward data error = $ \frac{\Delta y}{y} = \frac{f(\hat{x}) - f(x)}{f(x)}$
-
-We also use a _Condition Number_: How much a change in the data affects a change in the result.
-$$ COND(f) = \frac{\lvert \Delta y/y \rvert}{ \lvert \Delta x/x \rvert} = \frac{\lvert x \Delta y \rvert}{ \lvert y \Delta x \rvert} $$
-
-It may be intutive that if you start with 4 digits of input, your ouput will be correct to 4 digits at max. This isn't the case: Consider a function $f(x) = x^{\frac{1}{10}}$, and let's analyze the errors.
-
-$$ E_{data} = f(\hat{x}) - f(x) $$
-$$ (x+\Delta x)^\frac{1}{10} - x^\frac{1}{10} $$
-The relative error will be
-$$ E^{rel}_{data} = \frac{(x+\Delta x)^\frac{1}{10} - x^\frac{1}{10}}{x^\frac{1}{10}} $$
-Now Taylor expand
-$$ = \frac{x^\frac1{10} + \Delta x x^\frac{-9}{10} - x^\frac{1}{10}}{x^\frac{1}{10}} + O(\frac{\Delta x^2}{x^\frac1{10}})$$
-$$ \Delta y / y = \frac1{10} \Delta{x} /x + O(quadratic)$$
-You can have an additional significant digit in the output: start with 3, end up with 4, etc
-
-**In general**:
-* $\sqrt{x}$ has 1 more significant bit as compared to $x$
-* $x^\frac1{10^n}$ has n more decimal significant digits
-* x^2 is 1 fewer bit significant
-* x^10^n has n fewer decimal sig digits 
-
-But information theory tells us that information cannot be gained out of nowhere: what's going on?
-''')
-	
-	st.markdown('''
-	### Bounding Errors: 
-
-	https://www.youtube.com/watch?v=GFhhRdF54eI
-	
 	**Sources of approximation** include modelling, 
 	empirical measurements, previous computations, truncation/discretization, rounding.
 
 	**Absolute error** and **relative error** are different in the obvious manner:
-	''')
-	st.latex(r'''
+	""")
+	st.latex(r"""
 		\begin{align*}
 		\text{abs. error } &= \text{approx. value }-\text{true value}\\
 		\text{rel. error } &= \frac{\text{abs. error}}{\text{true value}}.
 		\end{align*}
-	''')
+	""")
 
 	st.markdown('''
 	**Data error and computational errror**, the hats indicate an approximation;
@@ -114,7 +39,95 @@ But information theory tells us that information cannot be gained out of nowhere
 	E_\text{tot} &= E_\text{comp} &+& E_\text{data}
 	\end{align*}''')
 
-	st.markdown(r'''
+	st.markdown(r"""
+	Computational error can be split int truncation error $E_{trunc}$ and rounding error E_{round}.
+
+	**Truncation error** contains:
+	* Simplifications of the physciial model (frictionless, etc)
+	* Finite basis sets
+	* Truncations of infinite series
+
+	etc: call the things you do to take your abstract problem to something you can actually solve.
+
+	**Rounding error** contains everything that comes from working on a finite computer
+	* Accumulated rounding error (from finite arithmetic)
+
+	**Forward vs. backward error**
+
+	foward error is the error in the output, backward error is the error in the input.
+
+	**Sensitivity and conditioning**
+
+	Condition number: $COND(f) \equiv \frac{|\frac{\Delta y}{y}|}{|\frac{\Delta x}{x}|} = \frac{|x\Delta y|}{|y\Delta x|}$
+
+	**Stability and accuracy**
+
+	
+	*floating point is scientic notation in base 2*. 
+
+	Another video: 
+	* Fixed points have each bit correspond to a specific scale.
+	* floating point (32 bit) has: 1 sign bit (0=postive, 1=negative), 8 exponent bits, 
+	and 23 mantissa bits. 
+
+	
+
+	overflow and underflow; refers to the largest and smallest numbers that can be 
+	contained in a floating point.
+
+	## Example
+
+	Computational error of first order finite difference: $$ f'(x) = \frac{f(x+h) - f(x)}{h} \def \hat{f'}(x) $$
+	Taylor expand:
+	$$ f(x+h) = f(x) + h*f'(x) + \frac{h^2}{2} f''(\theta), \qquad \lvert \theta - x \rvert \leq h $$
+	$$ \frac{f(x+h) - f(x)}{h} = f'(x) + \frac{h}2 f''(\theta) $$
+	$$ \hat{f'}(x) - f'(x) = \frac{h}2 f''(\theta) $$
+	$$ M \def \sup{\theta - x = h} \lvert f''(\theta) \rvert $$
+	$$ E_{trunc} = \hat{f'}(x) - f'(x) \leq \frac{M}2 h \quad \sim O(h) $$
+
+	What about rounding error? Assume that for $f$, it's bounded by $\epsilon$
+	$$ E_{round} \leq \frac{2\epsilon}h \quad \sim O\left(\frac1h\right) $$ 
+	(comes from floating point somehow... use significant digits?)
+
+	If you decrease $h$, you decrease truncation error but increase rounding error
+
+	$$ E_{comp} = \frac{M}2 h + \frac{2\epsilon}h $$
+	What value of $h$ minimizes it? Differentiate
+
+	$$ 0 = \frac{M}2 - \frac{2\epsilon}{h^2} $$
+	$$ h^2 = \frac{4\epsilon}M $$
+	$h$ can't be negative, so
+	$$ h = \frac{2 \sqrt{\epsilon}}{\sqrt{M}} $$
+	(Note that $\epsilon$ is a bound)
+
+	**Propagated Data Error**: The problem can either expand or contract the error from your data, and it's importat to understand what it does
+
+	Absolute forward data error = $f(\hat{x}) - f(x) \equiv \Delta y$
+
+	Relative forward data error = $ \frac{\Delta y}{y} = \frac{f(\hat{x}) - f(x)}{f(x)}$
+
+	We also use a _Condition Number_: How much a change in the data affects a change in the result.
+	$$ COND(f) = \frac{\lvert \Delta y/y \rvert}{ \lvert \Delta x/x \rvert} = \frac{\lvert x \Delta y \rvert}{ \lvert y \Delta x \rvert} $$
+
+	It may be intutive that if you start with 4 digits of input, your ouput will be correct to 4 digits at max. This isn't the case: Consider a function $f(x) = x^{\frac{1}{10}}$, and let's analyze the errors.
+
+	$$ E_{data} = f(\hat{x}) - f(x) $$
+	$$ (x+\Delta x)^\frac{1}{10} - x^\frac{1}{10} $$
+	The relative error will be
+	$$ E^{rel}_{data} = \frac{(x+\Delta x)^\frac{1}{10} - x^\frac{1}{10}}{x^\frac{1}{10}} $$
+	Now Taylor expand
+	$$ = \frac{x^\frac1{10} + \Delta x x^\frac{-9}{10} - x^\frac{1}{10}}{x^\frac{1}{10}} + O(\frac{\Delta x^2}{x^\frac1{10}})$$
+	$$ \Delta y / y = \frac1{10} \Delta{x} /x + O(quadratic)$$
+	You can have an additional significant digit in the output: start with 3, end up with 4, etc
+
+	**In general**:
+	* $\sqrt{x}$ has 1 more significant bit as compared to $x$
+	* $x^\frac1{10^n}$ has n more decimal significant digits
+	* x^2 is 1 fewer bit significant
+	* x^10^n has n fewer decimal sig digits 
+
+	But information theory tells us that information cannot be gained out of nowhere: what's going on?
+	
 	**Truncaiton error and rounding error** are the two parts of computational error. 
 	Truncation error stems from truncating infinite series, or replacing derivatives 
 	with finite differences. Rounding error is like the error from like floating point accuracy.
@@ -146,42 +159,8 @@ But information theory tells us that information cannot be gained out of nowhere
 		0 = \frac{d}{dh}E_\text{comp} = \frac{M}{2}-\frac{2\epsilon}{h^2}\\
 		\frac{M}{2} = \frac{2\epsilon}{h^2} 
 		\Leftrightarrow h^2 = \frac{4\epsilon}{M}\Leftrightarrow h_\text{optimal} = 2\sqrt{\frac{\epsilon}{M}}
-	\end{align*}''')
+	\end{align*}""")
 
-	try:
-		st.image('https://farside.ph.utexas.edu/teaching/329/lectures/img320.png')
-	except:
-		st.image('assets/images/errors.png')
-
-
-	st.markdown(r'''
-	**Forward vs. backward error**
-
-	foward error is the error in the output, backward error is the error in the input.
-
-	**Sensitivity and conditioning**
-
-	Condition number: $COND(f) \equiv \frac{|\frac{\Delta y}{y}|}{|\frac{\Delta x}{x}|} = \frac{|x\Delta y|}{|y\Delta x|}$
-
-	**Stability and accuracy**
-
-	**Floating point numbers**, a video from like 8 years ago by numberphile: 
-	https://www.youtube.com/watch?v=PZRI1IfStY0.
-	*floating point is scientic notation in base 2*. 
-
-	Another video: https://www.youtube.com/watch?v=f4ekifyijIg. 
-	* Fixed points have each bit correspond to a specific scale.
-	* floating point (32 bit) has: 1 sign bit (0=postive, 1=negative), 8 exponent bits, 
-	and 23 mantissa bits. 
-
-	* another video on fp addition: https://www.youtube.com/watch?v=782QWNOD_Z0
-
-	overflow and underflow; refers to the largest and smallest numbers that can be 
-	contained in a floating point.
-
-	**Complex arithmatic**
-
-	''')
 
 with st.expander('Linear Equations', expanded=False):
 	st.markdown(r"""
@@ -486,7 +465,7 @@ $$ =T\left(\lim_{d\to\infty}P(\Lambda_A)\right)T^{-1} $$
 * power iterate (gives us the greatest eigenvalue)
 * rayleigh iterate""")
 with st.expander('Nonlinear Equations	Optimization', expanded=False):
-	st.markdown(r""""# Nonlinear equations
+	st.markdown(r"""# Nonlinear equations
 
 [Get notes from fabri, I can't take stuff down properly]
 
@@ -568,6 +547,7 @@ $$E^k_{rel} = \frac{e_k}{x^*}  = \frac{x_k - x^*}{x^*}$$
 We need to look at the number of significant bits, because it's exact unlike significant decimal digits.
 
 $$\text{bits/step} = -\log_2(E^{k+1}_{rel}) - \left(-\log_2(E^k_{rel}) \right) $$
+
 $$ = \log_2\left(\frac{\frac{x_k - x^*}{x^*}}{\frac{x_{k+1} - x^*}{x^*}} \right) $$
 $$ = \log_2\left(\frac{\vert x_k - x^*\vert}{\vert 
 x_{k+1} - x^*\vert} \right) $$
