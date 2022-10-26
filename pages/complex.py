@@ -7,7 +7,6 @@ import re
 import seaborn as sns
 from matplotlib.gridspec import GridSpec
 from matplotlib import pyplot as plt
-from celluloid import Camera
 import numpy as np
 import networkx as nx
 import sys
@@ -181,8 +180,8 @@ def percolation(size,p):
         run(size, seed)
 
 # -----------
-# mandel broth
-def mandelbroth():
+# mandelbrot
+def mandelbrot():
     def stable(z):
         try:
             return False if abs(z) > 2 else True
@@ -191,7 +190,7 @@ def mandelbroth():
     stable = np.vectorize(stable)
 
 
-    def mandelbroth(c, a, n=10):
+    def mandelbrot(c, a, n=10):
         z = 0
         for i in range(n):
             z = z**a + c
@@ -217,7 +216,7 @@ def mandelbroth():
         a = st.slider('a',0.01,13.,2.)
         run_ = st.radio('run', ['yes', 'no'])
 
-    res = stable(mandelbroth(make_space(size), a=a))
+    res = stable(mandelbrot(make_space(size), a=a))
     plot_(res)
 
 # -----------
@@ -253,6 +252,8 @@ def bereaucrats():
 
     fig = plt.figure()
     plt.plot(_mean)
+    plt.ylabel('Mean number of tasks')
+    plt.xlabel('Time steps')
     #lt.savefig('bureaucrats.png')
     #plt.close()
     st.pyplot(fig)
@@ -334,15 +335,15 @@ def network():
     st.pyplot(fig)
 
 viz = st.sidebar.selectbox('viz', ['RandomWalk 2d', 
-                                    'Percolation', 'mandelbroth',
+                                    'Percolation', 'mandelbrot',
                                     'bereaucrats', 'bakSneppen',
                                     'network'])
 if viz =='RandomWalk 2d':
     run_random_walk()
 elif viz =='Percolation':
     percolation(size=20,p=.2)
-elif viz =='mandelbroth':
-    mandelbroth()
+elif viz =='mandelbrot':
+    mandelbrot()
 elif viz =='bereaucrats':
     bereaucrats()
 elif viz =='bakSneppen':
