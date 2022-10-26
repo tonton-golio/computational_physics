@@ -8,8 +8,8 @@ import seaborn as sns
 from matplotlib.gridspec import GridSpec
 from matplotlib import pyplot as plt
 import numpy as np
-import graphviz
-import networkx as nx
+#import graphviz
+#import networkx as nx
 import sys
 sys.setrecursionlimit(15000)
 
@@ -496,7 +496,7 @@ func_dict = {
     'Fractals'    : run_fractals,
     'Bereaucrats'   : bereaucrats,
     'Bak-Sneppen'    : bakSneppen,
-    'Networks'       : network,
+    #'Networks'       : network,
 }
 
 with st.sidebar:
