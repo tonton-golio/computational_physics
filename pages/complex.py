@@ -312,36 +312,58 @@ def makeGrid(resolution, lims=[-1.85, 1.25, -1.25, 1.45]):
 # -----------
 # Bereaucrats
 def bereaucrats():
-    arr = np.zeros((3,4))
-    N = len(arr.flatten())
-    nsteps = 100
+    st.markdown(r"# Beraucrats")
 
-    _mean = []
-    for step in range(nsteps):
-        # bring in 1 task
+
+    def makeGrid(size):
+        arr = np.zeros((size,size))
+        return arr, size**2
+    
+    def fill(arr, N):
         rand_index = np.random.randint(0,N)
         who = (rand_index//arr.shape[1], rand_index%arr.shape[1])
         arr[who] += 1
+        return arr
 
 
-        # if someone has 4 tasks redistribute to neighbours
-        for i, _ in enumerate(arr):
-            for j, _ in enumerate(arr[i]):
-                if arr[i,j] >= 4:
-                    try: arr[i+1, j] +=1
-                    except: pass
-                    try: arr[i-1, j] +=1
-                    except: pass
-                    try: arr[i, j+1] +=1
-                    except: pass
-                    try: arr[i, j-1] +=1
-                    except: pass
-                    arr[i,j] -= 4
-        _mean.append(np.mean(arr)) 
-    _mean = np.array(_mean)
+    def run():
+        arr, N = makeGrid(size)
+        results = {'mean':[], 'arr':[]}
+        
+        for step in range(nsteps):
+            arr = fill(arr, N)  # bring in 1 task
 
+            overfull_args = np.argwhere(arr>=4)  # if someone has 4 tasks redistribute to neighbours
+            for ov in overfull_args:
+                (i,j) = ov
+                for pos in [(i+1, j), (i-1, j), (i,j+1), (i,j-1)]:
+                    try: arr[pos] +=1
+                    except: pass
+                arr[i,j] -= 4
+            results['mean'].append(np.mean(arr)) 
+            results['arr'].append(arr) 
+
+        return results
+
+    with st.sidebar:
+        cols_sidebar = st.columns(2)
+        size = cols_sidebar[0].slider(r'size',5,40, 10)
+        nsteps = cols_sidebar[1].slider('nsteps',1,5000,1000)
+        a = cols_sidebar[1].slider('a',0.01,13.,2.3)
+    
+    
+    results = run()
+
+    
+    c = st.empty()
+    for i in np.linspace(0,len(results['arr']), 20, dtype=int)[:-1]:
+        #results['arr'][i]
+        fig = plt.figure()
+        plt.imshow(results['arr'][i])
+        c.pyplot(fig)
+        time.sleep(.2)
     fig = plt.figure()
-    plt.plot(_mean)
+    plt.plot(results['mean'])
     #lt.savefig('bureaucrats.png')
     #plt.close()
     st.pyplot(fig)
