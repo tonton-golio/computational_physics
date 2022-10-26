@@ -1,4 +1,8 @@
 import streamlit as st
+import matplotlib.pyplot as plt
+import numpy as np
+from time import sleep
+
 st.set_page_config(page_title="Scientific Computing", 
 	page_icon="🧊", 
 	layout="wide", 
@@ -7,24 +11,19 @@ st.set_page_config(page_title="Scientific Computing",
 st.title("Scientific Computing")
 
 with st.expander('Bounding Errors', expanded=False):
-	st.markdown(r"""
-	* [youtube: errors](https://www.youtube.com/watch?v=GFhhRdF54eI)
-	* [youtube: Floating point numbers](https://www.youtube.com/watch?v=PZRI1IfStY0)
-	* [youtube: fp ]( https://www.youtube.com/watch?v=f4ekifyijIg)
-	* [youtube: fp addition](https://www.youtube.com/watch?v=782QWNOD_Z0) 
+	cols = st.columns(4)
 
-	Take in inputs (measurements/ prior computation/ physical constants), do something with a computer (finite no. representations), and return an output. 
+	cols[0].markdown(r"[youtube: errors](https://www.youtube.com/watch?v=GFhhRdF54eI)")
+	cols[1].markdown(r"[youtube: Floating point numbers](https://www.youtube.com/watch?v=PZRI1IfStY0)")
+	cols[2].markdown(r"[youtube: fp ]( https://www.youtube.com/watch?v=f4ekifyijIg)")
+	cols[3].markdown(r"[youtube: fp addition](https://www.youtube.com/watch?v=782QWNOD_Z0) ")
 
+	st.markdown("""
 	**Sources of approximation** include modelling, 
 	empirical measurements, previous computations, truncation/discretization, rounding.
 
-	**Absolute error** and **relative error** are different in the obvious manner:
-	""")
-	st.latex(r"""
-		\begin{align*}
-		\text{abs. error } &= \text{approx. value }-\text{true value}\\
-		\text{rel. error } &= \frac{\text{abs. error}}{\text{true value}}.
-		\end{align*}
+	**Absolute error** and **relative error** are different in the obvious manner, i.e., abs. error 
+	= approx. value- true value, and rel. error = abs. error / true value.
 	""")
 
 	st.markdown('''
@@ -47,8 +46,6 @@ with st.expander('Bounding Errors', expanded=False):
 	* Finite basis sets
 	* Truncations of infinite series
 
-	etc: call the things you do to take your abstract problem to something you can actually solve.
-
 	**Rounding error** contains everything that comes from working on a finite computer
 	* Accumulated rounding error (from finite arithmetic)
 
@@ -61,17 +58,12 @@ with st.expander('Bounding Errors', expanded=False):
 	Condition number: $COND(f) \equiv \frac{|\frac{\Delta y}{y}|}{|\frac{\Delta x}{x}|} = \frac{|x\Delta y|}{|y\Delta x|}$
 
 	**Stability and accuracy**
-
 	
 	*floating point is scientic notation in base 2*. 
-
-	Another video: 
 	* Fixed points have each bit correspond to a specific scale.
 	* floating point (32 bit) has: 1 sign bit (0=postive, 1=negative), 8 exponent bits, 
 	and 23 mantissa bits. 
-
 	
-
 	overflow and underflow; refers to the largest and smallest numbers that can be 
 	contained in a floating point.
 
@@ -139,7 +131,7 @@ with st.expander('Bounding Errors', expanded=False):
 	* ...
 
 	*Example:* computational error of $1^\text{st}$ order finite difference
-	''')
+	""")
 	st.latex(r'''
 	\begin{align*}
 	f'(x) \approx \frac{f(x+h)-f(x)}{h}\equiv\hat{f'(x)}\\
@@ -153,7 +145,7 @@ with st.expander('Bounding Errors', expanded=False):
 		(assume R.E. for $f$ is $\epsilon \Rightarrow E_\text{ronud} \leq \frac{2\epsilon}{h}\sim 0(\frac{1}{h})$
 		''')
 
-	st.latex(r'''
+	st.latex(r"""
 	\begin{align*}
 		E_\text{comp} = \frac{M}{2}h + \frac{2\epsilon}{h}\\
 		0 = \frac{d}{dh}E_\text{comp} = \frac{M}{2}-\frac{2\epsilon}{h^2}\\
@@ -164,212 +156,256 @@ with st.expander('Bounding Errors', expanded=False):
 
 with st.expander('Linear Equations', expanded=False):
 	st.markdown(r"""
-Linear systems are special: It's something we can solve really well, and it covers an enourmous amount of problems. Even when you've got a non-linear system, you can isolate the linearity and solve that, and treat the non-linearity in another way.
+	Linear systems are special: It's something we can solve really well, and it covers an enourmous amount of problems. Even when you've got a non-linear system, you can isolate the linearity and solve that, and treat the non-linearity in another way.
 
-## Going from abstract linear systems to matrices
+	#### Going from abstract linear systems to matrices
 
-A **linear function** is anything that behaves in the way we call linear. They exist in vector spaces: A mapping $F: X \rightarrow Y$ (abstract, eg: wave functions) is linear if $F(ax + bx') = aF(x) + bF(x')$. 
+	A **linear function** is anything that behaves in the way we call linear. They exist in vector spaces: A mapping $F: X \rightarrow Y$ (abstract, eg: wave functions) is linear if $F(ax + bx') = aF(x) + bF(x')$. 
 
-Linear functions and matrices are the same thing!
-* Let's say you have a basis for $X$, eg: $\{e_{1}, e_2, \dots e_n\}$, then any vector $x \in X$ can be writte uniquely as $x = a_1e_1 + \dots + a_n e_n$
-* Let $\{f_{1}, f_2, \dots f_n\}$ form a basis for $Y$, any vector $y \in Y$ can be writtten as $y = b_1f_1 + \dots + b_m f_m$
-* $$F(e_j)=b_{1j}f_1 + \dots + b_{mj}f_m$$
-    We can write it because of linearity, but you'll notice that it's just matrix multiplication.
-* $$ F(x) = F(a_1e_1 + \dots + a_ne_n) = a_1F(e_1) + \dots + a_nF(e_n) $$
-    $$ = \sum_{j=1}^n a_j \sum_{i=i}^m b_{ij} f_i $$ 
-    $$ = \sum_{i=i}^m f_i \left(\sum_{j=1}^n a_j b_{ij} \right) $$ 
-    The thing on the right is nothing more than a matrix product. Think of the total thing as:  Representation of $F$ in $e,f$ basis $*$ (Coorrdinates of $x$ in $e$ basis) = Coordinates of $y$ in $f$ basis
+	Linear functions and matrices are the same thing!
+	* Let's say you have a basis for $X$, eg: $\{e_{1}, e_2, \dots e_n\}$, then any vector $x \in X$ can be writte uniquely as $x = a_1e_1 + \dots + a_n e_n$
+	* Let $\{f_{1}, f_2, \dots f_n\}$ form a basis for $Y$, any vector $y \in Y$ can be writtten as $y = b_1f_1 + \dots + b_m f_m$
+	* $$F(e_j)=b_{1j}f_1 + \dots + b_{mj}f_m$$
+		We can write it because of linearity, but you'll notice that it's just matrix multiplication.
+	* $$ F(x) = F(a_1e_1 + \dots + a_ne_n) = a_1F(e_1) + \dots + a_nF(e_n) $$
+		$$ = \sum_{j=1}^n a_j \sum_{i=i}^m b_{ij} f_i $$ 
+		$$ = \sum_{i=i}^m f_i \left(\sum_{j=1}^n a_j b_{ij} \right) $$ 
+		The thing on the right is nothing more than a matrix product. Think of the total thing as:  Representation of $F$ in $e,f$ basis $*$ (Coorrdinates of $x$ in $e$ basis) = Coordinates of $y$ in $f$ basis
 
-We've shown how an abstract linear problem can be represented with matrices. 
+	We've shown how an abstract linear problem can be represented with matrices. 
 
-We're missing one thing: how do you find $b_{ij}$, the components of the matrix? 
-$$b_{ij} = \left< f_i \vert F e_j \right>$$
-For example, $\int f_i(\alpha)(Fe_j)(\alpha) d\alpha$, if $Y$ is a space of functions $f(\alpha)$
+	We're missing one thing: how do you find $b_{ij}$, the components of the matrix? 
+	$$b_{ij} = \left< f_i \vert F e_j \right>$$
+	For example, $\int f_i(\alpha)(Fe_j)(\alpha) d\alpha$, if $Y$ is a space of functions $f(\alpha)$
 
-**Punch Line:** The actions of $F: X\rightarrow Y$ are exactly the same as $F: \mathbb{C}^m \rightarrow \mathbb{C}^n$.
+	**Punch Line:** The actions of $F: X\rightarrow Y$ are exactly the same as $F: \mathbb{C}^m \rightarrow \mathbb{C}^n$.
 
-## How to solve linear systems of equations
+	## How to solve linear systems of equations
 
-Find all $x \in X$ such that $F(x) = y$ (some known $y\in Y$)
-1. Pick basis sets $\{e_1, \dots, e_n\}$ for $X$, $\{f_1, \dots, f_m\}$ for $Y$
-2. Write down matrix $F$ in $e,f$ basis and RHS $y$ in $f$ basis
-3. Solve matrix equation $Fx=y$, where $F$ and $y$ are known
-4. Dot result $x$ with $e$ basis to get the result in the problem domain $x=x_1e_1+\dots+x_ne_n$
+	Find all $x \in X$ such that $F(x) = y$ (some known $y\in Y$)
+	1. Pick basis sets $\{e_1, \dots, e_n\}$ for $X$, $\{f_1, \dots, f_m\}$ for $Y$
+	2. Write down matrix $F$ in $e,f$ basis and RHS $y$ in $f$ basis
+	3. Solve matrix equation $Fx=y$, where $F$ and $y$ are known
+	4. Dot result $x$ with $e$ basis to get the result in the problem domain $x=x_1e_1+\dots+x_ne_n$
 
-## Can we solve $F(x)=y$?
-Yes, when solutions exist!
+	## Can we solve $F(x)=y$?
+	Yes, when solutions exist!
 
-Today, we'll use the case where $m=n$, i.e, matrix $\underline{F}$ is square.
+	Today, we'll use the case where $m=n$, i.e, matrix $\underline{F}$ is square.
 
-If you apply $F$ to all the vectors in the source space, you get a subset (not proper) of $Y$, which is called the _image_. $Im(F) = \{F(x) \vert x \in X\}$.
+	If you apply $F$ to all the vectors in the source space, you get a subset (not proper) of $Y$, which is called the _image_. $Im(F) = \{F(x) \vert x \in X\}$.
 
-In the non-abstract space, it's called the _span_: $Span(\underline{F}) = \{\underline{F} \,\underline{x} \vert \underline{x} \in \mathbb{C}\}$
+	In the non-abstract space, it's called the _span_: $Span(\underline{F}) = \{\underline{F} \,\underline{x} \vert \underline{x} \in \mathbb{C}\}$
 
-Three cases when $n=m$
+	Three cases when $n=m$
 
-* **$F$ is non-singular**: (if one of them holds, all of them hold: they're equivalent)
-  * $Im(F) = Y$ (Dimension of source space $X$ = Dimension of target space $Y$)
-  * $Span(\underline{F} = \mathbb{C}^n)$
-  * $Rank(\underline{F}) = n$
-  * $det(\underline{F}) \neq 0$
-  * $\underline{F}\,\underline{x} = 0 \leftrightarrow \underline{x}=0$ (trivial kernel)
-  * $\underline{F}$ is invertible (Deterministiclaly find unique solution)
-* **$F$ is singular**:
-  * $Im(F) \not\subseteq Y$
-  * $Span(\underline{F} \not\subseteq \mathbb{C}^n)$
-  * $Rank(\underline{F}) < n$
-  * $det(\underline{F}) = 0$
-  * There is a non-trivial subspace $Ker(\underline{F})$ such that $\underline{F}(\underline{x})=0$ for $\underline{x}\in Ker(\underline{F})$
+	* **$F$ is non-singular**: (if one of them holds, all of them hold: they're equivalent)
+	* $Im(F) = Y$ (Dimension of source space $X$ = Dimension of target space $Y$)
+	* $Span(\underline{F} = \mathbb{C}^n)$
+	* $Rank(\underline{F}) = n$
+	* $det(\underline{F}) \neq 0$
+	* $\underline{F}\,\underline{x} = 0 \leftrightarrow \underline{x}=0$ (trivial kernel)
+	* $\underline{F}$ is invertible (Deterministiclaly find unique solution)
+	* **$F$ is singular**:
+	* $Im(F) \not\subseteq Y$
+	* $Span(\underline{F} \not\subseteq \mathbb{C}^n)$
+	* $Rank(\underline{F}) < n$
+	* $det(\underline{F}) = 0$
+	* There is a non-trivial subspace $Ker(\underline{F})$ such that $\underline{F}(\underline{x})=0$ for $\underline{x}\in Ker(\underline{F})$
 
-Singular $F$ splits into two sub-cases:
-1. $y \not\in Im(F) \implies$ there are no solutions
-2. $y \in Im(F) \implies$ infinitely many solutions (becaues we can add something from the kernel and get another solution).
+	Singular $F$ splits into two sub-cases:
+	1. $y \not\in Im(F) \implies$ there are no solutions
+	2. $y \in Im(F) \implies$ infinitely many solutions (becaues we can add something from the kernel and get another solution).
 
-That was the mathematical part: Now we're going to look at a case where we have exact solutions: when are the solutions stable, and when do small perturbations cause it to blow up?
+	That was the mathematical part: Now we're going to look at a case where we have exact solutions: when are the solutions stable, and when do small perturbations cause it to blow up?
 
-## Sensitivity of a Linear System of Equations:
+	## Sensitivity of a Linear System of Equations:
 
-The more orthogonal the matrix is, the lower the condition number. It's ~1 for orthogonal, but as they get closer to one another, i.e, they get closer to being linearly dependent on one another, condition number increases. The webpage has a calculation of the exact condition number.
+	The more orthogonal the matrix is, the lower the condition number. It's ~1 for orthogonal, but as they get closer to one another, i.e, they get closer to being linearly dependent on one another, condition number increases. The webpage has a calculation of the exact condition number.
 
-## How to build the algorithms from scratch
+	## How to build the algorithms from scratch
 
-Construct algoithms that transforms $b=Ax$ into $x$ using a modest number of operations that are linear, invertible, and simple to compute.
+	Construct algoithms that transforms $b=Ax$ into $x$ using a modest number of operations that are linear, invertible, and simple to compute.
 
-**Fundamental Property:** if $M$ is invertible, then $MAx = Mb$ has the same solutions as $Ax=b$
+	**Fundamental Property:** if $M$ is invertible, then $MAx = Mb$ has the same solutions as $Ax=b$
 
-What we know:
-1. Our algorithm must have the same effect as multiplying by the inverse (you don't want to actually calculate the inverse and multiply because it introduces a lot of computational error): $A \rightarrowtail I; I \rightarrowtail A; b \rightarrowtail x$
-2. Each step must be linenar, invertible
-3. We first want $A = LU$ (lower and upper triangular matrices)
-4. Every step, we want to take an $n\times n$ matrix, and reduce the leftmost column to be zero below the first element. Then, we just recursively continue for an $(n-1)\times(n-1)$ matrix
-5. Row scaling (it's linear and invertible)
-6. Row addition and subtraction is also linear and invertible
+	What we know:
+	1. Our algorithm must have the same effect as multiplying by the inverse (you don't want to actually calculate the inverse and multiply because it introduces a lot of computational error): $A \rightarrowtail I; I \rightarrowtail A; b \rightarrowtail x$
+	2. Each step must be linenar, invertible
+	3. We first want $A = LU$ (lower and upper triangular matrices)
+	4. Every step, we want to take an $n\times n$ matrix, and reduce the leftmost column to be zero below the first element. Then, we just recursively continue for an $(n-1)\times(n-1)$ matrix
+	5. Row scaling (it's linear and invertible)
+	6. Row addition and subtraction is also linear and invertible
 
-We can use 5. and 6. together: just scale the rows (if the leading term is nonzero) and subtract
+	We can use 5. and 6. together: just scale the rows (if the leading term is nonzero) and subtract
 
-Sorry Anton, I ain't taking notes on gaussian elimination""")
+	Sorry Anton, I ain't taking notes on gaussian elimination""")
 	st.markdown(r"""Consider the matrix equation $Ax=b$
-For i in I, $m: a_{11}x_1 + a_{12}x_2 + \dots + a_{in}x_n \equiv A_i^T x=b_i$. A hypersphere
+	For i in I, $m: a_{11}x_1 + a_{12}x_2 + \dots + a_{in}x_n \equiv A_i^T x=b_i$. A hypersphere
 
-If there are 2 unknowns, i.e, n=2,
-$$a_{11}x_1 + a_{12} x_2 = b1$$
-$$a_{21}x_1 + a_{22} x_2 = b2$$
-In two dimensions, these define lines, we can find the slope and y-intercepts. The point of intersection is the solution to the system.
+	If there are 2 unknowns, i.e, n=2,
+	$$a_{11}x_1 + a_{12} x_2 = b1$$
+	$$a_{21}x_1 + a_{22} x_2 = b2$$
+	In two dimensions, these define lines, we can find the slope and y-intercepts. The point of intersection is the solution to the system.
 
-Assume that there's an error or uncertainity in the data, so that $||\Delta b||_\infty < \delta$. You'll have a region of uncertainity around the lines, transforming them into rectangles. Now, your solution can be anywhere in the shape that's made from the intersection of the rectangles. If we had an error in the matrix, we should have a skew (and a shift in slopes) and not a vertical shift like we do if the error is in $b$.
+	Assume that there's an error or uncertainity in the data, so that $||\Delta b||_\infty < \delta$. You'll have a region of uncertainity around the lines, transforming them into rectangles. Now, your solution can be anywhere in the shape that's made from the intersection of the rectangles. If we had an error in the matrix, we should have a skew (and a shift in slopes) and not a vertical shift like we do if the error is in $b$.
 
-## Error bounds:
+	## Error bounds:
 
-1. RHS: Assume $A \hat{x} = \hat{b} \implies A(x+\Delta x) = (b+\Delta b)$. That implies:
-    * $||\hat{b}|| = ||A\hat{x}|| \leq ||A||\; ||\hat{x} ||$ and so $||\hat{x}|| \geq \frac{||\hat{b}||}{||A||}$
-    * $|| \Delta x || = || A^{-1} \Delta b || \leq || A^{-1}|| \; ||\Delta b ||$
-    * together, we get $\frac{||\Delta x||}{||\hat{x}||} \geq \frac{||\Delta b||}{||\hat{b}||} \; ||A^{-1}|| \;|| A || = COND(A) \frac{||\Delta b||}{||\hat{b}||}$
-2. Nothing here depends on matrix $A$ being exact, and we can replace $A$ here with $\hat{A}$ everywhere so we can get a calculation even if it's not exact
+	1. RHS: Assume $A \hat{x} = \hat{b} \implies A(x+\Delta x) = (b+\Delta b)$. That implies:
+		* $||\hat{b}|| = ||A\hat{x}|| \leq ||A||\; ||\hat{x} ||$ and so $||\hat{x}|| \geq \frac{||\hat{b}||}{||A||}$
+		* $|| \Delta x || = || A^{-1} \Delta b || \leq || A^{-1}|| \; ||\Delta b ||$
+		* together, we get $\frac{||\Delta x||}{||\hat{x}||} \geq \frac{||\Delta b||}{||\hat{b}||} \; ||A^{-1}|| \;|| A || = COND(A) \frac{||\Delta b||}{||\hat{b}||}$
+	2. Nothing here depends on matrix $A$ being exact, and we can replace $A$ here with $\hat{A}$ everywhere so we can get a calculation even if it's not exact
 
-## Overdetermined Systems: m > n:
+	## Overdetermined Systems: m > n:
 
-Large number of equations, small number of unknowns. In general, there are _no exact solutions_.
+	Large number of equations, small number of unknowns. In general, there are _no exact solutions_.
 
-All the places you can reach are driven by $Im(A)$, the image. There's no $x$ that you can feed in that results in you ending up outside the image.
+	All the places you can reach are driven by $Im(A)$, the image. There's no $x$ that you can feed in that results in you ending up outside the image.
 
-## How would a least squares approximate solution have to look?
+	## How would a least squares approximate solution have to look?
 
-**Write** $\mathbb{C}^m = Im(A) \oplus Im(A)^\perp$
-Any vector space with a subspace can be broken down into the subspace and a space that's orthogonal to the subspace
-**Means** $b \in \mathbb{C}^m$ can be uniquely written $b = \hat{b} + b^\perp$, with $\hat{b} \in Im(A), b^\perp \in Im(A)^\perp$
-**Where** \
-$$Im(A)^\perp = \{x\in \mathbb{C}^m | x^T x' = 0 \;\forall\; x' \in Im(A)\}$$ 
+	**Write** $\mathbb{C}^m = Im(A) \oplus Im(A)^\perp$
+	Any vector space with a subspace can be broken down into the subspace and a space that's orthogonal to the subspace
+	**Means** $b \in \mathbb{C}^m$ can be uniquely written $b = \hat{b} + b^\perp$, with $\hat{b} \in Im(A), b^\perp \in Im(A)^\perp$
+	**Where** \
+	$$Im(A)^\perp = \{x\in \mathbb{C}^m | x^T x' = 0 \;\forall\; x' \in Im(A)\}$$ 
 
-$$=\{x\in \mathbb{C}^m | A^T_ix=0 \text{ for } 1 \leq i \leq m \}$$
+	$$=\{x\in \mathbb{C}^m | A^T_ix=0 \text{ for } 1 \leq i \leq m \}$$
 
-This helps us because of pythagoras:
+	This helps us because of pythagoras:
 
-$$||r||^2 = ||b-Ax||^2$$
-$$||\tilde{b} + b^\perp - Ax||^2 = ||(\tilde{b}-Ax)+b^\perp$$
-with Pythagoras (only valid in L2 norm),
-$$ ||\tilde{b}=Ax||^2 + || b^\perp ||^2$$
-The first is in the image, the second is in the perpendicular subspace. We can somehow set the first term to be zero, and the second term is somehow a constant.
+	$$||r||^2 = ||b-Ax||^2$$
+	$$||\tilde{b} + b^\perp - Ax||^2 = ||(\tilde{b}-Ax)+b^\perp$$
+	with Pythagoras (only valid in L2 norm),
+	$$ ||\tilde{b}=Ax||^2 + || b^\perp ||^2$$
+	The first is in the image, the second is in the perpendicular subspace. We can somehow set the first term to be zero, and the second term is somehow a constant.
 
-**So:** residueal of least square is perpendicular to Im(A)
-
-## Least Square Solution:
-* **Always Exists:** solution to $Ax=\tilde{b}$ is the least square solution. $\tilde{b}$ is the projection on the image space, and $b^\perp$ the projection on the orthogonal component
-* **Unique if Rank(A) = n:** If the rank is less than n, there are infinitely many solutions: you can find one and add the kernel space to it to get them all
-* **Normal equations**: $A^T_ir=0 \implies A^Tr=0 \implies A^T(b-Ax)=A^Tb-A^TAx=0$. The fact that the residual is orthogonal to the image means that for all the rows of $A$, the dot product with the residual has to be 0.
-* **$A^TA$ is a small square matrix**
-* The only problem is that this has a large condition number: COND$(A^TA)$ = COND$(A)^2$
-
-We're almost at our goal, but not there yet. We've found an efficient solution (the normal equations) which are great for mathematical calculations, but we can't use them because a small error will ruin us because of the condition number.
-
-## How do we save our significant digits (hopefully without too much work?)
-
-Note that $Im(A)^\perp = Ker(A^T) \implies \mathbb{C}^m=Im(A)\oplus Ker(A^T)$.
-
-Thus, we can write (see james' notes)""")
+	**So:** residueal of least square is perpendicular to Im(A)
+	""")
 	
 with st.expander('Linear Least Squares', expanded=False):
-	st.markdown(r"""# Least Squares
+	st.markdown("""
+	with given data and a desired function, determine the paramters of the 
+	function to minimize the distance to data points.""")
+	def runLeastSquares():
+		c = st.empty()
+		size = 20
+		x = np.random.uniform(0,1,size)
+		noise = np.random.rand(size)
+		a, b = 3, 1
+		y = a*x+b +noise
 
-## Recap
+		fig = plt.figure()
+		plt.scatter(x,y, label="data")
+		plt.legend()
+		c.pyplot(fig)
+		
+		a_guess, b_guess = 1,1
+		step_size = 0.1
+		for i in range(30):
+			fig = plt.figure()
+			sleep(.07)
+			plt.scatter(x,y, label="data")
+			loss = lambda a_guess, b_guess: sum((y - (a_guess*x+b_guess))**2)**.5
+			plt.plot(x, a_guess*x+b_guess, label='fit', ls='--', c='r')
+			
+			#update guess
 
-We decomposed the target space $\mathbb{C}^m$. [todo: google "Chiyo Prison Scool"] 
+			dloss_da = loss(a_guess+step_size, b_guess)- loss(a_guess, b_guess)
+			dloss_db = (loss(a_guess, b_guess+step_size)- loss(a_guess, b_guess))
+			a_guess -= dloss_da
+			b_guess -= dloss_db		
+			
+			plt.legend()
+			c.pyplot(fig)
+	run_least_squares = st.button('run',)
+	if run_least_squares: runLeastSquares()
 
-COND($A^TA$) = COND($A^2$), but COND($Q^TA$) = COND($A$).
 
-We just need to construct the effect of multiplying our matrix by $Q^T$. In general, you never want to calculate $Q$ cause it can be really large (million x million).
+	st.markdown(r"""
+	### Least Square Solution:
+	* **Always Exists:** solution to $Ax=\tilde{b}$ is the least square solution. 
+	$\tilde{b}$ is the projection on the image space, and $b^\perp$ 
+	the projection on the orthogonal component
+	* **Unique if Rank(A) = n:** If the rank is less than n, there are 
+	infinitely many solutions: you can find one and add the kernel space 
+	to it to get them all
+	* **Normal equations**: 
+	$A^T_ir=0 \Rightarrow A^Tr=0 \implies A^T(b-Ax)=A^Tb-A^TAx=0$. 
+	The fact that the residual is orthogonal to the image means that 
+	for all the rows of $A$, the dot product with the residual has to be 0.
+	* **$A^TA$ is a small square matrix**
+	* The only problem is that this has a large condition number: COND$(A^TA)$ = COND$(A)^2$
+	
+	
+	We're almost at our goal, but not there yet. We've found an efficient solution (the normal equations) which are great for mathematical calculations, but we can't use them because a small error will ruin us because of the condition number.
 
-## Building a least squares algorithm from scratch
+	### How do we save our significant digits (hopefully without too much work?)
 
-Note: Norm $\left(\,||x||\,\right)$ always refers to the Euclidean Norm $\left(\,||x||_2\,\right)$ when we're talking about least squares.
+	Note that $Im(A)^\perp = Ker(A^T) \implies \mathbb{C}^m=Im(A)\oplus Ker(A^T)$.
 
-**Goal:** Construct the effect of $Q^T$ such that $Q^T A = B$, where $B$ is a matrix with the bottom part being 0 and the upper part being upper triangular.
+	## Recap
+	We decomposed the target space $\mathbb{C}^m$. [todo: google "Chiyo Prison Scool"] 
 
-**Building blocks:** We want to perform _unitary_ operations: i.e, do things that don't change the length of vectors: operations like rotation, reflection (Not translations, because although it doesn't change lengths it changes the norm).
-* 2D: Rotations and reflections
-* 3D: Rotations, reflections and inversions (like reflection through a point)
-* Higher dimensions: lots more (symmetries of n-spheres), permutations (everywhere)
-  
-**What do we want to build?** Similar to LU, we want to take a column and eliminate everything below the diagonal. Construct a reflection operation $H$ (for Householder), which is a reflection. The norm of the entire column must be the same though, and so the top element (the diagonal) must contain $||a||$ concentrated in it.
+	COND($A^TA$) = COND($A^2$), but COND($Q^TA$) = COND($A$).
 
-First, we reflect vector (column) $a$ onto basis vector $e_1$. Consider a mirror, which is the angle bisector in between $a$ and $e_1$. We could reflect it onto $e_1$ or even onto the negative side, $-e_1$. Call the two mirrors $v^+$ and $v^-$
+	We just need to construct the effect of multiplying our matrix by $Q^T$. In general, you never want to calculate $Q$ cause it can be really large (million x million).
 
-The operation needs to transform $\vec{a} \rightarrowtail \alpha \vec{e_1}$, where $\alpha= \pm ||a||$
+	### Building a least squares algorithm from scratch
 
-$$Ha = a - 2 Pva$$
-$$ H = I - 2Pv \qquad v=v^+ \text{ or } v^-$$
+	Note: Norm $\left(\,||x||\,\right)$ always refers to the Euclidean Norm $\left(\,||x||_2\,\right)$ when we're talking about least squares.
 
-How to find $v^+, v^-$?
+	**Goal:** Construct the effect of $Q^T$ such that $Q^T A = B$, where $B$ is a matrix with the bottom part being 0 and the upper part being upper triangular.
 
-Projection operator, $P_v a = \frac{v^T a}{||v||^2} v= \frac{v^T a}{v^T v} v = \left(\frac{vv^T}{v^tv} a\right)$
-$$\implies P_v = \frac{vv^T}{v^Tv}$$
+	**Building blocks:** We want to perform _unitary_ operations: i.e, do things that don't change the length of vectors: operations like rotation, reflection (Not translations, because although it doesn't change lengths it changes the norm).
+	* 2D: Rotations and reflections
+	* 3D: Rotations, reflections and inversions (like reflection through a point)
+	* Higher dimensions: lots more (symmetries of n-spheres), permutations (everywhere)
+	
+	**What do we want to build?** Similar to LU, we want to take a column and eliminate everything below the diagonal. Construct a reflection operation $H$ (for Householder), which is a reflection. The norm of the entire column must be the same though, and so the top element (the diagonal) must contain $||a||$ concentrated in it.
 
-$$\alpha e_1 = Ha = a-2\frac{v^Ta}{v^Tv}v$$
-$$\underbrace{\frac{2v^Ta}{v^Tv}} v =a-\alpha e_1$$
-First part is just a scalar number, the rest are vectors. It gets normalized away if we choose $||v||=1$
+	First, we reflect vector (column) $a$ onto basis vector $e_1$. Consider a mirror, which is the angle bisector in between $a$ and $e_1$. We could reflect it onto $e_1$ or even onto the negative side, $-e_1$. Call the two mirrors $v^+$ and $v^-$
 
-Thus, $v \propto a - \alpha e_1$. Just subtract $\alpha$ from the first entry in the column
+	The operation needs to transform $\vec{a} \rightarrowtail \alpha \vec{e_1}$, where $\alpha= \pm ||a||$
 
-Now we can plug that into the equation for $H$, and we're done.
+	$$Ha = a - 2 Pva$$
+	$$ H = I - 2Pv \qquad v=v^+ \text{ or } v^-$$
 
-```python
-def HouseholderQR(A, b):
-    m, n = A.shape
-    R = A.astype(float)
-    b_tilde = b.astype(float)
-    for k in range(n):
-        a = R[k:m, k]
-        if (np.dot(a[1:],a[1:]) == 0):
-            continue
-        v = reflection_vector(a)
-        reflect_columns(x, R[k:m, k:n])
-        reflect_columns(v, b_tilde[k:m])
-    return R, b_tilde
+	How to find $v^+, v^-$?
 
-def reflect_columns(v, A):
-    S = -2 * np.dot(v, A)
-    A -= v[:, NA] * S[NA, :]
+	Projection operator, $P_v a = \frac{v^T a}{||v||^2} v= \frac{v^T a}{v^T v} v = \left(\frac{vv^T}{v^tv} a\right)$
+	$$\implies P_v = \frac{vv^T}{v^Tv}$$
 
-the last line RHS is the same as `np.outer(S,V)`""")
+	$$\alpha e_1 = Ha = a-2\frac{v^Ta}{v^Tv}v$$
+	$$\underbrace{\frac{2v^Ta}{v^Tv}} v =a-\alpha e_1$$
+	First part is just a scalar number, the rest are vectors. It gets normalized away if we choose $||v||=1$
+
+	Thus, $v \propto a - \alpha e_1$. Just subtract $\alpha$ from the first entry in the column
+
+	Now we can plug that into the equation for $H$, and we're done.
+	""")
+	st.markdown(r"""
+	```python
+	def HouseholderQR(A, b):
+		m, n = A.shape
+		R = A.astype(float)
+		b_tilde = b.astype(float)
+		for k in range(n):
+			a = R[k:m, k]
+			if (np.dot(a[1:],a[1:]) == 0):
+				continue
+			v = reflection_vector(a)
+			reflect_columns(x, R[k:m, k:n])
+			reflect_columns(v, b_tilde[k:m])
+		return R, b_tilde
+
+	def reflect_columns(v, A):
+		S = -2 * np.dot(v, A)
+		A -= v[:, NA] * S[NA, :]
+
+	the last line RHS is the same as `np.outer(S,V)`""")
 with st.expander('Eigensystems', expanded=False):
 	st.markdown(r"""
 # Eigensystems
@@ -879,6 +915,3 @@ with st.expander('Partial Differential Equations	FFT and Spectral Methods', expa
 	st.markdown('Linear Equations')
 
 
-
-
-						
