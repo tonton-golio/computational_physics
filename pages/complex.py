@@ -8,7 +8,7 @@ import seaborn as sns
 from matplotlib.gridspec import GridSpec
 from matplotlib import pyplot as plt
 import numpy as np
-import pygraphviz
+import graphviz
 import networkx as nx
 import sys
 sys.setrecursionlimit(15000)
