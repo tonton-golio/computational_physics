@@ -477,8 +477,7 @@ def newNetwork():
     domains = getDomains(M,0.6)
     open_arr = draw_from_matrix(M,domains)
 
-# -----------
-# percolation
+
 def run_percolation():
     st.markdown(r"""# Percolation""")
     def makeGrid(size, seed=42): 
@@ -576,7 +575,7 @@ def run_percolation():
     """)
 
     cols[1].code(r"""
-def getDomains(grid, p=.5):
+    def getDomains(grid, p=.5):
     open_arr = grid < p
     domains = {} ; index = 0; visited = set()
     for i, _ in enumerate(open_arr):
@@ -594,8 +593,6 @@ def getDomains(grid, p=.5):
                 visited.add((i,j))""")
 
 
-# -----------
-# mandel brot
 def run_fractals():
     def stable(z):
         try:
@@ -647,29 +644,27 @@ def run_fractals():
     after successive iterations. We let $z_0$ be 0.
     """)
     cols[1].code(r"""
-def stable(z):
-    try:
-        return False if abs(z) > 2 else True
-    except OverflowError:
-        return False
-stable = np.vectorize(stable)
+    def stable(z):
+        try:
+            return False if abs(z) > 2 else True
+        except OverflowError:
+            return False
+    stable = np.vectorize(stable)
 
 
-def mandelbrot(c, a, n=50):
-    z = 0
-    for i in range(n):
-        z = z**a + c
-    return z
+    def mandelbrot(c, a, n=50):
+        z = 0
+        for i in range(n):
+            z = z**a + c
+        return z
 
-def makeGrid(resolution, lims=[-1.85, 1.25, -1.25, 1.45]):
+    def makeGrid(resolution, lims=[-1.85, 1.25, -1.25, 1.45]):
     re = np.linspace(lims[0], lims[1], resolution)[::-1]
     im = np.linspace(lims[2], lims[3], resolution)
     re, im = np.meshgrid(re,im)
     return re+im*1j    """)
 
 
-# -----------
-# Bereaucrats
 def bereaucrats():
     st.markdown(r"# Beraucrats")
 
@@ -752,9 +747,6 @@ def bereaucrats():
     """)
 
 
-
-# -----------
-# bakSneppen
 def bakSneppen():
     st.markdown(r"# Bak-Sneppen")
     def run(size, nsteps):
@@ -806,8 +798,6 @@ def bakSneppen():
     cols[1].pyplot(fig)
 
 
-# -----------
-# networkGenerator
 def network():
 
     def makeBetheLattice(n_nodes = 10):
@@ -902,7 +892,8 @@ func_dict = {
     'Fractals'      : run_fractals,
     'Bereaucrats'   : bereaucrats,
     'Bak-Sneppen'   : bakSneppen,
-    'Networks'     : network,
+    'new network'   : newNetwork,
+    'Networks'      : network,
     'Bet-Hedghing'  : run_betHedging,
     'Statistical Mechanics' : run_stat_mech,
     'Phase transitions & Critical phenomena' : run_phaseTransitions_CriticalPhenomena,
