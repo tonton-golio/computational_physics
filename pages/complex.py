@@ -24,7 +24,22 @@ def run_stat_mech():
         # Statistical Mechanics
         
         ## Partition function
+        
+        ### Microcanonical Ensemble
+        According to L. Boltzmann, entropy of microcanonical ensemble i.e.
+        system with fixed energy $E$ is expressed as
+        $$
+            S = k_\mathrm{B} \ln \Omega.
+        $$ 
+        Here $k_\mathcal{B}$ is Boltzmann's constant and $\Omega$ is number 
+        of (quantum) microstate of the system.
+        In this system, temperature $T$ is statistically defined as 
+        $$ 
+            \frac{1}{T} = \frac{\partial S}{\partial E}
+        $$ 
 
+
+        ### Canonical Ensemble
         The partition function is defined as the sum of all states
         $$
             Z = \sum_i e^{-\beta E}.
