@@ -33,23 +33,23 @@ def run_stat_mech():
         With this assumption one can say that the system become particular state
         $i$ with probability
         $$
-            P_i = \frac{1}{\Omega (E)}
+            P_i = \frac{1}{\Omega}
         $$
-        Here $\Omega (E)$ is the total number of (quantum) microstate of the 
+        Here $\Omega$ is the total number of (quantum) microstate of the 
         system with energy $E$.
 
 
         According to Ludwig Boltzmann, entropy of system with microcanonical 
         ensemble of the system with fixed energy $E$ is expressed as
         $$
-            S(E) = k_\mathrm{B} \ln \Omega (E).
+            S = k_\mathrm{B} \ln \Omega.
         $$ 
         Here $k_\mathrm{B}$ is Boltzmann's constant.
         
         In this system, temperature $T$ is statistically defined as 
         $$ 
-            \frac{1}{T} = \frac{\partial S(E)}{\partial E} 
-            = k_\mathrm{B} \frac{\partial \ln \Omega (E)}{\partial E} 
+            \frac{1}{T} = \frac{\partial S}{\partial E} 
+            = k_\mathrm{B} \frac{\partial \ln \Omega}{\partial E} 
         $$ 
 
         ### Canonical Ensemble
