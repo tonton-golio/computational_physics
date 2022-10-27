@@ -493,14 +493,43 @@ def network():
     st.pyplot(fig)
 
 
+def run_betHedging():
+
+    st.markdown('# Bet-Hedghing')
+    with st.sidebar:
+        cols_sidebar = st.columns(2)
+        nsteps = cols_sidebar[0].slider('nsteps',1,3000,500)
+        starting_capital = cols_sidebar[1].slider('starting capital',1,1000,10)
+        prob_loss = cols_sidebar[0].slider('loss probability', 0.,1.,.5) 
+        invest_per_round = cols_sidebar[1].slider('invest per round', 0.,1.,.5) 
+
+    capital = [starting_capital]
+    for i in range(nsteps):
+        if np.random.uniform()>prob_loss:
+            capital.append(capital[i]*(1+invest_per_round))
+        else:
+            capital.append(capital[i]*(1-invest_per_round))
+
+    fig, ax = plt.subplots()
+    plt.plot(capital, c='purple')
+    plt.xlabel('timestep', color='white')
+    fig.patch.set_facecolor((.04,.065,.03))
+    ax.set(facecolor=(.04,.065,.03))
+    ax.tick_params(axis='x', colors='white')
+    ax.tick_params(axis='y', colors='white')
+    ax.set(yscale='log')
+    plt.ylabel('capital', color='white')
+    st.pyplot(fig)
+
 
 func_dict = {
-	'RandomWalk' : run_random_walk,
-    'Percolation'   :run_percolation,
-    'Fractals'    : run_fractals,
+	'RandomWalk'    : run_random_walk,
+    'Percolation'   : run_percolation,
+    'Fractals'      : run_fractals,
     'Bereaucrats'   : bereaucrats,
-    'Bak-Sneppen'    : bakSneppen,
-    #'Networks'       : network,
+    'Bak-Sneppen'   : bakSneppen,
+    #'Networks'     : network,
+    'Bet-Hedghing'  : run_betHedging
 }
 
 with st.sidebar:
