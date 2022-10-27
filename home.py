@@ -16,7 +16,7 @@ st.markdown("""
 """)
 
 st.markdown(r"""
-## Contributters""")
+## Contributers""")
 cols = st.columns(3)
 cols[0].markdown('#### [Anton](https://www.github.com/tonton-golio/)')
 cols[1].markdown('#### [Riz](https://www.github.com/rizfn/)')
@@ -28,5 +28,3 @@ with st.expander('TODO',expanded=False):
 	- [] add feedback box on each page
 	- [] get networks to work in browser
 	""")
-
-'end'
