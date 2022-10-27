@@ -186,15 +186,36 @@ def run_phaseTransitions_CriticalPhenomena():
     $$
         """) 
 
-
+    with st.sidebar:
+        cols_sidebar =st.columns(2)
+        size   = cols_sidebar[0].slider("size",0, 30, 10)
+        J      = cols_sidebar[1].slider("J ",0.01, 2., 1.)
+        nsteps = cols_sidebar[0].slider("Nsteps",0, 30, 10)
+        beta   = cols_sidebar[1].slider("beta",0., 5., 1.) 
+        cmap = st.select_slider('cmap', 
+            ['inferno', 'gist_rainbow', 'RdBu', 'viridis',
+            'inferno_r', 'magma'
+            ])
+        
     st.markdown(r'1D ising model')   
-    size = 10
-    J = 1
-    chain = np.zeros(size) ; chain[chain<.5] = -1; chain[chain!=-1] = 1
     
-    # pick random site
-    i = np.random.randint(0,size-1)
+    
+    chain = np.zeros(size) ; chain[chain<.5] = -1; chain[chain>=.5] = 1
+    CHAINS = []
+    for _ in range(nsteps):
+        # pick random site
+        i = np.random.randint(0,size-1)
+        dE = (sum(chain[i-1:i+2])-chain[i])*chain[i]
+        if np.random.rand()<np.exp(-beta*dE):
+            chain[i] *= -1
+        CHAINS.append(chain.copy())
 
+    a = len(CHAINS)
+    a
+    CHAINS = np.array(CHAINS)
+    fig, ax = plt.subplots()
+    plt.imshow(CHAINS, cmap=cmap, aspect = size/nsteps/3)
+    st.pyplot(fig)
 
 # -----------
 # random walk
