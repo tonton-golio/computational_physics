@@ -95,17 +95,17 @@ def run_stat_mech():
                 X[i,j]*=-1
                 E += dE
 
-            results['Energy'].append(E)
+            results['Energy'].append(E.copy())
             results['Magnetization'].append(np.sum(X))
         return results
     with st.sidebar:
         size = st.slider('size',3,100,10)
         beta = st.slider('beta',0.01,5.,1.)
-        nsteps = st.slider('nsteps',3,1000,100)
+        nsteps = st.slider('nsteps',3,10000,100)
 
     results = ising()
 
-    results['Susceptibility'] = np.var(results['Magnetization'])
+    results['Susceptibility'] = np.var(results['Magnetization'][-nsteps//4*3:])
     data[beta] = {'sus': results['Susceptibility'], 'nsteps':nsteps, 'size':size}
     
     np.savez('pages/data', data)
@@ -168,8 +168,25 @@ def run_stat_mech():
     plt.tight_layout()
     st.pyplot(fig)
 
+def run_phaseTransitions_CriticalPhenomena():
+    st.markdown(r"""
+    # Phase transitions & Critical phenomena
 
-        
+    ## mean-field approximation
+    Assume a site is affected by the mean of the system as opposed
+    to the actually interacting neighbours. This allows to solve this 
+    type of problem analytically.
+
+    This yields a mean-field partition functions
+    $$
+        Z_{MF} = \exp\left(-\beta\frac{NJzm^2}{2}
+        \right)
+        [2\cosh(Jzm\beta+h\beta)]^N
+    $$
+        """) 
+
+
+    st.markdown(r'1D ising model')   
 
 # -----------
 # random walk
@@ -683,6 +700,7 @@ func_dict = {
     #'Networks'     : network,
     'Bet-Hedghing'  : run_betHedging,
     'Statistical Mechanics' : run_stat_mech,
+    'Phase transitions & Critical phenomena' : run_phaseTransitions_CriticalPhenomena,
 }
 
 with st.sidebar:
