@@ -28,3 +28,5 @@ with st.expander('TODO',expanded=False):
 	- [] add feedback box on each page
 	- [] get networks to work in browser
 	""")
+
+'end'
