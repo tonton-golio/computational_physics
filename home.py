@@ -22,3 +22,9 @@ cols[0].markdown('#### [Anton](https://www.github.com/tonton-golio/)')
 cols[1].markdown('#### [Riz](https://www.github.com/rizfn/)')
 cols[2].markdown('#### [Yoshiaki](https://www.github.com/yoshiysoh/)')
 
+
+with st.expander('TODO',expanded=False):
+	st.markdown(r"""
+	- [] add feedback box on each page
+	- [] get networks to work in browser
+	""")
