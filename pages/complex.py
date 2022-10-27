@@ -8,7 +8,7 @@ import seaborn as sns
 from matplotlib.gridspec import GridSpec
 from matplotlib import pyplot as plt
 import numpy as np
-#import graphviz
+import graphviz
 #import networkx as nx
 import sys
 sys.setrecursionlimit(15000)
@@ -224,6 +224,71 @@ def run_phaseTransitions_CriticalPhenomena():
 
     st.markdown(r"""## Transfer Matrix Method
     ...""")
+
+
+
+def run_betheLattice():
+    st.markdown(r"""
+    # Bethe Lattice
+    Bethe lattice (also called a regular tree)  is an infinite connected 
+    cycle-free graph where all vertices have the same number of neighbors.  
+
+
+    Let's build it!
+    """)
+
+    # Create a graphlib graph object
+    graph = graphviz.Digraph()
+
+    root = str(0)
+    nodes = []
+    for other in '0 1 2'.split():
+        graph.edge(root, root+other)
+        nodes.append(root+other)
+
+    new_nodes = []
+    for i in nodes:
+        for j in range(2):
+            graph.edge(str(i), str(i)+str(j))
+
+            new_nodes.append(str(i)+str(j))
+
+    nodes = new_nodes
+    new_nodes = []
+    for i in nodes:
+        for j in range(2):
+            graph.edge(str(i), str(i)+str(j))
+            new_nodes.append(str(i)+str(j))
+
+
+    st.graphviz_chart(graph)
+
+
+    st.markdown("""hmmm, this is not great. Lets build a matrix along with a matrix
+        visualization tool""")
+
+    levels = 2
+    nnodes = 10
+    M = np.zeros((nnodes, nnodes))
+    for i in range(1,4):
+        M[0,i] = 1
+        M[i,0] = 1
+
+    for i in range(4,6):
+        M[1, i] = 1 ; M[i, 1] = 1
+
+    for i in range(6,8):
+        M[2, i] = 1 ; M[i, 2] = 1
+
+    for i in range(8,10):
+        M[3, i] = 1 ; M[i, 3] = 1
+
+
+    M
+
+
+
+    st.markdown(r"## percolation on this lattice")
 
 # -----------
 # random walk
@@ -738,6 +803,7 @@ func_dict = {
     'Bet-Hedghing'  : run_betHedging,
     'Statistical Mechanics' : run_stat_mech,
     'Phase transitions & Critical phenomena' : run_phaseTransitions_CriticalPhenomena,
+    'Bethe Lattice' : run_betheLattice
 }
 
 with st.sidebar:
