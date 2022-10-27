@@ -210,12 +210,20 @@ def run_phaseTransitions_CriticalPhenomena():
             chain[i] *= -1
         CHAINS.append(chain.copy())
 
-    a = len(CHAINS)
-    a
+    
     CHAINS = np.array(CHAINS)
     fig, ax = plt.subplots()
-    plt.imshow(CHAINS, cmap=cmap, aspect = size/nsteps/3)
+    ax.imshow(CHAINS, cmap=cmap, aspect = size/nsteps/3)
+    ax.tick_params(axis='x', colors='white')
+    ax.tick_params(axis='y', colors='white')
+    ax.set_ylabel('Timestep', color='white')
+    ax.set_xlabel('Site index', color='white')
+    fig.patch.set_facecolor((.04,.065,.03))
     st.pyplot(fig)
+
+
+    st.markdown(r"""## Transfer Matrix Method
+    ...""")
 
 # -----------
 # random walk
