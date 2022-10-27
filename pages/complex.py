@@ -32,7 +32,7 @@ def run_random_walk():
             X[i] = X[i-1]+x[i]
         return X
 
-    def randomWalk(nsteps, sigma2=1, seed=42, axisscale='linear'):
+    def randomWalk(nsteps, sigma2=1, seed=42, axisscale='linear', step_size=0):
         (dx_f, dy_f) = (lambda theta, r=1: r*trig(theta) for trig in (np.cos, np.sin)) 
         dx_f = lambda theta, r = 1: r*np.cos(theta)
         dy_f = lambda theta, r = 1: r*np.sin(theta)
@@ -47,6 +47,7 @@ def run_random_walk():
 
         rands = [thetas_uniform, thetas_randn, thetas_bimodal]
         rands_names = 'uniform, normal, bimodal'.split(', ')
+        stepLengths = np.random.rand(nsteps).copy()**step_size
 
         def plot2():
             colors = 'r g y'.split()
@@ -57,8 +58,8 @@ def run_random_walk():
             ax2 = fig.add_subplot(gs[:, 1:])    
             
             lims = {'xl':0, 'xh':0, 'yl':0, 'yh':0}
-            for i, (r, n) in enumerate(zip(rands, rands_names)):
-                dx, dy = dx_f(r), dy_f(r)
+            for i, (r, n, stepLength) in enumerate(zip(rands, rands_names, stepLengths)):
+                dx, dy = dx_f(r, stepLength), dy_f(r, stepLength)
                 dx = np.vstack([np.zeros(len(dx)), dx]).T.flatten()
                 dy = np.vstack([np.zeros(len(dy)), dy]).T.flatten()
                 
@@ -90,11 +91,12 @@ def run_random_walk():
         nsteps = cols_sidebar[0].slider('nsteps',  4,   100, 14)
         seed   = cols_sidebar[1].slider('Seed',    0,   69 , 42)
         sigma2 = cols_sidebar[0].slider('Variance',0.2, 1. ,0.32)
+        step_size = cols_sidebar[0].slider('Stepsize = random^x, x=', 0.,3.,0.)
         axisscale = cols_sidebar[1].radio('axis-scales', ['linear', 'symlog'])
         #yscale = cols_sidebar[1].radio('yscale', ['linear', 'symlog'])
 
 
-    randomWalk(nsteps,sigma2, seed, axisscale)
+    randomWalk(nsteps,sigma2, seed, axisscale, step_size)
 
     cols = st.columns(2)
     cols[0].markdown(r"""
@@ -433,6 +435,8 @@ def bakSneppen():
 
     The figure on the right depicts the mean magnitude of elements in
     the vector.
+
+    To build further on this, we should identify power laws along each dimension.
     """)
 
     fig, ax = plt.subplots()
