@@ -19,6 +19,158 @@ st.set_page_config(page_title="Scientific Computing",
 	initial_sidebar_state="collapsed", 
 	menu_items=None)
 
+def run_stat_mech():
+    st.markdown(r"""
+        # Statistical Mechanics
+        
+        ## Partition function
+
+        The partition function is defined as the sum of all states
+        $$
+            Z = \sum_i e^{-\beta E}.
+        $$
+        Notice we also have the grand partition function which additionally
+        condsiders chemical potentials.
+
+        Using the partiton the functions, we are able obtain any operator. 
+        A perticularly interesting value, we may obtain is the free energy,
+
+        $$
+            F = -\frac{1}{\beta}\log(Z).
+        $$
+        From here we may obtain the entropy, which is given by the 
+        negative derivative of the free energy with respect to temperature
+        $$
+            S = -\frac{\partial F}{\partial T}.
+        $$
+        Another value of high importance, we may obtain from the partition
+        function is the expectation value of the energy;
+        $$
+            \left<E\right> = -\frac{\partial\log(Z)}{\partial \beta}
+        $$
+
+
+        ## Ising Model
+        """)
+
+    # load or initialize data dictionary
+
+    try:
+        data = np.load('pages/data.npz', allow_pickle=True)[np.load('pages/data.npz', allow_pickle=True).files[0]].item()
+    except:
+        data = {};  np.savez('pages/data', data)
+    
+    def ising():
+        # initialize
+        X = np.random.rand(size,size)
+        X[X>0.5] =1
+        X[X!=1] =-1
+
+        E = 0 
+        for i in range(size):
+            for j in range(size):
+                sum_neighbors = 0
+                for pos in [(i,(j+1)%size),    (i,(j-1+size)%size), 
+                               ((i+1)%size,j), ((i-1+size)%size,j)]:
+                    
+                    sum_neighbors += X[pos]
+            E += -X[i,j] * sum_neighbors/2
+
+        results = {"Energy" : [E], "Magnetization" : [np.sum(X)]}
+        for step in range(nsteps):
+            #choose random site
+            (i,j) = tuple(np.random.randint(0,size-1,2))
+
+            sum_neighbors = 0
+            for pos in [(i,(j+1)%size),    (i,(j-1+size)%size), 
+                           ((i+1)%size,j), ((i-1+size)%size,j)]:
+                
+                sum_neighbors += X[pos]
+                
+
+            dE = 2 *X[i,j] * sum_neighbors
+
+            
+            if np.random.rand()<np.exp(-beta*dE):
+                X[i,j]*=-1
+                E += dE
+
+            results['Energy'].append(E)
+            results['Magnetization'].append(np.sum(X))
+        return results
+    with st.sidebar:
+        size = st.slider('size',3,100,10)
+        beta = st.slider('beta',0.01,5.,1.)
+        nsteps = st.slider('nsteps',3,1000,100)
+
+    results = ising()
+
+    results['Susceptibility'] = np.var(results['Magnetization'])
+    data[beta] = {'sus': results['Susceptibility'], 'nsteps':nsteps, 'size':size}
+    
+    np.savez('pages/data', data)
+    fig, ax = plt.subplots(1,3)
+    ax[0].plot(results['Energy'],c='purple')
+    ax[1].plot(results['Magnetization'], color='white')
+
+    ax[2].scatter(x = list(data.keys()), 
+                  y = [data[key]['sus'] for key in data.keys()],
+                  s = [data[key]['size'] for key in data.keys()],
+                  color='white')
+
+    
+    for i in [0,1,2]:
+        ax[i].set(facecolor=(.04,.065,.03))
+        ax[i].tick_params(axis='x', colors='white')
+        ax[i].tick_params(axis='y', colors='white')
+        ax[i].set_xlabel('Timestep', color='white')
+    ax[2].set_xlabel('beta', color='white')
+    ax[0].set_ylabel('Energy', color='white')
+    ax[1].set_ylabel('Magnetization', color='white')
+    ax[2].set_ylabel('Susceptibility', color='white')
+
+    fig.patch.set_facecolor((.04,.065,.03))
+    plt.tight_layout()
+    st.pyplot(fig)
+
+    
+    st.markdown(r"""
+    ## Metropolis algorithm
+
+    The metropolis algorithm is a hard cutoff. So for values above a critical point
+    are always accepted without considering probability. It makes computation easier.
+
+
+
+    """)
+
+    dEs = np.linspace(-1,1,1000)
+    prob_change = np.zeros(len(dEs))
+    prob_change = np.exp(-beta*dEs)
+    prob_change[dEs<0] = 1
+
+    fig, ax = plt.subplots()
+    ax = [ax]
+    ax[0].plot(dEs, prob_change, color='white')
+
+    
+    for i in [0]:
+        ax[i].set(facecolor=(.04,.065,.03))
+        ax[i].tick_params(axis='x', colors='white')
+        ax[i].tick_params(axis='y', colors='white')
+        ax[i].set(xlabel='Timestep')
+    ax[0].set_ylabel('probability of acceptance', color='white')
+    ax[0].set_xlabel('Energy difference', color='white')
+    ax[0].set(xticks=[-1,0,1])
+    plt.grid()
+
+    fig.patch.set_facecolor((.04,.065,.03))
+    plt.tight_layout()
+    st.pyplot(fig)
+
+
+        
+
 # -----------
 # random walk
 def run_random_walk():
@@ -529,7 +681,8 @@ func_dict = {
     'Bereaucrats'   : bereaucrats,
     'Bak-Sneppen'   : bakSneppen,
     #'Networks'     : network,
-    'Bet-Hedghing'  : run_betHedging
+    'Bet-Hedghing'  : run_betHedging,
+    'Statistical Mechanics' : run_stat_mech,
 }
 
 with st.sidebar:
