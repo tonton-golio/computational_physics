@@ -14,3 +14,10 @@ except:
 st.markdown("""
 [github](https://www.github.com/tonton-golio/computational_physics)
 """)
+
+st.markdown(r"""
+## Contributters
+#### [Anton](https://www.github.com/tonton-golio/)
+#### [Riz](https://www.github.com/rizfn/)
+#### [Yoshiaki](https://www.github.com/yoshiysoh/)
+	""")
