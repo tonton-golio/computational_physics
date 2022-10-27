@@ -5,26 +5,26 @@ st.set_page_config(page_title="Computational Physics",
 	layout="wide", 
 	initial_sidebar_state="collapsed", 
 	menu_items=None)
-st.title("Computational Physics")
+st.markdown(r"""
+	# Computational Physics
+	#### Notes and simulations for courses""")
 try:
 	st.image('streamlit_app1/assets/images/cover.jpg')
 except:
 	st.image('assets/images/cover.jpg')
 
 st.markdown("""
-[github](https://www.github.com/tonton-golio/computational_physics)
-""")
-
-st.markdown(r"""
-## Contributers""")
-cols = st.columns(3)
-cols[0].markdown('#### [Anton](https://www.github.com/tonton-golio/)')
-cols[1].markdown('#### [Riz](https://www.github.com/rizfn/)')
-cols[2].markdown('#### [Yoshiaki](https://www.github.com/yoshiysoh/)')
+### [github](https://www.github.com/tonton-golio/computational_physics)
+###### Contributers
+* Anton
+* Riz
+* Yoshiaki""")
 
 
 with st.expander('TODO',expanded=False):
 	st.markdown(r"""
-	- [] add feedback box on each page
+	- [] clean up functions 😅
+	- [] add feedback box on each page?
 	- [] get networks to work in browser
+	- [] make graphic for front page
 	""")

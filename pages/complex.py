@@ -1,15 +1,14 @@
-import numpy as np
-import matplotlib.pyplot as plt
-import time
 import streamlit as st
-import pandas as pd
-import re
-import seaborn as sns
-from matplotlib.gridspec import GridSpec
-from matplotlib import pyplot as plt
 import numpy as np
-
-#import networkx as nx
+import pandas as pd
+import matplotlib.pyplot as plt
+from matplotlib.gridspec import GridSpec
+import seaborn as sns
+try: import graphviz # having trouble with this when hosted
+except: pass
+try: import networkx as nx  # networkx too :(
+except: pass
+import time
 import sys
 sys.setrecursionlimit(15000)
 
@@ -20,6 +19,11 @@ st.set_page_config(page_title="Scientific Computing",
 	menu_items=None)
 
 def run_stat_mech():
+    with st.sidebar:
+        size = st.slider('size',3,100,10)
+        beta = st.slider('beta',0.01,5.,1.)
+        nsteps = st.slider('nsteps',3,10000,100)
+        nsnapshots = 4
     st.markdown(r"""
         # Statistical Mechanics
         
@@ -65,16 +69,57 @@ def run_stat_mech():
         $$
 
 
-        ## Ising Model
+        ## Ising Model (2d)
+
+        spins $\pm 1$ on a lattice will self-organize to energertically favourable
+        configurations. The energy of the system is given by
+
+        $$
+            H(\sigma) = -\sum_{\left<i j\right>}J_{ij}\sigma_i\sigma_j
+        $$
+        So it is energetically favourable to align with nearest neighbours. This happens over
+        some timescale, so we iteratively pick a spin, assess the energy change, $\delta E$, though its flip
+        and accept with a probability $p(\delta E)$.
         """)
 
-    # load or initialize data dictionary
+    cols = st.columns(2)
+    cols[0].markdown(r"""
+    #### Metropolis algorithm
 
-    try:
-        data = np.load('pages/data.npz', allow_pickle=True)[np.load('pages/data.npz', allow_pickle=True).files[0]].item()
-    except:
-        data = {};  np.savez('pages/data', data)
+    The metropolis algorithm is a hard cutoff. So for values above a critical point
+    are always accepted without considering probability. It makes computation easier.
+
+    "Why?" you may ask, well; the large numbers arrising from the exponential
+    are just that.
+
+
+    """)
+
+    dEs = np.linspace(-1,3,1000)
+    prob_change = np.zeros(len(dEs))
+    prob_change = np.exp(-beta*dEs)
+    prob_change[dEs<0] = 1
+
+    fig, ax = plt.subplots(figsize=(5,5))
+    ax = [ax]
+    ax[0].plot(dEs, prob_change, color='pink', lw=7)
+
     
+    for i in [0]:
+        ax[i].set(facecolor=(.04,.065,.03))
+        ax[i].tick_params(axis='x', colors='white')
+        ax[i].tick_params(axis='y', colors='white')
+        ax[i].set(xlabel='Timestep')
+    ax[0].set_ylabel('probability of acceptance', color='white')
+    ax[0].set_xlabel('Energy difference', color='white')
+    ax[0].set(xticks=[0])
+    plt.grid()
+
+    fig.patch.set_facecolor((.04,.065,.03))
+    plt.tight_layout()
+    cols[1].pyplot(fig)
+
+   
     def ising():
         # initialize
         X = np.random.rand(size,size)
@@ -91,7 +136,8 @@ def run_stat_mech():
                     sum_neighbors += X[pos]
             E += -X[i,j] * sum_neighbors/2
 
-        results = {"Energy" : [E], "Magnetization" : [np.sum(X)]}
+        results = {"Energy" : [E], "Magnetization" : [np.sum(X)], 
+                    "snapshots": {} }
         for step in range(nsteps):
             #choose random site
             (i,j) = tuple(np.random.randint(0,size-1,2))
@@ -112,77 +158,78 @@ def run_stat_mech():
 
             results['Energy'].append(E.copy())
             results['Magnetization'].append(np.sum(X))
+            if step in np.arange(nsnapshots)*nsteps//nsnapshots:
+                results['snapshots'][step]=X.copy()
         return results
-    with st.sidebar:
-        size = st.slider('size',3,100,10)
-        beta = st.slider('beta',0.01,5.,1.)
-        nsteps = st.slider('nsteps',3,10000,100)
+    
 
     results = ising()
+     
+    # load, fill and save susceptibility data
+    try: data = np.load('pages/data.npz', allow_pickle=True)[np.load('pages/data.npz', allow_pickle=True).files[0]].item()
+    except: data = {};  np.savez('pages/data', data)
 
-    results['Susceptibility'] = np.var(results['Magnetization'][-nsteps//4*3:])
-    data[beta] = {'sus': results['Susceptibility'], 'nsteps':nsteps, 'size':size}
-    
+    susceptibility = np.var(results['Magnetization'][-nsteps//4*3:])
+    data[beta] = {'sus': susceptibility, 'nsteps':nsteps, 'size':size}
     np.savez('pages/data', data)
-    fig, ax = plt.subplots(1,3)
+
+
+    st.markdown(r"""
+        below are snapshots of the output of a simulation of the 2d Ising model
+        using the metropolis algorithm.
+        """)
+    # plotting Snapshots
+    fig, ax = plt.subplots(1,nsnapshots, figsize=(15,3))
+    for idx, key in enumerate(results['snapshots'].keys()):
+        ax[idx].imshow(results['snapshots'][key])
+    fig.patch.set_facecolor((.04,.065,.03))
+    st.pyplot(fig)
+
+
+
+
+    fig, ax = plt.subplots(2,1, figsize=(5,6))
     ax[0].plot(results['Energy'],c='purple')
-    ax[1].plot(results['Magnetization'], color='white')
-
-    ax[2].scatter(x = list(data.keys()), 
-                  y = [data[key]['sus'] for key in data.keys()],
-                  s = [data[key]['size'] for key in data.keys()],
-                  color='white')
-
+    ax[1].plot(results['Magnetization'], color='orange')
     
-    for i in [0,1,2]:
+
+    for i in [0,1]: # could we make plotstyle page-wide?
         ax[i].set(facecolor=(.04,.065,.03))
         ax[i].tick_params(axis='x', colors='white')
         ax[i].tick_params(axis='y', colors='white')
         ax[i].set_xlabel('Timestep', color='white')
-    ax[2].set_xlabel('beta', color='white')
+    
     ax[0].set_ylabel('Energy', color='white')
     ax[1].set_ylabel('Magnetization', color='white')
-    ax[2].set_ylabel('Susceptibility', color='white')
-
+    
     fig.patch.set_facecolor((.04,.065,.03))
     plt.tight_layout()
-    st.pyplot(fig)
 
-    
     cols = st.columns(2)
-    cols[0].markdown(r"""
-    ## Metropolis algorithm
+    cols[0].markdown(r"""If we track paramters through time,
+        we may be able to spot a phase transition (they're a rare breed).
+        On the right are plots of the energy and magnetization over time. Below
+        is susceptibility as obtained the variance of the magnetization, 
+        $\chi = \left< \left< M\right> - M\right>$ (:shrug)""")
+    cols[1].pyplot(fig)
+    
+    ## susceptibility plot
+    fig, ax = plt.subplots( figsize=(5,3))
+    ax.scatter(x = list(data.keys()), 
+                  y = [data[key]['sus'] for key in data.keys()],
+                  s = [data[key]['size'] for key in data.keys()],
+                  color='cyan')
+    ax.set_ylabel('Susceptibility', color='white')
+    ax.set_xlabel('beta', color='white')
 
-    The metropolis algorithm is a hard cutoff. So for values above a critical point
-    are always accepted without considering probability. It makes computation easier.
+    ax.set(facecolor=(.04,.065,.03))
+    ax.tick_params(axis='x', colors='white')
+    ax.tick_params(axis='y', colors='white')
+    fig.patch.set_facecolor((.04,.065,.03))
+    cols[0].pyplot(fig)
 
-
-
-    """)
-
-    dEs = np.linspace(-1,3,1000)
-    prob_change = np.zeros(len(dEs))
-    prob_change = np.exp(-beta*dEs)
-    prob_change[dEs<0] = 1
-
-    fig, ax = plt.subplots()
-    ax = [ax]
-    ax[0].plot(dEs, prob_change, color='purple', lw=3)
 
     
-    for i in [0]:
-        ax[i].set(facecolor=(.04,.065,.03))
-        ax[i].tick_params(axis='x', colors='white')
-        ax[i].tick_params(axis='y', colors='white')
-        ax[i].set(xlabel='Timestep')
-    ax[0].set_ylabel('probability of acceptance', color='white')
-    ax[0].set_xlabel('Energy difference', color='white')
-    ax[0].set(xticks=[-1,0,1])
-    plt.grid()
-
-    fig.patch.set_facecolor((.04,.065,.03))
-    plt.tight_layout()
-    cols[1].pyplot(fig)
 
 def run_phaseTransitions_CriticalPhenomena():
     st.markdown(r"""
@@ -887,15 +934,15 @@ def run_betHedging():
 
 
 func_dict = {
+    'Statistical Mechanics' : run_stat_mech,
 	'RandomWalk'    : run_random_walk,
     'Percolation'   : run_percolation,
     'Fractals'      : run_fractals,
     'Bereaucrats'   : bereaucrats,
     'Bak-Sneppen'   : bakSneppen,
-    'new network'   : newNetwork,
-    'Networks'      : network,
+    #'new network'   : newNetwork,
+    #'Networks'      : network,
     'Bet-Hedghing'  : run_betHedging,
-    'Statistical Mechanics' : run_stat_mech,
     'Phase transitions & Critical phenomena' : run_phaseTransitions_CriticalPhenomena,
     'Bethe Lattice' : run_betheLattice
 }
