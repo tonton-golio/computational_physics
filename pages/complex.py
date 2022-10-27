@@ -747,22 +747,25 @@ def network():
             for j, val in enumerate(line):
                 if (i != j) and (val==1): 
                     G.add_edge(i, j)
-        color_map = ['r' if s==1 else 'b' for s in sick]
+        color_map = ['r' if s==1 else 'white' for s in sick]
         
         pos = nx.nx_agraph.graphviz_layout(G) if len(pos)==0 else pos
         
-        nx.draw_networkx(G,pos, node_color=color_map)
+        nx.draw_networkx(G,pos, node_color=color_map, edge_color='white')
         return pos
 
 
     with st.sidebar:
-        N = st.slider('N',1,42,22)
-        a = st.slider('alpha', 0.,1.,0.97)
         network_type = st.selectbox('networt_type',['bethe', 'random'])
+        N = st.slider('N',1,42,22)
+        if network_type == 'random':
+            a = st.slider('alpha', 0.,1.,0.97)
+        
     fig, ax = plt.subplots()
-
+    ax.set(facecolor=(.04,.065,.03))
     net = make_network(N,a) if network_type == 'random' else makeBetheLattice(N)
     draw_from_matrix(net)
+    fig.patch.set_facecolor((.04,.065,.03))
     st.pyplot(fig)
 
 
