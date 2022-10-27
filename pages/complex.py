@@ -26,22 +26,37 @@ def run_stat_mech():
         ## Partition function
         
         ### Microcanonical Ensemble
-        According to L. Boltzmann, entropy of microcanonical ensemble i.e.
-        "photocopies" of the system with fixed energy $E$ is expressed as
+        The central assumption of statistical mechanics is "principle of 
+        equal a priori probabilities" which argues that all (quantum) states 
+        with same energy $E$ of the closed mactoscopic system exists equally 
+        likely.
+        With this assumption one can say that the system become particular state
+        $i$ with probability
         $$
-            S = k_\mathrm{B} \ln \Omega.
+            P_i = \frac{1}{\Omega (E)}
+        $$
+        Here $\Omega (E)$ is the total number of (quantum) microstate of the 
+        system with energy $E$.
+
+
+        According to Ludwig Boltzmann, entropy of system with microcanonical 
+        ensemble of the system with fixed energy $E$ is expressed as
+        $$
+            S(E) = k_\mathrm{B} \ln \Omega (E).
         $$ 
-        Here $k_\mathrm{B}$ is Boltzmann's constant and $\Omega$ is number 
-        of (quantum) microstate of the system.
+        Here $k_\mathrm{B}$ is Boltzmann's constant.
+        
         In this system, temperature $T$ is statistically defined as 
         $$ 
-            \frac{1}{T} = \frac{\partial S}{\partial E}
+            \frac{1}{T} = \frac{\partial S(E)}{\partial E} 
+            = k_\mathrm{B} \frac{\partial \ln \Omega (E)}{\partial E} 
         $$ 
 
         ### Canonical Ensemble
-        Let's consider subsystem of microcanonical ensemble. For simplicity, 
-        we only consider only one subsystem and assuming it is small enough 
-        comparing to the rest of the system. Let's say this small part as 
+        Let's consider subsystem of whole system of microcanonical ensemble. 
+        For simplicity, we only consider only one subsystem and assuming it 
+        is small enough comparing to the rest of the system. Let's say this 
+        small part as 
         "system" and rest of enoumous part of the original microcanonical 
         system as "reservor" or "heat bath".
         By defining the system energy as $E_\mathrm{system}$ and reservor 
