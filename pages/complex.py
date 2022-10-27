@@ -9,7 +9,7 @@ from matplotlib.gridspec import GridSpec
 from matplotlib import pyplot as plt
 import numpy as np
 
-import networkx as nx
+#import networkx as nx
 import sys
 sys.setrecursionlimit(15000)
 
