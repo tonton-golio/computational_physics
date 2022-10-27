@@ -270,25 +270,13 @@ def run_betheLattice():
     levels = 2
     nnodes = 10
     M = np.zeros((nnodes, nnodes))
-    for i in range(1,4):
-        M[0,i] = 1
-        M[i,0] = 1
+    for i in range(nnodes):
+        if i == 0:
+            M[0,1:i+4]
 
-    for i in range(4,6):
-        M[1, i] = 1 ; M[i, 1] = 1
+    M += M.T
 
-    for i in range(6,8):
-        M[2, i] = 1 ; M[i, 2] = 1
-
-    for i in range(8,10):
-        M[3, i] = 1 ; M[i, 3] = 1
-
-
-    M
-
-
-
-    st.markdown(r"## percolation on this lattice")
+    st.markdown(r"## Percolation on this lattice")
 
 # -----------
 # random walk
