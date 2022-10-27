@@ -16,8 +16,9 @@ st.markdown("""
 """)
 
 st.markdown(r"""
-## Contributters
-#### [Anton](https://www.github.com/tonton-golio/)
-#### [Riz](https://www.github.com/rizfn/)
-#### [Yoshiaki](https://www.github.com/yoshiysoh/)
-	""")
+## Contributters""")
+cols = st.columns(3)
+cols[0].markdown('#### [Anton](https://www.github.com/tonton-golio/)')
+cols[1].markdown('#### [Riz](https://www.github.com/rizfn/)')
+cols[2].markdown('#### [Yoshiaki](https://www.github.com/yoshiysoh/)')
+
