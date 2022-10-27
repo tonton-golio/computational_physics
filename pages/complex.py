@@ -9,7 +9,7 @@ from matplotlib.gridspec import GridSpec
 from matplotlib import pyplot as plt
 import numpy as np
 import graphviz
-#import networkx as nx
+import networkx as nx
 import sys
 sys.setrecursionlimit(15000)
 
@@ -711,6 +711,19 @@ def bakSneppen():
 # -----------
 # networkGenerator
 def network():
+
+    def makeBetheLattice(n_nodes = 10):
+        M = np.zeros((n_nodes,n_nodes))
+
+        idx = 1
+        for i, _ in enumerate(M):
+            if i ==0: n =3
+            else: n =2
+            M[i, idx:idx+n] = 1
+            idx+=n
+
+        return M+M.T
+
     def make_network(n_persons = 5,alpha=.4):
         
         A = np.zeros((n_persons,n_persons))
@@ -745,9 +758,10 @@ def network():
     with st.sidebar:
         N = st.slider('N',1,42,22)
         a = st.slider('alpha', 0.,1.,0.97)
+        network_type = st.selectbox('networt_type',['bethe', 'random'])
     fig, ax = plt.subplots()
 
-    net = make_network(N,a)
+    net = make_network(N,a) if network_type == 'random' else makeBetheLattice(N)
     draw_from_matrix(net)
     st.pyplot(fig)
 
@@ -787,7 +801,7 @@ func_dict = {
     'Fractals'      : run_fractals,
     'Bereaucrats'   : bereaucrats,
     'Bak-Sneppen'   : bakSneppen,
-    #'Networks'     : network,
+    'Networks'     : network,
     'Bet-Hedghing'  : run_betHedging,
     'Statistical Mechanics' : run_stat_mech,
     'Phase transitions & Critical phenomena' : run_phaseTransitions_CriticalPhenomena,
