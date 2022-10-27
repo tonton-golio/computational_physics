@@ -134,7 +134,8 @@ def run_stat_mech():
     st.pyplot(fig)
 
     
-    st.markdown(r"""
+    cols = st.columns(2)
+    cols[0].markdown(r"""
     ## Metropolis algorithm
 
     The metropolis algorithm is a hard cutoff. So for values above a critical point
@@ -144,14 +145,14 @@ def run_stat_mech():
 
     """)
 
-    dEs = np.linspace(-1,1,1000)
+    dEs = np.linspace(-1,3,1000)
     prob_change = np.zeros(len(dEs))
     prob_change = np.exp(-beta*dEs)
     prob_change[dEs<0] = 1
 
     fig, ax = plt.subplots()
     ax = [ax]
-    ax[0].plot(dEs, prob_change, color='white')
+    ax[0].plot(dEs, prob_change, color='purple', lw=3)
 
     
     for i in [0]:
@@ -166,7 +167,7 @@ def run_stat_mech():
 
     fig.patch.set_facecolor((.04,.065,.03))
     plt.tight_layout()
-    st.pyplot(fig)
+    cols[1].pyplot(fig)
 
 def run_phaseTransitions_CriticalPhenomena():
     st.markdown(r"""
@@ -187,6 +188,13 @@ def run_phaseTransitions_CriticalPhenomena():
 
 
     st.markdown(r'1D ising model')   
+    size = 10
+    J = 1
+    chain = np.zeros(size) ; chain[chain<.5] = -1; chain[chain!=-1] = 1
+    
+    # pick random site
+    i = np.random.randint(0,size-1)
+
 
 # -----------
 # random walk
