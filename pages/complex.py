@@ -200,6 +200,10 @@ def run_stat_mech():
         $$ 
             E_\mathrm{system} + E_\mathrm{reservor} = E 
         $$
+<<<<<<< HEAD
+=======
+        
+>>>>>>> 1ffffc86cc3e8882b376eb4348a26dcabd0e4bd2
 
         The partition function is defined as the sum of all states
         $$
