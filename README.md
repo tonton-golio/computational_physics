@@ -16,13 +16,7 @@ The app is built with [Streamlit](https://streamlit.io/), as it's written in pyt
 
 After cloning the repository, you need to install the required libraries. We recommended creating a [Python virtual environment](https://docs.python.org/3/tutorial/venv.html) called `venv` in the root directory. Note that the requirements only work with python versions 3.7, 3.8, and 3.9, so make sure you're using one of those in the virtual environment!
 
-Next, you want to move inside the `streamlit_app1` directory with
-
-```bash
-cd streamlit_app1
-```
-
-Once that's done, install the required libraries with
+Next, you want to install the required libraries with
 
 ```bash
 pip install -r requirements.txt
