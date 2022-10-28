@@ -255,7 +255,6 @@ def run_stat_mech():
     cols[1].pyplot(plotEnergy_magnetization())
     cols[0].pyplot(plotSusceptibility())
     
-
 def run_phaseTransitions_CriticalPhenomena():
     st.markdown(r"""
     # Phase transitions & Critical phenomena
@@ -312,61 +311,235 @@ def run_phaseTransitions_CriticalPhenomena():
     st.markdown(r"""## Transfer Matrix Method
     ...""")
 
+def run_percolation_and_fractals():
+    # Side bar
+    with st.sidebar:
+        cols_sidebar = st.columns(2)
+        size = cols_sidebar[0].slider('size', 10  , 100, 50)
+        p = cols_sidebar[1].slider('p',       0.01, 1. , .1)
+        marker_dict = {
+            'point': '.',
+            'square': 's',
+            'pixel': ',',
+            'circle': 'o',
+        }
+        marker_key = st.select_slider('marker', marker_dict.keys())
+        marker = marker_dict[marker_key]
+        seed = st.slider('seed',10,100)
+
+    # Functions
+    def makeGrid(size, seed=42): 
+        np.random.seed(seed)
+        grid = np.random.uniform(0,1,(size,size), )
+        grid_with_border = np.ones((size+2,size+2))
+        grid_with_border[1:-1, 1:-1] = grid
+        return grid_with_border
+
+    def checkNeighbours(pos, grid, domain, visited):
+        (i,j) = pos
+        neighbours = [(i-1,j), (i+1,j), (i,j-1), (i, j+1)]
+        for n in neighbours:
+            if (n[0]>=0) and (n[1]>=0) and (n[0]<len(grid)) and (n[1]<len(grid)):
+                if grid[n] and (n not in visited):
+                    domain.add(n)
+                    visited.add(n)
+                    domain_, visited_ = checkNeighbours(n, grid, domain, visited)
+                    domain = domain.union(domain_)
+                    visited = visited.union(visited_)
+                else: visited.add(n)
+        return domain, visited
+
+    def getDomains(grid, p=.5):
+        open_arr = grid < p
+        domains = {} ; index = 0; visited = set()
+        for i, _ in enumerate(open_arr):
+            for j, val in enumerate(open_arr[i]):
+                if val:
+                    if (i,j) in visited:
+                        domain, visited_ = checkNeighbours((i,j), open_arr, domain=set(), visited=visited)
+                    else:
+                        visited.add((i,j))
+                        domain, visited_ = checkNeighbours((i,j), open_arr, domain=set([(i,j)]), visited=visited)
+                    domains[index] = domain
+                    visited = visited.union(visited_)
+                    index+=1
+                else:
+                    visited.add((i,j))
+        
+        new_domains = {}
+        index = 0
+        for d in domains:
+            if len(domains[d]) !=0:
+                new_domains[index] = domains[d]
+                index += 1
+                
+        return new_domains
+
+    def percolation():
+        grid = makeGrid(size,seed)
+        domains = getDomains(grid, p)
+
+        x = np.arange(size+2)
+        X,Y = np.meshgrid(x,x)
+        
+        fig, ax = plt.subplots()
+        # background
+        ax.scatter(X,Y, c='black')
+
+        # colors
+        colors = sns.color_palette("hls", len(domains))
+        np.random.shuffle(colors)
+        colors = np.concatenate([[colors[i]]*len(domains[i]) for i in domains])
+
+        # plot
+        xx = np.concatenate([list(domains[i]) for i in domains])
+        ax.scatter(xx[:,0], xx[:,1], c=colors, marker=marker)
+        ax.set(xticks = [], yticks = [], facecolor='black')
+        fig.patch.set_facecolor('darkgrey')
+        return fig
+
+    def betheLattice():
+        # Create a graphlib graph object
+        graph = graphviz.Digraph()
+
+        root = str(0)
+        nodes = []
+        for other in '0 1 2'.split():
+            graph.edge(root, root+other)
+            nodes.append(root+other)
+
+        new_nodes = []
+        for i in nodes:
+            for j in range(2):
+                graph.edge(str(i), str(i)+str(j))
+
+                new_nodes.append(str(i)+str(j))
+
+        nodes = new_nodes
+        new_nodes = []
+        for i in nodes:
+            for j in range(2):
+                graph.edge(str(i), str(i)+str(j))
+                new_nodes.append(str(i)+str(j))
+        return graph
 
 
-def run_betheLattice():
-    st.markdown(r"""
-    # Bethe Lattice
-    Bethe lattice (also called a regular tree)  is an infinite connected 
-    cycle-free graph where all vertices have the same number of neighbors.  
+    def run_fractals():
+        def stable(z):
+            try:
+                return False if abs(z) > 2 else True
+            except OverflowError:
+                return False
+        stable = np.vectorize(stable)
 
 
-    Let's build it!
+        def mandelbrot(c, a, n=50):
+            z = 0
+            for i in range(n):
+                z = z**a + c
+            return z
+
+        def makeGrid(resolution, lims=[-1.85, 1.25, -1.25, 1.45]):
+            re = np.linspace(lims[0], lims[1], resolution)[::-1]
+            im = np.linspace(lims[2], lims[3], resolution)
+            re, im = np.meshgrid(re,im)
+            return re+im*1j
+
+        def plot_(res):
+            fig = plt.figure(figsize=(12,6))
+            plt.imshow(res.T, cmap='magma')
+            plt.xticks([]); plt.yticks([])
+            plt.xlabel('Im',rotation=0, loc='right', color='blue')
+            plt.ylabel('Re',rotation=0, loc='top', color='blue')
+            fig.patch.set_facecolor('black')
+            st.pyplot(fig)
+
+        with st.sidebar:
+            cols_sidebar = st.columns(2)
+            logsize = cols_sidebar[0].slider(r'Resolution (log)',1.5,4., 3.)
+            size = int(10**logsize)
+            cols_sidebar[1].latex(r'10^{}\approx {}'.format("{"+str(logsize)+"}", size))
+            cols_sidebar = st.columns(2)
+            n = cols_sidebar[0].slider('n',1,50,27)
+            a = cols_sidebar[1].slider('a',0.01,13.,2.3)
+
+        res = stable(mandelbrot(makeGrid(size,  lims=[-1.85, 1.25, -1.25, 1.45]), a=a, n=n))
+        plot_(res)
+
+        cols = st.columns(2)
+        cols[0].markdown(r"""
+        The Mandelbrot set contains complex numbers remaining stable through
+        
+        $$z_{i+1} = z^a + c$$
+        
+        after successive iterations. We let $z_0$ be 0.
+        """)
+        cols[1].code(r"""
+        def stable(z):
+            try:
+                return False if abs(z) > 2 else True
+            except OverflowError:
+                return False
+        stable = np.vectorize(stable)
+
+
+        def mandelbrot(c, a, n=50):
+            z = 0
+            for i in range(n):
+                z = z**a + c
+            return z
+
+        def makeGrid(resolution, lims=[-1.85, 1.25, -1.25, 1.45]):
+        re = np.linspace(lims[0], lims[1], resolution)[::-1]
+        im = np.linspace(lims[2], lims[3], resolution)
+        re, im = np.meshgrid(re,im)
+        return re+im*1j    """)
+
+    # Render
+    st.markdown(r"""# Percolation and Fractals""")
+
+    st.markdown(r"""## Percolation""")
+    st.pyplot(percolation())
+    cols = st.columns(2)
+    cols[0].markdown(r"""
+    A matrix containing values between zero and one, with
+    the value determining openness as a function of $p$.
+
+    After generating a grid and a value for p, we look for 
+    connected domains. 
     """)
 
-    # Create a graphlib graph object
-    graph = graphviz.Digraph()
+    cols[1].code(r"""
+    def getDomains(grid, p=.5):
+    open_arr = grid < p
+    domains = {} ; index = 0; visited = set()
+    for i, _ in enumerate(open_arr):
+        for j, val in enumerate(open_arr[i]):
+            if val:
+                if (i,j) in visited:
+                    domain, visited_ = checkNeighbours((i,j), open_arr, domain=set(), visited=visited)
+                else:
+                    visited.add((i,j))
+                    domain, visited_ = checkNeighbours((i,j), open_arr, domain=set([(i,j)]), visited=visited)
+                domains[index] = domain
+                visited = visited.union(visited_)
+                index+=1
+            else:
+                visited.add((i,j))""")
 
-    root = str(0)
-    nodes = []
-    for other in '0 1 2'.split():
-        graph.edge(root, root+other)
-        nodes.append(root+other)
-
-    new_nodes = []
-    for i in nodes:
-        for j in range(2):
-            graph.edge(str(i), str(i)+str(j))
-
-            new_nodes.append(str(i)+str(j))
-
-    nodes = new_nodes
-    new_nodes = []
-    for i in nodes:
-        for j in range(2):
-            graph.edge(str(i), str(i)+str(j))
-            new_nodes.append(str(i)+str(j))
-
-
-    st.graphviz_chart(graph)
-
-
-    st.markdown("""hmmm, this is not great. Lets build a matrix along with a matrix
-        visualization tool""")
-
-    levels = 2
-    nnodes = 10
-    M = np.zeros((nnodes, nnodes))
-    for i in range(nnodes):
-        if i == 0:
-            M[0,1:i+4]
-
-    M += M.T
+    st.markdown(r"""
+    ## Bethe Lattice
+    Bethe lattice (also called a regular tree)  is an infinite connected 
+    cycle-free graph where all vertices have the same number of neighbors.  
+    """)
+    
+    st.graphviz_chart(betheLattice())
 
     st.markdown(r"## Percolation on this lattice")
 
-# -----------
-# random walk
+
+    run_fractals()
+
 def run_random_walk():
     # Sidebar
     with st.sidebar:
@@ -551,193 +724,6 @@ def newNetwork():
     M = makeBetheLattice(34)
     domains = getDomains(M,0.6)
     open_arr = draw_from_matrix(M,domains)
-
-
-def run_percolation():
-    st.markdown(r"""# Percolation""")
-    def makeGrid(size, seed=42): 
-        np.random.seed(seed)
-        grid = np.random.uniform(0,1,(size,size), )
-        grid_with_border = np.ones((size+2,size+2))
-        grid_with_border[1:-1, 1:-1] = grid
-        return grid_with_border
-
-    def checkNeighbours(pos, grid, domain, visited):
-        (i,j) = pos
-        neighbours = [(i-1,j), (i+1,j), (i,j-1), (i, j+1)]
-        for n in neighbours:
-            if (n[0]>=0) and (n[1]>=0) and (n[0]<len(grid)) and (n[1]<len(grid)):
-                if grid[n] and (n not in visited):
-                    domain.add(n)
-                    visited.add(n)
-                    domain_, visited_ = checkNeighbours(n, grid, domain, visited)
-                    domain = domain.union(domain_)
-                    visited = visited.union(visited_)
-                else: visited.add(n)
-        return domain, visited
-
-    def getDomains(grid, p=.5):
-        open_arr = grid < p
-        domains = {} ; index = 0; visited = set()
-        for i, _ in enumerate(open_arr):
-            for j, val in enumerate(open_arr[i]):
-                if val:
-                    if (i,j) in visited:
-                        domain, visited_ = checkNeighbours((i,j), open_arr, domain=set(), visited=visited)
-                    else:
-                        visited.add((i,j))
-                        domain, visited_ = checkNeighbours((i,j), open_arr, domain=set([(i,j)]), visited=visited)
-                    domains[index] = domain
-                    visited = visited.union(visited_)
-                    index+=1
-                else:
-                    visited.add((i,j))
-        
-        new_domains = {}
-        index = 0
-        for d in domains:
-            if len(domains[d]) !=0:
-                new_domains[index] = domains[d]
-                index += 1
-                
-        return new_domains
-
-    def percolation():
-        grid = makeGrid(size,seed)
-        domains = getDomains(grid, p)
-
-        x = np.arange(size+2)
-        X,Y = np.meshgrid(x,x)
-        
-        fig, ax = plt.subplots()
-        # background
-        ax.scatter(X,Y, c='black')
-
-        # colors
-        colors = sns.color_palette("hls", len(domains))
-        np.random.shuffle(colors)
-        colors = np.concatenate([[colors[i]]*len(domains[i]) for i in domains])
-
-        # plot
-        xx = np.concatenate([list(domains[i]) for i in domains])
-        ax.scatter(xx[:,0], xx[:,1], c=colors, marker=marker)
-        ax.set(xticks = [], yticks = [], facecolor='black')
-        fig.patch.set_facecolor('darkgrey')
-        st.pyplot(fig)
-    
-    with st.sidebar:
-        cols_sidebar = st.columns(2)
-        size = cols_sidebar[0].slider('size', 10  , 100, 50)
-        p = cols_sidebar[1].slider('p',       0.01, 1. , .1)
-        marker_dict = {
-            'point': '.',
-            'square': 's',
-            'pixel': ',',
-            'circle': 'o',
-        }
-        marker_key = st.select_slider('marker', marker_dict.keys())
-        marker = marker_dict[marker_key]
-        seed = st.slider('seed',10,100)
-
-    percolation()
-    cols = st.columns(2)
-    cols[0].markdown(r"""
-    A matrix containing values between zero and one, with
-    the value determining openness as a function of $p$.
-
-    After generating a grid and a value for p, we look for 
-    connected domains. 
-    """)
-
-    cols[1].code(r"""
-    def getDomains(grid, p=.5):
-    open_arr = grid < p
-    domains = {} ; index = 0; visited = set()
-    for i, _ in enumerate(open_arr):
-        for j, val in enumerate(open_arr[i]):
-            if val:
-                if (i,j) in visited:
-                    domain, visited_ = checkNeighbours((i,j), open_arr, domain=set(), visited=visited)
-                else:
-                    visited.add((i,j))
-                    domain, visited_ = checkNeighbours((i,j), open_arr, domain=set([(i,j)]), visited=visited)
-                domains[index] = domain
-                visited = visited.union(visited_)
-                index+=1
-            else:
-                visited.add((i,j))""")
-
-
-def run_fractals():
-    def stable(z):
-        try:
-            return False if abs(z) > 2 else True
-        except OverflowError:
-            return False
-    stable = np.vectorize(stable)
-
-
-    def mandelbrot(c, a, n=50):
-        z = 0
-        for i in range(n):
-            z = z**a + c
-        return z
-
-    def makeGrid(resolution, lims=[-1.85, 1.25, -1.25, 1.45]):
-        re = np.linspace(lims[0], lims[1], resolution)[::-1]
-        im = np.linspace(lims[2], lims[3], resolution)
-        re, im = np.meshgrid(re,im)
-        return re+im*1j
-
-    def plot_(res):
-        fig = plt.figure(figsize=(12,6))
-        plt.imshow(res.T, cmap='magma')
-        plt.xticks([]); plt.yticks([])
-        plt.xlabel('Im',rotation=0, loc='right', color='blue')
-        plt.ylabel('Re',rotation=0, loc='top', color='blue')
-        fig.patch.set_facecolor('black')
-        st.pyplot(fig)
-
-    with st.sidebar:
-        cols_sidebar = st.columns(2)
-        logsize = cols_sidebar[0].slider(r'Resolution (log)',1.5,4., 3.)
-        size = int(10**logsize)
-        cols_sidebar[1].latex(r'10^{}\approx {}'.format("{"+str(logsize)+"}", size))
-        cols_sidebar = st.columns(2)
-        n = cols_sidebar[0].slider('n',1,50,27)
-        a = cols_sidebar[1].slider('a',0.01,13.,2.3)
-
-    res = stable(mandelbrot(makeGrid(size,  lims=[-1.85, 1.25, -1.25, 1.45]), a=a, n=n))
-    plot_(res)
-
-    cols = st.columns(2)
-    cols[0].markdown(r"""
-    The Mandelbrot set contains complex numbers remaining stable through
-    
-    $$z_{i+1} = z^a + c$$
-    
-    after successive iterations. We let $z_0$ be 0.
-    """)
-    cols[1].code(r"""
-    def stable(z):
-        try:
-            return False if abs(z) > 2 else True
-        except OverflowError:
-            return False
-    stable = np.vectorize(stable)
-
-
-    def mandelbrot(c, a, n=50):
-        z = 0
-        for i in range(n):
-            z = z**a + c
-        return z
-
-    def makeGrid(resolution, lims=[-1.85, 1.25, -1.25, 1.45]):
-    re = np.linspace(lims[0], lims[1], resolution)[::-1]
-    im = np.linspace(lims[2], lims[3], resolution)
-    re, im = np.meshgrid(re,im)
-    return re+im*1j    """)
 
 
 def bereaucrats():
@@ -963,16 +949,15 @@ def run_betHedging():
 
 func_dict = {
     'Statistical Mechanics' : run_stat_mech,
+    'Phase transitions & Critical phenomena' : run_phaseTransitions_CriticalPhenomena,
+    'Percolation and Fractals'   : run_percolation_and_fractals,
 	'RandomWalk'    : run_random_walk,
-    'Percolation'   : run_percolation,
-    'Fractals'      : run_fractals,
     'Bereaucrats'   : bereaucrats,
     'Bak-Sneppen'   : bakSneppen,
     #'new network'   : newNetwork,
     #'Networks'      : network,
     'Bet-Hedghing'  : run_betHedging,
-    'Phase transitions & Critical phenomena' : run_phaseTransitions_CriticalPhenomena,
-    'Bethe Lattice' : run_betheLattice
+    #'Bethe Lattice' : run_betheLattice
 }
 
 with st.sidebar:
