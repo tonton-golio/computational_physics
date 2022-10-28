@@ -329,6 +329,7 @@ def run_phaseTransitions_CriticalPhenomena():
 def run_percolation_and_fractals():
     # Side bar
     with st.sidebar:
+        st.markdown('### square grid percolation') 
         cols_sidebar = st.columns(2)
         size = cols_sidebar[0].slider('size', 10  , 100, 50)
         p = cols_sidebar[1].slider('p',       0.01, 1. , .1)
@@ -341,6 +342,12 @@ def run_percolation_and_fractals():
         marker_key = st.select_slider('marker', marker_dict.keys())
         marker = marker_dict[marker_key]
         seed = st.slider('seed',10,100)
+
+        st.markdown('### Bethe lattice')
+
+        st.markdown('### percolation on bethe lattice')
+
+        st.markdown('### Fractals') 
 
     # Functions
     def makeGrid(size, seed=42): 
