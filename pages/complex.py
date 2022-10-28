@@ -2,14 +2,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 import streamlit as st
-import pandas as pd
-import re
-import seaborn as sns
-from matplotlib.gridspec import GridSpec
-from matplotlib import pyplot as plt
 import numpy as np
-
-#import networkx as nx
+import pandas as pd
+import matplotlib.pyplot as plt
+from matplotlib.gridspec import GridSpec
+import matplotlib as mpl
+import seaborn as sns
+try: import graphviz # having trouble with this when hosted
+except: pass
+try: import networkx as nx  # networkx too :(
+except: pass
+import time
 import sys
 sys.setrecursionlimit(15000)
 
@@ -19,7 +22,138 @@ st.set_page_config(page_title="Scientific Computing",
 	initial_sidebar_state="collapsed", 
 	menu_items=None)
 
+# matplotlib style
+
+mpl.rcParams['patch.facecolor'] = (0.04, 0.065, 0.03)
+mpl.rcParams['axes.facecolor'] = (0.04, 0.065, 0.03)
+mpl.rcParams['figure.facecolor'] = (0.04, 0.065, 0.03)
+# mpl.rcParams['axes.grid'] = True  # should we?
+# ax.tick_params(axis='x', colors='white')
+# ax.tick_params(axis='y', colors='white')
+# ax.set_ylabel('probability of acceptance', color='white')
+# ax.set_xlabel('Energy difference', color='white')
+# ax.set(xticks=[0])
+# plt.tight_layout()
+
+
 def run_stat_mech():
+    # Sidebar
+    with st.sidebar:
+        size = st.slider('size',3,100,10)
+        beta = st.slider('beta',0.01,5.,1.)
+        nsteps = st.slider('nsteps',3,10000,100)
+        nsnapshots = 4
+
+    # functions
+    def metropolisVisualization():
+        dEs = np.linspace(-1,3,1000)
+        prob_change = np.exp(-beta*dEs)
+        prob_change[dEs<0] = 1
+
+        fig, ax = plt.subplots(figsize=(5,5))
+        ax.plot(dEs, prob_change, color='pink', lw=7)
+
+        ax.tick_params(axis='x', colors='white')
+        ax.tick_params(axis='y', colors='white')
+        ax.set_ylabel('probability of acceptance', color='white')
+        ax.set_xlabel('Energy difference', color='white')
+        ax.set(xticks=[0])
+        plt.grid()
+        plt.tight_layout()
+
+        return fig
+
+    def ising():
+        # initialize
+        X = np.random.rand(size,size)
+        X[X>0.5] =1 ; X[X!=1] =-1
+        E = 0 
+        for i in range(size):
+            for j in range(size):
+                sum_neighbors = 0
+                for pos in [(i,(j+1)%size),    (i,(j-1+size)%size), 
+                               ((i+1)%size,j), ((i-1+size)%size,j)]:
+                    
+                    sum_neighbors += X[pos]
+            E += -X[i,j] * sum_neighbors/2
+
+        results = {"Energy" : [E], 
+                   "Magnetization" : [np.sum(X)], 
+                   "snapshots": {} }
+        for step in range(nsteps):
+            (i,j) = tuple(np.random.randint(0,size-1,2)) #choose random site
+
+            sum_neighbors = 0
+            for pos in [(i,(j+1)%size),    (i,(j-1+size)%size), 
+                           ((i+1)%size,j), ((i-1+size)%size,j)]:
+                sum_neighbors += X[pos]
+                
+            dE = 2 *X[i,j] * sum_neighbors
+
+            
+            if np.random.rand()<np.exp(-beta*dE):
+                X[i,j]*=-1
+                E += dE
+
+            results['Energy'].append(E.copy())
+            results['Magnetization'].append(np.sum(X))
+            if step in np.arange(nsnapshots)*nsteps//nsnapshots:
+                results['snapshots'][step]=X.copy()
+
+        # load, fill and save susceptibility data
+        try: data = np.load('pages/data.npz', allow_pickle=True)[np.load('pages/data.npz', allow_pickle=True).files[0]].item()
+        except: data = {};  np.savez('pages/data', data)
+
+        susceptibility = np.var(results['Magnetization'][-nsteps//4*3:])
+        data[beta] = {'sus': susceptibility, 'nsteps':nsteps, 'size':size}
+        np.savez('pages/data', data)
+        return results, data
+
+    def plotSnapshots(nsnapshots = 4):
+        fig, ax = plt.subplots(1,nsnapshots, figsize=(15,3))
+        for idx, key in enumerate(results['snapshots'].keys()):
+            ax[idx].imshow(results['snapshots'][key])
+        # fig.patch.set_facecolor((.04,.065,.03))
+        return fig
+
+    def plotEnergy_magnetization():
+        fig, ax = plt.subplots(2,1, figsize=(5,6))
+        ax[0].plot(results['Energy'],c='purple')
+        ax[1].plot(results['Magnetization'], color='orange')
+        
+
+        for i in [0,1]: # could we make plotstyle page-wide?
+            ax[i].set(facecolor=(.04,.065,.03))
+            ax[i].tick_params(axis='x', colors='white')
+            ax[i].tick_params(axis='y', colors='white')
+            ax[i].set_xlabel('Timestep', color='white')
+        
+        ax[0].set_ylabel('Energy', color='white')
+        ax[1].set_ylabel('Magnetization', color='white')
+        
+        # fig.patch.set_facecolor((.04,.065,.03))
+        plt.tight_layout()
+        return fig
+    
+    def plotSusceptibility():
+        ## susceptibility plot
+
+        fig, ax = plt.subplots( figsize=(5,3))
+        ax.scatter(x = list(data.keys()), 
+                      y = [data[key]['sus'] for key in data.keys()],
+                      s = [data[key]['size'] for key in data.keys()],
+                      color='cyan')
+        ax.set_ylabel('Susceptibility', color='white')
+        ax.set_xlabel('beta', color='white')
+
+        ax.set(facecolor=(.04,.065,.03))
+        ax.tick_params(axis='x', colors='white')
+        ax.tick_params(axis='y', colors='white')
+        # fig.patch.set_facecolor((.04,.065,.03))
+        return fig
+
+    # Render
+
     st.markdown(r"""
         # Statistical Mechanics
         
@@ -64,32 +198,8 @@ def run_stat_mech():
         between these two. Because total energy conserved, the sum of two 
         energy is constant value.
         $$ 
-            E = E_\mathrm{s} + E_\mathrm{r} 
+            E_\mathrm{system} + E_\mathrm{reservor} = E 
         $$
-        $\Omega(E)$ is the total number of states with energy $E$.
-        $\Omega(E_\mathrm{s}, E_\mathrm{r})$ is the total number of states with 
-        system has energy $E_\mathrm{s}$ and system has energy $E_\mathrm{r}$.
-        It can be the product of total number of state of system and reservoir.
-        $$
-            \Omega(E_\mathrm{s}, E_\mathrm{r})
-            = \Omega_\mathrm{s}(E_\mathrm{s}) \Omega_\mathrm{r}(E_\mathrm{r})
-        $$
-        Entropy of whole system become
-        $$
-            S =  k_\mathrm{B} \ln \Omega(E_\mathrm{s}, E_\mathrm{r}).
-        $$
-        Entropy of the system and reservoir become
-        $$
-            S_\mathrm{s} =  k_\mathrm{B} \ln \Omega(E_\mathrm{s}),
-        $$
-        $$
-            S_\mathrm{r} =  k_\mathrm{B} \ln \Omega(E_\mathrm{r}).
-        $$
-        Thus total entropy become sum of system and reservoir.
-        $$
-            S = S_\mathrm{s} + S_\mathrm{r}.
-        $$
-        
 
         The partition function is defined as the sum of all states
         $$
@@ -116,125 +226,50 @@ def run_stat_mech():
         $$
 
 
-        ## Ising Model
+        ## Ising Model (2d)
+
+        spins $\pm 1$ on a lattice will self-organize to energertically favourable
+        configurations. The energy of the system is given by
+
+        $$
+            H(\sigma) = -\sum_{\left<i j\right>}J_{ij}\sigma_i\sigma_j
+        $$
+        So it is energetically favourable to align with nearest neighbours. This happens over
+        some timescale, so we iteratively pick a spin, assess the energy change, $\delta E$, though its flip
+        and accept with a probability $p(\delta E)$.
         """)
 
-    # load or initialize data dictionary
-
-    try:
-        data = np.load('pages/data.npz', allow_pickle=True)[np.load('pages/data.npz', allow_pickle=True).files[0]].item()
-    except:
-        data = {};  np.savez('pages/data', data)
-    
-    def ising():
-        # initialize
-        X = np.random.rand(size,size)
-        X[X>0.5] =1
-        X[X!=1] =-1
-
-        E = 0 
-        for i in range(size):
-            for j in range(size):
-                sum_neighbors = 0
-                for pos in [(i,(j+1)%size),    (i,(j-1+size)%size), 
-                               ((i+1)%size,j), ((i-1+size)%size,j)]:
-                    
-                    sum_neighbors += X[pos]
-            E += -X[i,j] * sum_neighbors/2
-
-        results = {"Energy" : [E], "Magnetization" : [np.sum(X)]}
-        for step in range(nsteps):
-            #choose random site
-            (i,j) = tuple(np.random.randint(0,size-1,2))
-
-            sum_neighbors = 0
-            for pos in [(i,(j+1)%size),    (i,(j-1+size)%size), 
-                           ((i+1)%size,j), ((i-1+size)%size,j)]:
-                
-                sum_neighbors += X[pos]
-                
-
-            dE = 2 *X[i,j] * sum_neighbors
-
-            
-            if np.random.rand()<np.exp(-beta*dE):
-                X[i,j]*=-1
-                E += dE
-
-            results['Energy'].append(E.copy())
-            results['Magnetization'].append(np.sum(X))
-        return results
-    with st.sidebar:
-        size = st.slider('size',3,100,10)
-        beta = st.slider('beta',0.01,5.,1.)
-        nsteps = st.slider('nsteps',3,10000,100)
-
-    results = ising()
-
-    results['Susceptibility'] = np.var(results['Magnetization'][-nsteps//4*3:])
-    data[beta] = {'sus': results['Susceptibility'], 'nsteps':nsteps, 'size':size}
-    
-    np.savez('pages/data', data)
-    fig, ax = plt.subplots(1,3)
-    ax[0].plot(results['Energy'],c='purple')
-    ax[1].plot(results['Magnetization'], color='white')
-
-    ax[2].scatter(x = list(data.keys()), 
-                  y = [data[key]['sus'] for key in data.keys()],
-                  s = [data[key]['size'] for key in data.keys()],
-                  color='white')
-
-    
-    for i in [0,1,2]:
-        ax[i].set(facecolor=(.04,.065,.03))
-        ax[i].tick_params(axis='x', colors='white')
-        ax[i].tick_params(axis='y', colors='white')
-        ax[i].set_xlabel('Timestep', color='white')
-    ax[2].set_xlabel('beta', color='white')
-    ax[0].set_ylabel('Energy', color='white')
-    ax[1].set_ylabel('Magnetization', color='white')
-    ax[2].set_ylabel('Susceptibility', color='white')
-
-    fig.patch.set_facecolor((.04,.065,.03))
-    plt.tight_layout()
-    st.pyplot(fig)
-
-    
     cols = st.columns(2)
     cols[0].markdown(r"""
-    ## Metropolis algorithm
+        #### Metropolis algorithm
 
-    The metropolis algorithm is a hard cutoff. So for values above a critical point
-    are always accepted without considering probability. It makes computation easier.
+        The metropolis algorithm is a hard cutoff. So for values above a critical point
+        are always accepted without considering probability. It makes computation easier.
 
-
-
-    """)
-
-    dEs = np.linspace(-1,3,1000)
-    prob_change = np.zeros(len(dEs))
-    prob_change = np.exp(-beta*dEs)
-    prob_change[dEs<0] = 1
-
-    fig, ax = plt.subplots()
-    ax = [ax]
-    ax[0].plot(dEs, prob_change, color='purple', lw=3)
-
+        "Why?" you may ask, well; the large numbers arrising from the exponential
+        are just that.
+        """)
     
-    for i in [0]:
-        ax[i].set(facecolor=(.04,.065,.03))
-        ax[i].tick_params(axis='x', colors='white')
-        ax[i].tick_params(axis='y', colors='white')
-        ax[i].set(xlabel='Timestep')
-    ax[0].set_ylabel('probability of acceptance', color='white')
-    ax[0].set_xlabel('Energy difference', color='white')
-    ax[0].set(xticks=[-1,0,1])
-    plt.grid()
+    cols[1].pyplot(metropolisVisualization())
 
-    fig.patch.set_facecolor((.04,.065,.03))
-    plt.tight_layout()
-    cols[1].pyplot(fig)
+    results, data = ising()
+     
+    st.markdown(r"""
+        below are snapshots of the output of a simulation of the 2d Ising model
+        using the metropolis algorithm.
+        """)
 
+    st.pyplot(plotSnapshots(nsnapshots = 4))
+
+    cols = st.columns(2)
+    cols[0].markdown(r"""If we track paramters through time,
+        we may be able to spot a phase transition (they're a rare breed).
+        On the right are plots of the energy and magnetization over time. Below
+        is susceptibility as obtained the variance of the magnetization, 
+        $\chi = \left< \left< M\right> - M\right>$ (:shrug)""")
+    cols[1].pyplot(plotEnergy_magnetization())
+    cols[0].pyplot(plotSusceptibility())
+    
 def run_phaseTransitions_CriticalPhenomena():
     st.markdown(r"""
     # Phase transitions & Critical phenomena
@@ -291,70 +326,244 @@ def run_phaseTransitions_CriticalPhenomena():
     st.markdown(r"""## Transfer Matrix Method
     ...""")
 
+def run_percolation_and_fractals():
+    # Side bar
+    with st.sidebar:
+        st.markdown('## Paramteres') 
+        with st.expander('square grid percolation'):
+
+            cols_sidebar = st.columns(2)
+            size = cols_sidebar[0].slider('size', 10  , 100, 50)
+            p = cols_sidebar[1].slider('p',       0.01, 1. , .1)
+            marker_dict = {
+                'point': '.',
+                'square': 's',
+                'pixel': ',',
+                'circle': 'o',
+            }
+            marker_key = st.select_slider('marker', marker_dict.keys())
+            marker = marker_dict[marker_key]
+            seed = st.slider('seed',10,100)
+
+        with st.expander('Bethe lattice'):
+
+            cols_sidebar = st.columns(2)
+            levels = cols_sidebar[0].slider('levels', 0  , 3, 2)
+            p = cols_sidebar[1].slider('p_',       0.01, 1. , .1)
+
+            
+
+        with st.expander('Mandelbrot'):
+            cols_sidebar = st.columns(2)
+            logsize = cols_sidebar[0].slider(r'Resolution (log)',1.5,4., 3.)
+            size_fractal = int(10**logsize)
+            cols_sidebar[1].latex(r'10^{}\approx {}'.format("{"+str(logsize)+"}", size))
+            cols_sidebar = st.columns(2)
+            n = cols_sidebar[0].slider('n',1,50,27)
+            a = cols_sidebar[1].slider('a',0.01,13.,2.3)
+
+    # Functions
+    def makeGrid(size, seed=42): 
+        np.random.seed(seed)
+        grid = np.random.uniform(0,1,(size,size), )
+        grid_with_border = np.ones((size+2,size+2))
+        grid_with_border[1:-1, 1:-1] = grid
+        return grid_with_border
+
+    def checkNeighbours(pos, grid, domain, visited):
+        (i,j) = pos
+        neighbours = [(i-1,j), (i+1,j), (i,j-1), (i, j+1)]
+        for n in neighbours:
+            if (n[0]>=0) and (n[1]>=0) and (n[0]<len(grid)) and (n[1]<len(grid)):
+                if grid[n] and (n not in visited):
+                    domain.add(n)
+                    visited.add(n)
+                    domain_, visited_ = checkNeighbours(n, grid, domain, visited)
+                    domain = domain.union(domain_)
+                    visited = visited.union(visited_)
+                else: visited.add(n)
+        return domain, visited
+
+    def getDomains(grid, p=.5):
+        open_arr = grid < p
+        domains = {} ; index = 0; visited = set()
+        for i, _ in enumerate(open_arr):
+            for j, val in enumerate(open_arr[i]):
+                if val:
+                    if (i,j) in visited:
+                        domain, visited_ = checkNeighbours((i,j), open_arr, domain=set(), visited=visited)
+                    else:
+                        visited.add((i,j))
+                        domain, visited_ = checkNeighbours((i,j), open_arr, domain=set([(i,j)]), visited=visited)
+                    domains[index] = domain
+                    visited = visited.union(visited_)
+                    index+=1
+                else:
+                    visited.add((i,j))
+        
+        new_domains = {}
+        index = 0
+        for d in domains:
+            if len(domains[d]) !=0:
+                new_domains[index] = domains[d]
+                index += 1
+                
+        return new_domains
+
+    def percolation():
+        grid = makeGrid(size,seed)
+        domains = getDomains(grid, p)
+
+        x = np.arange(size+2)
+        X,Y = np.meshgrid(x,x)
+        
+        fig, ax = plt.subplots()
+        # background
+        ax.scatter(X,Y, c='black')
+
+        # colors
+        colors = sns.color_palette("hls", len(domains))
+        np.random.shuffle(colors)
+        colors = np.concatenate([[colors[i]]*len(domains[i]) for i in domains])
+
+        # plot
+        xx = np.concatenate([list(domains[i]) for i in domains])
+        ax.scatter(xx[:,0], xx[:,1], c=colors, marker=marker)
+        ax.set(xticks = [], yticks = [], facecolor='black')
+        fig.patch.set_facecolor('darkgrey')
+        return fig
+
+    def betheLattice():
+        # Create a graphlib graph object
+        graph = graphviz.Digraph()
+
+        root = str(0)
+        nodes = []
+        for other in '0 1 2'.split():
+            graph.edge(root, root+other)
+            nodes.append(root+other)
+
+        new_nodes = []
+        for i in nodes:
+            for j in range(2):
+                graph.edge(str(i), str(i)+str(j))
+
+                new_nodes.append(str(i)+str(j))
+
+        nodes = new_nodes
+        new_nodes = []
+        for i in nodes:
+            for j in range(2):
+                graph.edge(str(i), str(i)+str(j))
+                new_nodes.append(str(i)+str(j))
+        return graph
 
 
-def run_betheLattice():
+    def run_fractals():
+        def stable(z):
+            try:
+                return False if abs(z) > 2 else True
+            except OverflowError:
+                return False
+        stable = np.vectorize(stable)
+
+
+        def mandelbrot(c, a, n=50):
+            z = 0
+            for i in range(n):
+                z = z**a + c
+            return z
+
+        def makeGrid(resolution, lims=[-1.85, 1.25, -1.25, 1.45]):
+            re = np.linspace(lims[0], lims[1], resolution)[::-1]
+            im = np.linspace(lims[2], lims[3], resolution)
+            re, im = np.meshgrid(re,im)
+            return re+im*1j
+
+        def plot_(res):
+            fig = plt.figure(figsize=(12,6))
+            plt.imshow(res.T, cmap='magma')
+            plt.xticks([]); plt.yticks([])
+            plt.xlabel('Im',rotation=0, loc='right', color='blue')
+            plt.ylabel('Re',rotation=0, loc='top', color='blue')
+            fig.patch.set_facecolor('black')
+            return fig
+
+        res = stable(mandelbrot(makeGrid(size_fractal,  lims=[-1.85, 1.25, -1.25, 1.45]), a=a, n=n))
+        return plot_(res)
+
+    # Render
+    st.markdown(r"""# Percolation and Fractals""")
+
+    st.markdown(r"""## Percolation""")
+    st.pyplot(percolation())
+    
+
     st.markdown(r"""
-    # Bethe Lattice
-    Bethe lattice (also called a regular tree)  is an infinite connected 
-    cycle-free graph where all vertices have the same number of neighbors.  
+    A matrix containing values between zero and one, with
+    the value determining openness as a function of $p$.
 
-
-    Let's build it!
+    After generating a grid and a value for p, we look for 
+    connected domains. 
     """)
 
-    # Create a graphlib graph object
-    graph = graphviz.Digraph()
-
-    root = str(0)
-    nodes = []
-    for other in '0 1 2'.split():
-        graph.edge(root, root+other)
-        nodes.append(root+other)
-
-    new_nodes = []
-    for i in nodes:
-        for j in range(2):
-            graph.edge(str(i), str(i)+str(j))
-
-            new_nodes.append(str(i)+str(j))
-
-    nodes = new_nodes
-    new_nodes = []
-    for i in nodes:
-        for j in range(2):
-            graph.edge(str(i), str(i)+str(j))
-            new_nodes.append(str(i)+str(j))
-
-
-    st.graphviz_chart(graph)
-
-
-    st.markdown("""hmmm, this is not great. Lets build a matrix along with a matrix
-        visualization tool""")
-
-    levels = 2
-    nnodes = 10
-    M = np.zeros((nnodes, nnodes))
-    for i in range(nnodes):
-        if i == 0:
-            M[0,1:i+4]
-
-    M += M.T
+    st.markdown(r"""
+    ## Bethe Lattice
+    Bethe lattice (also called a regular tree)  is an infinite connected 
+    cycle-free graph where all vertices have the same number of neighbors.  
+    """)
+    
+    st.graphviz_chart(betheLattice())
 
     st.markdown(r"## Percolation on this lattice")
 
-# -----------
-# random walk
+
+    st.pyplot(run_fractals())
+
+
+    st.markdown(r"""
+    The Mandelbrot set contains complex numbers remaining stable through
+    
+    $$z_{i+1} = z^a + c$$
+    
+    after successive iterations. We let $z_0$ be 0.
+    """)
+    st.code(r"""
+    def stable(z):
+        try:
+            return False if abs(z) > 2 else True
+        except OverflowError:
+            return False
+    stable = np.vectorize(stable)
+
+
+    def mandelbrot(c, a, n=50):
+        z = 0
+        for i in range(n):
+            z = z**a + c
+        return z
+
+    def makeGrid(resolution, lims=[-1.85, 1.25, -1.25, 1.45]):
+    re = np.linspace(lims[0], lims[1], resolution)[::-1]
+    im = np.linspace(lims[2], lims[3], resolution)
+    re, im = np.meshgrid(re,im)
+    return re+im*1j    """)
+
 def run_random_walk():
-    st.markdown(r"""# RandomWalk""")
+    # Sidebar
+    with st.sidebar:
+        cols_sidebar = st.columns(2)
+        nsteps = cols_sidebar[0].slider('nsteps',  4,   100, 14)
+        seed   = cols_sidebar[1].slider('Seed',    0,   69 , 42)
+        sigma2 = cols_sidebar[0].slider('Variance',0.2, 1. ,0.32)
+        step_size = cols_sidebar[0].slider('Stepsize = random^x, x=', 0.,3.,0.)
+        axisscale = cols_sidebar[1].radio('axis-scales', ['linear', 'symlog'])
+        #yscale = cols_sidebar[1].radio('yscale', ['linear', 'symlog'])
+    
+    # Functions
     def accumulate(x):
-        X=np.zeros(len(x))
-        X[0] = x[0]
-        
-        for i, _ in enumerate(x):
-            #st.write(i)
-            X[i] = X[i-1]+x[i]
+        X=np.zeros(len(x)) ; X[0] = x[0]
+        for i, _ in enumerate(x): X[i] = X[i-1]+x[i]
         return X
 
     def randomWalk(nsteps, sigma2=1, seed=42, axisscale='linear', step_size=0):
@@ -408,20 +617,13 @@ def run_random_walk():
             ax2.set_title('Cummulative path', fontsize=24)
             plt.tight_layout()
             fig.patch.set_facecolor('darkgrey')
-            st.pyplot(fig)
-        plot2()
-
-    with st.sidebar:
-        cols_sidebar = st.columns(2)
-        nsteps = cols_sidebar[0].slider('nsteps',  4,   100, 14)
-        seed   = cols_sidebar[1].slider('Seed',    0,   69 , 42)
-        sigma2 = cols_sidebar[0].slider('Variance',0.2, 1. ,0.32)
-        step_size = cols_sidebar[0].slider('Stepsize = random^x, x=', 0.,3.,0.)
-        axisscale = cols_sidebar[1].radio('axis-scales', ['linear', 'symlog'])
-        #yscale = cols_sidebar[1].radio('yscale', ['linear', 'symlog'])
+            return fig
+        return plot2()
 
 
-    randomWalk(nsteps,sigma2, seed, axisscale, step_size)
+
+    st.markdown(r"""# RandomWalk""")
+    st.pyplot(randomWalk(nsteps,sigma2, seed, axisscale, step_size))
 
     cols = st.columns(2)
     cols[0].markdown(r"""
@@ -433,7 +635,6 @@ def run_random_walk():
 
     Normal and bi-modal distributions are different in that the
     similarity of step direction causes great displacement.
-
     """)
 
     cols[1].code(r"""
@@ -443,6 +644,54 @@ def randomWalk(nsteps):
         dx = np.cos(theta) ; x += dx
         dy = np.sin(theta) ; y += dy 
     """)
+
+    st.markdown(r"""
+    ## First return
+    *Explore the time of first return in 1d, 2d and 3d*
+        """)
+
+    # 1d
+    def run_firstReturn1D():
+        lengths = []
+        lines = {}
+        c=st.empty()
+        for idx in range(100):
+            
+
+            x = [0] 
+            for i in range(100):
+                change = -1 if np.random.rand()< 0.5 else 1
+                x.append(x[i]+change)
+                if x[i+1] == 0: break
+            lines[idx] = x
+
+            fig, ax = plt.subplots(1,2)
+            for idx in lines.keys():
+                x = lines[idx]
+            
+                ax[0].plot(x, range(len(x)))#, c='orange')
+            ax[0].set_xlabel('x position', color='white')
+            ax[0].set_ylabel('time', color='white')
+            ax[0].set(xticks=[0], yticks=[])
+            ax[0].grid()
+            ax[0].tick_params(axis='x', colors='white')
+            ax[0].tick_params(axis='y', colors='white')
+
+            lengths.append(len(x))
+
+            ax[1].hist(lengths)
+            ax[1].set_xlabel('First return time', color='white')
+            ax[1].set_ylabel('occurance frequency', color='white')
+            #ax[1].set(xticks=[0], yticks=[])
+            ax[1].grid()
+            ax[1].tick_params(axis='x', colors='white')
+            ax[1].tick_params(axis='y', colors='white')
+            c.pyplot(fig)
+
+    a = st.button('run_firstReturn1D')
+    if a: run_firstReturn1D()
+
+
 
 
 def newNetwork():
@@ -527,193 +776,6 @@ def newNetwork():
     M = makeBetheLattice(34)
     domains = getDomains(M,0.6)
     open_arr = draw_from_matrix(M,domains)
-
-
-def run_percolation():
-    st.markdown(r"""# Percolation""")
-    def makeGrid(size, seed=42): 
-        np.random.seed(seed)
-        grid = np.random.uniform(0,1,(size,size), )
-        grid_with_border = np.ones((size+2,size+2))
-        grid_with_border[1:-1, 1:-1] = grid
-        return grid_with_border
-
-    def checkNeighbours(pos, grid, domain, visited):
-        (i,j) = pos
-        neighbours = [(i-1,j), (i+1,j), (i,j-1), (i, j+1)]
-        for n in neighbours:
-            if (n[0]>=0) and (n[1]>=0) and (n[0]<len(grid)) and (n[1]<len(grid)):
-                if grid[n] and (n not in visited):
-                    domain.add(n)
-                    visited.add(n)
-                    domain_, visited_ = checkNeighbours(n, grid, domain, visited)
-                    domain = domain.union(domain_)
-                    visited = visited.union(visited_)
-                else: visited.add(n)
-        return domain, visited
-
-    def getDomains(grid, p=.5):
-        open_arr = grid < p
-        domains = {} ; index = 0; visited = set()
-        for i, _ in enumerate(open_arr):
-            for j, val in enumerate(open_arr[i]):
-                if val:
-                    if (i,j) in visited:
-                        domain, visited_ = checkNeighbours((i,j), open_arr, domain=set(), visited=visited)
-                    else:
-                        visited.add((i,j))
-                        domain, visited_ = checkNeighbours((i,j), open_arr, domain=set([(i,j)]), visited=visited)
-                    domains[index] = domain
-                    visited = visited.union(visited_)
-                    index+=1
-                else:
-                    visited.add((i,j))
-        
-        new_domains = {}
-        index = 0
-        for d in domains:
-            if len(domains[d]) !=0:
-                new_domains[index] = domains[d]
-                index += 1
-                
-        return new_domains
-
-    def percolation():
-        grid = makeGrid(size,seed)
-        domains = getDomains(grid, p)
-
-        x = np.arange(size+2)
-        X,Y = np.meshgrid(x,x)
-        
-        fig, ax = plt.subplots()
-        # background
-        ax.scatter(X,Y, c='black')
-
-        # colors
-        colors = sns.color_palette("hls", len(domains))
-        np.random.shuffle(colors)
-        colors = np.concatenate([[colors[i]]*len(domains[i]) for i in domains])
-
-        # plot
-        xx = np.concatenate([list(domains[i]) for i in domains])
-        ax.scatter(xx[:,0], xx[:,1], c=colors, marker=marker)
-        ax.set(xticks = [], yticks = [], facecolor='black')
-        fig.patch.set_facecolor('darkgrey')
-        st.pyplot(fig)
-    
-    with st.sidebar:
-        cols_sidebar = st.columns(2)
-        size = cols_sidebar[0].slider('size', 10  , 100, 50)
-        p = cols_sidebar[1].slider('p',       0.01, 1. , .1)
-        marker_dict = {
-            'point': '.',
-            'square': 's',
-            'pixel': ',',
-            'circle': 'o',
-        }
-        marker_key = st.select_slider('marker', marker_dict.keys())
-        marker = marker_dict[marker_key]
-        seed = st.slider('seed',10,100)
-
-    percolation()
-    cols = st.columns(2)
-    cols[0].markdown(r"""
-    A matrix containing values between zero and one, with
-    the value determining openness as a function of $p$.
-
-    After generating a grid and a value for p, we look for 
-    connected domains. 
-    """)
-
-    cols[1].code(r"""
-    def getDomains(grid, p=.5):
-    open_arr = grid < p
-    domains = {} ; index = 0; visited = set()
-    for i, _ in enumerate(open_arr):
-        for j, val in enumerate(open_arr[i]):
-            if val:
-                if (i,j) in visited:
-                    domain, visited_ = checkNeighbours((i,j), open_arr, domain=set(), visited=visited)
-                else:
-                    visited.add((i,j))
-                    domain, visited_ = checkNeighbours((i,j), open_arr, domain=set([(i,j)]), visited=visited)
-                domains[index] = domain
-                visited = visited.union(visited_)
-                index+=1
-            else:
-                visited.add((i,j))""")
-
-
-def run_fractals():
-    def stable(z):
-        try:
-            return False if abs(z) > 2 else True
-        except OverflowError:
-            return False
-    stable = np.vectorize(stable)
-
-
-    def mandelbrot(c, a, n=50):
-        z = 0
-        for i in range(n):
-            z = z**a + c
-        return z
-
-    def makeGrid(resolution, lims=[-1.85, 1.25, -1.25, 1.45]):
-        re = np.linspace(lims[0], lims[1], resolution)[::-1]
-        im = np.linspace(lims[2], lims[3], resolution)
-        re, im = np.meshgrid(re,im)
-        return re+im*1j
-
-    def plot_(res):
-        fig = plt.figure(figsize=(12,6))
-        plt.imshow(res.T, cmap='magma')
-        plt.xticks([]); plt.yticks([])
-        plt.xlabel('Im',rotation=0, loc='right', color='blue')
-        plt.ylabel('Re',rotation=0, loc='top', color='blue')
-        fig.patch.set_facecolor('black')
-        st.pyplot(fig)
-
-    with st.sidebar:
-        cols_sidebar = st.columns(2)
-        logsize = cols_sidebar[0].slider(r'Resolution (log)',1.5,4., 3.)
-        size = int(10**logsize)
-        cols_sidebar[1].latex(r'10^{}\approx {}'.format("{"+str(logsize)+"}", size))
-        cols_sidebar = st.columns(2)
-        n = cols_sidebar[0].slider('n',1,50,27)
-        a = cols_sidebar[1].slider('a',0.01,13.,2.3)
-
-    res = stable(mandelbrot(makeGrid(size,  lims=[-1.85, 1.25, -1.25, 1.45]), a=a, n=n))
-    plot_(res)
-
-    cols = st.columns(2)
-    cols[0].markdown(r"""
-    The Mandelbrot set contains complex numbers remaining stable through
-    
-    $$z_{i+1} = z^a + c$$
-    
-    after successive iterations. We let $z_0$ be 0.
-    """)
-    cols[1].code(r"""
-    def stable(z):
-        try:
-            return False if abs(z) > 2 else True
-        except OverflowError:
-            return False
-    stable = np.vectorize(stable)
-
-
-    def mandelbrot(c, a, n=50):
-        z = 0
-        for i in range(n):
-            z = z**a + c
-        return z
-
-    def makeGrid(resolution, lims=[-1.85, 1.25, -1.25, 1.45]):
-    re = np.linspace(lims[0], lims[1], resolution)[::-1]
-    im = np.linspace(lims[2], lims[3], resolution)
-    re, im = np.meshgrid(re,im)
-    return re+im*1j    """)
 
 
 def bereaucrats():
@@ -938,17 +1000,16 @@ def run_betHedging():
 
 
 func_dict = {
-	'RandomWalk'    : run_random_walk,
-    'Percolation'   : run_percolation,
-    'Fractals'      : run_fractals,
-    'Bereaucrats'   : bereaucrats,
-    'Bak-Sneppen'   : bakSneppen,
-    'new network'   : newNetwork,
-    'Networks'      : network,
-    'Bet-Hedghing'  : run_betHedging,
     'Statistical Mechanics' : run_stat_mech,
     'Phase transitions & Critical phenomena' : run_phaseTransitions_CriticalPhenomena,
-    'Bethe Lattice' : run_betheLattice
+    'Percolation and Fractals'   : run_percolation_and_fractals,
+	'RandomWalk'    : run_random_walk,
+    'Bereaucrats'   : bereaucrats,
+    'Bak-Sneppen'   : bakSneppen,
+    #'new network'   : newNetwork,
+    #'Networks'      : network,
+    'Bet-Hedghing'  : run_betHedging,
+    #'Bethe Lattice' : run_betheLattice
 }
 
 with st.sidebar:
@@ -958,6 +1019,3 @@ a = func_dict[topic] ; a()
 
 
 #plt.style.available
-
-
-
