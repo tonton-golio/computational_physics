@@ -24,13 +24,12 @@ st.set_page_config(page_title="Scientific Computing",
 mpl.rcParams['patch.facecolor'] = (0.04, 0.065, 0.03)
 mpl.rcParams['axes.facecolor'] = (0.04, 0.065, 0.03)
 mpl.rcParams['figure.facecolor'] = (0.04, 0.065, 0.03)
+# mpl.rcParams['axes.grid'] = True  # should we?
 # ax.tick_params(axis='x', colors='white')
 # ax.tick_params(axis='y', colors='white')
 # ax.set_ylabel('probability of acceptance', color='white')
 # ax.set_xlabel('Energy difference', color='white')
 # ax.set(xticks=[0])
-# plt.grid()
-# fig.patch.set_facecolor((.04,.065,.03))
 # plt.tight_layout()
 
 
@@ -51,14 +50,12 @@ def run_stat_mech():
         fig, ax = plt.subplots(figsize=(5,5))
         ax.plot(dEs, prob_change, color='pink', lw=7)
 
-        ax.set(facecolor=(.04,.065,.03))
         ax.tick_params(axis='x', colors='white')
         ax.tick_params(axis='y', colors='white')
         ax.set_ylabel('probability of acceptance', color='white')
         ax.set_xlabel('Energy difference', color='white')
         ax.set(xticks=[0])
         plt.grid()
-        # fig.patch.set_facecolor((.04,.065,.03))
         plt.tight_layout()
 
         return fig
