@@ -19,11 +19,126 @@ st.set_page_config(page_title="Scientific Computing",
 	menu_items=None)
 
 def run_stat_mech():
+    # Sidebar
     with st.sidebar:
         size = st.slider('size',3,100,10)
         beta = st.slider('beta',0.01,5.,1.)
         nsteps = st.slider('nsteps',3,10000,100)
         nsnapshots = 4
+
+    # functions
+    def metropolisVisualization():
+        dEs = np.linspace(-1,3,1000)
+        prob_change = np.exp(-beta*dEs)
+        prob_change[dEs<0] = 1
+
+        fig, ax = plt.subplots(figsize=(5,5))
+        ax.plot(dEs, prob_change, color='pink', lw=7)
+
+        ax.set(facecolor=(.04,.065,.03))
+        ax.tick_params(axis='x', colors='white')
+        ax.tick_params(axis='y', colors='white')
+        ax.set(xlabel='Timestep')
+        ax.set_ylabel('probability of acceptance', color='white')
+        ax.set_xlabel('Energy difference', color='white')
+        ax.set(xticks=[0])
+        plt.grid()
+        fig.patch.set_facecolor((.04,.065,.03))
+        plt.tight_layout()
+
+        return fig
+
+    def ising():
+        # initialize
+        X = np.random.rand(size,size)
+        X[X>0.5] =1 ; X[X!=1] =-1
+        E = 0 
+        for i in range(size):
+            for j in range(size):
+                sum_neighbors = 0
+                for pos in [(i,(j+1)%size),    (i,(j-1+size)%size), 
+                               ((i+1)%size,j), ((i-1+size)%size,j)]:
+                    
+                    sum_neighbors += X[pos]
+            E += -X[i,j] * sum_neighbors/2
+
+        results = {"Energy" : [E], 
+                   "Magnetization" : [np.sum(X)], 
+                   "snapshots": {} }
+        for step in range(nsteps):
+            (i,j) = tuple(np.random.randint(0,size-1,2)) #choose random site
+
+            sum_neighbors = 0
+            for pos in [(i,(j+1)%size),    (i,(j-1+size)%size), 
+                           ((i+1)%size,j), ((i-1+size)%size,j)]:
+                sum_neighbors += X[pos]
+                
+            dE = 2 *X[i,j] * sum_neighbors
+
+            
+            if np.random.rand()<np.exp(-beta*dE):
+                X[i,j]*=-1
+                E += dE
+
+            results['Energy'].append(E.copy())
+            results['Magnetization'].append(np.sum(X))
+            if step in np.arange(nsnapshots)*nsteps//nsnapshots:
+                results['snapshots'][step]=X.copy()
+
+        # load, fill and save susceptibility data
+        try: data = np.load('pages/data.npz', allow_pickle=True)[np.load('pages/data.npz', allow_pickle=True).files[0]].item()
+        except: data = {};  np.savez('pages/data', data)
+
+        susceptibility = np.var(results['Magnetization'][-nsteps//4*3:])
+        data[beta] = {'sus': susceptibility, 'nsteps':nsteps, 'size':size}
+        np.savez('pages/data', data)
+        return results, data
+
+    def plotSnapshots(nsnapshots = 4):
+        fig, ax = plt.subplots(1,nsnapshots, figsize=(15,3))
+        for idx, key in enumerate(results['snapshots'].keys()):
+            ax[idx].imshow(results['snapshots'][key])
+        fig.patch.set_facecolor((.04,.065,.03))
+        return fig
+
+    def plotEnergy_magnetization():
+        fig, ax = plt.subplots(2,1, figsize=(5,6))
+        ax[0].plot(results['Energy'],c='purple')
+        ax[1].plot(results['Magnetization'], color='orange')
+        
+
+        for i in [0,1]: # could we make plotstyle page-wide?
+            ax[i].set(facecolor=(.04,.065,.03))
+            ax[i].tick_params(axis='x', colors='white')
+            ax[i].tick_params(axis='y', colors='white')
+            ax[i].set_xlabel('Timestep', color='white')
+        
+        ax[0].set_ylabel('Energy', color='white')
+        ax[1].set_ylabel('Magnetization', color='white')
+        
+        fig.patch.set_facecolor((.04,.065,.03))
+        plt.tight_layout()
+        return fig
+    
+    def plotSusceptibility():
+        ## susceptibility plot
+
+        fig, ax = plt.subplots( figsize=(5,3))
+        ax.scatter(x = list(data.keys()), 
+                      y = [data[key]['sus'] for key in data.keys()],
+                      s = [data[key]['size'] for key in data.keys()],
+                      color='cyan')
+        ax.set_ylabel('Susceptibility', color='white')
+        ax.set_xlabel('beta', color='white')
+
+        ax.set(facecolor=(.04,.065,.03))
+        ax.tick_params(axis='x', colors='white')
+        ax.tick_params(axis='y', colors='white')
+        fig.patch.set_facecolor((.04,.065,.03))
+        return fig
+
+    # Render
+
     st.markdown(r"""
         # Statistical Mechanics
         
@@ -71,9 +186,6 @@ def run_stat_mech():
             E_\mathrm{system} + E_\mathrm{reservor} = E 
         $$
 
-
-        
-
         The partition function is defined as the sum of all states
         $$
             Z = \sum_i e^{-\beta E}.
@@ -114,126 +226,26 @@ def run_stat_mech():
 
     cols = st.columns(2)
     cols[0].markdown(r"""
-    #### Metropolis algorithm
+        #### Metropolis algorithm
 
-    The metropolis algorithm is a hard cutoff. So for values above a critical point
-    are always accepted without considering probability. It makes computation easier.
+        The metropolis algorithm is a hard cutoff. So for values above a critical point
+        are always accepted without considering probability. It makes computation easier.
 
-    "Why?" you may ask, well; the large numbers arrising from the exponential
-    are just that.
-
-
-    """)
-
-    dEs = np.linspace(-1,3,1000)
-    prob_change = np.zeros(len(dEs))
-    prob_change = np.exp(-beta*dEs)
-    prob_change[dEs<0] = 1
-
-    fig, ax = plt.subplots(figsize=(5,5))
-    ax = [ax]
-    ax[0].plot(dEs, prob_change, color='pink', lw=7)
-
+        "Why?" you may ask, well; the large numbers arrising from the exponential
+        are just that.
+        """)
     
-    for i in [0]:
-        ax[i].set(facecolor=(.04,.065,.03))
-        ax[i].tick_params(axis='x', colors='white')
-        ax[i].tick_params(axis='y', colors='white')
-        ax[i].set(xlabel='Timestep')
-    ax[0].set_ylabel('probability of acceptance', color='white')
-    ax[0].set_xlabel('Energy difference', color='white')
-    ax[0].set(xticks=[0])
-    plt.grid()
+    cols[1].pyplot(metropolisVisualization())
 
-    fig.patch.set_facecolor((.04,.065,.03))
-    plt.tight_layout()
-    cols[1].pyplot(fig)
 
-   
-    def ising():
-        # initialize
-        X = np.random.rand(size,size)
-        X[X>0.5] =1
-        X[X!=1] =-1
-
-        E = 0 
-        for i in range(size):
-            for j in range(size):
-                sum_neighbors = 0
-                for pos in [(i,(j+1)%size),    (i,(j-1+size)%size), 
-                               ((i+1)%size,j), ((i-1+size)%size,j)]:
-                    
-                    sum_neighbors += X[pos]
-            E += -X[i,j] * sum_neighbors/2
-
-        results = {"Energy" : [E], "Magnetization" : [np.sum(X)], 
-                    "snapshots": {} }
-        for step in range(nsteps):
-            #choose random site
-            (i,j) = tuple(np.random.randint(0,size-1,2))
-
-            sum_neighbors = 0
-            for pos in [(i,(j+1)%size),    (i,(j-1+size)%size), 
-                           ((i+1)%size,j), ((i-1+size)%size,j)]:
-                
-                sum_neighbors += X[pos]
-                
-
-            dE = 2 *X[i,j] * sum_neighbors
-
-            
-            if np.random.rand()<np.exp(-beta*dE):
-                X[i,j]*=-1
-                E += dE
-
-            results['Energy'].append(E.copy())
-            results['Magnetization'].append(np.sum(X))
-            if step in np.arange(nsnapshots)*nsteps//nsnapshots:
-                results['snapshots'][step]=X.copy()
-        return results
-    
-
-    results = ising()
+    results, data = ising()
      
-    # load, fill and save susceptibility data
-    try: data = np.load('pages/data.npz', allow_pickle=True)[np.load('pages/data.npz', allow_pickle=True).files[0]].item()
-    except: data = {};  np.savez('pages/data', data)
-
-    susceptibility = np.var(results['Magnetization'][-nsteps//4*3:])
-    data[beta] = {'sus': susceptibility, 'nsteps':nsteps, 'size':size}
-    np.savez('pages/data', data)
-
-
     st.markdown(r"""
         below are snapshots of the output of a simulation of the 2d Ising model
         using the metropolis algorithm.
         """)
-    # plotting Snapshots
-    fig, ax = plt.subplots(1,nsnapshots, figsize=(15,3))
-    for idx, key in enumerate(results['snapshots'].keys()):
-        ax[idx].imshow(results['snapshots'][key])
-    fig.patch.set_facecolor((.04,.065,.03))
-    st.pyplot(fig)
 
-
-
-
-    fig, ax = plt.subplots(2,1, figsize=(5,6))
-    ax[0].plot(results['Energy'],c='purple')
-    ax[1].plot(results['Magnetization'], color='orange')
-    
-
-    for i in [0,1]: # could we make plotstyle page-wide?
-        ax[i].set(facecolor=(.04,.065,.03))
-        ax[i].tick_params(axis='x', colors='white')
-        ax[i].tick_params(axis='y', colors='white')
-        ax[i].set_xlabel('Timestep', color='white')
-    
-    ax[0].set_ylabel('Energy', color='white')
-    ax[1].set_ylabel('Magnetization', color='white')
-    
-    fig.patch.set_facecolor((.04,.065,.03))
-    plt.tight_layout()
+    st.pyplot(plotSnapshots(nsnapshots = 4))
 
     cols = st.columns(2)
     cols[0].markdown(r"""If we track paramters through time,
@@ -241,24 +253,8 @@ def run_stat_mech():
         On the right are plots of the energy and magnetization over time. Below
         is susceptibility as obtained the variance of the magnetization, 
         $\chi = \left< \left< M\right> - M\right>$ (:shrug)""")
-    cols[1].pyplot(fig)
-    
-    ## susceptibility plot
-    fig, ax = plt.subplots( figsize=(5,3))
-    ax.scatter(x = list(data.keys()), 
-                  y = [data[key]['sus'] for key in data.keys()],
-                  s = [data[key]['size'] for key in data.keys()],
-                  color='cyan')
-    ax.set_ylabel('Susceptibility', color='white')
-    ax.set_xlabel('beta', color='white')
-
-    ax.set(facecolor=(.04,.065,.03))
-    ax.tick_params(axis='x', colors='white')
-    ax.tick_params(axis='y', colors='white')
-    fig.patch.set_facecolor((.04,.065,.03))
-    cols[0].pyplot(fig)
-
-
+    cols[1].pyplot(plotEnergy_magnetization())
+    cols[0].pyplot(plotSusceptibility())
     
 
 def run_phaseTransitions_CriticalPhenomena():
