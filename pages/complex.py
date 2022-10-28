@@ -198,9 +198,13 @@ def run_stat_mech():
         between these two. Because total energy conserved, the sum of two 
         energy is constant value.
         $$ 
-            E = E_\mathrm{s} + E_\mathrm{r} 
+            E_\mathrm{t} = E_\mathrm{s} + E_\mathrm{r} 
         $$
-        $\Omega(E)$ is the total number of states with energy $E$.
+        Here $E_\mathrm{t}$ is total energy of whole system.
+
+        Let's think about number of state.
+        $\Omega(E_\mathrm{t})$ is the total number of states with energy 
+        $E_\mathrm{t}$.
         $\Omega(E_\mathrm{s}, E_\mathrm{r})$ is the total number of states with 
         system has energy $E_\mathrm{s}$ and system has energy $E_\mathrm{r}$.
         It can be the product of total number of state of system and reservoir.
@@ -210,7 +214,7 @@ def run_stat_mech():
         $$
         Entropy of whole system become
         $$
-            S =  k_\mathrm{B} \ln \Omega(E_\mathrm{s}, E_\mathrm{r}).
+            S_\mathrm{t} =  k_\mathrm{B} \ln \Omega(E_\mathrm{s}, E_\mathrm{r}).
         $$
         Entropy of the system and reservoir become
         $$
@@ -221,17 +225,17 @@ def run_stat_mech():
         $$
         Thus total entropy become sum of system and reservoir.
         $$
-            S = S_\mathrm{s} + S_\mathrm{r}.
+            S_\mathrm{t} = S_\mathrm{s} + S_\mathrm{r}.
         $$
 
         Probability of finding the state system energy $E_\mathrm{s}$ and 
         reservoir energy $E_\mathrm{r}$ is
         $$
             P(E_\mathrm{s}, E_\mathrm{r}) 
-            = \frac{\Omega(E_\mathrm{s}, E_\mathrm{r})}{\Omega(E)}
+            = \frac{\Omega(E_\mathrm{s}, E_\mathrm{r})}{\Omega(E_\mathrm{t})}
             = \frac{\Omega_\mathrm{s}(E_\mathrm{s}) 
             \Omega_\mathrm{r}(E_\mathrm{r})}
-            {\Omega(E)}
+            {\Omega(E_\mathrm{t})}
         $$
         Most probable state (thermodynamical equilibrium state) satisfies
         $$
@@ -271,7 +275,7 @@ def run_stat_mech():
                 -
                 \frac{T_\mathrm{r}}{k_\mathrm{B}}.
         $$
-        Here T_\mathrm{s} is temperature of system and T_\mathrm{r} is 
+        Here $T_\mathrm{s}$ is temperature of system and $T_\mathrm{r}$ is 
         temperature of reservoir.
         We can say in equilibrium system's temperature and reservoir's 
         temperature is same.
@@ -282,30 +286,185 @@ def run_stat_mech():
         If two system and reservoir exchange the energy, they have same 
         temperature.
 
-        When 
+        When system is in state $i$ and has energy $E_i$, reservoir has energy
+        $E_\mathrm{t} - E_i$, probability of happening this state $i$ is 
+        $$
+            P_i 
+            \propto 
+                \Omega_\mathrm{r}(E_\mathrm{t} - E_i) 
+            = 
+                \exp 
+                \left[ \frac{1}{k_\mathrm{B}} S_r(E_\mathrm{t} - E_i) \right]
+            \approx 
+                \exp \left[ \frac{1}{k_\mathrm{B}} 
+                \left(S_\mathrm{r}(E_\mathrm{t}) 
+                - \left. 
+                \frac{\mathrm{d}S_\mathrm{r}}{\mathrm{d}E} 
+                \right|_{E=E_\mathrm{t}}E_i\right)
+                \right]
+            = 
+                \exp \left[ \frac{1}{k_\mathrm{B}} 
+                \left(S_\mathrm{r}(E_\mathrm{t}) 
+                - \frac{E_i}{T_\mathrm{r}}\right)
+                \right]
+            \propto 
+                \exp \left[ 
+                -\frac{E_i}{k_\mathrm{B}T_\mathrm{r}} 
+                \right]
+        $$
+        We used Taylor series expansion because $E_\mathrm{t}\gg E_i$.
+        The term 
+        $\exp \left[-\frac{E_i}{k_\mathrm{B}T} \right]$
+        called "Boltzmann factor".
+        The probability that state $i$ happens is proportional to Boltzmann 
+        factor
+        $P_i \propto \exp \left[-\frac{E_i}{k_\mathrm{B}T} \right]$.
 
-        The partition function is defined as the sum of all states
+        The partition function is defined as the sum of the Boltzmann factor 
+        of all states of system.
         $$
-            Z = \sum_i e^{-\beta E}.
+            Z = \sum_i \exp \left[{-\frac{E_i}{k_\mathrm{b}T}} \right]
+              = \sum_i \exp \left[{-\beta E_i}\right].
         $$
-        Notice we also have the grand partition function which additionally
-        condsiders chemical potentials.
+        Here $\beta = \frac{1}{k_\mathrm{B}T}$.
+        Thus probability of finding system with state $i$ with energy $E_i$ 
+        becomes
+        $$
+            P_i 
+            =
+            \frac{1}{Z} \exp \left[-\frac{E_i}{k_\mathrm{B}T} \right]
+            =
+            \frac{1}{Z} \exp \left[-\beta E_i \right].
+        $$
 
-        Using the partiton the functions, we are able obtain any operator. 
-        A perticularly interesting value, we may obtain is the free energy,
+        Using the partiton the functions, we are able obtain any thermodynamical
+        observable. 
+        A particularly important value we may obtain is the (Helmholtz) free 
+        energy,
+        $$
+            F = -k_\mathrm{B}T \ln Z = -\frac{1}{\beta}\ln Z 
+            = \left<E\right> - TS.
+        $$
+        We can also obtain average energy from partition function.
+        $$
+            \left<E\right>
+            =
+            \frac{1}{Z} \sum_i E_i \exp \left[{-\beta E_i}\right]
+            =
+            -\frac{1}{Z} \sum_i \frac{\partial}{\partial \beta} 
+            \exp \left[{-\beta E_i}\right]
+            =
+            -\frac{1}{Z} \frac{\partial}{\partial \beta} Z
+            =
+            - \frac{\partial}{\partial \beta} \ln Z
+        $$
+        From average energy, we can obtain specific heat.
+        $$
+            C 
+            =
+            \frac{\partial \left<E\right>}{\partial T}
+            = 
+            \frac{\partial \left<E\right>}{\partial \beta}
+            \frac{\partial \beta}{\partial T}
+            =
+            -\frac{1}{k_\mathrm{B} T^2}
+            \frac{\partial \left<E\right>}{\partial \beta}
+            =
+            \frac{1}{k_\mathrm{B} T^2}
+            \frac{\partial^2}{\partial \beta^2} \ln Z
+        $$
+        Specific heat is equal to variace of energy.
+        $$
+            k_\mathrm{B} T^2C 
+            =
+            \frac{\partial^2}{\partial \beta^2} \ln Z
+            =
+            \frac{\partial}{\partial \beta} 
+            \left(
+            \frac{\partial}{\partial \beta}
+            \ln Z
+            \right)
+            =
+            \frac{\partial}{\partial \beta} 
+            \left(
+            \frac{1}{Z}
+            \frac{\partial Z}{\partial \beta}
+            \right)
+            =
+            -
+            \frac{1}{Z^2}
+            \left(
+            \frac{\partial Z}{\partial \beta}
+            \right)^2
+            +
+            \frac{1}{Z}
+            \frac{\partial^2 Z}{\partial \beta^2}
+            =
+            \left<E^2\right> - \left<E\right>^2
+            =
+            \left< \left( E - \left< E \right> \right)^2 \right>
+            =
+            \left(\Delta E\right)^2
+        $$
+        Assuming energy of the system can be approximated by system size 
+        $\left< E \right> \sim N k_\mathrm{B} T$, specific heat is also 
+        approximated as $C \sim N k_\mathrm{B}$. 
 
+        Thus
         $$
-            F = -\frac{1}{\beta}\log(Z).
+            \Delta E \sim N^{1/2}.
         $$
-        From here we may obtain the entropy, which is given by the 
-        negative derivative of the free energy with respect to temperature
+        Variance of energy scales as square root of system size.
+
+        From free energy we can obtain the entropy,         
         $$
-            S = -\frac{\partial F}{\partial T}.
+            S = - \left. \frac{\partial F}{\partial T} \right|_H.
         $$
-        Another value of high importance, we may obtain from the partition
-        function is the expectation value of the energy;
+        From free energy we can also obtain the magnetization,         
         $$
-            \left<E\right> = -\frac{\partial\log(Z)}{\partial \beta}
+            M = - \left.\frac{\partial F}{\partial H} \right|_T.
+        $$
+        Susceptibility becomes
+        $$
+            \chi_T = - \left.\frac{\partial^2 F}{\partial H^2} \right|_T.
+        $$
+        Notice that susceptibility is equal to variance of magnetization.
+        $$
+            k_\mathrm{B} T\chi_T 
+            = 
+            -k_\mathrm{B} T
+            \frac{\partial^2 F}{\partial H^2} 
+            = 
+            \frac{1}{\beta^2}
+            \frac{\partial}{\partial H} 
+            \left(
+            \frac{\partial}{\partial H} 
+            \ln Z
+            \right)
+            = 
+            \frac{1}{\beta^2}
+            \frac{\partial}{\partial H} 
+            \left(
+            \frac{1}{Z} 
+            \frac{\partial Z}{\partial H} 
+            \right)
+            =
+            -
+            \frac{1}{\beta^2}
+            \frac{1}{Z^2}
+            \left(
+            \frac{\partial Z}{\partial H}
+            \right)^2
+            +
+            \frac{1}{\beta^2}
+            \frac{1}{Z}
+            \frac{\partial^2 Z}{\partial H^2}
+            =
+            \left<M^2\right> - \left<M\right>^2
+            =
+            \left< \left( M - \left< M \right> \right)^2 \right>
+            =
+            \left(\Delta M\right)^2
         $$
 
 
