@@ -647,6 +647,49 @@ def randomWalk(nsteps):
     *Explore the time of first return in 1d, 2d and 3d*
         """)
 
+    # 1d
+    def run_firstReturn1D():
+        lengths = []
+        lines = {}
+        c=st.empty()
+        for idx in range(100):
+            
+
+            x = [0] 
+            for i in range(100):
+                change = -1 if np.random.rand()< 0.5 else 1
+                x.append(x[i]+change)
+                if x[i+1] == 0: break
+            lines[idx] = x
+
+            fig, ax = plt.subplots(1,2)
+            for idx in lines.keys():
+                x = lines[idx]
+            
+                ax[0].plot(x, range(len(x)))#, c='orange')
+            ax[0].set_xlabel('x position', color='white')
+            ax[0].set_ylabel('time', color='white')
+            ax[0].set(xticks=[0], yticks=[])
+            ax[0].grid()
+            ax[0].tick_params(axis='x', colors='white')
+            ax[0].tick_params(axis='y', colors='white')
+
+            lengths.append(len(x))
+
+            ax[1].hist(lengths)
+            ax[1].set_xlabel('First return time', color='white')
+            ax[1].set_ylabel('occurance frequency', color='white')
+            #ax[1].set(xticks=[0], yticks=[])
+            ax[1].grid()
+            ax[1].tick_params(axis='x', colors='white')
+            ax[1].tick_params(axis='y', colors='white')
+            c.pyplot(fig)
+
+    a = st.button('run_firstReturn1D')
+    if a: run_firstReturn1D()
+
+
+
 
 def newNetwork():
     def makeBetheLattice(n_nodes = 10):
