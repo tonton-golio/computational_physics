@@ -237,7 +237,6 @@ def run_stat_mech():
     
     cols[1].pyplot(metropolisVisualization())
 
-
     results, data = ising()
      
     st.markdown(r"""
@@ -369,14 +368,20 @@ def run_betheLattice():
 # -----------
 # random walk
 def run_random_walk():
-    st.markdown(r"""# RandomWalk""")
+    # Sidebar
+    with st.sidebar:
+        cols_sidebar = st.columns(2)
+        nsteps = cols_sidebar[0].slider('nsteps',  4,   100, 14)
+        seed   = cols_sidebar[1].slider('Seed',    0,   69 , 42)
+        sigma2 = cols_sidebar[0].slider('Variance',0.2, 1. ,0.32)
+        step_size = cols_sidebar[0].slider('Stepsize = random^x, x=', 0.,3.,0.)
+        axisscale = cols_sidebar[1].radio('axis-scales', ['linear', 'symlog'])
+        #yscale = cols_sidebar[1].radio('yscale', ['linear', 'symlog'])
+    
+    # Functions
     def accumulate(x):
-        X=np.zeros(len(x))
-        X[0] = x[0]
-        
-        for i, _ in enumerate(x):
-            #st.write(i)
-            X[i] = X[i-1]+x[i]
+        X=np.zeros(len(x)) ; X[0] = x[0]
+        for i, _ in enumerate(x): X[i] = X[i-1]+x[i]
         return X
 
     def randomWalk(nsteps, sigma2=1, seed=42, axisscale='linear', step_size=0):
@@ -430,20 +435,13 @@ def run_random_walk():
             ax2.set_title('Cummulative path', fontsize=24)
             plt.tight_layout()
             fig.patch.set_facecolor('darkgrey')
-            st.pyplot(fig)
-        plot2()
-
-    with st.sidebar:
-        cols_sidebar = st.columns(2)
-        nsteps = cols_sidebar[0].slider('nsteps',  4,   100, 14)
-        seed   = cols_sidebar[1].slider('Seed',    0,   69 , 42)
-        sigma2 = cols_sidebar[0].slider('Variance',0.2, 1. ,0.32)
-        step_size = cols_sidebar[0].slider('Stepsize = random^x, x=', 0.,3.,0.)
-        axisscale = cols_sidebar[1].radio('axis-scales', ['linear', 'symlog'])
-        #yscale = cols_sidebar[1].radio('yscale', ['linear', 'symlog'])
+            return fig
+        return plot2()
 
 
-    randomWalk(nsteps,sigma2, seed, axisscale, step_size)
+
+    st.markdown(r"""# RandomWalk""")
+    st.pyplot(randomWalk(nsteps,sigma2, seed, axisscale, step_size))
 
     cols = st.columns(2)
     cols[0].markdown(r"""
@@ -455,7 +453,6 @@ def run_random_walk():
 
     Normal and bi-modal distributions are different in that the
     similarity of step direction causes great displacement.
-
     """)
 
     cols[1].code(r"""
@@ -465,6 +462,11 @@ def randomWalk(nsteps):
         dx = np.cos(theta) ; x += dx
         dy = np.sin(theta) ; y += dy 
     """)
+
+    st.markdown(r"""
+    ## First return
+    *Explore the time of first return in 1d, 2d and 3d*
+        """)
 
 
 def newNetwork():
@@ -980,6 +982,3 @@ a = func_dict[topic] ; a()
 
 
 #plt.style.available
-
-
-
