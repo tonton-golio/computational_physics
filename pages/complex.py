@@ -198,12 +198,91 @@ def run_stat_mech():
         between these two. Because total energy conserved, the sum of two 
         energy is constant value.
         $$ 
-            E_\mathrm{system} + E_\mathrm{reservor} = E 
+            E = E_\mathrm{s} + E_\mathrm{r} 
         $$
-<<<<<<< HEAD
-=======
-        
->>>>>>> 1ffffc86cc3e8882b376eb4348a26dcabd0e4bd2
+        $\Omega(E)$ is the total number of states with energy $E$.
+        $\Omega(E_\mathrm{s}, E_\mathrm{r})$ is the total number of states with 
+        system has energy $E_\mathrm{s}$ and system has energy $E_\mathrm{r}$.
+        It can be the product of total number of state of system and reservoir.
+        $$
+            \Omega(E_\mathrm{s}, E_\mathrm{r})
+            = \Omega_\mathrm{s}(E_\mathrm{s}) \Omega_\mathrm{r}(E_\mathrm{r})
+        $$
+        Entropy of whole system become
+        $$
+            S =  k_\mathrm{B} \ln \Omega(E_\mathrm{s}, E_\mathrm{r}).
+        $$
+        Entropy of the system and reservoir become
+        $$
+            S_\mathrm{s} =  k_\mathrm{B} \ln \Omega(E_\mathrm{s}),
+        $$
+        $$
+            S_\mathrm{r} =  k_\mathrm{B} \ln \Omega(E_\mathrm{r}).
+        $$
+        Thus total entropy become sum of system and reservoir.
+        $$
+            S = S_\mathrm{s} + S_\mathrm{r}.
+        $$
+
+        Probability of finding the state system energy $E_\mathrm{s}$ and 
+        reservoir energy $E_\mathrm{r}$ is
+        $$
+            P(E_\mathrm{s}, E_\mathrm{r}) 
+            = \frac{\Omega(E_\mathrm{s}, E_\mathrm{r})}{\Omega(E)}
+            = \frac{\Omega_\mathrm{s}(E_\mathrm{s}) 
+            \Omega_\mathrm{r}(E_\mathrm{r})}
+            {\Omega(E)}
+        $$
+        Most probable state (thermodynamical equilibrium state) satisfies
+        $$
+            \frac{\partial P(E_\mathrm{s}, E_\mathrm{r})}{\partial E_\mathrm{s}}
+            =0
+        $$
+        This condition does not change with logarithmic scale.
+        $$
+            \frac{\partial \ln 
+            P(E_\mathrm{s}, E_\mathrm{r})}{\partial E_\mathrm{s}}
+            =0
+        $$
+        Using number of state, this condition can be expressed as 
+        $$
+            0 = 
+                \frac{\partial \ln 
+                P(E_\mathrm{s}, E_\mathrm{r})}{\partial E_\mathrm{s}}
+              = 
+                \frac{\partial}{\partial E_\mathrm{s}} 
+                \ln \frac{\Omega_\mathrm{s}(E_\mathrm{s}) 
+                \Omega_\mathrm{r}(E_\mathrm{r})}{\Omega(E)}
+              = 
+                \frac{\partial}{\partial E_\mathrm{s}} 
+                \ln \Omega_\mathrm{s}(E_\mathrm{s}) 
+                +
+                \frac{\partial}{\partial E_\mathrm{r}} 
+                \frac{\partial E_\mathrm{r}}{\partial E_\mathrm{s}} 
+                \ln \Omega_\mathrm{r}(E_\mathrm{r})
+              = 
+                \frac{1}{k_\mathrm{B}}
+                \frac{\partial S_\mathrm{s}}{\partial E_\mathrm{s}} 
+                -
+                \frac{1}{k_\mathrm{B}}
+                \frac{\partial S_\mathrm{r}}{\partial E_\mathrm{r}} 
+            = 
+                \frac{T_\mathrm{s}}{k_\mathrm{B}}
+                -
+                \frac{T_\mathrm{r}}{k_\mathrm{B}}.
+        $$
+        Here T_\mathrm{s} is temperature of system and T_\mathrm{r} is 
+        temperature of reservoir.
+        We can say in equilibrium system's temperature and reservoir's 
+        temperature is same.
+        $$
+                T_\mathrm{s} = T_\mathrm{r}
+
+        $$
+        If two system and reservoir exchange the energy, they have same 
+        temperature.
+
+        When 
 
         The partition function is defined as the sum of all states
         $$
