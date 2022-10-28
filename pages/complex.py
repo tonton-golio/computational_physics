@@ -180,7 +180,7 @@ def run_stat_mech():
         In this system, temperature $T$ is statistically defined as 
         $$ 
             \frac{1}{T} = \frac{\partial S}{\partial E} 
-            = k_\mathrm{B} \frac{\partial \ln \Omega}{\partial E} 
+            = k_\mathrm{B} \frac{\partial}{\partial E} \ln \Omega
         $$ 
 
         ### Canonical Ensemble
@@ -189,14 +189,41 @@ def run_stat_mech():
         is small enough comparing to the rest of the system. Let's say this 
         small part as 
         "system" and rest of enoumous part of the original microcanonical 
-        system as "reservor" or "heat bath".
-        By defining the system energy as $E_\mathrm{system}$ and reservor 
-        energy as $E_\mathrm{reservor}$, we consider the energy exchange 
+        system as "reservoir" or "heat bath".
+        By defining the system's energy as $E_\mathrm{s}$ and reservoir's 
+        energy as $E_\mathrm{r}$, we consider the energy exchange 
         between these two. Because total energy conserved, the sum of two 
         energy is constant value.
         $$ 
-            E_\mathrm{system} + E_\mathrm{reservor} = E 
+            E = E_\mathrm{s} + E_\mathrm{r} 
         $$
+        $\Omega(E)$ is the total number of states with energy $E$.
+        $\Omega(E_\mathrm{s}, E_\mathrm{r})$ is the total number of states with 
+        system has energy $E_\mathrm{s}$ and system has energy $E_\mathrm{r}$.
+        It can be the product of total number of state of system and reservoir.
+        $$
+            \Omega(E_\mathrm{s}, E_\mathrm{r})
+            = \Omega_\mathrm{s}(E_\mathrm{s}) \Omega_\mathrm{r}(E_\mathrm{r})
+        $$
+        Entropy of whole system become
+        $$
+            S =  k_\mathrm{B} \ln \Omega(E_\mathrm{s}, E_\mathrm{r}).
+        $$
+        Entropy of the system and reservoir become
+        $$
+            S_\mathrm{s} =  k_\mathrm{B} \ln \Omega(E_\mathrm{s}),
+        $$
+        $$
+            S_\mathrm{r} =  k_\mathrm{B} \ln \Omega(E_\mathrm{r}).
+        $$
+        Thus total entropy become sum of system and reservoir.
+        $$
+            S = S_\mathrm{s} + S_\mathrm{r}.
+        $$
+<<<<<<< HEAD
+=======
+        
+>>>>>>> 1ffffc86cc3e8882b376eb4348a26dcabd0e4bd2
 
         The partition function is defined as the sum of all states
         $$
