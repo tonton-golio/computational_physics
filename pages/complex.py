@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
+import matplotlib as mpl
 import seaborn as sns
 try: import graphviz # having trouble with this when hosted
 except: pass
@@ -17,6 +18,21 @@ st.set_page_config(page_title="Scientific Computing",
 	layout="wide", 
 	initial_sidebar_state="collapsed", 
 	menu_items=None)
+
+# matplotlib style
+
+mpl.rcParams['patch.facecolor'] = (0.04, 0.065, 0.03)
+mpl.rcParams['axes.facecolor'] = (0.04, 0.065, 0.03)
+mpl.rcParams['figure.facecolor'] = (0.04, 0.065, 0.03)
+# ax.tick_params(axis='x', colors='white')
+# ax.tick_params(axis='y', colors='white')
+# ax.set_ylabel('probability of acceptance', color='white')
+# ax.set_xlabel('Energy difference', color='white')
+# ax.set(xticks=[0])
+# plt.grid()
+# fig.patch.set_facecolor((.04,.065,.03))
+# plt.tight_layout()
+
 
 def run_stat_mech():
     # Sidebar
@@ -38,12 +54,11 @@ def run_stat_mech():
         ax.set(facecolor=(.04,.065,.03))
         ax.tick_params(axis='x', colors='white')
         ax.tick_params(axis='y', colors='white')
-        ax.set(xlabel='Timestep')
         ax.set_ylabel('probability of acceptance', color='white')
         ax.set_xlabel('Energy difference', color='white')
         ax.set(xticks=[0])
         plt.grid()
-        fig.patch.set_facecolor((.04,.065,.03))
+        # fig.patch.set_facecolor((.04,.065,.03))
         plt.tight_layout()
 
         return fig
@@ -98,7 +113,7 @@ def run_stat_mech():
         fig, ax = plt.subplots(1,nsnapshots, figsize=(15,3))
         for idx, key in enumerate(results['snapshots'].keys()):
             ax[idx].imshow(results['snapshots'][key])
-        fig.patch.set_facecolor((.04,.065,.03))
+        # fig.patch.set_facecolor((.04,.065,.03))
         return fig
 
     def plotEnergy_magnetization():
@@ -116,7 +131,7 @@ def run_stat_mech():
         ax[0].set_ylabel('Energy', color='white')
         ax[1].set_ylabel('Magnetization', color='white')
         
-        fig.patch.set_facecolor((.04,.065,.03))
+        # fig.patch.set_facecolor((.04,.065,.03))
         plt.tight_layout()
         return fig
     
@@ -134,7 +149,7 @@ def run_stat_mech():
         ax.set(facecolor=(.04,.065,.03))
         ax.tick_params(axis='x', colors='white')
         ax.tick_params(axis='y', colors='white')
-        fig.patch.set_facecolor((.04,.065,.03))
+        # fig.patch.set_facecolor((.04,.065,.03))
         return fig
 
     # Render
