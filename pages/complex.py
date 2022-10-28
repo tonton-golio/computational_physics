@@ -326,25 +326,38 @@ def run_phaseTransitions_CriticalPhenomena():
 def run_percolation_and_fractals():
     # Side bar
     with st.sidebar:
-        st.markdown('### square grid percolation') 
-        cols_sidebar = st.columns(2)
-        size = cols_sidebar[0].slider('size', 10  , 100, 50)
-        p = cols_sidebar[1].slider('p',       0.01, 1. , .1)
-        marker_dict = {
-            'point': '.',
-            'square': 's',
-            'pixel': ',',
-            'circle': 'o',
-        }
-        marker_key = st.select_slider('marker', marker_dict.keys())
-        marker = marker_dict[marker_key]
-        seed = st.slider('seed',10,100)
+        st.markdown('## Paramteres') 
+        with st.expander('square grid percolation'):
 
-        st.markdown('### Bethe lattice')
+            cols_sidebar = st.columns(2)
+            size = cols_sidebar[0].slider('size', 10  , 100, 50)
+            p = cols_sidebar[1].slider('p',       0.01, 1. , .1)
+            marker_dict = {
+                'point': '.',
+                'square': 's',
+                'pixel': ',',
+                'circle': 'o',
+            }
+            marker_key = st.select_slider('marker', marker_dict.keys())
+            marker = marker_dict[marker_key]
+            seed = st.slider('seed',10,100)
 
-        st.markdown('### percolation on bethe lattice')
+        with st.expander('Bethe lattice'):
 
-        st.markdown('### Fractals') 
+            cols_sidebar = st.columns(2)
+            levels = cols_sidebar[0].slider('levels', 0  , 3, 2)
+            p = cols_sidebar[1].slider('p_',       0.01, 1. , .1)
+
+            
+
+        with st.expander('Mandelbrot'):
+            cols_sidebar = st.columns(2)
+            logsize = cols_sidebar[0].slider(r'Resolution (log)',1.5,4., 3.)
+            size_fractal = int(10**logsize)
+            cols_sidebar[1].latex(r'10^{}\approx {}'.format("{"+str(logsize)+"}", size))
+            cols_sidebar = st.columns(2)
+            n = cols_sidebar[0].slider('n',1,50,27)
+            a = cols_sidebar[1].slider('a',0.01,13.,2.3)
 
     # Functions
     def makeGrid(size, seed=42): 
@@ -471,80 +484,25 @@ def run_percolation_and_fractals():
             plt.xlabel('Im',rotation=0, loc='right', color='blue')
             plt.ylabel('Re',rotation=0, loc='top', color='blue')
             fig.patch.set_facecolor('black')
-            st.pyplot(fig)
+            return fig
 
-        with st.sidebar:
-            cols_sidebar = st.columns(2)
-            logsize = cols_sidebar[0].slider(r'Resolution (log)',1.5,4., 3.)
-            size = int(10**logsize)
-            cols_sidebar[1].latex(r'10^{}\approx {}'.format("{"+str(logsize)+"}", size))
-            cols_sidebar = st.columns(2)
-            n = cols_sidebar[0].slider('n',1,50,27)
-            a = cols_sidebar[1].slider('a',0.01,13.,2.3)
-
-        res = stable(mandelbrot(makeGrid(size,  lims=[-1.85, 1.25, -1.25, 1.45]), a=a, n=n))
-        plot_(res)
-
-        cols = st.columns(2)
-        cols[0].markdown(r"""
-        The Mandelbrot set contains complex numbers remaining stable through
-        
-        $$z_{i+1} = z^a + c$$
-        
-        after successive iterations. We let $z_0$ be 0.
-        """)
-        cols[1].code(r"""
-        def stable(z):
-            try:
-                return False if abs(z) > 2 else True
-            except OverflowError:
-                return False
-        stable = np.vectorize(stable)
-
-
-        def mandelbrot(c, a, n=50):
-            z = 0
-            for i in range(n):
-                z = z**a + c
-            return z
-
-        def makeGrid(resolution, lims=[-1.85, 1.25, -1.25, 1.45]):
-        re = np.linspace(lims[0], lims[1], resolution)[::-1]
-        im = np.linspace(lims[2], lims[3], resolution)
-        re, im = np.meshgrid(re,im)
-        return re+im*1j    """)
+        res = stable(mandelbrot(makeGrid(size_fractal,  lims=[-1.85, 1.25, -1.25, 1.45]), a=a, n=n))
+        return plot_(res)
 
     # Render
     st.markdown(r"""# Percolation and Fractals""")
 
     st.markdown(r"""## Percolation""")
     st.pyplot(percolation())
-    cols = st.columns(2)
-    cols[0].markdown(r"""
+    
+
+    st.markdown(r"""
     A matrix containing values between zero and one, with
     the value determining openness as a function of $p$.
 
     After generating a grid and a value for p, we look for 
     connected domains. 
     """)
-
-    cols[1].code(r"""
-    def getDomains(grid, p=.5):
-    open_arr = grid < p
-    domains = {} ; index = 0; visited = set()
-    for i, _ in enumerate(open_arr):
-        for j, val in enumerate(open_arr[i]):
-            if val:
-                if (i,j) in visited:
-                    domain, visited_ = checkNeighbours((i,j), open_arr, domain=set(), visited=visited)
-                else:
-                    visited.add((i,j))
-                    domain, visited_ = checkNeighbours((i,j), open_arr, domain=set([(i,j)]), visited=visited)
-                domains[index] = domain
-                visited = visited.union(visited_)
-                index+=1
-            else:
-                visited.add((i,j))""")
 
     st.markdown(r"""
     ## Bethe Lattice
@@ -557,7 +515,36 @@ def run_percolation_and_fractals():
     st.markdown(r"## Percolation on this lattice")
 
 
-    run_fractals()
+    st.pyplot(run_fractals())
+
+
+    st.markdown(r"""
+    The Mandelbrot set contains complex numbers remaining stable through
+    
+    $$z_{i+1} = z^a + c$$
+    
+    after successive iterations. We let $z_0$ be 0.
+    """)
+    st.code(r"""
+    def stable(z):
+        try:
+            return False if abs(z) > 2 else True
+        except OverflowError:
+            return False
+    stable = np.vectorize(stable)
+
+
+    def mandelbrot(c, a, n=50):
+        z = 0
+        for i in range(n):
+            z = z**a + c
+        return z
+
+    def makeGrid(resolution, lims=[-1.85, 1.25, -1.25, 1.45]):
+    re = np.linspace(lims[0], lims[1], resolution)[::-1]
+    im = np.linspace(lims[2], lims[3], resolution)
+    re, im = np.meshgrid(re,im)
+    return re+im*1j    """)
 
 def run_random_walk():
     # Sidebar
