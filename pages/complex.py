@@ -251,30 +251,32 @@ def run_stat_mech():
         $$
         Using number of state, this condition can be expressed as 
         $$
-            0 = 
+        \begin{align*}
+            0 &= 
                 \frac{\partial \ln 
                 P(E_\mathrm{s}, E_\mathrm{r})}{\partial E_\mathrm{s}}
-              = 
+              \\&= 
                 \frac{\partial}{\partial E_\mathrm{s}} 
                 \ln \frac{\Omega_\mathrm{s}(E_\mathrm{s}) 
                 \Omega_\mathrm{r}(E_\mathrm{r})}{\Omega(E)}
-              = 
+              \\&= 
                 \frac{\partial}{\partial E_\mathrm{s}} 
                 \ln \Omega_\mathrm{s}(E_\mathrm{s}) 
                 +
                 \frac{\partial}{\partial E_\mathrm{r}} 
                 \frac{\partial E_\mathrm{r}}{\partial E_\mathrm{s}} 
                 \ln \Omega_\mathrm{r}(E_\mathrm{r})
-              = 
+              \\&= 
                 \frac{1}{k_\mathrm{B}}
                 \frac{\partial S_\mathrm{s}}{\partial E_\mathrm{s}} 
                 -
                 \frac{1}{k_\mathrm{B}}
                 \frac{\partial S_\mathrm{r}}{\partial E_\mathrm{r}} 
-            = 
+              \\&= 
                 \frac{T_\mathrm{s}}{k_\mathrm{B}}
                 -
                 \frac{T_\mathrm{r}}{k_\mathrm{B}}.
+        \end{align*}
         $$
         Here $T_\mathrm{s}$ is temperature of system and $T_\mathrm{r}$ is 
         temperature of reservoir.
@@ -291,28 +293,30 @@ def run_stat_mech():
         When system is in state $i$ and has energy $E_i$, reservoir has energy
         $E_\mathrm{t} - E_i$, probability of happening this state $i$ is 
         $$
+        \begin{align*}
             P_i 
-            \propto 
+            &\propto 
                 \Omega_\mathrm{r}(E_\mathrm{t} - E_i) 
-            = 
+            \\&= 
                 \exp 
                 \left[ \frac{1}{k_\mathrm{B}} S_r(E_\mathrm{t} - E_i) \right]
-            \approx 
+            \\&\approx 
                 \exp \left[ \frac{1}{k_\mathrm{B}} 
                 \left(S_\mathrm{r}(E_\mathrm{t}) 
                 - \left. 
                 \frac{\mathrm{d}S_\mathrm{r}}{\mathrm{d}E} 
                 \right|_{E=E_\mathrm{t}}E_i\right)
                 \right]
-            = 
+            \\&= 
                 \exp \left[ \frac{1}{k_\mathrm{B}} 
                 \left(S_\mathrm{r}(E_\mathrm{t}) 
                 - \frac{E_i}{T_\mathrm{r}}\right)
                 \right]
-            \propto 
+            \\&\propto 
                 \exp \left[ 
                 -\frac{E_i}{k_\mathrm{B}T_\mathrm{r}} 
                 \right]
+        \end{align*}
         $$
         We used Taylor series expansion because $E_\mathrm{t}\gg E_i$.
         The term 
@@ -354,16 +358,18 @@ def run_stat_mech():
         $$
         We can also obtain average energy from partition function.
         $$
+        \begin{align*}
             \left<E\right>
-            =
+            &=
             \frac{1}{Z} \sum_i E_i \exp \left[{-\beta E_i}\right]
-            =
+            \\&=
             -\frac{1}{Z} \sum_i \frac{\partial}{\partial \beta} 
             \exp \left[{-\beta E_i}\right]
-            =
+            \\&=
             -\frac{1}{Z} \frac{\partial}{\partial \beta} Z
-            =
+            \\&=
             - \frac{\partial}{\partial \beta} \ln Z
+        \end{align*}
         $$
         From average energy, we can obtain specific heat.
         $$
@@ -382,22 +388,23 @@ def run_stat_mech():
         $$
         Specific heat is equal to variace of energy.
         $$
+        \begin{align*}
             k_\mathrm{B} T^2C 
-            =
+            &=
             \frac{\partial^2}{\partial \beta^2} \ln Z
-            =
+            \\&=
             \frac{\partial}{\partial \beta} 
             \left(
             \frac{\partial}{\partial \beta}
             \ln Z
             \right)
-            =
+            \\&=
             \frac{\partial}{\partial \beta} 
             \left(
             \frac{1}{Z}
             \frac{\partial Z}{\partial \beta}
             \right)
-            =
+            \\&=
             -
             \frac{1}{Z^2}
             \left(
@@ -406,12 +413,13 @@ def run_stat_mech():
             +
             \frac{1}{Z}
             \frac{\partial^2 Z}{\partial \beta^2}
-            =
+            \\&=
             \left<E^2\right> - \left<E\right>^2
-            =
+            \\&=
             \left< \left( E - \left< E \right> \right)^2 \right>
-            =
+            \\&=
             \left(\Delta E\right)^2
+        \end{align*}
         $$
         Assuming energy of the system can be approximated by system size 
         $\left< E \right> \sim N k_\mathrm{B} T$ 
@@ -440,25 +448,26 @@ def run_stat_mech():
         $$
         Notice that susceptibility is equal to variance of magnetization.
         $$
+        \begin{align*}
             k_\mathrm{B} T\chi_T 
-            = 
+            &= 
             -k_\mathrm{B} T
             \frac{\partial^2 F}{\partial H^2} 
-            = 
+            \\&= 
             \frac{1}{\beta^2}
             \frac{\partial}{\partial H} 
             \left(
             \frac{\partial}{\partial H} 
             \ln Z
             \right)
-            = 
+            \\&= 
             \frac{1}{\beta^2}
             \frac{\partial}{\partial H} 
             \left(
             \frac{1}{Z} 
             \frac{\partial Z}{\partial H} 
             \right)
-            =
+            \\&=
             -
             \frac{1}{\beta^2}
             \frac{1}{Z^2}
@@ -469,12 +478,13 @@ def run_stat_mech():
             \frac{1}{\beta^2}
             \frac{1}{Z}
             \frac{\partial^2 Z}{\partial H^2}
-            =
+            \\&=
             \left<M^2\right> - \left<M\right>^2
-            =
+            \\&=
             \left< \left( M - \left< M \right> \right)^2 \right>
-            =
+            \\&=
             \left(\Delta M\right)^2
+        \end{align*}
         $$
 
 
@@ -662,18 +672,169 @@ def run_stat_mech():
 def run_phaseTransitions_CriticalPhenomena():
     st.markdown(r"""
     # Phase transitions & Critical phenomena
-
-    ## mean-field approximation
-    Assume a site is affected by the mean of the system as opposed
-    to the actually interacting neighbours. This allows to solve this 
-    type of problem analytically.
-
-    This yields a mean-field partition functions
+    ## Mean Field Solution to Ising Model
+    Hamiltonian of Ising model is 
     $$
-        Z_{MF} = \exp\left(-\beta\frac{NJzm^2}{2}
+        \mathcal{H} 
+        = 
+        -J \sum_{\left<i j\right>} s_i s_j - h \sum_i s_i
+    $$
+    We are going to modify this.
+    By slightly modifying Hamiltonian, we obtain
+    $$
+        \mathcal{H} 
+        \approx 
+        \sum_{i} \left( - J \sum_{\left<j\right>} s_j - h \right) s_i.
+    $$
+    Then we replace $\sum_{\left<j\right>} s_j$ with mean value 
+    $\left< s \right> = \frac{1}{N} \sum_i s_i = m$ 
+    which is not obtained yet. This is mean-field approximation.
+    $$
+        \sum_{\left<j\right>} s_j \approx N m \frac{z}{2}
+    $$
+    Here $z$ is number of nearest neighbors. Division by 2 is for avoiding
+    overlap caliculation.
+    Then Hamiltonian become
+    $$
+        \mathcal{H} 
+        \approx 
+        \sum_{i} \left( - J N m \frac{z}{2} - h \right) s_i
+        =
+        \left( - J N m \frac{z}{2} - h \right) \sum_{i} s_i
+    $$
+    Then mean-field partition function become
+    $$
+        \begin{align*}
+        Z_{\mathrm{MF}}
+        &= 
+        \sum_{s_1 = \pm 1} \sum_{s_2 = \pm 1} \cdots 
+        \sum_{s_N = \pm 1}
+        \exp \left[-\beta \mathcal{H} \right]
+        \\&= 
+        \sum_{s_1 = \pm 1} \sum_{s_2 = \pm 1} \cdots 
+        \sum_{s_N = \pm 1}
+        \exp 
+        \left[
+            -\beta \left( - J N m \frac{z}{2} - h \right) \sum_{i} s_i 
+        \right]
+        \\&= 
+        \sum_{s_1 = \pm 1} 
+        \exp 
+        \left[
+            -\beta \left( - J N m \frac{z}{2} - h \right) s_1 
+        \right]
+        \sum_{s_2 = \pm 1} 
+        \exp 
+        \left[
+            -\beta \left( - J N m \frac{z}{2} - h \right) s_2
+        \right]
+        \cdots 
+        \sum_{s_N = \pm 1}
+        \exp 
+        \left[
+            -\beta \left( - J N m \frac{z}{2} - h \right) s_N
+        \right]
+        \\&= 
+        \left[
+        \sum_{s = \pm 1}
+        \exp 
+        \left[
+            \beta \left( J N m \frac{z}{2} + h \right) s
+        \right]
+        \right]^N
+        \\&= 
+        \left[
+        2\cosh
+        \left[
+            \beta \left( J N m \frac{z}{2} + h \right)
+        \right]
+        \right]^N
+        \end{align*}
+    $$
+    We can caliculate statistical mechanical average 
+    $\left<s_i\right>=m$.
+    $$
+    \begin{align*}
+        m = \left<s_i\right>
+        &=
+        \frac{1}{Z_{\mathrm{MF}}}
+        \sum_{s_1 = \pm 1} 
+        \sum_{s_2 = \pm 1} 
+        \cdots 
+        \sum_{s_N = \pm 1}
+        s_i
+        \exp \left(-\beta \mathcal{H} \right)
+        \\&=
+        \frac{1}{Z_{\mathrm{MF}}}
+        \sum_{s_1 = \pm 1} 
+        \exp 
+        \left(
+            -\beta \left( - J N m \frac{z}{2} - h \right) s_1 
         \right)
-        [2\cosh(Jzm\beta+h\beta)]^N
+        \cdots 
+        \sum_{s_i = \pm 1} 
+        s_i 
+        \exp 
+        \left(
+            -\beta \left( - J N m \frac{z}{2} - h \right) s_i
+        \right)
+        \cdots 
+        \sum_{s_N = \pm 1}
+        \exp 
+        \left(
+            -\beta \left( - J N m \frac{z}{2} - h \right) s_N
+        \right)
+        \\&=
+        \frac{1}{Z_{\mathrm{MF}}}
+        2\cosh 
+        \left[
+            \beta \left( J N m \frac{z}{2} + h \right)
+        \right]
+        \cdots 
+        2\sinh
+        \left[
+            \beta \left( J N m \frac{z}{2} + h \right)
+        \right]
+        \cdots 
+        2\cosh
+        \left[
+            \beta \left( J N m \frac{z}{2} + h \right)
+        \right]
+        \\&=
+        \frac
+        {
+        \left[
+        2\cosh
+        \left[
+            \beta \left( J N m \frac{z}{2} + h \right)
+        \right]
+        \right]^{N-1}
+        2\sinh
+        \left[
+            \beta \left( J N m \frac{z}{2} + h \right)
+        \right]
+        }
+        {
+        \left[
+        2\cosh
+        \left[
+            \beta \left( J N m \frac{z}{2} + h \right)
+        \right]
+        \right]^N
+        }
+        \\&=
+        \tanh
+        \left[
+            \beta J N m \frac{z}{2} + \beta h 
+        \right]
+    \end{align*}
     $$
+    When there is no external magnetic field $h=0$, this would be
+    $$
+        m = \tanh \left[ \beta J N m \frac{z}{2} \right]
+    $$
+    We got a self-consistent form of magnetization.
+
         """) 
 
     with st.sidebar:
@@ -687,7 +848,10 @@ def run_phaseTransitions_CriticalPhenomena():
             'inferno_r', 'magma'
             ])
         
-    st.markdown(r'1D ising model')   
+    st.markdown(r"""
+    ## 1D ising model
+    ...
+    """)   
     
     
     chain = np.zeros(size) ; chain[chain<.5] = -1; chain[chain>=.5] = 1
@@ -712,8 +876,10 @@ def run_phaseTransitions_CriticalPhenomena():
     st.pyplot(fig)
 
 
-    st.markdown(r"""## Transfer Matrix Method
-    ...""")
+    st.markdown(r"""
+    ## Transfer Matrix Method
+    ...
+    """)
 
 def run_percolation_and_fractals():
     # Side bar
