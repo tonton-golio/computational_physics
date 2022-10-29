@@ -187,6 +187,7 @@ def run_stat_mech():
         $$ 
 
         ### Canonical Ensemble
+        #### Temperature of system and reservoir become same in equilibrium
         Let's consider subsystem of whole system of microcanonical ensemble. 
         For simplicity, we only consider only one subsystem and assuming it 
         is small enough comparing to the rest of the system. Let's say this 
@@ -286,6 +287,7 @@ def run_stat_mech():
         If two system and reservoir exchange the energy, they have same 
         temperature.
 
+        #### Boltzmann distribution 
         When system is in state $i$ and has energy $E_i$, reservoir has energy
         $E_\mathrm{t} - E_i$, probability of happening this state $i$ is 
         $$
@@ -315,15 +317,16 @@ def run_stat_mech():
         We used Taylor series expansion because $E_\mathrm{t}\gg E_i$.
         The term 
         $\exp \left[-\frac{E_i}{k_\mathrm{B}T} \right]$
-        called "Boltzmann factor".
+        called "Boltzmann distribution".
         The probability that state $i$ happens is proportional to Boltzmann 
-        factor
+        distribution
         $P_i \propto \exp \left[-\frac{E_i}{k_\mathrm{B}T} \right]$.
 
+        #### Partition function, free energy and thermodynamical observable
         The partition function is defined as the sum of the Boltzmann factor 
         of all states of system.
         $$
-            Z = \sum_i \exp \left[{-\frac{E_i}{k_\mathrm{b}T}} \right]
+            Z = \sum_i \exp \left[{-\frac{E_i}{k_\mathrm{B}T}} \right]
               = \sum_i \exp \left[{-\beta E_i}\right].
         $$
         Here $\beta = \frac{1}{k_\mathrm{B}T}$.
@@ -332,9 +335,13 @@ def run_stat_mech():
         $$
             P_i 
             =
-            \frac{1}{Z} \exp \left[-\frac{E_i}{k_\mathrm{B}T} \right]
+            \frac
+            {\exp \left[-\frac{E_i}{k_\mathrm{B}T} \right]}
+            {Z} 
             =
-            \frac{1}{Z} \exp \left[-\beta E_i \right].
+            \frac
+            {\exp \left[-\beta E_i \right]}
+            {Z} .
         $$
 
         Using the partiton the functions, we are able obtain any thermodynamical
@@ -407,7 +414,10 @@ def run_stat_mech():
             \left(\Delta E\right)^2
         $$
         Assuming energy of the system can be approximated by system size 
-        $\left< E \right> \sim N k_\mathrm{B} T$, specific heat is also 
+        $\left< E \right> \sim N k_\mathrm{B} T$ 
+        (you know this is good approximation because the energy of 
+        particle in a box is $E=\frac{3}{2} N k_\mathrm{B}T$), 
+        specific heat is also 
         approximated as $C \sim N k_\mathrm{B}$. 
 
         Thus
@@ -468,28 +478,165 @@ def run_stat_mech():
         $$
 
 
-        ## Ising Model (2d)
-
-        spins $\pm 1$ on a lattice will self-organize to energertically favourable
-        configurations. The energy of the system is given by
-
+        ## Ising Model 
+        Ernst Ising introduced the model of ferromagnetism with a discrete 
+        magnetic momemt $s_i$.
+        He approximated spin (magnetic moment) can be only one of the two 
+        state.
         $$
-            H(\sigma) = -\sum_{\left<i j\right>}J_{ij}\sigma_i\sigma_j
+            s_i = 
+            \begin{cases}
+            +1 \\
+            -1
+            \end{cases}
         $$
-        So it is energetically favourable to align with nearest neighbours. This happens over
-        some timescale, so we iteratively pick a spin, assess the energy change, $\delta E$, though its flip
-        and accept with a probability $p(\delta E)$.
+        $s_i = +1$ represents spin up and $s_i = -1$ represents spin down.
+
+        Hamiltonian of Ising model is
+        $$
+            \mathcal{H} = -J \sum_{\left<i j\right>} s_i s_j - h \sum_i s_i
+        $$
+        Here, $\left<i j\right>$ means sum is performed over interaction.
+        $J>0$ is coupling strength and $h$ is the external magnetic field.
+        Notice that $J<0$ indicates antiferromagnetism.
+        In case of $J=0$, there is no interspin interaction.
+        When $J$ depends on pair of spin, it is spin glass.
+
+        Magnetization of Ising model become
+        $$
+            M = \sum_i s_i
+        $$
+        or
+        $$
+            M = \frac{1}{N} \sum_{i=1}^N s_i.
+        $$
+        depending of the problem.
+
+        Caliculating partition function of 1D-lattice Ising model was 
+        performed by E. Ising himself, and that of 2D-lattice Ising 
+        model was aesthetically performed by Lars Onsager. 
+        However, nobody succeed in caliculating partition function of
+        3D-lattice Ising model until now as far as I know. 
+        Thus, generally speaking, caliculating partition function of 
+        Ising model is one of the hardest problem we human being have.
+        Nevertheless, we can use computer to numerically caliculate 
+        thermodynamic observable of canonical ensemble.
+        
+        ## Metropolis algorithm
+        ### Monte Carlo method
+        Monte Carlo is a subpart of Monaco and it is famous for gambling.
+        According to Wikipedia, Nicholas Metropolis suggest the name.
+
+        This method is used for numerically estimate physical observable.
+        Statistical mechanical average value of physical observable 
+        $\left<A\right>$ is 
+        $$
+            \left<A\right>
+            =
+            \frac{\sum_i A \exp \left[-\beta E_i \right] }{Z}
+            =
+            \frac
+            {\sum_i A \exp \left[-\beta E_i \right]}
+            {\sum_i \exp \left[-\beta E_i \right]}
+        $$
+        This can be approximated by 
+        $$
+            \left<A\right>
+            \approx 
+            \frac{\sum_i A \exp{-\beta E_i}}{\sum_i \exp{-\beta E_i}}
+        $$
+        ### Markov process and master equation
+        Important assumption of Metropolis algorithm is Markov process
+        which argue that state change is only depends on previous state.
+        By using this Markov assumption, one can describe the time 
+        evolution of probability distribution of state $i$ as 
+        master equation.
+        $$ 
+            \frac{\mathrm{d}P_i}{\mathrm{d}t}
+            =
+            \sum_j \left( w_{ij}P_j - w_{ji}P_i \right)
+        $$ 
+        Here $P_i$ is probability of state $i$ and $w_{ij}$ is transition
+        rate from state $j$ to state $i$.
+        $w_{ij}P_j$ is flux from state $j$ to state $i$.
+        First term of master equation shows the incoming probablity flux 
+        from state $j$ to state $i$ and second term shows outgoing 
+        probability from state $i$ to state $j$.
+
+        Notice that probability normalization 
+        $$ 
+            \sum_i P_i = 1
+        $$ 
+        constrains probability flux to be conserved as a form of master 
+        equation.
+
+        In steady state, probability distribution does not depend on time 
+        i.e. $\frac{\mathrm{d}P_i}{\mathrm{d}t} = 0$.
+        Then
+        $$ 
+            \sum_j \left( w_{ij}P_j - w_{ji}P_i \right)
+            = 0 
+        $$ 
+        which is equivalent to condition of steady state.
+        $$ 
+            \sum_j w_{ij}P_j = \sum_j w_{ji}P_i
+        $$ 
+        This argues that, in steady state, total flux coming to state $i$ 
+        equals to total flux going out from state $i$.
+        However, this condition can allow system to have irreversible 
+        state transition (circular state transition) which violate 
+        the concept of thermal equilibrium.
+        ### Detailed balance
+        By using "detailed balance" as a condition of equilibrium,
+        one can avoid such irreversible state transition.
+        $$ 
+            w_{ij}P_j = w_{ji}P_i
+        $$ 
+        This argues that flux from state $j$ to state $i$ is equal to 
+        that of opposite. 
+        This condition does not allow irreversible state transition.
+        ### Metropolis-Hastings algorithm 
+        What Metropolis algorithm do are two things: trying random state 
+        transition then accepting that transition with specific criteria.
+        How can we set the criteria to sample state from canonical 
+        ensemble?
+        By using detailed balance condition, we can know the form of 
+        transition rate and it provide us a criteria.
+        Equilibrium probability distribution of canonical ensemble is
+        $$
+            P_i
+            =
+            \frac
+            {\exp \left[-\beta E_i \right]}
+            {Z} .
+        $$
+        By combining this with detailed balance condition
+        $$
+            \frac{w_{ij}}{w_{ji}} 
+            =
+            \frac{P_i}{P_j} 
+            =
+            \frac
+            { \frac{\exp \left[-\beta E_i \right]}{Z} }
+            { \frac{\exp \left[-\beta E_j \right]}{Z} }
+            =
+            \exp \left[-\beta \left(E_i - E_j\right) \right]
+            =
+            \exp \left[-\beta \Delta E_{ij} \right]
+        $$
+        Here $\Delta E_{ij}$ is energy difference from state $j$ to state
+        $i$.
+
         """)
 
     cols = st.columns(2)
     cols[0].markdown(r"""
-        #### Metropolis algorithm
-
-        The metropolis algorithm is a hard cutoff. So for values above a critical point
-        are always accepted without considering probability. It makes computation easier.
-
-        "Why?" you may ask, well; the large numbers arrising from the exponential
-        are just that.
+        As I mentioned earlier, first step of Metropolis algorithm is 
+        trying random state transition.
+        In second step of the algorithm, first caliculate energy difference.
+        If energy difference is negative, accept the trial transition.
+        If energy difference is positive, accept with weight 
+        $\exp \left[-\beta \Delta E_{ij} \right]$. 
         """)
     
     cols[1].pyplot(metropolisVisualization())
@@ -497,7 +644,7 @@ def run_stat_mech():
     results, data = ising()
      
     st.markdown(r"""
-        below are snapshots of the output of a simulation of the 2d Ising model
+        Below are snapshots of the output of a simulation of the 2d Ising model
         using the metropolis algorithm.
         """)
 
