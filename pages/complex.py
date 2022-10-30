@@ -22,18 +22,15 @@ st.set_page_config(page_title="Scientific Computing",
 	initial_sidebar_state="collapsed", 
 	menu_items=None)
 
-# matplotlib style
+# setting matplotlib style:
 
 mpl.rcParams['patch.facecolor'] = (0.04, 0.065, 0.03)
 mpl.rcParams['axes.facecolor'] = (0.04, 0.065, 0.03)
 mpl.rcParams['figure.facecolor'] = (0.04, 0.065, 0.03)
+mpl.rcParams['xtick.color'] = 'white'
+mpl.rcParams['ytick.color'] = 'white'
+mpl.rcParams['figure.autolayout'] = True  # 'tight_layout'
 # mpl.rcParams['axes.grid'] = True  # should we?
-# ax.tick_params(axis='x', colors='white')
-# ax.tick_params(axis='y', colors='white')
-# ax.set_ylabel('probability of acceptance', color='white')
-# ax.set_xlabel('Energy difference', color='white')
-# ax.set(xticks=[0])
-# plt.tight_layout()
 
 
 def run_stat_mech():
@@ -52,14 +49,10 @@ def run_stat_mech():
 
         fig, ax = plt.subplots(figsize=(5,5))
         ax.plot(dEs, prob_change, color='pink', lw=7)
-
-        ax.tick_params(axis='x', colors='white')
-        ax.tick_params(axis='y', colors='white')
         ax.set_ylabel('probability of acceptance', color='white')
         ax.set_xlabel('Energy difference', color='white')
         ax.set(xticks=[0])
         plt.grid()
-        plt.tight_layout()
 
         return fig
 
@@ -113,7 +106,6 @@ def run_stat_mech():
         fig, ax = plt.subplots(1,nsnapshots, figsize=(15,3))
         for idx, key in enumerate(results['snapshots'].keys()):
             ax[idx].imshow(results['snapshots'][key])
-        # fig.patch.set_facecolor((.04,.065,.03))
         return fig
 
     def plotEnergy_magnetization():
@@ -122,17 +114,12 @@ def run_stat_mech():
         ax[1].plot(results['Magnetization'], color='orange')
         
 
-        for i in [0,1]: # could we make plotstyle page-wide?
-            ax[i].set(facecolor=(.04,.065,.03))
-            ax[i].tick_params(axis='x', colors='white')
-            ax[i].tick_params(axis='y', colors='white')
+        for i in [0,1]:
             ax[i].set_xlabel('Timestep', color='white')
         
         ax[0].set_ylabel('Energy', color='white')
         ax[1].set_ylabel('Magnetization', color='white')
         
-        # fig.patch.set_facecolor((.04,.065,.03))
-        plt.tight_layout()
         return fig
     
     def plotSusceptibility():
@@ -146,10 +133,6 @@ def run_stat_mech():
         ax.set_ylabel('Susceptibility', color='white')
         ax.set_xlabel('beta', color='white')
 
-        ax.set(facecolor=(.04,.065,.03))
-        ax.tick_params(axis='x', colors='white')
-        ax.tick_params(axis='y', colors='white')
-        # fig.patch.set_facecolor((.04,.065,.03))
         return fig
 
     # Render
@@ -1220,11 +1203,8 @@ def run_phaseTransitions_CriticalPhenomena():
     CHAINS = np.array(CHAINS)
     fig, ax = plt.subplots()
     ax.imshow(CHAINS, cmap=cmap, aspect = size/nsteps/3)
-    ax.tick_params(axis='x', colors='white')
-    ax.tick_params(axis='y', colors='white')
     ax.set_ylabel('Timestep', color='white')
     ax.set_xlabel('Site index', color='white')
-    fig.patch.set_facecolor((.04,.065,.03))
     st.pyplot(fig)
 
 
@@ -1337,7 +1317,6 @@ def run_percolation_and_fractals():
         xx = np.concatenate([list(domains[i]) for i in domains])
         ax.scatter(xx[:,0], xx[:,1], c=colors, marker=marker)
         ax.set(xticks = [], yticks = [], facecolor='black')
-        fig.patch.set_facecolor('darkgrey')
         return fig
 
     def betheLattice():
@@ -1393,7 +1372,6 @@ def run_percolation_and_fractals():
             plt.xticks([]); plt.yticks([])
             plt.xlabel('Im',rotation=0, loc='right', color='blue')
             plt.ylabel('Re',rotation=0, loc='top', color='blue')
-            fig.patch.set_facecolor('black')
             return fig
 
         res = stable(mandelbrot(makeGrid(size_fractal,  lims=[-1.85, 1.25, -1.25, 1.45]), a=a, n=n))
@@ -1521,9 +1499,9 @@ def run_random_walk():
             ax2.set_xticks([])
             ax2.set_yticks([])
             ax1[0].set_title('Individual steps', fontsize=24)
-            ax2.set_title('Cummulative path', fontsize=24)
+            ax2.set_title('Cumulative path', fontsize=24)
             plt.tight_layout()
-            fig.patch.set_facecolor('darkgrey')
+            fig.patch.set_facecolor('darkgrey')  # do we want black or darkgrey??
             return fig
         return plot2()
 
@@ -1581,8 +1559,6 @@ def randomWalk(nsteps):
             ax[0].set_ylabel('time', color='white')
             ax[0].set(xticks=[0], yticks=[])
             ax[0].grid()
-            ax[0].tick_params(axis='x', colors='white')
-            ax[0].tick_params(axis='y', colors='white')
 
             lengths.append(len(x))
 
@@ -1591,8 +1567,6 @@ def randomWalk(nsteps):
             ax[1].set_ylabel('occurance frequency', color='white')
             #ax[1].set(xticks=[0], yticks=[])
             ax[1].grid()
-            ax[1].tick_params(axis='x', colors='white')
-            ax[1].tick_params(axis='y', colors='white')
             c.pyplot(fig)
 
     a = st.button('run_firstReturn1D')
@@ -1732,7 +1706,6 @@ def bereaucrats():
     status_text = st.empty()
     chart = st.line_chart()
     fig, ax = plt.subplots(1,5, figsize=(12,2.5))
-    fig.patch.set_facecolor('black')
     a = [ax[idx].set(xticks=[], yticks=[], 
                 facecolor='black') for idx in range(5)]
     
@@ -1784,9 +1757,6 @@ def bakSneppen():
 
         fig, ax = plt.subplots()
         ax.imshow(X, aspect  = size/nsteps, vmin=0, vmax=1, cmap='gist_rainbow')
-        ax.tick_params(axis='x', colors='white')
-        ax.tick_params(axis='y', colors='white')
-        fig.patch.set_facecolor((.04,.065,.03))
         st.pyplot(fig)
         return L
 
@@ -1870,10 +1840,8 @@ def network():
             a = st.slider('alpha', 0.,1.,0.97)
         
     fig, ax = plt.subplots()
-    ax.set(facecolor=(.04,.065,.03))
     net = make_network(N,a) if network_type == 'random' else makeBetheLattice(N)
     draw_from_matrix(net)
-    fig.patch.set_facecolor((.04,.065,.03))
     st.pyplot(fig)
 
 
@@ -1898,9 +1866,6 @@ def run_betHedging():
     plt.plot(capital, c='purple')
     plt.xlabel('timestep', color='white')
     fig.patch.set_facecolor((.04,.065,.03))
-    ax.set(facecolor=(.04,.065,.03))
-    ax.tick_params(axis='x', colors='white')
-    ax.tick_params(axis='y', colors='white')
     ax.set(yscale='log')
     plt.ylabel('capital', color='white')
     st.pyplot(fig)
