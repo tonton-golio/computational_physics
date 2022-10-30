@@ -182,8 +182,11 @@ def run_stat_mech():
         
         In this system, temperature $T$ is statistically defined as 
         $$ 
-            \frac{1}{T} = \frac{\partial S}{\partial E} 
-            = k_\mathrm{B} \frac{\partial}{\partial E} \ln \Omega
+        \begin{align*}
+            \frac{1}{T} 
+            &= \frac{\partial S}{\partial E} 
+            \\&= k_\mathrm{B} \frac{\partial}{\partial E} \ln \Omega
+        \end{align*}
         $$ 
 
         ### Canonical Ensemble
@@ -232,11 +235,13 @@ def run_stat_mech():
         Probability of finding the state system energy $E_\mathrm{s}$ and 
         reservoir energy $E_\mathrm{r}$ is
         $$
+        \begin{align*}
             P(E_\mathrm{s}, E_\mathrm{r}) 
-            = \frac{\Omega(E_\mathrm{s}, E_\mathrm{r})}{\Omega(E_\mathrm{t})}
-            = \frac{\Omega_\mathrm{s}(E_\mathrm{s}) 
+            &= \frac{\Omega(E_\mathrm{s}, E_\mathrm{r})}{\Omega(E_\mathrm{t})}
+            \\&= \frac{\Omega_\mathrm{s}(E_\mathrm{s}) 
             \Omega_\mathrm{r}(E_\mathrm{r})}
             {\Omega(E_\mathrm{t})}
+        \end{align*}
         $$
         Most probable state (thermodynamical equilibrium state) satisfies
         $$
@@ -280,8 +285,8 @@ def run_stat_mech():
         $$
         Here $T_\mathrm{s}$ is temperature of system and $T_\mathrm{r}$ is 
         temperature of reservoir.
-        We can say in equilibrium system's temperature and reservoir's 
-        temperature is same.
+        From this result, we can say in equilibrium system's temperature 
+        and reservoir's temperature is same.
         $$
                 T_\mathrm{s} = T_\mathrm{r}
 
@@ -313,39 +318,43 @@ def run_stat_mech():
                 - \frac{E_i}{T_\mathrm{r}}\right)
                 \right]
             \\&\propto 
-                \exp \left[ 
+                \exp \left( 
                 -\frac{E_i}{k_\mathrm{B}T_\mathrm{r}} 
-                \right]
+                \right)
         \end{align*}
         $$
         We used Taylor series expansion because $E_\mathrm{t}\gg E_i$.
         The term 
-        $\exp \left[-\frac{E_i}{k_\mathrm{B}T} \right]$
+        $\exp \left(-\frac{E_i}{k_\mathrm{B}T} \right)$
         called "Boltzmann distribution".
         The probability that state $i$ happens is proportional to Boltzmann 
         distribution
-        $P_i \propto \exp \left[-\frac{E_i}{k_\mathrm{B}T} \right]$.
+        $P_i \propto \exp \left(-\frac{E_i}{k_\mathrm{B}T} \right)$.
 
         #### Partition function, free energy and thermodynamical observable
         The partition function is defined as the sum of the Boltzmann factor 
         of all states of system.
         $$
-            Z = \sum_i \exp \left[{-\frac{E_i}{k_\mathrm{B}T}} \right]
-              = \sum_i \exp \left[{-\beta E_i}\right].
+        \begin{align*}
+            Z &= \sum_i \exp \left({-\frac{E_i}{k_\mathrm{B}T}} \right)
+              \\&= \sum_i \exp \left({-\beta E_i}\right).
+        \end{align*}
         $$
         Here $\beta = \frac{1}{k_\mathrm{B}T}$.
         Thus probability of finding system with state $i$ with energy $E_i$ 
         becomes
         $$
+        \begin{align*}
             P_i 
-            =
+            &=
             \frac
-            {\exp \left[-\frac{E_i}{k_\mathrm{B}T} \right]}
+            {\exp \left(-\frac{E_i}{k_\mathrm{B}T} \right)}
             {Z} 
-            =
+            \\&=
             \frac
-            {\exp \left[-\beta E_i \right]}
+            {\exp \left(-\beta E_i \right)}
             {Z} .
+        \end{align*}
         $$
 
         Using the partiton the functions, we are able obtain any thermodynamical
@@ -353,18 +362,24 @@ def run_stat_mech():
         A particularly important value we may obtain is the (Helmholtz) free 
         energy,
         $$
-            F = -k_\mathrm{B}T \ln Z = -\frac{1}{\beta}\ln Z 
-            = \left<E\right> - TS.
+        \begin{align*}
+            F 
+            &= -k_\mathrm{B}T \ln Z 
+            \\&= -\frac{1}{\beta}\ln Z 
+            \\&= \left<E\right> - TS.
+        \end{align*}
         $$
         We can also obtain average energy from partition function.
         $$
         \begin{align*}
             \left<E\right>
             &=
-            \frac{1}{Z} \sum_i E_i \exp \left[{-\beta E_i}\right]
+            \sum_i E_i P_i
+            \\&=
+            \frac{1}{Z} \sum_i E_i \exp \left({-\beta E_i}\right)
             \\&=
             -\frac{1}{Z} \sum_i \frac{\partial}{\partial \beta} 
-            \exp \left[{-\beta E_i}\right]
+            \exp \left({-\beta E_i}\right)
             \\&=
             -\frac{1}{Z} \frac{\partial}{\partial \beta} Z
             \\&=
@@ -373,18 +388,20 @@ def run_stat_mech():
         $$
         From average energy, we can obtain specific heat.
         $$
+        \begin{align*}
             C 
-            =
+            &=
             \frac{\partial \left<E\right>}{\partial T}
-            = 
+            \\&= 
             \frac{\partial \left<E\right>}{\partial \beta}
             \frac{\partial \beta}{\partial T}
-            =
+            \\&=
             -\frac{1}{k_\mathrm{B} T^2}
             \frac{\partial \left<E\right>}{\partial \beta}
-            =
+            \\&=
             \frac{1}{k_\mathrm{B} T^2}
             \frac{\partial^2}{\partial \beta^2} \ln Z
+        \end{align*}
         $$
         Specific heat is equal to variace of energy.
         $$
@@ -414,7 +431,7 @@ def run_stat_mech():
             \frac{1}{Z}
             \frac{\partial^2 Z}{\partial \beta^2}
             \\&=
-            \left<E^2\right> - \left<E\right>^2
+            - \left<E\right>^2 + \left<E^2\right> 
             \\&=
             \left< \left( E - \left< E \right> \right)^2 \right>
             \\&=
@@ -479,7 +496,7 @@ def run_stat_mech():
             \frac{1}{Z}
             \frac{\partial^2 Z}{\partial H^2}
             \\&=
-            \left<M^2\right> - \left<M\right>^2
+            - \left<M\right>^2 + \left<M^2\right> 
             \\&=
             \left< \left( M - \left< M \right> \right)^2 \right>
             \\&=
@@ -504,23 +521,30 @@ def run_stat_mech():
 
         Hamiltonian of Ising model is
         $$
-            \mathcal{H} = -J \sum_{\left<i j\right>} s_i s_j - h \sum_i s_i
+            \mathcal{H} 
+            = 
+            -J \sum_{\left<i j\right>} s_i s_j - h \sum_i s_i
         $$
-        Here, $\left<i j\right>$ means sum is performed over interaction.
+        Here, $\left<i j\right>$ means sum is performed over 
+        nearest-neighbor interaction which means 
+        $\sum_{\left<i j\right>} 
+        = \frac{1}{2} \sum_i \sum_{\left< j \right>}$.
+        Index of second summation $\left< j \right>$ is nearest neighbor 
+        of spin $i$.
         $J>0$ is coupling strength and $h$ is the external magnetic field.
         Notice that $J<0$ indicates antiferromagnetism.
         In case of $J=0$, there is no interspin interaction.
         When $J$ depends on pair of spin, it is spin glass.
 
-        Magnetization of Ising model become
+        Magnetization of Ising model becomes
         $$
-            M = \sum_i s_i
+            M = \sum_{i=1}^N s_i.
         $$
-        or
+        or 
         $$
-            M = \frac{1}{N} \sum_{i=1}^N s_i.
+            m = \frac{1}{N} \sum_{i=1}^N s_i.
         $$
-        depending of the problem.
+        depending on the problem.
 
         Caliculating partition function of 1D-lattice Ising model was 
         performed by E. Ising himself, and that of 2D-lattice Ising 
@@ -541,20 +565,28 @@ def run_stat_mech():
         Statistical mechanical average value of physical observable 
         $\left<A\right>$ is 
         $$
+        \begin{align*}
             \left<A\right>
-            =
-            \frac{\sum_i A \exp \left[-\beta E_i \right] }{Z}
-            =
+            &=
+            \frac{\sum_i A_i \exp \left(-\beta E_i \right) }{Z}
+            \\&=
             \frac
-            {\sum_i A \exp \left[-\beta E_i \right]}
-            {\sum_i \exp \left[-\beta E_i \right]}
+            {\sum_i A \exp \left(-\beta E_i \right)}
+            {\sum_i \exp \left(-\beta E_i \right)}
+            \\&=
+            \sum_i A_i P_i
+        \end{align*}
         $$
         This can be approximated by 
         $$
             \left<A\right>
             \approx 
-            \frac{\sum_i A \exp{-\beta E_i}}{\sum_i \exp{-\beta E_i}}
+            \sum_i A_i \tilde{P}_i
         $$
+        Here $\tilde{P}_i$ is sampled probability distribution.
+        By approximating statistical mechanical probability distribution 
+        with sampled probabiolity distribution, we can get approximated 
+        physical observable from Monte Carlo method.
         ### Markov process and master equation
         Important assumption of Metropolis algorithm is Markov process
         which argue that state change is only depends on previous state.
@@ -608,8 +640,10 @@ def run_stat_mech():
         ### Metropolis-Hastings algorithm 
         What Metropolis algorithm do are two things: trying random state 
         transition then accepting that transition with specific criteria.
-        How can we set the criteria to sample state from canonical 
+        How can we set the criteria for sampling state from canonical 
         ensemble?
+        We need to restrict transition rate to sample state from canonical
+        ensemble.
         By using detailed balance condition, we can know the form of 
         transition rate and it provide us a criteria.
         Equilibrium probability distribution of canonical ensemble is
@@ -617,7 +651,7 @@ def run_stat_mech():
             P_i
             =
             \frac
-            {\exp \left[-\beta E_i \right]}
+            {\exp \left(-\beta E_i \right)}
             {Z} .
         $$
         By combining this with detailed balance condition
@@ -627,12 +661,12 @@ def run_stat_mech():
             \frac{P_i}{P_j} 
             =
             \frac
-            { \frac{\exp \left[-\beta E_i \right]}{Z} }
-            { \frac{\exp \left[-\beta E_j \right]}{Z} }
+            { \frac{\exp \left(-\beta E_i \right)}{Z} }
+            { \frac{\exp \left(-\beta E_j \right)}{Z} }
             =
             \exp \left[-\beta \left(E_i - E_j\right) \right]
             =
-            \exp \left[-\beta \Delta E_{ij} \right]
+            \exp \left(-\beta \Delta E_{ij} \right)
         $$
         Here $\Delta E_{ij}$ is energy difference from state $j$ to state
         $i$.
@@ -673,168 +707,485 @@ def run_phaseTransitions_CriticalPhenomena():
     st.markdown(r"""
     # Phase transitions & Critical phenomena
     ## Mean Field Solution to Ising Model
-    Hamiltonian of Ising model is 
+    ### Hamiltonian and partition function
+    Hamiltonian and partition function of Ising model are
     $$
         \mathcal{H} 
         = 
         -J \sum_{\left<i j\right>} s_i s_j - h \sum_i s_i
     $$
-    We are going to modify this.
-    By slightly modifying Hamiltonian, we obtain
     $$
-        \mathcal{H} 
-        \approx 
-        \sum_{i} \left( - J \sum_{\left<j\right>} s_j - h \right) s_i.
+    \begin{align*}
+        Z
+        &= 
+        \mathrm{Tr}
+        \left(
+        e^{-\beta \mathcal{H}}
+        \right)
+        \\&= 
+        \sum_{\{s_i\}} 
+        e^{-\beta \mathcal{H}\left(\{s_i\}\right)}
+        \\&= 
+        \sum_n^{2^N} 
+        \left\langle n \right\vert
+        e^{-\beta \mathcal{H}}
+        \left\vert n \right\rangle
+        \\&= 
+        \sum_{n}^{2^N} 
+        e^{-\beta E_n}
+    \end{align*}
     $$
-    Then we replace $\sum_{\left<j\right>} s_j$ with mean value 
-    $\left< s \right> = \frac{1}{N} \sum_i s_i = m$ 
-    which is not obtained yet. This is mean-field approximation.
+    Here $n$ is index of state, $\left\vert n \right\rangle$ is 
+    ket state $n$, $N$ is total number of spins and $\{s_i\}$ means
+    all possible configuration of Ising model.
+
+    We cannot caliculate partition function directly except for 
+    1D-lattice case and 2D-lattice case.
+    However, by approximating Hamiltonian with mean field, we can 
+    analytically obtain partition function.
+    Let's approxiomate Hamiltonian.
+    ### Ignoring high-order fluctuation
+    First, let's replace $s_i$ with mean $\left< s_i \right>$ and 
+    fluctuation from mean $\delta s_i = s_i - \left< s_i \right>$.
     $$
-        \sum_{\left<j\right>} s_j \approx N m \frac{z}{2}
+    \begin{align*}
+        s_i 
+        &= 
+        \left< s_i \right> + \delta s_i
+        \\&= 
+        \left< s_i \right> 
+        + \left( s_i - \left< s_i \right> \right)
+    \end{align*}
     $$
-    Here $z$ is number of nearest neighbors. Division by 2 is for avoiding
-    overlap caliculation.
-    Then Hamiltonian become
+    Here $\left< s_i \right>$ means
     $$
-        \mathcal{H} 
-        \approx 
-        \sum_{i} \left( - J N m \frac{z}{2} - h \right) s_i
+        \left< s_i \right>
         =
-        \left( - J N m \frac{z}{2} - h \right) \sum_{i} s_i
+        \frac{1}{Z} \sum_{n=1}^{2^N} s_i \exp \left( -\beta E_n \right).
     $$
-    Then mean-field partition function become
+    $n$ is index of state 
+    (total number of all state is $2^N$, $N$ is number of spin). 
+    Inside of sum of first term of Hamiltonian becomes
+    $$
+    \begin{align*}
+        s_i s_j
+        &=
+        \left( 
+            \left< s_i \right> + \delta s_i
+        \right) 
+        \left( 
+            \left< s_j \right> + \delta s_j
+        \right) 
+        \\&=
+        \left< s_i \right> \left< s_j \right>
+        + 
+        \left< s_i \right> \delta s_j
+        + 
+        \delta s_i \left< s_j \right> 
+        + 
+        \delta s_i \delta s_j
+        \\& \approx
+        \left< s_i \right> \left< s_j \right>
+        + 
+        \left< s_i \right> \delta s_j
+        + 
+        \delta s_i \left< s_j \right> 
+        \\&=
+        \left< s_i \right> \left< s_j \right>
+        + 
+        \left< s_i \right> 
+        \left( 
+            s_j - \left< s_j \right>
+        \right) 
+        + 
+        \left( 
+            s_i - \left< s_i \right>
+        \right) 
+        \left< s_i \right> 
+        \\&=
+        \left< s_i \right> \left< s_j \right>
+        + 
+        \left< s_i \right> 
+        \left( 
+            s_j - \left< s_j \right>
+        \right) 
+        + 
+        \left( 
+            s_i - \left< s_i \right>
+        \right) 
+        \left< s_i \right> 
+        \\&=
+        -\left< s_i \right>^2
+        + 
+        \left< s_i \right> 
+        \left( 
+            s_i + s_j 
+        \right) 
+    \end{align*}
+    $$
+    We ignore the fluctuation with second order.
+    We also used 
+    $$
+    \left< s_1 \right> 
+    = \left< s_2 \right> 
+    = \cdots
+    = \left< s_i \right> 
+    = \cdots
+    = \left< s_N \right>
+    $$
+    because all spins are equivalent.
+
+    What we need to notice is that magnetization in equilibrium state
+    is equivalent to mean of spin $\left< s_i \right>$.
+    $$
+    \begin{align*}
+        m 
+        &= 
+        \frac{1}{N} \sum_{i=1}^N \left< s_i \right>
+        \\&= 
+        \frac{1}{N} \left< s_i \right> \sum_{i=1}^N
+        \\&= 
+        \frac{1}{N} \left< s_i \right> N
+        \\&= 
+        \left< s_i \right>
+    \end{align*}
+    $$
+    Thus we can replace $\left< s_i \right>$ with $m$.
+    $$
+        s_i s_j
+        \approx 
+        - m^2 + m(s_i + s_j)
+    $$
+    ### Mean-field Hamiltonian
+    Then, mean-field Hamiltonian $\mathcal{H}_\mathrm{MF}$ beocomes
+    $$
+    \begin{align*}
+        \mathcal{H}_\mathrm{MF}
+        &= 
+        -J \sum_{\left<i j\right>} 
+        \left(- m^2 + m(s_i + s_j) \right) 
+        - h \sum_i s_i
+        \\&= 
+        J m^2 \sum_{\left<i j\right>}  
+        - J \sum_{\left<i j\right>} m(s_i + s_j)
+        - h \sum_i s_i
+    \end{align*}
+    $$
+    Let's think about first term.
+    $$
+    \begin{align*}
+        J m^2 \sum_{\left<i j\right>}
+        &=
+        J m^2 \frac{1}{2} 
+        \sum_{i} \sum_{\left<j\right>}
+        \\&=
+        J m^2 \frac{1}{2} 
+        \sum_{i=1}^N z
+        \\&=
+        \frac{J N z}{2} m^2 
+    \end{align*}
+    $$
+    Here $z$ is number of nearest-neighbor spins and division by 2 is
+    for avoiding overlap.
+
+    Move on to second term.
+    $$
+    \begin{align*}
+        - J \sum_{\left<i j\right>} m(s_i + s_j)
+        &=
+        - J m 
+        \left( 
+            \sum_{\left<i j\right>} s_i + \sum_{\left<i j\right>} s_j
+        \right)
+        \\&=
+        - 2 J m \sum_{\left<i j\right>} s_i
+        \\&=
+        - 2 J m \frac{1}{2} \sum_{i} s_i \sum_{\left<j\right>} 
+        \\&=
+        - J z m  \sum_{i} s_i
+    \end{align*}
+    $$
+    Finally, mean-field Hamiltonian becomes
+    $$
+    \begin{align*}
+        \mathcal{H}_\mathrm{MF}
+        &= 
+        \frac{J N z}{2} m^2 
+        - J z m  \sum_{i} s_i
+        - h \sum_i s_i
+        \\&= 
+        \frac{J N z}{2} m^2 
+        - \left( J z m + h \right) \sum_i s_i
+    \end{align*}
+    $$
+    ### Mean-field partition function
+    We shut up and caliculate mean-field partition function.
     $$
         \begin{align*}
         Z_{\mathrm{MF}}
         &= 
-        \sum_{s_1 = \pm 1} \sum_{s_2 = \pm 1} \cdots 
-        \sum_{s_N = \pm 1}
-        \exp \left[-\beta \mathcal{H} \right]
+        \sum_{\{s_i\}} 
+        e^{-\beta \mathcal{H}\left(\{s_i\}\right)}
         \\&= 
-        \sum_{s_1 = \pm 1} \sum_{s_2 = \pm 1} \cdots 
-        \sum_{s_N = \pm 1}
+        \sum_{s_1 = \pm 1} \sum_{s_2 = \pm 1} 
+        \cdots \sum_{s_N = \pm 1}
         \exp 
         \left[
-            -\beta \left( - J N m \frac{z}{2} - h \right) \sum_{i} s_i 
+        -\beta 
+        \mathcal{H} 
+        \left( \{s_i\} \right)
         \right]
         \\&= 
+        \sum_{s_1 = \pm 1} \cdots \sum_{s_N = \pm 1}
+        \exp 
+        \left[
+            - \beta\frac{J N z}{2} m^2 
+            + \beta \left( J z m + h \right) \sum_i s_i
+        \right]
+        \\&= 
+        \exp 
+        \left(
+            - \beta\frac{J N z}{2} m^2 
+        \right)
+        \sum_{s_1 = \pm 1} \cdots \sum_{s_N = \pm 1}
+        \prod_{i=1}^N
+        \exp 
+        \left[
+            \beta \left( J z m + h \right) s_i
+        \right]
+        \\&= 
+        \exp 
+        \left(
+            - \beta\frac{J N z}{2} m^2 
+        \right)
+        \left[
         \sum_{s_1 = \pm 1} 
         \exp 
         \left[
-            -\beta \left( - J N m \frac{z}{2} - h \right) s_1 
+            \beta \left( J z m + h \right) s_1 
         \right]
-        \sum_{s_2 = \pm 1} 
-        \exp 
-        \left[
-            -\beta \left( - J N m \frac{z}{2} - h \right) s_2
         \right]
         \cdots 
+        \left[
         \sum_{s_N = \pm 1}
         \exp 
         \left[
-            -\beta \left( - J N m \frac{z}{2} - h \right) s_N
+            \beta \left( J z m + h \right) s_N
+        \right]
         \right]
         \\&= 
+        \exp 
+        \left(
+            - \beta\frac{J N z}{2} m^2 
+        \right)
         \left[
         \sum_{s = \pm 1}
         \exp 
         \left[
-            \beta \left( J N m \frac{z}{2} + h \right) s
+            \beta \left( J z m + h \right) s
         \right]
         \right]^N
         \\&= 
+        \exp 
+        \left(
+            - \beta\frac{J N z}{2} m^2 
+        \right)
         \left[
         2\cosh
-        \left[
-            \beta \left( J N m \frac{z}{2} + h \right)
-        \right]
+        \left(
+            \beta J z m + \beta h
+        \right)
         \right]^N
         \end{align*}
     $$
-    We can caliculate statistical mechanical average 
-    $\left<s_i\right>=m$.
+    ### Self-consistent equation of magnetization
+    We can also caliculate statistical mechanically averaged magnetization
+    $m=\left<s_i\right>$.
     $$
     \begin{align*}
         m = \left<s_i\right>
         &=
         \frac{1}{Z_{\mathrm{MF}}}
         \sum_{s_1 = \pm 1} 
-        \sum_{s_2 = \pm 1} 
         \cdots 
         \sum_{s_N = \pm 1}
         s_i
-        \exp \left(-\beta \mathcal{H} \right)
+        \exp 
+        \left[
+        -\beta 
+        \mathcal{H} 
+        \left( \{s_i\} \right)
+        \right]
         \\&=
         \frac{1}{Z_{\mathrm{MF}}}
+        \exp 
+        \left(
+            - \beta\frac{J N z}{2} m^2 
+        \right)
+        \left[
         \sum_{s_1 = \pm 1} 
         \exp 
-        \left(
-            -\beta \left( - J N m \frac{z}{2} - h \right) s_1 
-        \right)
+        \left[
+            \beta \left(J z m + h \right) s_1 
+        \right]
+        \right]
         \cdots 
+        \left[
         \sum_{s_i = \pm 1} 
-        s_i 
+        s_i
         \exp 
-        \left(
-            -\beta \left( - J N m \frac{z}{2} - h \right) s_i
-        \right)
+        \left[
+            \beta \left(J z m + h \right) s_i
+        \right]
+        \right]
         \cdots 
-        \sum_{s_N = \pm 1}
+        \left[
+        \sum_{s_N = \pm 1} 
         \exp 
-        \left(
-            -\beta \left( - J N m \frac{z}{2} - h \right) s_N
-        \right)
+        \left[
+            \beta \left(J z m + h \right) s_N
+        \right]
+        \right]
         \\&=
         \frac{1}{Z_{\mathrm{MF}}}
+        \exp 
+        \left(
+            - \beta\frac{J N z}{2} m^2 
+        \right)
+        \left[
         2\cosh 
-        \left[
-            \beta \left( J N m \frac{z}{2} + h \right)
+        \left(
+            \beta J z m + \beta h
+        \right)
         \right]
         \cdots 
+        \left[
         2\sinh
-        \left[
-            \beta \left( J N m \frac{z}{2} + h \right)
+        \left(
+            \beta J z m + \beta h
+        \right)
         \right]
         \cdots 
-        2\cosh
         \left[
-            \beta \left( J N m \frac{z}{2} + h \right)
+        2\cosh
+        \left(
+            \beta J z m + \beta h
+        \right)
         \right]
         \\&=
         \frac
         {
+        \exp 
+        \left(
+            - \beta\frac{J N z}{2} m^2 
+        \right)
         \left[
         2\cosh
-        \left[
-            \beta \left( J N m \frac{z}{2} + h \right)
-        \right]
+        \left(
+            \beta J z m + \beta h
+        \right)
         \right]^{N-1}
         2\sinh
-        \left[
-            \beta \left( J N m \frac{z}{2} + h \right)
-        \right]
+        \left(
+            \beta J z m + \beta h
+        \right)
         }
         {
+        \exp 
+        \left(
+            - \beta\frac{J N z}{2} m^2 
+        \right)
         \left[
         2\cosh
-        \left[
-            \beta \left( J N m \frac{z}{2} + h \right)
-        \right]
+        \left(
+            \beta J z m + \beta h
+        \right)
         \right]^N
         }
         \\&=
         \tanh
-        \left[
-            \beta J N m \frac{z}{2} + \beta h 
-        \right]
+        \left(
+            \beta J z m + \beta h 
+        \right)
     \end{align*}
     $$
     When there is no external magnetic field $h=0$, this would be
     $$
-        m = \tanh \left[ \beta J N m \frac{z}{2} \right]
+        m = \tanh \left( \beta J z m \right)
     $$
-    We got a self-consistent form of magnetization.
-
+    We got a self-consistent equation of magnetization.
+    This form is analytically unsolvable but we can obtain $m$ from 
+    graphical method. 
+    By independetly plot the functions $y = m$ and 
+    $y=\tanh \left( \beta J z m \right)$, we can see $m$ which satisfies 
+    the self-consistent equation (consider $J$ and $z$ as constant).
+    - make graph
+    We clearly see that as the temperature increases, in a particular 
+    temperature, number of solution become one from three.
+    This qualitative change is phase transition.
+    ### Critical temperature of mean-field approximation
+    At which temperature, does this transition happen? 
+    When the slope of $y=\tanh \left( \beta J z m \right)$ is same as 
+    $y=m$ at $m=0$, these two equation has single intersection.
+    Taylor series of $\tanh(x)$ at $x=0$ is $\tanh(x) \approx x$.
+    Near $m=0$ we can say $\tanh(\beta Jzm) = \beta Jzm$.
+    Then slope become
+    $$
+    \begin{align*}
+        \frac{\mathrm{d}}{\mathrm{d}m} \tanh(\beta Jzm)
+        &\approx
+        \frac{\mathrm{d}}{\mathrm{d}m} \beta Jzm
+        \\&=
+        \beta Jz
+    \end{align*}
+    $$
+    This is equal to the slope of $y=m$ at $m=0$ which is 1.
+    Then critical temperature sarisfies
+    $\frac{Jz}{k_\mathrm{B} T_\mathrm{C}} = 1$.
+    Critical temperature $T_\mathrm{C}$ is 
+    $$
+        T_\mathrm{C}
+        =
+        \frac{Jz}{k_\mathrm{B}}.
+    $$
+    Critical temperature increases with $J$ and $z$ but it does not 
+    depend on dimension of lattice.
+    As we know, there is no phase transition in 1D-lattice Ising model.
+    This results is qualitatively wrong in that case but as the dimension 
+    become infinity this result become correct.
+    ### Free energy of mean-field approximation
+    We already have partition function. 
+    Why don't we get free energy?
+    By dividing system size $N$, we can obtain free energy per spin.
+    $$
+    \begin{align*}
+        F_\mathrm{MF} 
+        &= 
+        - \frac{1}{N\beta} \ln Z_\mathrm{MF}
+        \\&=
+        - \frac{1}{N\beta} \ln  
+        \left[
+        \exp 
+        \left(
+            - \beta\frac{J N z}{2} m^2 
+        \right)
+        \left[
+        2\cosh
+        \left(
+            \beta J z m + \beta h
+        \right)
+        \right]^N
+        \right]
+        \\&=
+        \frac{Jz}{2}m^2
+        - \frac{1}{\beta} \ln
+        \left[
+            2 \cosh \left(\beta Jzm + \beta h \right)
+        \right]
+    \end{align*}
+    $$
+    Notice that by differentiating free energy with magnetic field, we
+    can obtain magnetization.
         """) 
 
     with st.sidebar:
@@ -849,8 +1200,9 @@ def run_phaseTransitions_CriticalPhenomena():
             ])
         
     st.markdown(r"""
-    ## 1D ising model
-    ...
+    ## 1D Ising model
+    We can obtain partition function of 1D-lattice Ising model can 
+    analytically.
     """)   
     
     
