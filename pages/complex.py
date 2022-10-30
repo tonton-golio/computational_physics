@@ -1003,8 +1003,9 @@ def run_phaseTransitions_CriticalPhenomena():
     $m=\left<s_i\right>$.
     $$
     \begin{align*}
-        m = \left<s_i\right>
-        &=
+        m 
+        &= \left<s_i\right>
+        \\&=
         \frac{1}{Z_{\mathrm{MF}}}
         \sum_{s_1 = \pm 1} 
         \cdots 
@@ -1139,12 +1140,12 @@ def run_phaseTransitions_CriticalPhenomena():
         \beta Jz
     \end{align*}
     $$
-    This is equal to the slope of $y=m$ at $m=0$ which is 1.
-    Then critical temperature sarisfies
-    $\frac{Jz}{k_\mathrm{B} T_\mathrm{C}} = 1$.
-    Critical temperature $T_\mathrm{C}$ is 
+    This is equal to the slope of $y=m$ at $m=0$ which is $1$.
+    Then critical temperature $T_\mathrm{c}$ sarisfies
+    $\frac{Jz}{k_\mathrm{B} T_\mathrm{c}} = 1$.
+    Critical temperature $T_\mathrm{c}$ is 
     $$
-        T_\mathrm{C}
+        T_\mathrm{c}
         =
         \frac{Jz}{k_\mathrm{B}}.
     $$
@@ -1156,14 +1157,13 @@ def run_phaseTransitions_CriticalPhenomena():
     ### Free energy of mean-field approximation
     We already have partition function. 
     Why don't we get free energy?
-    By dividing system size $N$, we can obtain free energy per spin.
     $$
     \begin{align*}
         F_\mathrm{MF} 
         &= 
-        - \frac{1}{N\beta} \ln Z_\mathrm{MF}
+        - \frac{1}{\beta} \ln Z_\mathrm{MF}
         \\&=
-        - \frac{1}{N\beta} \ln  
+        - \frac{1}{\beta} \ln  
         \left[
         \exp 
         \left(
@@ -1177,8 +1177,8 @@ def run_phaseTransitions_CriticalPhenomena():
         \right]^N
         \right]
         \\&=
-        \frac{Jz}{2}m^2
-        - \frac{1}{\beta} \ln
+        \frac{JNz}{2}m^2
+        - \frac{N}{\beta} \ln
         \left[
             2 \cosh \left(\beta Jzm + \beta h \right)
         \right]
@@ -1186,6 +1186,199 @@ def run_phaseTransitions_CriticalPhenomena():
     $$
     Notice that by differentiating free energy with magnetic field, we
     can obtain magnetization.
+    $$
+    \begin{align*}
+        m &= \frac{1}{N}M
+          \\&= 
+          -
+          \frac{1}{N} 
+          \frac{\partial F_\mathrm{MF}}{\partial h}
+          \\&= 
+          \frac{1}{N} 
+          \frac{N}{\beta}
+          \frac
+          {2 \sinh \left(\beta Jzm + \beta h \right)}
+          {2 \cosh \left(\beta Jzm + \beta h \right)}
+          \beta
+          \\&=
+          \tanh \left(\beta Jzm + \beta h \right)
+    \end{align*}
+    $$
+    ### Critical exponent of mean-field approximation
+    By introducint dimensionless temperature parameter $\theta$,
+    $$
+    \begin{align*}
+     \theta 
+     &= 
+     \frac{T}{T_\mathrm{c}}
+     \\&= 
+     \frac{k_\mathrm{B}T}{Jz}
+     \\&= 
+     \frac{1}{\beta Jz}
+    \end{align*}
+    $$
+    we can rewrite free energy as dimensionless form.
+    $$
+    \begin{align*}
+        f_\mathrm{MF}
+        &=
+        \frac{F_\mathrm{MF}}{JzN}
+        \\&= 
+        \frac{m^2}{2}
+        - \frac{1}{\beta Jz} 
+        \ln
+        \left[
+            2 \cosh \left(\beta Jzm + \beta Jz h \frac{1}{Jz} \right)
+        \right]
+        \\&= 
+        \frac{m^2}{2}
+        - \theta \ln 2
+        - \theta 
+        \ln \cosh 
+        \left( 
+            \frac{1}{\theta} m 
+             + \frac{1}{\theta} \frac{h}{Jz} 
+        \right)
+        \\&= 
+        \frac{m^2}{2}
+        - \theta \ln 2
+        - \theta \ln \cosh 
+        \left( 
+            \frac{m + h'}{\theta} 
+        \right)
+    \end{align*}
+    $$
+    Here $h':=\frac{h}{Jz}$.
+    To get intuitive idea of this free energy, let's use the Mclaurin 
+    series expansion 
+    $\cosh(x) = 1 + \frac{x^2}{2} + \frac{x^4}{24} + \mathcal{O}(x^6)$.
+    In the case of $h'=0$ and $\frac{m}{\theta} \ll 1$, 
+    free energy can be expanded as
+    $$
+        f_\mathrm{MF}
+        = 
+        \frac{m^2}{2}
+        - \theta \ln 2
+        - \theta \ln 
+        \left[ 
+            1
+            +\frac{1}{2}\frac{m^2}{\theta^2}
+            +\frac{1}{24}\frac{m^4}{\theta^4}
+            + \mathcal{O}(\frac{m^6}{\theta^6})
+        \right].
+    $$
+    Then we use the Mclaurin series expansion 
+    $\ln(1+x) \approx x - \frac{x^2}{2}$
+    $$
+    \begin{align*}
+        f_\mathrm{MF}
+        &= 
+        \frac{m^2}{2}
+        - \theta \ln 2
+        - \theta 
+        \left[ 
+            (\frac{1}{2}\frac{m^2}{\theta^2} 
+            + \frac{1}{24}\frac{m^4}{\theta^4})
+            - \frac{1}{2}
+            (\frac{1}{2}\frac{m^2}{\theta^2} 
+            + \frac{1}{24}\frac{m^4}{\theta^4})^2
+            + \mathcal{O}\left(\frac{m^6}{\theta^6}\right)
+        \right]
+        \\&= 
+        \frac{m^2}{2}
+        - \theta \ln 2
+        - \theta 
+        \left[ 
+            \frac{1}{2}\frac{m^2}{\theta^2} 
+            + \frac{1}{24}\frac{m^4}{\theta^4}
+            - \frac{1}{2}\frac{1}{4}\frac{m^4}{\theta^4} 
+            + \mathcal{O}\left(\frac{m^6}{\theta^6}\right)
+        \right]
+        \\&= 
+        \frac{m^2}{2}
+        - \theta \ln 2
+        - \theta 
+        \left[ 
+            \frac{1}{2}\frac{m^2}{\theta^2} 
+            - \frac{1}{12}\frac{m^4}{\theta^4}
+            + \mathcal{O}\left(\frac{m^6}{\theta^6}\right)
+        \right]
+        \\&= 
+        \frac{1}{12}\frac{m^4}{\theta^3}
+        + \frac{1}{2}m^2 \left( 1-\frac{1}{\theta} \right)
+        - \theta \ln 2
+        + \mathcal{O}\left(\frac{m^6}{\theta^6}\right)
+    \end{align*}
+    $$
+    Let's check the extrema of this free energy.
+    $$
+    \begin{align*}
+        0
+        &=
+        \frac{\partial f_\mathrm{MF}}{\partial m}
+        \\&=
+        \frac{1}{3}\frac{m^3}{\theta^3}
+        + m \left( 1-\frac{1}{\theta} \right)
+        \\&=
+        m 
+        \left(
+        \frac{1}{3}\frac{m^2}{\theta^3}
+        + \left( 1-\frac{1}{\theta} \right)
+        \right)
+    \end{align*}
+    $$
+    Except for $m=0$ this has a solution
+    $$
+    \begin{align*}
+        m^2
+        &=
+        \left( \frac{1}{\theta} - 1 \right) \cdot 3\theta^3
+        \\&=
+        3\left( 1-\theta \right) \theta^2
+        \\&=
+        -3 t \theta^2.
+    \end{align*}
+    $$
+    Here we introduced reduced temperature
+    $$
+    \begin{align*}
+        t 
+        &:= 
+        \frac{T - T_\mathrm{C}}{T_\mathrm{C}}
+        \\&= 
+        \theta - 1
+    \end{align*}
+    $$
+    Thus when $t<0$ i.e. $T<T_\mathrm{c}$, there are three local extrema 
+    i.e. $m=0, \pm \sqrt{3} |t|^{1/2} \theta$.
+    When $t>0$ i.e. $T>T_\mathrm{c}$, there is single local extrema $m=0$.
+    From $m \sim (-t)^\beta \sim (-t)^{1/2}$, exponent of magnetization is
+    $1/2$.
+    
+    To check these extrema are maxima or minima, we need to check second 
+    derivative of free energy.
+    $$
+    \begin{align*}
+        \frac{\partial^2 f_\mathrm{MF}}{\partial m^2}
+        &=
+        \frac{m^2}{\theta^3}
+        + \left( 1-\frac{1}{\theta} \right)
+        \\&=
+        \frac{m^2}{(1+t)^3}
+        + \left( \frac{1+t-1}{1+t} \right)
+        \\&=
+        \frac{m^2}{(1+t)^3}
+        + \left( \frac{t}{1+t} \right)
+        \\&=
+        \frac{1}{1+t}
+        \left[
+        \frac{m^2}{(1+t)^2} + t
+        \right]
+    \end{align*}
+    $$
+    Thus when $t<0$ second derivative is positive for nonzero $m$?????
+    ????????????????????
+
         """) 
 
     with st.sidebar:
@@ -1200,9 +1393,341 @@ def run_phaseTransitions_CriticalPhenomena():
             ])
         
     st.markdown(r"""
-    ## 1D Ising model
+    ## 1D Ising model and transfer matrix method
+    ### Hamiltonian 
     We can obtain partition function of 1D-lattice Ising model can 
     analytically.
+    Hamiltonian of 1D-lattice Ising model is
+    $$
+        \mathcal{H}
+        =
+        -J\sum_{i=1}^{N} s_i s_{i+1} - h \sum_{i=1}^{N} s_i
+    $$
+    with periodic boundary condition $s_{N+1} = s_{1}$.
+    ### Partition function
+    Partition function becomes
+    $$
+    \begin{align*}
+        Z 
+        &=
+        \sum_{\{s_i\}} 
+        e^{-\beta \mathcal{H}\left(\{s_i\}\right)}
+        \\&=
+        \sum_{s_1 = \pm 1} \cdots \sum_{s_N = \pm 1}
+        \exp
+        \left(
+            \beta J\sum_{i=1}^{N} s_i s_{i+1} 
+            + \beta h \sum_{i=1}^{N} s_i 
+        \right)
+        \\&=
+        \sum_{s_1 = \pm 1} \cdots \sum_{s_N = \pm 1}
+        \exp
+        \left[
+            \beta J \left( s_1 s_2 + \cdots + s_N s_1 \right)
+            + \beta h \left( s_1 + \cdots + s_N \right)
+        \right]
+        \\&=
+        \sum_{s_1 = \pm 1} \cdots \sum_{s_N = \pm 1}
+        \exp
+        \left(
+            \beta J s_1 s_2 
+            + \cdots
+            + \beta J s_N s_1 
+            + \beta h \frac{s_1+s_2}{2} 
+            + \cdots
+            + \beta h \frac{s_N+s_1}{2} 
+        \right)
+        \\&=
+        \sum_{s_1 = \pm 1} \cdots \sum_{s_N = \pm 1}
+        \exp
+        \left(
+            \beta J s_1 s_2 
+            + \beta h \frac{s_1+s_2}{2} 
+        \right)
+        \cdots
+        \exp
+        \left(
+            \beta J s_N s_1 
+            + \beta h \frac{s_N+s_1}{2} 
+        \right)
+        \\&=
+        \sum_{s_1 = \pm 1} \cdots \sum_{s_N = \pm 1}
+        \prod_{i=1}^N
+        \exp
+        \left(
+            \beta J s_i s_{i+1} 
+            + \beta h \frac{s_i+s_{i+1}}{2} 
+        \right)
+    \end{align*}
+    $$
+    ### Transfer matrix
+    $$
+        T_{s_i, s_{i+1}} 
+        =
+        \exp
+        \left(
+            \beta J s_i s_{i+1} 
+            + \beta h \frac{s_i+s_{i+1}}{2} 
+        \right)
+    $$
+    is a element of transfer matrix $T$. Transfer matrix is 
+    $$
+    \begin{align*}
+        T
+        &=
+        \begin{bmatrix}
+        T_{+1, +1} & T_{+1, -1} \\
+        T_{-1, +1} & T_{-1, -1}
+        \end{bmatrix}
+        \\&=
+        \begin{bmatrix}
+        \exp \left[ \beta(J+h) \right] & \exp \left[ -\beta J \right] \\
+        \exp \left[ -\beta J \right] & \exp \left[ \beta(J-h) \right]
+        \end{bmatrix}
+    \end{align*}
+    $$
+    From the definition of matrix multiplication, we see
+    $$
+        \left(T^2\right)_{s_i, s_{i+2}} 
+        =
+        \sum_{s_{i+1} = \pm1}
+        T_{s_i, s_{i+1}}
+        T_{s_{i+1}, s_{i+2}}
+    $$
+    Using these let's caliculate partition function!
+    $$
+    \begin{align*}
+        Z 
+        &=
+        \sum_{s_1 = \pm 1} \cdots \sum_{s_N = \pm 1}
+        \prod_{i=1}^N
+        T_{s_i, s_{i+1}}
+        \\&=
+        \sum_{s_1 = \pm 1} \cdots \sum_{s_N = \pm 1}
+        T_{s_1, s_2}
+        \cdots
+        T_{s_N, s_1}
+        \\&=
+        \sum_{s_1 = \pm 1} 
+        \sum_{s_3 = \pm 1} 
+        \cdots
+        \sum_{s_N = \pm 1} 
+        \left(
+        \sum_{s_2 = \pm 1} 
+        T_{s_1, s_2}
+        T_{s_2, s_3}
+        \right)
+        T_{s_3, s_4}
+        \cdots
+        T_{s_N, s_1}
+        \\&=
+        \sum_{s_1 = \pm 1} 
+        \sum_{s_3 = \pm 1} 
+        \cdots
+        \sum_{s_N = \pm 1} 
+        \left(T^2\right)_{s_1, s_3}
+        T_{s_3, s_4}
+        \cdots
+        T_{s_N, s_1}
+        \\&=
+        \sum_{s_1 = \pm 1} 
+        \cdots
+        \sum_{s_N = \pm 1} 
+        \left(
+        \sum_{s_3 = \pm 1} 
+        \left(T^2\right)_{s_1, s_3}
+        T_{s_3, s_4}
+        \right)
+        T_{s_4, s_5}
+        \cdots
+        T_{s_N, s_1}
+        \\&= 
+        \cdots
+        \\&= 
+        \sum_{s_1 = \pm 1} 
+        \left(
+        \sum_{s_N = \pm 1} 
+        \left(T^{N-1}\right)_{s_1, s_N}
+        T_{s_N, s_1}
+        \right)
+        \\&= 
+        \sum_{s_1 = \pm 1} 
+        \left(T^{N}\right)_{s_1, s_1}
+        \\&= 
+        \mathrm{Tr}
+        \left(
+        T^{N}
+        \right)
+    \end{align*}
+    $$
+    Here $T$ is a real symmetric matrix which is diagonalizable.
+    $$
+        T = PDP^{-1}
+    $$
+    where $D$ is a diagonal matrix with eigenvalues $\lambda_1$ and 
+    $\lambda_2$
+    $$
+        D 
+        = 
+        \begin{bmatrix}
+        \lambda_1 & 0 \\
+        0 & \lambda_2
+        \end{bmatrix}
+    $$
+    and $P$ is a matrix containing eigenvectors.
+    Thanks to this diagonalization $T^{N}$ becomes simpler.
+    $$
+    \begin{align*}
+        T^{N} 
+        &=
+        PDP^{-1}PDP^{-1} \cdots PDP^{-1}
+        \\&=
+        PD^{N}P^{-1}
+    \end{align*}
+    $$
+    Using the property of trace, 
+    $$
+    \begin{aligned}
+        \operatorname{Tr}(A B) &=\sum_i(A B)_{i i} \\
+        &=\sum_i \sum_j A_{i j} B_{j i} \\
+        &=\sum_j \sum_i B_{j i} A_{i j} \\
+        &=\sum_j(B A)_{j j} \\
+        &=\operatorname{Tr}(B A)
+    \end{aligned}
+    $$
+    we obtain
+    $$
+    \begin{aligned}
+        \mathrm{Tr}
+        \left(
+            PD^{N}P^{-1}
+        \right)
+        &=
+        \mathrm{Tr}
+        \left(
+            D^{N}P^{-1}P
+        \right)
+        \\&=
+        \mathrm{Tr}
+        \left(
+            D^{N}
+        \right)
+    \end{aligned}
+    $$
+    Returning to partition function
+    $$
+    \begin{aligned}
+        Z
+        &=
+        \mathrm{Tr}
+        \left(
+            T^{N}
+        \right)
+        \\&=
+        \mathrm{Tr}
+        \left(
+            D^{N}
+        \right)
+        \\&=
+        \lambda_1^N + \lambda_2^N
+    \end{aligned}
+    $$
+    Cool. We need eigenvalue of transfer matrix.
+    $$
+    \begin{aligned}
+        0
+        &=
+        \operatorname{det}(T-\lambda)
+        \\&=
+        \left|\begin{array}{cc}
+        \exp\left({\beta J+ \beta h}\right)-\lambda & \exp\left({-\beta J}\right) \\
+        \exp\left(-\beta J\right) & \exp\left(\beta J - \beta h\right)-\lambda
+        \end{array}\right|
+        \\&=
+        \left(\exp\left(\beta J+ \beta h\right)-\lambda\right)
+        \left(\exp\left(\beta J- \beta h\right)-\lambda\right)
+        -\exp\left(-2 \beta J\right)
+        \\&=
+        \exp\left(2\beta J\right)
+        -\lambda
+        \left(
+            \exp\left(\beta J + \beta h\right)
+            +
+            \exp\left(\beta J - \beta h\right)
+        \right)
+        +\lambda^2
+        -\exp\left(-2 \beta J\right)
+    \end{aligned}
+    $$
+    We obtaiend quadratic equation of $\lambda$.
+    $$
+    \begin{aligned}
+        0
+        &=
+        \lambda^2
+        - 
+        \lambda
+        \left[
+             \exp\left(\beta J+ \beta h\right)
+            +\exp\left(\beta J- \beta h\right)
+        \right]
+        + 
+        \left[
+        \exp\left(2\beta J\right)
+        - \exp\left(-2 \beta J\right)
+        \right]
+        \\&=
+        \lambda^2
+        - 
+        2 \lambda \exp \left(\beta J\right) \cosh \left(\beta h\right)
+        + 
+        2 \sinh \left(2 \beta J\right)
+    \end{aligned}
+    $$
+    This equation has two solutions.
+    $$
+    \begin{aligned}
+        \lambda 
+        &=
+        \exp \left(\beta J\right) \cosh \left(\beta h\right)
+        \pm
+        \sqrt{
+            \exp \left(2 \beta J\right) \cosh^2 \left(\beta h\right)
+            -
+            2 \sinh \left(2 \beta J\right)
+        }
+        \\&=
+        \exp \left(\beta J\right) \cosh \left(\beta h\right)
+        \pm
+        \sqrt{
+            \exp \left(2 \beta J\right) 
+            +
+            \exp \left(2 \beta J\right) 
+            \sinh^2 \left(\beta h\right)
+            -
+            \left(
+                \exp\left(2 \beta J\right)
+                +
+                \exp\left(-2 \beta J\right)
+            \right)
+        }
+        \\&=
+        \exp \left(\beta J\right) \cosh \left(\beta h\right)
+        \pm
+        \sqrt{
+            \exp \left(2 \beta J\right) 
+            \sinh^2 \left(\beta h\right)
+            -
+            \exp\left(-2 \beta J\right)
+        }
+    \end{aligned}
+    $$
+
+
+
+
+
+
     """)   
     
     
