@@ -35,6 +35,16 @@ mpl.rcParams['figure.autolayout'] = True  # 'tight_layout'
 # mpl.rcParams['axes.grid'] = True  # should we?
 
 textfile_path = 'assets/complex/text/'
+
+def homeComplex():
+    st.markdown(r"""
+    # Complex Physics
+
+    In this course, we covered:
+    * **Statistical Mechanics**, in which we brushed up on copcepts like the partition function, free energy, entropy, their relations and their derivatives. We used this knowledge to simulated the Ising model.
+    * ...
+
+    """)
 def statisticalMechanics():
     
     # Sidebar
@@ -42,7 +52,7 @@ def statisticalMechanics():
         size = st.slider('size',3,100,10)
         beta = st.slider('beta',0.01,5.,1.)
         nsteps = st.slider('nsteps',3,10000,100)
-        nsnapshots = 9
+        nsnapshots = 8
     
     # Detailed Description
     ## some of these should perhaps be partially unpacked
@@ -143,7 +153,7 @@ def percolation_and_fractals():
 
         with st.expander('Mandelbrot'):
             cols_sidebar = st.columns(2)
-            logsize = cols_sidebar[0].slider(r'Resolution (log)',1.5,4., 3.)
+            logsize = cols_sidebar[0].slider(r'Resolution (log)',1.5,4., 2.5)
             size_fractal = int(10**logsize)
             cols_sidebar[1].latex(r'10^{}\approx {}'.format("{"+str(logsize)+"}", size_fractal))
             cols_sidebar = st.columns(2)
@@ -180,23 +190,23 @@ def percolation_and_fractals():
         ax.set_xlabel(r'$p$', color='white')
         ax.set_ylabel(r'Number of domains, $N$', color='white')
         st.pyplot(fig)
+        def perc_hists():
+            max_domain_size = np.max([np.max(Ns[i]['domain sizes']) for i in Ns])
+            
+            bins =np.logspace(0,np.log10(max_domain_size),10)
+            hists = np.array([np.histogram(Ns[i]['domain sizes'], bins=bins)[0] for i in Ns])
+            fig, ax = plt.subplots(figsize=(8,3))
 
-        #max_domain_size = np.max([np.max(Ns[i]['domain sizes']) for i in Ns])
-        
-        #bins =np.logspace(0,np.log10(max_domain_size),10)
-        #hists = np.array([np.histogram(Ns[i]['domain sizes'], bins=bins)[0] for i in Ns])
-        #fig, ax = plt.subplots(figsize=(8,3))
+            
+            hists_normalized = hists/np.max(hists, axis=0)
+            for h in hists:
+                ax.plot(bins[:-1], h)
+            ax.set(xscale='log')
+            ax.set_xlabel(r'$p$', color='white')
+            ax.set_ylabel(r'Number of domains, $N$', color='white')
+            st.pyplot(fig)
 
-        
-        #hists_normalized = hists/np.max(hists, axis=0)
-        #for h in hists:
-        #    ax.plot(bins[:-1], h)
-        #ax.set(xscale='log')
-        #ax.set_xlabel(r'$p$', color='white')
-        #ax.set_ylabel(r'Number of domains, $N$', color='white')
-        #st.pyplot(fig)
-
-    percolation_many_ps(10)
+    percolation_many_ps(7)
 
 
     # Bethe lattice
@@ -692,6 +702,7 @@ def run_betHedging():
 
 
 func_dict = {
+    'Home' : homeComplex,
     'Statistical Mechanics' : statisticalMechanics,
     'Phase transitions & Critical phenomena' : run_phaseTransitions_CriticalPhenomena,
     'Percolation and Fractals'   : percolation_and_fractals,

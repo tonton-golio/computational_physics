@@ -28,4 +28,5 @@ with st.expander('TODO',expanded=False):
 	- [x] get networks to work in browser
 	- [x] make graphic for front page
 	- [] dark mode equals default or style sheet for each theme
+	- [] close plots
 	""")

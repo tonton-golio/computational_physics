@@ -82,12 +82,13 @@ def ising(size, nsteps, beta, nsnapshots):
 
 def plotSnapshots(results, nsnapshots):
     
-    fig, ax = plt.subplots(3,nsnapshots //3, figsize=(9,9))
+    fig, ax = plt.subplots(2,4, figsize=(9,9))
     for idx, key in enumerate(results['snapshots'].keys()):
-        ax[idx//3, idx%3].imshow(results['snapshots'][key])
-        ax[idx//3, idx%3].set(xticks=[], yticks=[]) 
-        ax[idx//3, idx%3].set_title(key, color="white")
+        ax[idx//4, idx%4].imshow(results['snapshots'][key])
+        ax[idx//4, idx%4].set(xticks=[], yticks=[]) 
+        ax[idx//4, idx%4].set_title(key, color="white")
         plt.tight_layout()
+    plt.close()
     return fig
 
 def plotEnergy_magnetization(results):
@@ -100,7 +101,7 @@ def plotEnergy_magnetization(results):
     ax.set_xlabel('Timestep', color='white')
     ax.set_ylabel('Energy', color='red')
     ax2.set_ylabel('|Magnetization|', color='orange')
-    
+    plt.close()
     return fig
 
 def plotSusceptibility(data):
@@ -113,7 +114,7 @@ def plotSusceptibility(data):
                     color='cyan')
     ax.set_ylabel('Susceptibility', color='white')
     ax.set_xlabel('beta', color='white')
-
+    plt.close()
     return fig
 
 def metropolisVisualization(beta):
@@ -127,13 +128,11 @@ def metropolisVisualization(beta):
     ax.set_xlabel('Energy difference', color='white')
     ax.set(xticks=[0])
     plt.grid()
-
+    plt.close()
     return fig
 
 
 # Percolation and Fractals
-
-
 def percolation(size, seed, p,marker):
     def makeGrid(size, seed=42): 
         np.random.seed(seed)
@@ -147,8 +146,7 @@ def percolation(size, seed, p,marker):
         for n in neighbours:
             if (n[0]>=0) and (n[1]>=0) and (n[0]<len(grid)) and (n[1]<len(grid)):
                 if grid[n] and (n not in visited):
-                    domain.add(n)
-                    visited.add(n)
+                    domain.add(n) ; visited.add(n)
                     domain_, visited_ = checkNeighbours(n, grid, domain, visited)
                     domain = domain.union(domain_)
                     visited = visited.union(visited_)
@@ -169,8 +167,7 @@ def percolation(size, seed, p,marker):
                     domains[index] = domain
                     visited = visited.union(visited_)
                     index+=1
-                else:
-                    visited.add((i,j))
+                else: visited.add((i,j))
         
         new_domains = {}
         index = 0
@@ -200,6 +197,7 @@ def percolation(size, seed, p,marker):
     xx = np.concatenate([list(domains[i]) for i in domains])
     ax.scatter(xx[:,0], xx[:,1], c=colors, marker=marker)
     ax.set(xticks = [], yticks = [], facecolor='black')
+    plt.close()
     return fig, domains
 
 def betheLattice_old():
@@ -226,7 +224,6 @@ def betheLattice_old():
             graph.edge(str(i), str(i)+str(j))
             new_nodes.append(str(i)+str(j))
     return graph
-
 
 def betheLattice(p=0.1, size=62, get_many=False, ps=[.5]):
     def makeBetheLattice(n_nodes = 10):
@@ -297,6 +294,7 @@ def betheLattice(p=0.1, size=62, get_many=False, ps=[.5]):
 
         fig = plt.figure()
         nx.draw_networkx(G, node_color=color_map, pos=nx.kamada_kawai_layout(G))
+        plt.close()
         return fig
         
     if get_many == False:
@@ -311,21 +309,15 @@ def betheLattice(p=0.1, size=62, get_many=False, ps=[.5]):
             Ns[p] = len(getDomains(M,p))
         return Ns
 
-
 def run_fractals(size_fractal, a ,n):
-
     def stable(z):
-        try:
-            return False if abs(z) > 2 else True
-        except OverflowError:
-            return False
+        try: return False if abs(z) > 2 else True
+        except OverflowError: return False
     stable = np.vectorize(stable)
-
 
     def mandelbrot(c, a, n=50):
         z = 0
-        for i in range(n):
-            z = z**a + c
+        for i in range(n): z = z**a + c
         return z
 
     def makeGrid(resolution, lims=[-1.85, 1.25, -1.25, 1.45]):
@@ -340,6 +332,7 @@ def run_fractals(size_fractal, a ,n):
         plt.xticks([]); plt.yticks([])
         plt.xlabel('Im',rotation=0, loc='right', color='blue')
         plt.ylabel('Re',rotation=0, loc='top', color='blue')
+        plt.close()
         return fig
 
     res = stable(mandelbrot(makeGrid(size_fractal,  lims=[-1.85, 1.25, -1.25, 1.45]), a=a, n=n))
