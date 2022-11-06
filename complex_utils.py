@@ -11,11 +11,10 @@ def escapeCharacters(text, inverted=True):
             '\t' : '\x09',  # tab
             '\r' : '\x0d',  # carriage return
             '\n' : '\x0a',
-            '\f' : '\x0c',
+            r'\f' : r'\x0c',
         }
-    print(ecs)
+    
     for c in ecs:
-        print(c)
         if inverted: text = text.replace(ecs[c], c)
         else:        text = text.replace(c, ecs[c])
 
