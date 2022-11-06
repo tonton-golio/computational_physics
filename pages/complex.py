@@ -15,6 +15,7 @@ try: import networkx as nx  # networkx too :(
 except: pass
 import time
 import sys
+
 sys.setrecursionlimit(15000)
 
 st.set_page_config(page_title="Scientific Computing", 
