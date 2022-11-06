@@ -16,7 +16,7 @@ except: pass
 import time
 import sys
 
-sys.setrecursionlimit(15000)
+sys.setrecursionlimit(150000)
 
 st.set_page_config(page_title="Scientific Computing", 
     page_icon="🧊", 
@@ -141,17 +141,11 @@ def percolation_and_fractals():
             marker = marker_dict[st.radio('marker', marker_dict.keys())]
             seed = cols_sidebar[1].slider('seed',10,100)
 
-        with st.expander('Bethe lattice'):
-
-            cols_sidebar = st.columns(2)
-            levels = cols_sidebar[0].slider('levels', 0  , 3, 2)
-            
-
         with st.expander('Mandelbrot'):
             cols_sidebar = st.columns(2)
             logsize = cols_sidebar[0].slider(r'Resolution (log)',1.5,4., 3.)
             size_fractal = int(10**logsize)
-            cols_sidebar[1].latex(r'10^{}\approx {}'.format("{"+str(logsize)+"}", size))
+            cols_sidebar[1].latex(r'10^{}\approx {}'.format("{"+str(logsize)+"}", size_fractal))
             cols_sidebar = st.columns(2)
             n = cols_sidebar[0].slider('n',1,50,27)
             a = cols_sidebar[1].slider('a',0.01,13.,2.3)
@@ -202,49 +196,69 @@ def percolation_and_fractals():
         #ax.set_ylabel(r'Number of domains, $N$', color='white')
         #st.pyplot(fig)
 
-    percolation_many_ps(25)
+    percolation_many_ps(10)
 
+
+    # Bethe lattice
     st.markdown(r"""
-    ## Bethe Lattice
+    ## Bethe Lattice""")
+    cols = st.columns(2)
+    cols[0].markdown(r"""
     Bethe lattice (also called a regular tree)  is an infinite connected 
     cycle-free graph where all vertices have the same number of neighbors.  
-    """)
     
-    st.graphviz_chart(betheLattice())
+    
+    We may perform percolation on this lattice. To do this, we fill the adjencancy matrix, not with boolean value, but instead with random samples drawn from a uniform distribution.
+    """)
+    cols[1].pyplot(betheLattice(0, size=10))
 
-    st.markdown(r"## Percolation on this lattice")
+    #st.graphviz_chart(betheLattice_old())
+    size_beth = 62
+    p_beth = st.slider("""p = """,       0.01, 1. , .5)
+    st.pyplot( betheLattice(p_beth, size=size_beth))
+    
+    st.markdown(r'''Again we may take a look at the number of domains as a function of $p$.''')
+
+    Ns = betheLattice(size=32, get_many=True, 
+                    ps=np.linspace(.1,.9,10))
+        
+    fig, ax = plt.subplots(figsize=(7,3))
+    ax.plot(Ns.keys(),Ns.values() , c='white')
+    ax.set_xlabel(r'$p$', color='white')
+    ax.set_ylabel(r'Number of domains, $N$', color='white')
+    st.pyplot(fig)
 
 
-    st.pyplot(run_fractals())
-
-
+    st.markdown(r"""## Mandelbrot""")
     st.markdown(r"""
-    The Mandelbrot set contains complex numbers remaining stable through
-    
-    $$z_{i+1} = z^a + c$$
-    
-    after successive iterations. We let $z_0$ be 0.
+    The Mandelbrot set contains complex numbers remaining stable through the mandelbrot function after successive iterations. Note; we let $z_0$ be 0. The two main essential pieces of code are displayed below the plot.
     """)
-    st.code(r"""
-    def stable(z):
-        try:
-            return False if abs(z) > 2 else True
-        except OverflowError:
-            return False
-    stable = np.vectorize(stable)
-
-
-    def mandelbrot(c, a, n=50):
-        z = 0
-        for i in range(n):
-            z = z**a + c
-        return z
-
-    def makeGrid(resolution, lims=[-1.85, 1.25, -1.25, 1.45]):
-    re = np.linspace(lims[0], lims[1], resolution)[::-1]
-    im = np.linspace(lims[2], lims[3], resolution)
-    re, im = np.meshgrid(re,im)
-    return re+im*1j    """)
+    st.pyplot(run_fractals(size_fractal, a, n))
+    st.markdown(r"""
+    To optimize run-time, we have used that the output is symmetric across the real axis. We only calculate one side, i.e., 
+    $$
+        \text{stable} \left(\text{mandelbrot}(a+ib)\right)
+        =
+        \text{stable} \left(\text{mandelbrot}(a-ib)\right)
+    $$
+    """)
+    
+    cols = st.columns(2)
+    cols[0].code(r"""
+def stable(z):
+    try:
+        return False if abs(z) > 2 else True
+    except OverflowError:
+        return False
+stable = np.vectorize(stable)""")
+    
+    cols[1].code(r"""
+def mandelbrot(c, a=2, n=50):
+    z = 0
+    for i in range(n):
+        z = z**a + c
+    return z
+""")
 
 def run_random_walk():
     # Sidebar
