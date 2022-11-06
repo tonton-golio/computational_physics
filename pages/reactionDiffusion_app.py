@@ -306,7 +306,7 @@ def repr(snapshots, meta_data):
         ax[meth_num].set(title=meth, 
                     xlabel=r'$\log_2(dx)$', ylabel=r'$\log_2(dt)$')
         ax[meth_num].legend(facecolor='beige')
-        ax[meth_num].set_facecolor((0.34, 0.65, 0.03))
+        ax[meth_num].set_facecolor((1., 0.85, 0.3))
     
     plt.tight_layout()
     
