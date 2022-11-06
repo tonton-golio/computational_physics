@@ -133,7 +133,7 @@ def metropolisVisualization(beta):
 
 
 # Percolation and Fractals
-def percolation(size, seed, p,marker):
+def percolation(size=10, seed=69, p=0.4,marker='.', devmod=False):
     def makeGrid(size, seed=42): 
         np.random.seed(seed)
         grid = np.ones((size+2,size+2))
@@ -164,9 +164,11 @@ def percolation(size, seed, p,marker):
                     else:
                         visited.add((i,j))
                         domain, visited_ = checkNeighbours((i,j), open_arr, domain=set([(i,j)]), visited=visited)
-                    domains[index] = domain
+                    
                     visited = visited.union(visited_)
-                    index+=1
+                    if len(domain) > 0:
+                        domains[index] = domain
+                        index+=1
                 else: visited.add((i,j))
         
         new_domains = {}
@@ -180,59 +182,116 @@ def percolation(size, seed, p,marker):
 
     grid = makeGrid(size,seed)
     domains = getDomains(grid, p)
-
+    #if devmod: return domains
     x = np.arange(size+2)
     X,Y = np.meshgrid(x,x)
-    
-    fig, ax = plt.subplots()
-    # background
-    ax.scatter(X,Y, c='black')
-
-    # colors
-    colors = sns.color_palette("hls", len(domains))
-    np.random.shuffle(colors)
-    colors = np.concatenate([[colors[i]]*len(domains[i]) for i in domains])
-
-    # plot
     xx = np.concatenate([list(domains[i]) for i in domains])
-    ax.scatter(xx[:,0], xx[:,1], c=colors, marker=marker)
-    ax.set(xticks = [], yticks = [], facecolor='black')
-    plt.close()
-    return fig, domains
+    
+    if devmod:
+       return domains, xx
+    else:
+        fig, ax = plt.subplots()
+        # background
+        ax.scatter(X,Y, c='black')
 
-def betheLattice_old():
-    # Create a graphlib graph object
-    graph = graphviz.Digraph()
+        # colors
+        colors = sns.color_palette("hls", len(domains))
+        np.random.shuffle(colors)
+        colors = np.concatenate([[colors[i]]*len(domains[i]) for i in domains])
 
-    root = str(0)
-    nodes = []
-    for other in '0 1 2'.split():
-        graph.edge(root, root+other)
-        nodes.append(root+other)
+        # plot
+        ax.scatter(xx[:,0], xx[:,1], c=colors, marker=marker)
+        ax.set(xticks = [], yticks = [], facecolor='black')
+        plt.close()
+        
+        return fig, domains
 
-    new_nodes = []
-    for i in nodes:
-        for j in range(2):
-            graph.edge(str(i), str(i)+str(j))
+def percolation_many_ps(n_ps, size, seed):
+        Ns = {}
+        for p_ in np.linspace(0.01,.9,n_ps):
+            domains, __ = percolation(size, seed, p_, devmod=True)
+            Ns[p_] = {'number of domains':len(domains),
+                        'domain sizes' : [len(domains[i]) for i in domains]
+                    }
+        
+        fig, ax = plt.subplots(figsize=(5,2))
+        ax.plot(Ns.keys(),[Ns[i]['number of domains'] for i in Ns] , c='white')
+        ax.set_xlabel(r'$p$', color='white')
+        ax.set_ylabel(r'Number of domains, $N$', color='white')
+        plt.close()
+        return fig
 
-            new_nodes.append(str(i)+str(j))
+def animate_many_percolations(size=30 , steps = 10, filename='animation.gif', fps=5):
+    def many_perc(size = 30, low=0.01, high=0.9, steps=10, seed=42, marker='.'):
+        out = {}
+        for p in np.linspace(low, high, steps):
+            domains, xx = percolation(size, seed, p,marker, devmod=True)#[0]
+            N = len(domains)
+            sizes = np.array([len(domains[i]) for i in domains])#.reshape(-1,1)
+            
+            idx = 1 if p> 0.3 else 0
+            idx = 2 if p> 0.7 else idx 
+            
+            out[p] = {'domains' : domains, 
+                        'sizes' : sizes, 
+                        'xx' : xx}
+        return out
 
-    nodes = new_nodes
-    new_nodes = []
-    for i in nodes:
-        for j in range(2):
-            graph.edge(str(i), str(i)+str(j))
-            new_nodes.append(str(i)+str(j))
-    return graph
+    def animate(out, filename='animation.gif', fps=5):
+        fig = plt.figure(constrained_layout=True)
 
-def betheLattice(p=0.1, size=62, get_many=False, ps=[.5]):
-    def makeBetheLattice(n_nodes = 10):
+        gs = GridSpec(2, 3, figure=fig)
+        ax = [fig.add_subplot(gs[0, 0]), 
+            fig.add_subplot(gs[1, 0])]
+        ax_im = fig.add_subplot(gs[:, 1:])
+
+        camera = Camera(fig)
+
+        for i, p in enumerate(out.keys()):
+            
+            # histogram
+            counts, bins = np.histogram(out[p]['sizes'])
+            colors = sns.color_palette("gray", len(out.keys()) )
+            bin_mids = (bins[:-1] + bins[1:])/2
+            
+            ax[0].stairs(counts*1, bins, color=colors[i], label=p, lw=3)
+            ax[1].stairs(counts*bin_mids, bins, color=colors[i], label=p, lw=3)
+            ax[1].set_xlabel(r'Domain size, $s$', color="white")
+            ax[0].set_ylabel(r'Ocurrance freq., $f$', color="white")
+            ax[1].set_ylabel(r'Weight, $w=f\times s$', color="white")
+            ax[0].legend([f'p={round(p, 2)}'], facecolor='beige')
+            ax[0].set(yscale='log')
+            ax[1].set(yscale='log')
+            
+            # imshow
+            domains = out[p]['domains']
+            colors_im = sns.color_palette("hls", len(domains))
+            if len(domains) > 20: np.random.shuffle(colors_im)
+            colors_im = np.concatenate([[colors_im[i]]*len(domains[i]) for i in domains])
+            
+            xx = out[p]['xx']
+            ax_im.scatter(xx[:,0], xx[:,1], c=colors_im, marker='.')
+            ax_im.set(xticks = [], yticks = [], facecolor='black')
+            
+            plt.tight_layout()
+            camera.snap()
+
+        #plt.xscale('log')
+        animation = camera.animate()
+        animation.save(filename, fps=fps)
+
+
+    out = many_perc(size = size, steps=steps)
+    animate(out, filename=filename, fps=fps)
+
+def betheLattice(p=0.1, size=62, get_many=False, ps=[.5], degree=3):
+    def makeBetheLattice(n_nodes = 10, degree=3):
         M = np.zeros((n_nodes,n_nodes))
 
         idx = 1
         for i, _ in enumerate(M):
-            if i ==0: n =3
-            else: n = 2
+            if i ==0: n =degree
+            else: n = degree-1
             M[i, idx:idx+n] = 1
             idx+=n
         return M+M.T
@@ -288,7 +347,7 @@ def betheLattice(p=0.1, size=62, get_many=False, ps=[.5]):
                 if (i != j) and (val==1): 
                     G.add_edge(i, j)
         palette = sns.color_palette('hls', len(domains))
-        color_map = ['darkgrey' if i not in inDomain.keys() else palette[inDomain[i]] for i in range(len(M))]
+        color_map = ['black' if i not in inDomain.keys() else palette[inDomain[i]] for i in range(len(M))]
 
         if len(palette) == 0: color_map = ['orange'] * len(M)
 
@@ -298,7 +357,7 @@ def betheLattice(p=0.1, size=62, get_many=False, ps=[.5]):
         return fig
         
     if get_many == False:
-        M = makeBetheLattice(size)
+        M = makeBetheLattice(size, degree=degree)
         domains = getDomains(M,p)
         return draw_from_matrix(M,domains)
 
@@ -338,4 +397,23 @@ def run_fractals(size_fractal, a ,n):
     res = stable(mandelbrot(makeGrid(size_fractal,  lims=[-1.85, 1.25, -1.25, 1.45]), a=a, n=n))
     return plot_(res)
 
-
+# Phase Transitions and Critical Phenomena
+def ising_1d(size, beta, nsteps):
+    chain = np.zeros(size) ; chain[chain<.5] = -1; chain[chain>=.5] = 1
+    CHAINS = []
+    for _ in range(nsteps):
+        # pick random site
+        i = np.random.randint(0,size-1)
+        dE = (sum(chain[i-1:i+2])-chain[i])*chain[i]
+        if np.random.rand()<np.exp(-beta*dE):
+            chain[i] *= -1
+        CHAINS.append(chain.copy())
+    CHAINS = np.array(CHAINS)
+    
+    fig, ax = plt.subplots()
+    ax.imshow(CHAINS, #cmap=cmap, 
+    aspect = size/nsteps/3)
+    ax.set_ylabel('Timestep', color='white')
+    ax.set_xlabel('Site index', color='white')
+    plt.close()
+    return fig, CHAINS

@@ -100,43 +100,27 @@ def statisticalMechanics():
     st.pyplot(plotEnergy_magnetization(results))
     st.pyplot(plotSusceptibility(data))
     
-def run_phaseTransitions_CriticalPhenomena():
-    text_dict = getText_prep(filename = textfile_path+'phaseTransitions.md', 
-                                split_level = 2)
+def phaseTransitions_CriticalPhenomena():
+    text_dict = getText_prep(filename = textfile_path+'phaseTransitions.md', split_level = 2)
     
-    for key in text_dict:
-        with st.expander(key, expanded=False):
-            st.markdown(text_dict[key])
+    st.title('Phase Transitions and Critical Phenomena')
+
+    key = 'Mean Field Solution to Ising Model'
+    with st.expander(key, expanded=False):
+        st.markdown(text_dict[key])
+    
+    key = '1D Ising model and transfer matrix method'
+    with st.expander(key, expanded=False):
+        st.markdown(text_dict[key])
       
     with st.sidebar:
-        size = st.slider('size',3,100,10)
-        beta = st.slider('beta',0.01,5.,1.)
+        size = st.slider('size',3,100,30)
+        beta = st.slider('beta',0.01,5.,1.5)
         nsteps = st.slider('nsteps',3,10000,100)
-        nsnapshots = 4
-    chain = np.zeros(size) ; chain[chain<.5] = -1; chain[chain>=.5] = 1
-    CHAINS = []
-    for _ in range(nsteps):
-        # pick random site
-        i = np.random.randint(0,size-1)
-        dE = (sum(chain[i-1:i+2])-chain[i])*chain[i]
-        if np.random.rand()<np.exp(-beta*dE):
-            chain[i] *= -1
-        CHAINS.append(chain.copy())
-
     
-    CHAINS = np.array(CHAINS)
-    fig, ax = plt.subplots()
-    ax.imshow(CHAINS, #cmap=cmap, 
-    aspect = size/nsteps/3)
-    ax.set_ylabel('Timestep', color='white')
-    ax.set_xlabel('Site index', color='white')
+    
+    fig, _ = ising_1d(size, beta, nsteps)
     st.pyplot(fig)
-
-
-    st.markdown(r"""
-    ## Transfer Matrix Method
-    ...
-    """)
 
 def percolation_and_fractals():
     # Side bar
@@ -145,15 +129,15 @@ def percolation_and_fractals():
         with st.expander('square grid percolation'):
 
             cols_sidebar = st.columns(2)
-            size = cols_sidebar[0].slider('size', 4  , 64, 42)
-
+            size = cols_sidebar[0].slider('size', 4  , 64, 24)
+            n_ps = cols_sidebar[1].slider('Num ps = ', 5,20,5)
             marker_dict = {'point': '.','pixel': ',',}
-            marker = marker_dict[st.radio('marker', marker_dict.keys())]
+            marker = marker_dict[cols_sidebar[0].radio('marker', marker_dict.keys())]
             seed = cols_sidebar[1].slider('seed',10,100)
 
         with st.expander('Mandelbrot'):
             cols_sidebar = st.columns(2)
-            logsize = cols_sidebar[0].slider(r'Resolution (log)',1.5,4., 2.5)
+            logsize = cols_sidebar[0].slider(r'Resolution (log)',1.5,4., 2.)
             size_fractal = int(10**logsize)
             cols_sidebar[1].latex(r'10^{}\approx {}'.format("{"+str(logsize)+"}", size_fractal))
             cols_sidebar = st.columns(2)
@@ -166,48 +150,27 @@ def percolation_and_fractals():
     
     st.markdown(r"""## Percolation""")
     cols = st.columns(2)
-
     cols[0].markdown(r"""
-    A matrix containing values between zero and one is generated. Values greater than $p$ are *open*. On the right, is a randomly generated grid. Vary $p$ to alter openness to affect the number of domains, $N(p)$.
+    Percolation theory considers the behavior of a network. An appropriate case to start with is a 2D lattice with nearest neigbour connections. Let the nodes (intersections) require activation energy $p$ to be *open*. Neighboring open sites connect to form domains.
+
+    On the right, is a randomly generated grid. Vary $p$ to alter openness and affect the number of domains, $N(p)$.
     """)
     
     p_percolation = cols[0].slider("""p =""",       0.01, 1. , .1)
-    fig_percolation, domains = percolation(size, seed, p_percolation,marker)
+    fig_percolation, domains = percolation(size, seed, p_percolation,marker, devmod=False)
+    #domains
     cols[1].pyplot(fig_percolation)
-    st.latex(r"""N({}) = {}""".format(p_percolation, len(domains)))
+    cols[0].latex(r"""N({}) = {}""".format(p_percolation, len(domains)))
     
-    st.markdown(r"""We may visualize this relation:""")
-    def percolation_many_ps(n_ps=10):
-        Ns = {}
-        for p_ in np.linspace(0.01,.9,n_ps):
-            _, domains = percolation(size, seed, p_,marker)
-            Ns[p_] = {'number of domains':len(domains),
-                        'domain sizes' : [len(domains[i]) for i in domains]
-                    }
+    fig = percolation_many_ps(n_ps, size, seed)
+    cols[1].pyplot(fig)
+
+
+    st.markdown(r"""By visualizing $N(P)$, we find that this lattice structure undergoes a phase transition at $p=\frac{1}{2}$
+    """)
         
-        fig, ax = plt.subplots(figsize=(7,3))
-        ax.plot(Ns.keys(),[Ns[i]['number of domains'] for i in Ns] , c='white')
-        ax.set_xlabel(r'$p$', color='white')
-        ax.set_ylabel(r'Number of domains, $N$', color='white')
-        st.pyplot(fig)
-        def perc_hists():
-            max_domain_size = np.max([np.max(Ns[i]['domain sizes']) for i in Ns])
-            
-            bins =np.logspace(0,np.log10(max_domain_size),10)
-            hists = np.array([np.histogram(Ns[i]['domain sizes'], bins=bins)[0] for i in Ns])
-            fig, ax = plt.subplots(figsize=(8,3))
 
-            
-            hists_normalized = hists/np.max(hists, axis=0)
-            for h in hists:
-                ax.plot(bins[:-1], h)
-            ax.set(xscale='log')
-            ax.set_xlabel(r'$p$', color='white')
-            ax.set_ylabel(r'Number of domains, $N$', color='white')
-            st.pyplot(fig)
-
-    percolation_many_ps(7)
-
+    
 
     # Bethe lattice
     st.markdown(r"""
@@ -220,24 +183,33 @@ def percolation_and_fractals():
     
     We may perform percolation on this lattice. To do this, we fill the adjencancy matrix, not with boolean value, but instead with random samples drawn from a uniform distribution.
     """)
-    cols[1].pyplot(betheLattice(0, size=10))
+    degree = cols[1].slider("""degree""",       2, 5 , 3)
+    cols[1].pyplot(betheLattice(0, size={2:5,3:10,4:17,5:26}[degree], degree=degree))
 
     #st.graphviz_chart(betheLattice_old())
-    size_beth = 62
-    p_beth = st.slider("""p = """,       0.01, 1. , .5)
-    st.pyplot( betheLattice(p_beth, size=size_beth))
+    size_beth = 40
+    #cols=st.columns(2)
+    p_beth = cols[0].slider("""p = """,       0.01, 1. , .33)
+    
+    st.pyplot( betheLattice(p_beth, size=size_beth, degree=degree))
     
     st.markdown(r'''Again we may take a look at the number of domains as a function of $p$.''')
 
+    
     Ns = betheLattice(size=32, get_many=True, 
-                    ps=np.linspace(.1,.9,10))
+                    ps=np.linspace(.1,.9,7), degree=degree)
         
     fig, ax = plt.subplots(figsize=(7,3))
     ax.plot(Ns.keys(),Ns.values() , c='white')
     ax.set_xlabel(r'$p$', color='white')
-    ax.set_ylabel(r'Number of domains, $N$', color='white')
+    ax.set_ylabel(r'Number of domains, $N$ ', color='white')
     st.pyplot(fig)
 
+    st.markdown(r"""We may find the critical point for different degree, $z$, bethe lattices.
+    $$
+        p_c = \frac{1}{z-1}
+    $$
+    """)
 
     st.markdown(r"""## Mandelbrot""")
     st.markdown(r"""
@@ -269,7 +241,10 @@ def mandelbrot(c, a=2, n=50):
         z = z**a + c
     return z
 """)
-    st.markdown(r"""## Fractal Dimension""")
+    st.markdown(r"""
+    ## Fractal Dimension
+    After we get the formulae for this, we could look at the fractal dimension of the mandelbrot set at different zoom-levels.
+    """)
 
 def run_random_walk():
     # Sidebar
@@ -704,7 +679,7 @@ def run_betHedging():
 func_dict = {
     'Home' : homeComplex,
     'Statistical Mechanics' : statisticalMechanics,
-    'Phase transitions & Critical phenomena' : run_phaseTransitions_CriticalPhenomena,
+    'Phase transitions & Critical phenomena' : phaseTransitions_CriticalPhenomena,
     'Percolation and Fractals'   : percolation_and_fractals,
 	'RandomWalk'    : run_random_walk,
     'Bereaucrats'   : bereaucrats,

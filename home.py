@@ -29,4 +29,5 @@ with st.expander('TODO',expanded=False):
 	- [x] make graphic for front page
 	- [] dark mode equals default or style sheet for each theme
 	- [] close plots
+	- [] find critical point for percolation on bethe lattice of different degrees
 	""")
