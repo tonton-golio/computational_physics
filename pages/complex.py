@@ -259,6 +259,7 @@ def mandelbrot(c, a=2, n=50):
         z = z**a + c
     return z
 """)
+    st.markdown(r"""## Fractal Dimension""")
 
 def run_random_walk():
     # Sidebar

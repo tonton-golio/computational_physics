@@ -23,8 +23,9 @@ st.markdown("""
 
 with st.expander('TODO',expanded=False):
 	st.markdown(r"""
-	- [] clean up functions 😅
+	- [] move functions from complex into complex_utils
 	- [] add feedback box on each page?
-	- [] get networks to work in browser
-	- [] make graphic for front page
+	- [x] get networks to work in browser
+	- [x] make graphic for front page
+	- [] dark mode equals default or style sheet for each theme
 	""")

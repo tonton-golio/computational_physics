@@ -133,6 +133,7 @@ def metropolisVisualization(beta):
 
 # Percolation and Fractals
 
+
 def percolation(size, seed, p,marker):
     def makeGrid(size, seed=42): 
         np.random.seed(seed)
@@ -309,6 +310,7 @@ def betheLattice(p=0.1, size=62, get_many=False, ps=[.5]):
         for p in ps:
             Ns[p] = len(getDomains(M,p))
         return Ns
+
 
 def run_fractals(size_fractal, a ,n):
 
