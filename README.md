@@ -2,7 +2,7 @@
 
 This is a **web app** designed to store notes and resources from the University of Copenhagen's M.Sc. Computational Physics course. We'd appreciate it if people from other speciaizations could chip in too!
 
-[Website](https://tonton-golio-computational-physics-home-8pw1a2.streamlitapp.com/)
+[Website](https://physics.streamlit.app/)
 
 [Discord](https://discord.gg/JzZRhUNV5c)
 
