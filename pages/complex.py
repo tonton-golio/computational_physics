@@ -128,31 +128,23 @@ def run_phaseTransitions_CriticalPhenomena():
     ...
     """)
 
-def run_percolation_and_fractals():
+def percolation_and_fractals():
     # Side bar
     with st.sidebar:
         st.markdown('## Paramteres') 
         with st.expander('square grid percolation'):
 
             cols_sidebar = st.columns(2)
-            size = cols_sidebar[0].slider('size', 10  , 100, 50)
-            p = cols_sidebar[1].slider('p',       0.01, 1. , .1)
-            marker_dict = {
-                'point': '.',
-                'square': 's',
-                'pixel': ',',
-                'circle': 'o',
-            }
-            marker_key = st.select_slider('marker', marker_dict.keys())
-            marker = marker_dict[marker_key]
-            seed = st.slider('seed',10,100)
+            size = cols_sidebar[0].slider('size', 4  , 64, 42)
+
+            marker_dict = {'point': '.','pixel': ',',}
+            marker = marker_dict[st.radio('marker', marker_dict.keys())]
+            seed = cols_sidebar[1].slider('seed',10,100)
 
         with st.expander('Bethe lattice'):
 
             cols_sidebar = st.columns(2)
             levels = cols_sidebar[0].slider('levels', 0  , 3, 2)
-            p_ = cols_sidebar[1].slider('p_',       0.01, 1. , .1)
-
             
 
         with st.expander('Mandelbrot'):
@@ -167,18 +159,50 @@ def run_percolation_and_fractals():
 
     # Render
     st.markdown(r"""# Percolation and Fractals""")
-
-    st.markdown(r"""## Percolation""")
-    st.pyplot(percolation(size, seed, p,marker))
     
+    st.markdown(r"""## Percolation""")
+    cols = st.columns(2)
 
-    st.markdown(r"""
-    A matrix containing values between zero and one, with
-    the value determining openness as a function of $p$.
-
-    After generating a grid and a value for p, we look for 
-    connected domains. 
+    cols[0].markdown(r"""
+    A matrix containing values between zero and one is generated. Values greater than $p$ are *open*. On the right, is a randomly generated grid. Vary $p$ to alter openness to affect the number of domains, $N(p)$.
     """)
+    
+    p_percolation = cols[0].slider("""p =""",       0.01, 1. , .1)
+    fig_percolation, domains = percolation(size, seed, p_percolation,marker)
+    cols[1].pyplot(fig_percolation)
+    st.latex(r"""N({}) = {}""".format(p_percolation, len(domains)))
+    
+    st.markdown(r"""We may visualize this relation:""")
+    def percolation_many_ps(n_ps=10):
+        Ns = {}
+        for p_ in np.linspace(0.01,.9,n_ps):
+            _, domains = percolation(size, seed, p_,marker)
+            Ns[p_] = {'number of domains':len(domains),
+                        'domain sizes' : [len(domains[i]) for i in domains]
+                    }
+        
+        fig, ax = plt.subplots(figsize=(7,3))
+        ax.plot(Ns.keys(),[Ns[i]['number of domains'] for i in Ns] , c='white')
+        ax.set_xlabel(r'$p$', color='white')
+        ax.set_ylabel(r'Number of domains, $N$', color='white')
+        st.pyplot(fig)
+
+        #max_domain_size = np.max([np.max(Ns[i]['domain sizes']) for i in Ns])
+        
+        #bins =np.logspace(0,np.log10(max_domain_size),10)
+        #hists = np.array([np.histogram(Ns[i]['domain sizes'], bins=bins)[0] for i in Ns])
+        #fig, ax = plt.subplots(figsize=(8,3))
+
+        
+        #hists_normalized = hists/np.max(hists, axis=0)
+        #for h in hists:
+        #    ax.plot(bins[:-1], h)
+        #ax.set(xscale='log')
+        #ax.set_xlabel(r'$p$', color='white')
+        #ax.set_ylabel(r'Number of domains, $N$', color='white')
+        #st.pyplot(fig)
+
+    percolation_many_ps(25)
 
     st.markdown(r"""
     ## Bethe Lattice
@@ -655,7 +679,7 @@ def run_betHedging():
 func_dict = {
     'Statistical Mechanics' : statisticalMechanics,
     'Phase transitions & Critical phenomena' : run_phaseTransitions_CriticalPhenomena,
-    'Percolation and Fractals'   : run_percolation_and_fractals,
+    'Percolation and Fractals'   : percolation_and_fractals,
 	'RandomWalk'    : run_random_walk,
     'Bereaucrats'   : bereaucrats,
     'Bak-Sneppen'   : bakSneppen,

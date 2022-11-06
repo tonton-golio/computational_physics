@@ -196,7 +196,7 @@ def percolation(size, seed, p,marker):
     xx = np.concatenate([list(domains[i]) for i in domains])
     ax.scatter(xx[:,0], xx[:,1], c=colors, marker=marker)
     ax.set(xticks = [], yticks = [], facecolor='black')
-    return fig
+    return fig, domains
 
 def betheLattice():
     # Create a graphlib graph object
