@@ -372,50 +372,65 @@ def networks():
 def agent_event_models():
     st.markdown(r"""
     # Agent/event based models
+    In this type of model, we consider autonomous agents follwoing a set of rules. The example which immediately springs to mind, is Conway's *Game of Life*.
+
+    (insert game of life simulation)
+
+    ### simulation with discrete but random changes
+
+    Unlike cellular automata, we may have agent based models which act in a non-deterministic (random) fashion.
+
+    
+    ### Gillespie algorithm, 
+    *Traditional continuous and deterministic biochemical rate equations do not accurately predict cellular reactions since they rely on bulk reactions that require the interactions of millions of molecules. They are typically modeled as a set of coupled ordinary differential equations. In contrast, the Gillespie algorithm allows a discrete and stochastic simulation of a system with few reactants because every reaction is explicitly simulated. A trajectory corresponding to a single Gillespie simulation represents an exact sample from the probability mass function that is the solution of the master equation.*
+    
+    ### Example of agent based simulation and its advantages.
+    * spread in epidemics
+    * post spread on social networks
+    * ...
     """)
 
-def run_betHedging():
+def econophysics():
+    st.title('Econophysics')
 
-    st.markdown('# Bet-Hedghing')
-    with st.sidebar:
-        cols_sidebar = st.columns(2)
-        nsteps = cols_sidebar[0].slider('nsteps',1,3000,500)
-        starting_capital = cols_sidebar[1].slider('starting capital',1,1000,10)
-        prob_loss = cols_sidebar[0].slider('loss probability', 0.,1.,.5) 
-        invest_per_round = cols_sidebar[1].slider('invest per round', 0.,1.,.5) 
+    st.markdown(r"""
+    ### Hurst exponent
+    The Hurst exponent is a measure of long-term memory of timeseries.
+    $$
+        \mathbb {E} \left[{\frac {R(n)}{S(n)}}\right]=Cn^{H}{\text{  as }}n\to \infty \,,
+    $$
+    where;
 
-    capital = [starting_capital]
-    for i in range(nsteps):
-        if np.random.uniform()>prob_loss:
-            capital.append(capital[i]*(1+invest_per_round))
-        else:
-            capital.append(capital[i]*(1-invest_per_round))
+    * $R(n)$ is the range of the first $n$ cumulative deviations from the mean
+    * $S(n)$ is the series (sum) of the first n standard deviations
+    * $\mathbb {E} \left[x\right]\,$ is the expected value
+    * $n$ is the time span of the observation (number of data points in a time series)
+    * $C$ is a constant.
 
-    fig, ax = plt.subplots()
-    plt.plot(capital, c='purple')
-    plt.xlabel('timestep', color='white')
-    fig.patch.set_facecolor((.04,.065,.03))
-    ax.set(yscale='log')
-    plt.ylabel('capital', color='white')
+    $H$ ranges between 0 and 1, with higher values indicating less volatility/roughness. For self-similar time-series, $H$ is directly related to fractal dimension, $D=2-H$.
+
+    
+    ### Fear-factor model
+    Careful when googling fearfactor model ;)
+    
+    ### Bet-Hedghing
+    Bet-hedghing ...
+    an important parameter in bet-hedghing models, is the noise size 
+    """)
+    fig = betHedging()
     st.pyplot(fig)
 
-
-func_dict = {
-    'Contents' : homeComplex,
-    'Statistical Mechanics' : statisticalMechanics,
+topic_dict = {
+    'Contents' :                               homeComplex,
+    'Statistical Mechanics' :                  statisticalMechanics,
     'Phase transitions & Critical phenomena' : phaseTransitions_CriticalPhenomena,
-    'Percolation and Fractals'   : percolation_and_fractals,
-	'Self-organized Criticality'    : selfOrganizedCriticality,
-    'Networks'      : networks,
-    'Agent/event based models' : agent_event_models,
-    'Econophysics'  : run_betHedging,
-}
-    
+    'Percolation and Fractals' :               percolation_and_fractals,
+	'Self-organized Criticality' :             selfOrganizedCriticality,
+    'Networks' :                               networks,
+    'Agent/event based models' :               agent_event_models,
+    'Econophysics'  :                          econophysics, }
 
 with st.sidebar:
-	topic = st.selectbox("topic" , list(func_dict.keys()))
+	topic = st.selectbox("topic" , list(topic_dict.keys()))
 
-run_topic = func_dict[topic] ; run_topic()
-
-
-#plt.style.available
+run_topic = topic_dict[topic] ; run_topic()

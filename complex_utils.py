@@ -713,3 +713,34 @@ def draw_from_matrix(M, sick=[], pos=[]):
     fig, ax = plt.subplots()
     nx.draw_networkx(G, node_color=color_map, edge_color='white')
     return fig
+
+
+# Agents
+
+
+
+# Econophysics
+def betHedging():
+
+    with st.sidebar:
+        cols_sidebar = st.columns(2)
+        nsteps = cols_sidebar[0].slider('nsteps',1,3000,500)
+        starting_capital = cols_sidebar[1].slider('starting capital',1,1000,10)
+        prob_loss = cols_sidebar[0].slider('loss probability', 0.,1.,.5) 
+        invest_per_round = cols_sidebar[1].slider('invest per round', 0.,1.,.5) 
+
+    capital = [starting_capital]
+    for i in range(nsteps):
+        if np.random.uniform()>prob_loss:
+            capital.append(capital[i]*(1+invest_per_round))
+        else:
+            capital.append(capital[i]*(1-invest_per_round))
+
+    fig, ax = plt.subplots()
+    plt.plot(capital, c='purple')
+    plt.xlabel('timestep', color='white')
+    fig.patch.set_facecolor((.04,.065,.03))
+    ax.set(yscale='log')
+    plt.ylabel('capital', color='white')
+    plt.close()
+    return fig
