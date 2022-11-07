@@ -37,18 +37,9 @@ mpl.rcParams['figure.autolayout'] = True  # 'tight_layout'
 textfile_path = 'assets/complex/text/'
 
 def homeComplex():
-    st.markdown(r"""
-    # Complex Physics
-
-    In this course, we covered:
-    * **Statistical Mechanics**, in which we brushed up on copcepts like the partition function, free energy, entropy, their relations and their derivatives. We used this knowledge to simulate the Ising model.
-    * **Phase transitions & Critical phenomena**, in which we found the mean-field solution to Ising model, solved 1-d Ising model and applied the transfer matrix method.
-    * **Percolation and fractals**, in which we implemented percolation on different lattice structures to asses the distribution of cluster/domain sizes. Additionally, we looked at fractal dimensions.
-    * **Self organized criticality**: First return of Random walk, critical branching, the sandpile model, the evolution model.
-    * **Networks**: Amplification factor, scale free networks, analyzing patterns of networks, algorithms to make or evolve scale free networks.
-    * **Agent based models & Event based simulation**: simulation with discrrete but random changes, Gillespie algorithm, Example of agent based simulation and its advantages.
-    * **Econophysics** Hurst exponent, Fear Factor model, Bet hedging with smal and big noise terms.
-    """)
+    text = getText_prep(filename = textfile_path+'home.md')
+    st.title('Complex Physics')
+    st.markdown(text['# Complex Physics'])
 
 def statisticalMechanics():
     
@@ -263,6 +254,32 @@ def selfOrganizedCriticality():
     # Self organized criticality (SOC)
     Self-organized criticality, is a property of a dynamic system which have a critical point as an attractor. In this type of model, we may set initial values rather arbitrarily, as the system itself will evolve to the critical state. At the criticality, the model displays spatial or temporal scale-invariance.
 
+    ## Bak-Sneppen
+    """)
+    # Main fig
+    cols = st.columns(2)
+    nsteps = cols[0].slider('nsteps',1,30000,5000)
+    size = cols[1].slider('size',10,1000,300)
+    bakSneppen_fig, L = bakSneppen(size, nsteps)
+    st.pyplot(bakSneppen_fig)
+
+    # fill
+    cols = st.columns(2)
+    cols[0].markdown(r"""
+    The Bak-Sneppen method starts with a random vector. At each
+    timestep the smallest element and its two neighbors, are each 
+    replaced with new random numbers.
+
+    The figure on the right depicts the mean magnitude of elements in
+    the vector.
+    """)
+    fig_baksneppen_fill = bakSneppen_plot_fill(L)
+    cols[1].pyplot(fig_baksneppen_fill)
+
+    st.markdown(r"""
+    To build further on this, we should identify power laws along each dimension.""")
+
+    st.markdown(r"""
     ## Critical branching
     Critical branching is ...
     
@@ -316,7 +333,7 @@ def selfOrganizedCriticality():
     """)
     st.image('assets/complex/images/sandpile_2d_aval_dist.png')
     
-
+    st.markdown('## Evolution Model')
 
 def newNetwork():
     def makeBetheLattice(n_nodes = 10):
@@ -401,54 +418,6 @@ def newNetwork():
     domains = getDomains(M,0.6)
     open_arr = draw_from_matrix(M,domains)
 
-
-def bakSneppen():
-    st.markdown(r"# Bak-Sneppen")
-    def run(size, nsteps):
-        chain = np.random.rand(size)
-
-        X = np.empty((nsteps,size))
-        L = np.zeros(nsteps)
-        for i in range(nsteps):
-            lowest = np.argmin(chain)  # determine lowest
-            chain[(lowest-1+size)%size] = np.random.rand() # change left neighbour
-            chain[lowest] = np.random.rand() # change ego
-            chain[(lowest+1)%size] = np.random.rand() # change right neighbour
-            X[i] = chain
-            L[i] = np.mean(chain)
-
-        fig, ax = plt.subplots()
-        ax.imshow(X, aspect  = size/nsteps, vmin=0, vmax=1, cmap='gist_rainbow')
-        st.pyplot(fig)
-        return L
-
-    with st.sidebar:
-        nsteps = st.slider('nsteps',1,30000,5000)
-        size = st.slider('size',10,1000,300)
-
-    L = run(size, nsteps)
-    cols = st.columns(2)
-
-    cols[0].markdown(r"""
-    The Bak-Sneppen method starts with a random vector. At each
-    timestep the smallest element and its two neighbors, are each 
-    replaced with new random numbers.
-
-    The figure on the right depicts the mean magnitude of elements in
-    the vector.
-
-    To build further on this, we should identify power laws along each dimension.
-    """)
-
-    fig, ax = plt.subplots()
-    ax.plot(range(len(L)), L, c='purple')
-    fig.patch.set_facecolor((.04,.065,.03))
-    ax.set(facecolor=(.04,.065,.03))
-    ax.tick_params(axis='x', colors='white')
-    ax.tick_params(axis='y', colors='white')
-
-    cols[1].pyplot(fig)
-
 def network():
 
     def makeBetheLattice(n_nodes = 10):
@@ -505,6 +474,11 @@ def network():
     draw_from_matrix(net)
     st.pyplot(fig)
 
+def agent_event_models():
+    st.markdown(r"""
+    # Agent/event based models
+    """)
+
 def run_betHedging():
 
     st.markdown('# Bet-Hedghing')
@@ -532,22 +506,21 @@ def run_betHedging():
 
 
 func_dict = {
-    'Home' : homeComplex,
+    'Contents' : homeComplex,
     'Statistical Mechanics' : statisticalMechanics,
     'Phase transitions & Critical phenomena' : phaseTransitions_CriticalPhenomena,
     'Percolation and Fractals'   : percolation_and_fractals,
-	'self-organized Criticality'    : selfOrganizedCriticality,
-    'Bak-Sneppen'   : bakSneppen,
-    #'new network'   : newNetwork,
-    #'Networks'      : network,
-    'Bet-Hedghing'  : run_betHedging,
-    #'Bethe Lattice' : run_betheLattice
+	'Self-organized Criticality'    : selfOrganizedCriticality,
+    'Networks'      : network,
+    'Agent/event based models' : agent_event_models,
+    'Econophysics'  : run_betHedging,
 }
+    
 
 with st.sidebar:
 	topic = st.selectbox("topic" , list(func_dict.keys()))
 
-a = func_dict[topic] ; a()
+run_topic = func_dict[topic] ; run_topic()
 
 
 #plt.style.available

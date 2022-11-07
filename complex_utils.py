@@ -421,6 +421,38 @@ def ising_1d(size, beta, nsteps):
 
 
 # SOC
+
+
+def bakSneppen(size, nsteps):
+    chain = np.random.rand(size)
+
+    X = np.empty((nsteps,size))
+    L = np.zeros(nsteps)
+    for i in range(nsteps):
+        lowest = np.argmin(chain)  # determine lowest
+        chain[(lowest-1+size)%size] = np.random.rand() # change left neighbour
+        chain[lowest] = np.random.rand() # change ego
+        chain[(lowest+1)%size] = np.random.rand() # change right neighbour
+        X[i] = chain
+        L[i] = np.mean(chain)
+
+    fig, ax = plt.subplots()
+    ax.imshow(X, aspect  = size/nsteps, vmin=0, vmax=1, cmap='gist_rainbow')
+    plt.close()
+    return fig, L
+
+def bakSneppen_plot_fill(L):
+    fig, ax = plt.subplots()
+    ax.plot(range(len(L)), L, c='purple')
+    fig.patch.set_facecolor((.04,.065,.03))
+    ax.set(facecolor=(.04,.065,.03))
+    ax.tick_params(axis='x', colors='white')
+    ax.tick_params(axis='y', colors='white')
+
+    plt.close()
+    return fig
+
+
 def accumulate(x):
     X=np.zeros(len(x)) ; X[0] = x[0]
     for i, _ in enumerate(x): X[i] = X[i-1]+x[i]
