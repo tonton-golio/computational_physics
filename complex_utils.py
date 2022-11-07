@@ -717,7 +717,65 @@ def draw_from_matrix(M, sick=[], pos=[]):
 
 
 # Agents
+def game_of_life(size=6, nsteps=4, initially_filled = [(2,2), (3,2), (2,3), (4,3), (2,4)]):
+    """
+    If the cell is alive, then it stays alive if it has either 2 or 3 live neighbors
+    If the cell is dead, then it springs to life only in the case that it has 3 live neighbors
+    """
+    def initGrid(size, initially_filled):
+        grid = np.zeros((size,size), dtype=bool)
+        for i in initially_filled: grid[i] = True
+        return grid
 
+    def sumNeighbors(grid, i,j):
+        S = 0
+        for pos in [(i-1, j), (i+1, j), (i, j-1), (i, j+1),
+                    (i-1, j-1), (i+1, j+1), (i+1, j-1), (i-1, j+1)]:
+            if (pos[0] >= 0) and (pos[1] >= 0) and (pos[0] < len(grid)) and (pos[1] < len(grid)):
+                    S += grid[pos]
+        return S
+
+    def update(grid):
+        grid_new = grid.copy()
+        for i in range(size):
+            for j in range(size):
+                if grid[i,j]: # if ego is alive
+                    if sumNeighbors(grid, i, j) not in [2,3]:
+                        grid_new[i,j] = False
+                else:
+                    if sumNeighbors(grid, i, j) ==3:
+                        grid_new[i,j] = True
+
+        return grid_new
+
+
+    grid = initGrid(size, initially_filled)
+
+    fig, ax = plt.subplots(1,5)
+    ax[0].imshow(grid)
+    ax[0].set_title('initial', color='white')
+
+    grid = update(grid)
+    ax[1].imshow(grid)
+    ax[1].set_title('after 1 itr', color='white')
+
+    grid = update(grid)
+    ax[2].imshow(grid)
+    ax[2].set_title('after 2 itr', color='white')
+
+    grid = update(grid)
+    ax[3].imshow(grid)
+    ax[3].set_title('after 3 itr', color='white')
+
+    grid = update(grid)
+    ax[4].imshow(grid)
+    ax[4].set_title('after 4 itr', color='white')
+
+    _ = [ax[i].set(xticks=[], yticks=[]) for i in range(len(ax))]
+    plt.tight_layout()
+    
+    plt.close()
+    return fig
 
 # Econophysics
 def betHedging(p, noise, invest_per_round, nsteps, win_multiplier=2, loss_multiplier=.5):
