@@ -396,7 +396,37 @@ def run_fractals(size_fractal, a ,n):
         return fig
 
     res = stable(mandelbrot(makeGrid(size_fractal,  lims=[-1.85, 1.25, -1.25, 1.45]), a=a, n=n))
-    return plot_(res)
+    return plot_(res), res
+
+
+def fractal_dimension(res):
+    box_sizes_plot = [8,4,2]
+    fig, ax = plt.subplots(1,len(box_sizes_plot))
+
+    SQUARES = {}
+    box_sizes = np.arange(2,32)
+    for box_size in box_sizes:
+    
+        squares = np.zeros(np.array(res.shape)//box_size)
+        
+        for i, _ in enumerate(squares):
+            for j, _ in enumerate(squares[i]):
+                select = res[i*box_size:(i+1)*box_size, j*box_size:(j+1)*box_size]
+                if (0 in select) and (1 in select):
+                    squares[i,j] = 1
+
+        SQUARES[box_size] = squares
+    
+    for i, box_size in enumerate(box_sizes_plot):
+        ax[i].imshow(SQUARES[box_size].T)
+    st.pyplot(fig)
+    plt.close()
+
+
+    fig2 = plt.figure()
+    plt.plot(box_sizes, [1*np.sum(SQUARES[box_size]) for box_size in box_sizes])
+    st.pyplot(fig2)
+
 
 
 # Phase Transitions and Critical Phenomena
@@ -776,6 +806,7 @@ def game_of_life(size=6, nsteps=4, initially_filled = [(2,2), (3,2), (2,3), (4,3
     
     plt.close()
     return fig
+
 
 # Econophysics
 def betHedging(p, noise, invest_per_round, nsteps, win_multiplier=2, loss_multiplier=.5):

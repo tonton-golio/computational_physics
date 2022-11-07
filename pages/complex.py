@@ -211,13 +211,14 @@ def percolation_and_fractals():
     st.markdown(r"""
     The Mandelbrot set contains complex numbers remaining stable through the mandelbrot function after successive iterations. Note; we let $z_0$ be 0. The two main essential pieces of code are displayed below the plot.
     """)
-    st.pyplot(run_fractals(size_fractal, a, n))
+    fig, res = run_fractals(size_fractal, a, n)
+    st.pyplot(fig)
     st.markdown(r"""
     To optimize run-time, we have used that the output is symmetric across the real axis. We only calculate one side, i.e., 
     $$
-        \text{stable} \left(\text{mandelbrot}(a+ib)\right)
+        \text{mandelbrot}(a+ib)
         =
-        \text{stable} \left(\text{mandelbrot}(a-ib)\right)
+        \text{mandelbrot}(a-ib)
     $$
     """)
     
@@ -240,7 +241,10 @@ def mandelbrot(c, a=2, n=50):
     st.markdown(r"""
     ## Fractal Dimension
     After we get the formulae for this, we could look at the fractal dimension of the mandelbrot set at different zoom-levels.
+
+
     """)
+    fractal_dimension(res)
 
 def selfOrganizedCriticality():
         # Sidebar
@@ -396,7 +400,9 @@ def networks():
 def agent_event_models():
     st.markdown(r"""
     # Agent/event based models
-    In this type of model, we consider autonomous agents follwoing a set of rules. The example which immediately springs to mind, is Conway's *Game of Life*. The rules simple, we consider each site to have 8 nieghbors. If a site is alive it will stay alive if either 2 or 3 of its neighbors are alive. If a site is dead, it will spawn iff 3 of its neighbors are alive.
+    In this type of model, we consider autonomous agents follwoing a set of rules. The example which immediately springs to mind, is Conway's *Game of Life*. The rules simple, we consider each site to have 8 nieghbors. 
+        * If a site is alive it will stay alive if either 2 or 3 of its neighbors are alive. 
+        * If a site is dead, it will spawn iff 3 of its neighbors are alive.
     """)
     st.pyplot(game_of_life())
 
@@ -411,10 +417,15 @@ def agent_event_models():
     ### Gillespie algorithm, 
     *Traditional continuous and deterministic biochemical rate equations do not accurately predict cellular reactions since they rely on bulk reactions that require the interactions of millions of molecules. They are typically modeled as a set of coupled ordinary differential equations. In contrast, the Gillespie algorithm allows a discrete and stochastic simulation of a system with few reactants because every reaction is explicitly simulated. A trajectory corresponding to a single Gillespie simulation represents an exact sample from the probability mass function that is the solution of the master equation.*
     
-    ### Example of agent based simulation and its advantages.
+    ### Example of agent based simulation
     * spread in epidemics
     * post spread on social networks
     * ...
+
+    ### Advantages of agent based models
+    If actors in a model have different attirbutes (i.e. a heterogenous population) it makes sense to use an agent-based approach. This allows us to have super spreaders and things like that depending on what we are simulating.
+
+    In the opposite case, i.e., that with a homogenous population, we may derive results statistically.
     """)
 
 def econophysics():
@@ -471,7 +482,7 @@ topic_dict = {
     'Percolation and Fractals' :               percolation_and_fractals,
 	'Self-organized Criticality' :             selfOrganizedCriticality,
     'Networks' :                               networks,
-    'Agent/event based models' :               agent_event_models,
+    'Agent based models' :               agent_event_models,
     'Econophysics'  :                          econophysics, }
 
 with st.sidebar:
