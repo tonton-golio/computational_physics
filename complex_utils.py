@@ -747,11 +747,19 @@ def draw_from_matrix(M, sick=[], pos=[]):
 
 
 # Agents
-def game_of_life(size=6, nsteps=4, initially_filled = [(2,2), (3,2), (2,3), (4,3), (2,4)]):
+def game_of_life(size=6, nsteps=4, initial_config = 'boat'):
     """
     If the cell is alive, then it stays alive if it has either 2 or 3 live neighbors
     If the cell is dead, then it springs to life only in the case that it has 3 live neighbors
     """
+    initially_filled = {
+                        'boat' : [(2,2), (3,2), (2,3), (4,3), (3,4)],
+                        'ship' : [(2,2), (3,2), (2,3), (4,3), (4,4), (3,4)],
+                        'square' : [(2,2), (3,2), (2,3), (3,3)],
+                        'loaf' : [(2,1), (3,1), (1,2), (4,2), (2,4), (1,3), (3,3)],
+                        'glider' : [(2,2), (3,2), (2,3), (4,3), (2,4), ],
+        }[initial_config]
+
     def initGrid(size, initially_filled):
         grid = np.zeros((size,size), dtype=bool)
         for i in initially_filled: grid[i] = True

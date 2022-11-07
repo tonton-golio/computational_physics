@@ -398,13 +398,16 @@ def networks():
     cols[1].pyplot(fig)
 
 def agent_event_models():
-    st.markdown(r"""
-    # Agent/event based models
+    st.title('Agent/event based models')
+    cols = st.columns(2)
+    cols[0].markdown(r"""
     In this type of model, we consider autonomous agents follwoing a set of rules. The example which immediately springs to mind, is Conway's *Game of Life*. The rules simple, we consider each site to have 8 nieghbors. 
-        * If a site is alive it will stay alive if either 2 or 3 of its neighbors are alive. 
-        * If a site is dead, it will spawn iff 3 of its neighbors are alive.
+
+    * If a site is alive it will stay alive if either 2 or 3 of its neighbors are alive. 
+    * If a site is dead, it will spawn iff 3 of its neighbors are alive.
     """)
-    st.pyplot(game_of_life())
+    initial_config = cols[1].radio('initial config', ['glider','square', "boat", "loaf", "ship"])
+    st.pyplot(game_of_life(initial_config=initial_config))
 
     st.markdown(r"""
     In the figure above, I have initialized a *glider*. a glider is a self-replicating configurations which glides in some direction. For the one shown above, it is self-similar every 4 generations. Other configurations show self-similarity on much greater time-scales. 
