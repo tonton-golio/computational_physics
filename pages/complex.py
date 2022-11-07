@@ -162,8 +162,9 @@ def percolation_and_fractals():
     cols[1].pyplot(fig)
 
 
-    st.markdown(r"""By visualizing $N(p_c)$, we find that this lattice structure undergoes a phase transition at $p_c=\frac{1}{2}$
+    st.markdown(r"""By visualizing $N(p_c)$, we find that this lattice structure undergoes a phase transition at $p_c=\frac{1}{2}$. An easy way to notice this transition, and see just how *hard* it is, is to look at ...
     """)
+    st.video('assets/complex/images/percolation_animation.mp4')
         
     # Bethe lattice
     st.markdown(r"""
