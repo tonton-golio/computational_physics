@@ -166,12 +166,9 @@ def percolation_and_fractals():
     cols[1].pyplot(fig)
 
 
-    st.markdown(r"""By visualizing $N(P)$, we find that this lattice structure undergoes a phase transition at $p=\frac{1}{2}$
+    st.markdown(r"""By visualizing $N(p_c)$, we find that this lattice structure undergoes a phase transition at $p_c=\frac{1}{2}$
     """)
         
-
-    
-
     # Bethe lattice
     st.markdown(r"""
     ## Bethe Lattice""")
