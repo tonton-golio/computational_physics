@@ -20,7 +20,7 @@ sys.setrecursionlimit(150000)
 
 st.set_page_config(page_title="Scientific Computing", 
     page_icon="🧊", 
-	layout="wide", 
+	layout="centered", 
 	initial_sidebar_state="collapsed", 
 	menu_items=None)
 
@@ -42,60 +42,49 @@ def homeComplex():
     st.markdown(text['# Complex Physics'])
 
 def statisticalMechanics():
-    
-    # Sidebar
-    with st.sidebar:
-        size = st.slider('size',3,100,10)
-        beta = st.slider('beta',0.01,5.,1.)
-        nsteps = st.slider('nsteps',3,10000,100)
-        nsnapshots = 8
-    
     # Detailed Description
     ## some of these should perhaps be partially unpacked
     st.markdown(r"""# Statistical Mechanics""")
-    text_dict = getText_prep(filename = textfile_path+'statisticalMechanics.md', 
-                                split_level = 2)
-    
-    with st.expander("Microcanonical Ensemble", expanded=False):
-        text_dict["Microcanonical Ensemble"]
+    text_dict = getText_prep(filename = textfile_path+'statisticalMechanics.md', split_level = 2)
+    #a = text_dict.keys()
+    #a
 
-    with st.expander("Ising Model ", expanded=False):
-        text_dict["Ising Model "]
-    
-    with st.expander("Metropolis algorithm", expanded=False):
-        text_dict["Metropolis algorithm"]
-        cols = st.columns(2)
-        cols[0].markdown(r"""
-            As I mentioned earlier, first step of Metropolis algorithm is 
-            trying random state transition.
-            In second step of the algorithm, first caliculate energy difference.
-            If energy difference is negative, accept the trial transition.
-            If energy difference is positive, accept with weight 
-            $\exp \left[-\beta \Delta E_{ij} \right]$. 
-            """)
-        
-        cols[1].pyplot(metropolisVisualization(beta))
+    text_expander(key="Microcanonical Ensemble", 
+            text_dict=text_dict, expanded=False)
+    text_expander(key="Canonical Ensemble", text_dict=text_dict)
 
-    with st.expander("Mean Field Solution to Ising Model", expanded=False):
-        text_dict["Mean Field Solution to Ising Model"]
+    key="Metropolis algorithm"
+    with st.expander(key, expanded=False):
+        st.markdown(text_dict[key])
+
+    key = "Ising Model "
+    with st.expander(key, expanded=False):
+        st.markdown(text_dict[key])
     
+
     # Simulation
-    results, data = ising(size, nsteps, beta, nsnapshots)
-     
+   
     st.markdown(r"""
         ### Ising 2d Simulation  
-        Snapshots of the output of a simulation of the 2d Ising modelusing the metropolis algorithm.
+        Snapshots of the output of a simulation of the 2d Ising model using the metropolis algorithm.
         """)
+    cols = st.columns(3)
+    size = cols[0].slider('size',3,100,10)
+    beta = cols[1].slider('beta',0.01,5.,1.)
+    nsteps = cols[2].slider('nsteps',3,10000,100)
+    
+
+    nsnapshots = 4 #  multiples of 4 
+    results, data = ising(size, nsteps, beta, nsnapshots)
+     
+    
     st.pyplot(plotSnapshots(results, nsnapshots))
 
-    st.markdown(r"""If we track paramters through time,
-        we may be able to spot a phase transition (they're a rare breed).
-        On the right are plots of the energy and magnetization over time. Below
-        is susceptibility as obtained the variance of the magnetization, 
-        $\chi = \left< \left< M\right> - M\right>$ (:shrug)""")
-    st.pyplot(plotEnergy_magnetization(results))
-    st.pyplot(plotSusceptibility(data))
-    
+    st.markdown(r"""A time series indicates whether we have entered steady-state, and the susceptibility plots indicates (🤞) the phase-transition. *Phase transitions are trypically soft in the small $L$ regime.*""")
+    cols = st.columns(2)
+    cols[0].pyplot(plotEnergy_magnetization(results))
+    cols[1].pyplot(plotSusceptibility(data))
+     
 def phaseTransitions_CriticalPhenomena():
     text_dict = getText_prep(filename = textfile_path+'phaseTransitions.md', split_level = 2)
     
@@ -175,17 +164,18 @@ def percolation_and_fractals():
     cols[0].markdown(r"""
     Bethe lattice (also called a regular tree)  is an infinite connected 
     cycle-free graph where all vertices have the same number of neighbors.  
+    """)
+    degree = cols[0].slider("""degree""",       2, 5 , 3)
     
-    
+    st.markdown(r"""
     We may perform percolation on this lattice. To do this, we fill the adjencancy matrix, not with boolean value, but instead with random samples drawn from a uniform distribution.
     """)
-    degree = cols[1].slider("""degree""",       2, 5 , 3)
     cols[1].pyplot(betheLattice(0, size={2:5,3:10,4:17,5:26}[degree], degree=degree))
 
     #st.graphviz_chart(betheLattice_old())
     size_beth = 40
     #cols=st.columns(2)
-    p_beth = cols[0].slider("""p = """,       0.01, 1. , .33)
+    p_beth = st.slider("""p = """,       0.01, 1. , .33)
     
     st.pyplot( betheLattice(p_beth, size=size_beth, degree=degree))
     
@@ -214,33 +204,34 @@ def percolation_and_fractals():
     fig, res = run_fractals(size_fractal, a, n)
     st.pyplot(fig)
     st.markdown(r"""
-    To optimize run-time, we have used that the output is symmetric across the real axis. We only calculate one side, i.e., 
-    $$
-        \text{mandelbrot}(a+ib)
-        =
-        \text{mandelbrot}(a-ib)
-    $$
+    To optimize I assume the output is symmetric across the real axis. 
     """)
     
+    def code(lvl, text):
+        lines = text.split('\n')[1:]
+        for i, line in enumerate(lines):
+            lines[i] = line[4*lvl:]
+        return '\n'.join(lines)
+
     cols = st.columns(2)
-    cols[0].code(r"""
-def stable(z):
-    try:
-        return False if abs(z) > 2 else True
-    except OverflowError:
-        return False
-stable = np.vectorize(stable)""")
+    cols[0].code(code(2,r"""
+        def stable(z):
+            try:
+                return False if abs(z) > 2 else True
+            except OverflowError:
+                return False
+        """))
     
-    cols[1].code(r"""
-def mandelbrot(c, a=2, n=50):
-    z = 0
-    for i in range(n):
-        z = z**a + c
-    return z
-""")
+    cols[1].code(code(2,r"""
+        def mandelbrot(c, a=2, n=50):
+            z = 0
+            for i in range(n):
+                z = z**a + c
+            return z
+        """))
     st.markdown(r"""
     ## Fractal Dimension
-    After we get the formulae for this, we could look at the fractal dimension of the mandelbrot set at different zoom-levels.
+    After we get the formulae for this, we could look at the fractal dimension of the mandelbrot set at different zoom-levels, and find out whether its scale free.
 
 
     """)
@@ -403,7 +394,7 @@ def agent_event_models():
     cols[0].markdown(r"""
     In this type of model, we consider autonomous agents follwoing a set of rules. The example which immediately springs to mind, is Conway's *Game of Life*. The rules simple, we consider each site to have 8 nieghbors. 
 
-    * If a site is alive it will stay alive if either 2 or 3 of its neighbors are alive. 
+    * If a site is alive it will stay alive iff either 2 or 3 of its neighbors are alive. 
     * If a site is dead, it will spawn iff 3 of its neighbors are alive.
     """)
     initial_config = cols[1].radio('initial config', ['glider','square', "boat", "loaf", "ship"])

@@ -33,6 +33,9 @@ def getText_prep(filename = 'pages/stat_mech.md', split_level = 2):
     
     return text_dict    
 
+def text_expander(key, text_dict, expanded=False):
+    with st.expander(key, expanded=expanded):
+        st.markdown(text_dict[key])
 
 # statatistical mechanics
 def ising(size, nsteps, beta, nsnapshots):
@@ -83,9 +86,10 @@ def ising(size, nsteps, beta, nsnapshots):
 
 def plotSnapshots(results, nsnapshots):
     
-    fig, ax = plt.subplots(2,4, figsize=(9,9))
+    fig, ax = plt.subplots(nsnapshots//4,4, figsize=(9,9))
+    if nsnapshots == 4: ax = np.vstack([ax,ax])
     for idx, key in enumerate(results['snapshots'].keys()):
-        ax[idx//4, idx%4].imshow(results['snapshots'][key])
+        ax[idx//4, idx%4].imshow(results['snapshots'][key], cmap='BuGn')
         ax[idx//4, idx%4].set(xticks=[], yticks=[]) 
         ax[idx//4, idx%4].set_title(key, color="white")
         plt.tight_layout()
@@ -380,7 +384,7 @@ def run_fractals(size_fractal, a ,n):
         for i in range(n): z = z**a + c
         return z
 
-    def makeGrid(resolution, lims=[-1.85, 1.25, -1.25, 1.45]):
+    def makeGrid(resolution, lims=[-1.85, 1.25, -1.45, 1.45]):
         re = np.linspace(lims[0], lims[1], resolution)[::-1]
         im = np.linspace(lims[2], lims[3], resolution)
         re, im = np.meshgrid(re,im)
@@ -392,6 +396,7 @@ def run_fractals(size_fractal, a ,n):
         plt.xticks([]); plt.yticks([])
         plt.xlabel('Im',rotation=0, loc='right', color='blue')
         plt.ylabel('Re',rotation=0, loc='top', color='blue')
+        plt.text(12.5, 95, r"stable( mandelbrot($a-ib$) ) = stable( mandelbrot$(a+ib) )$", color='white')
         plt.close()
         return fig
 

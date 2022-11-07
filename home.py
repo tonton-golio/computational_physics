@@ -28,6 +28,9 @@ with st.expander('TODO',expanded=False):
 	- [x] get networks to work in browser
 	- [x] make graphic for front page
 	- [] dark mode equals default or style sheet for each theme
-	- [] close plots
+	- [x] close plots
+	- [] optimize bethelattice percolation search to make nice plots and confirm p_c
 	- [] find critical point for percolation on bethe lattice of different degrees
+	- [] big runs for susceptibility in 2d ising, add dashed line to plot
+	
 	""")
