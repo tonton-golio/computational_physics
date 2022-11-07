@@ -398,6 +398,7 @@ def run_fractals(size_fractal, a ,n):
     res = stable(mandelbrot(makeGrid(size_fractal,  lims=[-1.85, 1.25, -1.25, 1.45]), a=a, n=n))
     return plot_(res)
 
+
 # Phase Transitions and Critical Phenomena
 def ising_1d(size, beta, nsteps):
     chain = np.zeros(size) ; chain[chain<.5] = -1; chain[chain>=.5] = 1
@@ -718,23 +719,16 @@ def draw_from_matrix(M, sick=[], pos=[]):
 # Agents
 
 
-
 # Econophysics
-def betHedging():
-
-    with st.sidebar:
-        cols_sidebar = st.columns(2)
-        nsteps = cols_sidebar[0].slider('nsteps',1,3000,500)
-        starting_capital = cols_sidebar[1].slider('starting capital',1,1000,10)
-        prob_loss = cols_sidebar[0].slider('loss probability', 0.,1.,.5) 
-        invest_per_round = cols_sidebar[1].slider('invest per round', 0.,1.,.5) 
-
-    capital = [starting_capital]
+def betHedging(p, noise, invest_per_round, nsteps, win_multiplier=2, loss_multiplier=.5):
+    capital = [1]
+    
     for i in range(nsteps):
+        prob_loss = 1/(2*(1-p))+np.random.uniform(-1,1,None)*noise
         if np.random.uniform()>prob_loss:
-            capital.append(capital[i]*(1+invest_per_round))
+            capital.append(capital[i]*win_multiplier)
         else:
-            capital.append(capital[i]*(1-invest_per_round))
+            capital.append(capital[i]*loss_multiplier)
 
     fig, ax = plt.subplots()
     plt.plot(capital, c='purple')

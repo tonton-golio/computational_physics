@@ -341,10 +341,33 @@ def selfOrganizedCriticality():
 def networks():
     st.markdown(r"""
     # Networks
-    A network is a set of nodes connected by edges. Networks are everywhere; examples include social-networks, paper-authors, and many others.
+    A network is a set of nodes connected by edges. Networks are everywhere; examples include 
+    * social-networks, 
+    * paper-authors, 
+    * and many others.
+
+    ### features of a network
+    * cliqueishness
+    * degree
+    * centrality
+    * connectedness
 
     ### Amplification factor
-    **Amplification factor** is an attribute of a node in a directed network, which captures the ratio of outgoing nodes to incoming nodes.
+    **Amplification factor** is an attribute of a node in a directed network, which captures the ratio of outgoing nodes to incoming nodes;
+    $$
+        \mathcal{A} = \frac{k_\text{out}}{k_\text{in}},
+    $$
+    in which $k$ is the degree. We can expand this concept to un-directed graphs, for which
+    $
+        \mathcal{A} = k-1.
+    $
+    Rather than considering only a single node, we can determine the the weighted average amplification factor of a network:
+
+    $$
+        \mathcal{A} = \frac{\int k(k-1)n(k)dk}{\int kn(k)dk} = \frac{\left<k^2\right>}{\left<k\right>}-1
+    $$
+
+    so, degree times amplification factor times occurance, divided by the total degree of the network.
 
     ### Scale-free networks
     **Scale-free networks** are networks in the degree distribution follows a power law. Examples of scale free networks include:
@@ -354,20 +377,21 @@ def networks():
     
 
     ### Analyzing patterns of networks
+    A characterisitic of a network, which we can look for 
 
 
     ### Algorithms for generating scale-free networks
     """)
-    with st.sidebar:
-        network_type = st.radio('networt_type',['bethe', 'random'])
-        N = st.slider('N',1,42,22)
-        if network_type == 'random':
-            a = st.slider('alpha', 0.,1.,0.97)
+
+    cols = st.columns(2)
+    network_type = cols[0].radio('networt_type',['bethe', 'random'])
+    N = cols[0].slider('N',1,42,22)
+    if network_type == 'random':
+        a = cols[0].slider('alpha', 0.,1.,0.97)
         
-    
     net = make_network(N,a) if network_type == 'random' else makeBetheLattice(N)
     fig = draw_from_matrix(net)
-    st.pyplot(fig)
+    cols[1].pyplot(fig)
 
 def agent_event_models():
     st.markdown(r"""
@@ -411,14 +435,31 @@ def econophysics():
 
     
     ### Fear-factor model
-    Careful when googling fearfactor model ;)
+    If we assume that stock prices move in a Brownian fashion, we may let the $q$ describe the probability of the stock moving up. Naturally $1-q$ is the probability of the stock moving down.
+
+    We let $p$ be the probability of a *collective fear event* which causes all stocks to move down. We thus have $(1-p)q$ probability of the stock increasing and $p+ (1-p)(1-q)$ probability of the opposite.
+
+    A neutral random walk (Brownian) requires that these probabilities are equal;
+    $$
+        (1-p)q = p+ (1-p)(1-q) \Rightarrow q = \frac{1}{2(1-p)}
+    $$
     
-    ### Bet-Hedghing
+    ### Bet-Hedghing Model
     Bet-hedghing ...
     an important parameter in bet-hedghing models, is the noise size 
     """)
-    fig = betHedging()
-    st.pyplot(fig)
+
+    cols = st.columns(2)
+    noise = cols[0].slider('noise',0.,3.,1.)
+    p = cols[0].slider('p', 0.,1.,.05) 
+    win_multiplier = cols[0].slider('win multiplier', 1.,4.,1.5) 
+    loss_multiplier = cols[0].slider('loss multiplier', 0.,1.,.5) 
+
+    invest_per_round = cols[0].slider('invest per round', 0.,1.,.5) 
+    nsteps = cols[0].slider('nsteps    ',1,3000,500)
+    
+    fig = betHedging(p, noise, invest_per_round, nsteps)
+    cols[1].pyplot(fig)
 
 topic_dict = {
     'Contents' :                               homeComplex,
