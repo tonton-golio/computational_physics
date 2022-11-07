@@ -41,10 +41,15 @@ def homeComplex():
     # Complex Physics
 
     In this course, we covered:
-    * **Statistical Mechanics**, in which we brushed up on copcepts like the partition function, free energy, entropy, their relations and their derivatives. We used this knowledge to simulated the Ising model.
-    * ...
-
+    * **Statistical Mechanics**, in which we brushed up on copcepts like the partition function, free energy, entropy, their relations and their derivatives. We used this knowledge to simulate the Ising model.
+    * **Phase transitions & Critical phenomena**, in which we found the mean-field solution to Ising model, solved 1-d Ising model and applied the transfer matrix method.
+    * **Percolation and fractals**, in which we implemented percolation on different lattice structures to asses the distribution of cluster/domain sizes. Additionally, we looked at fractal dimensions.
+    * **Self organized criticality**: First return of Random walk, critical branching, the sandpile model, the evolution model.
+    * **Networks**: Amplification factor, scale free networks, analyzing patterns of networks, algorithms to make or evolve scale free networks.
+    * **Agent based models & Event based simulation**: simulation with discrrete but random changes, Gillespie algorithm, Example of agent based simulation and its advantages.
+    * **Econophysics** Hurst exponent, Fear Factor model, Bet hedging with smal and big noise terms.
     """)
+
 def statisticalMechanics():
     
     # Sidebar
@@ -243,8 +248,8 @@ def mandelbrot(c, a=2, n=50):
     After we get the formulae for this, we could look at the fractal dimension of the mandelbrot set at different zoom-levels.
     """)
 
-def run_random_walk():
-    # Sidebar
+def selfOrganizedCriticality():
+        # Sidebar
     with st.sidebar:
         cols_sidebar = st.columns(2)
         nsteps = cols_sidebar[0].slider('nsteps',  4,   100, 14)
@@ -254,132 +259,64 @@ def run_random_walk():
         axisscale = cols_sidebar[1].radio('axis-scales', ['linear', 'symlog'])
         #yscale = cols_sidebar[1].radio('yscale', ['linear', 'symlog'])
     
-    # Functions
-    def accumulate(x):
-        X=np.zeros(len(x)) ; X[0] = x[0]
-        for i, _ in enumerate(x): X[i] = X[i-1]+x[i]
-        return X
+    st.markdown(r"""
+    # Self organized criticality (SOC)
+    Self-organized criticality, is a property of a dynamic system which have a critical point as an attractor. In this type of model, we may set initial values rather arbitrarily, as the system itself will evolve to the critical state. At the criticality, the model displays spatial or temporal scale-invariance.
 
-    def randomWalk(nsteps, sigma2=1, seed=42, axisscale='linear', step_size=0):
-        (dx_f, dy_f) = (lambda theta, r=1: r*trig(theta) for trig in (np.cos, np.sin)) 
-        dx_f = lambda theta, r = 1: r*np.cos(theta)
-        dy_f = lambda theta, r = 1: r*np.sin(theta)
+    ## Critical branching
+    Critical branching is ...
+    
+    We may observe critial branching, by visualizing the first return of a random walk.
 
-        np.random.seed(seed)
-        thetas_uniform = np.random.uniform(0,2*np.pi,nsteps)
-        thetas_randn = np.random.randn(nsteps)*sigma2
-        thetas_bimodal = np.concatenate([ np.random.randn(nsteps//2) * sigma2-1, 
-                                          np.random.randn(nsteps//2) * sigma2+1 ])
-
-        thetas_uniform[0], thetas_randn[0], thetas_bimodal[0] = 0, 0, 0 
-
-        rands = [thetas_uniform, thetas_randn, thetas_bimodal]
-        rands_names = 'uniform, normal, bimodal'.split(', ')
-        stepLengths = np.random.rand(nsteps).copy()**step_size
-
-        def plot2():
-            colors = 'r g y'.split()
-            fig = plt.figure(figsize=(12,6))
-            
-            gs = GridSpec(3, 3, figure=fig)
-            ax1 = [fig.add_subplot(gs[i, 0]) for i in range(3)]
-            ax2 = fig.add_subplot(gs[:, 1:])    
-            
-            lims = {'xl':0, 'xh':0, 'yl':0, 'yh':0}
-            for i, (r, n, stepLength) in enumerate(zip(rands, rands_names, stepLengths)):
-                dx, dy = dx_f(r, stepLength), dy_f(r, stepLength)
-                dx = np.vstack([np.zeros(len(dx)), dx]).T.flatten()
-                dy = np.vstack([np.zeros(len(dy)), dy]).T.flatten()
-                
-                ax1[i].plot(dx,dy, lw=1, c=colors[i])
-                ax1[i].set(ylim=(-1,1), xlim=(-1,1), 
-                            xticks=[], yticks=[],facecolor = "black",)
-                
-                x = accumulate(dx)
-                y = accumulate(dy)
-                ax2.plot(x,y, lw=2, label=n,c=colors[i])
-
-            ax2.set(facecolor = "black",# xticks=[], yticks=[],
-                    xticklabels=[],
-                    xscale=axisscale,
-                    yscale=axisscale)
-            ax2.legend(fontsize=20)
-                
-            ax2.set_xticks([])
-            ax2.set_yticks([])
-            ax1[0].set_title('Individual steps', fontsize=24)
-            ax2.set_title('Cumulative path', fontsize=24)
-            plt.tight_layout()
-            fig.patch.set_facecolor('darkgrey')  # do we want black or darkgrey??
-            return fig
-        return plot2()
-
-
-
-    st.markdown(r"""# RandomWalk""")
-    st.pyplot(randomWalk(nsteps,sigma2, seed, axisscale, step_size))
-
-    cols = st.columns(2)
-    cols[0].markdown(r"""
-    Continous steps in a random direction illustrates the
-    differences between diff. distributions.
-
-    Red steps are generated by sampling theta from a uniform distribution.
-    This tends to keep us close to the origin.
-
-    Normal and bi-modal distributions are different in that the
-    similarity of step direction causes great displacement.
+    In 1 dimension, we either take a step right or a step left at each iteration. It should be very likely that we return to the origin, however some *walks* may take us on a long trip.
     """)
-
-    cols[1].code(r"""
-def randomWalk(nsteps):
-    for i in range(nsteps):
-        theta = random()
-        dx = np.cos(theta) ; x += dx
-        dy = np.sin(theta) ; y += dy 
-    """)
+    run_firstReturn1D = st.button('run: First return of 1d randomwalk')
+    if run_firstReturn1D: firstReturn1D()
 
     st.markdown(r"""
-    ## First return
-    *Explore the time of first return in 1d, 2d and 3d*
+    In 2 dimensions, we generate a random angle and take a step in that direction.
+    """)
+    st.code(r"""
+    def randomWalk(nsteps):
+        for i in range(nsteps):
+            theta = random()
+            dx = np.cos(theta) ; x += dx
+            dy = np.sin(theta) ; y += dy 
         """)
+    st.markdown(r"""
+    When looking for first return in 2d with floating point angles, we must consider a region around origo to be *home*. I implement this by looking when the agent enters the unit circle after having been a distance greater than $\frac{3}{2}$ from the origin.
+    """)
+    run_firstReturn2D = st.button('run: First return of 2d randomwalk')
+    if run_firstReturn2D: firstReturn2D()
+    
+    
+    st.markdown(r"""
+    Notice, it becomes increasingly unlikely to make a swift return as we add dimensions to our random walk model.""")
 
-    # 1d
-    def run_firstReturn1D():
-        lengths = []
-        lines = {}
-        c=st.empty()
-        for idx in range(100):
-            
+    st.markdown(r"""## Sandpile Model (bereaucrats)""")
 
-            x = [0] 
-            for i in range(100):
-                change = -1 if np.random.rand()< 0.5 else 1
-                x.append(x[i]+change)
-                if x[i+1] == 0: break
-            lines[idx] = x
+    
 
-            fig, ax = plt.subplots(1,2)
-            for idx in lines.keys():
-                x = lines[idx]
-            
-                ax[0].plot(x, range(len(x)))#, c='orange')
-            ax[0].set_xlabel('x position', color='white')
-            ax[0].set_ylabel('time', color='white')
-            ax[0].set(xticks=[0], yticks=[])
-            ax[0].grid()
+    st.markdown(r"""
+    The problem with beraucrats, is that they dont finish tasks. When a task 
+    lands on the desk of one, the set a side to start a pile. When that pile contains 
+    4 tasks, its time to distribute them amongst the nieghbors. If a
+    beraucrat neighbours an edge, they may dispose of the task headed in that direction. 
+    """)
 
-            lengths.append(len(x))
+    cols = st.columns(3)
+    run_bereaucrats = cols[0].button('run: bereaucrat model')
+    size_bereaucrats = cols[1].slider('size_bereaucrats', 10,100,30)
+    nsteps_bereaucrats = cols[2].slider('nsteps_bereaucrats', 10,20000,3000)
+    
+    if run_bereaucrats: bereaucrats(nsteps_bereaucrats, size_bereaucrats)
 
-            ax[1].hist(lengths)
-            ax[1].set_xlabel('First return time', color='white')
-            ax[1].set_ylabel('occurance frequency', color='white')
-            #ax[1].set(xticks=[0], yticks=[])
-            ax[1].grid()
-            c.pyplot(fig)
+    st.markdown(r"""
+    After a while, the model reaches steady state. Analyzing the distribution of avalanche sizes in steady state, reveals the ...
+    """)
+    st.image('assets/complex/images/sandpile_2d_aval_dist.png')
+    
 
-    a = st.button('run_firstReturn1D')
-    if a: run_firstReturn1D()
 
 def newNetwork():
     def makeBetheLattice(n_nodes = 10):
@@ -464,85 +401,6 @@ def newNetwork():
     domains = getDomains(M,0.6)
     open_arr = draw_from_matrix(M,domains)
 
-def bereaucrats():
-    st.markdown(r"# Beraucrats")
-
-
-    def makeGrid(size):
-        arr = np.zeros((size,size))
-        return arr, size**2
-    
-    def fill(arr, N):
-        rand_index = np.random.randint(0,N)
-        who = (rand_index//arr.shape[1], rand_index%arr.shape[1])
-        arr[who] += 1
-        return arr
-
-
-    def run():
-        arr, N = makeGrid(size)
-        results = {'mean':[], 'arr':[]}
-        
-        for step in range(nsteps):
-            arr = fill(arr, N)  # bring in 1 task
-
-            overfull_args = np.argwhere(arr>=4)  # if someone has 4 tasks redistribute to neighbours
-            for ov in overfull_args:
-                (i,j) = ov
-                for pos in [(i+1, j), (i-1, j), (i,j+1), (i,j-1)]:
-                    try: arr[pos] +=1
-                    except: pass
-                arr[i,j] -= 4
-            results['mean'].append(np.mean(arr)) 
-            results['arr'].append(arr.copy()) 
-
-        return results
-
-    with st.sidebar:
-        cols_sidebar = st.columns(2)
-        size = cols_sidebar[0].slider(r'size',5,40, 10)
-        nsteps = cols_sidebar[1].slider('nsteps',1,5000,1000)
-    
-    results = run()
-
-    # plot 1
-    c = st.empty()
-    progress_bar = st.progress(0)
-    status_text = st.empty()
-    chart = st.line_chart()
-    fig, ax = plt.subplots(1,5, figsize=(12,2.5))
-    a = [ax[idx].set(xticks=[], yticks=[], 
-                facecolor='black') for idx in range(5)]
-    
-    steps = range(nsteps)[::nsteps//10]
-    
-    for val, (i, next) in enumerate(zip(steps, steps[1:])):
-        
-        progress_bar.progress(int((i + 1)/nsteps))  # Update progress bar.
-
-        if val%2==0:  # plot imshow the grid
-            idx = 0 if val==0 else idx+1 
-            ax[idx].imshow(results['arr'][i], cmap="inferno")
-            ax[idx].set(xticks=[], yticks=[])
-            c.pyplot(fig)
-            
-        
-        new_rows = results['mean'][i:next]
-
-        # Append data to the chart.
-        chart.add_rows(new_rows)
-
-        # Pretend we're doing some computation that takes time.
-        time.sleep(.1)
-
-    status_text.text('Done!')
-
-    st.markdown(r"""
-    The problem with beraucrats, is that they dont finish tasks. When a task 
-    lands on the desk of one, the set a side to start a pile. When that pile contains 
-    4 tasks, its time to distribute them amongst the nieghbors. If a
-    beraucrat neighbours an edge, they may dispose of the task headed in that direction. 
-    """)
 
 def bakSneppen():
     st.markdown(r"# Bak-Sneppen")
@@ -678,8 +536,7 @@ func_dict = {
     'Statistical Mechanics' : statisticalMechanics,
     'Phase transitions & Critical phenomena' : phaseTransitions_CriticalPhenomena,
     'Percolation and Fractals'   : percolation_and_fractals,
-	'RandomWalk'    : run_random_walk,
-    'Bereaucrats'   : bereaucrats,
+	'self-organized Criticality'    : selfOrganizedCriticality,
     'Bak-Sneppen'   : bakSneppen,
     #'new network'   : newNetwork,
     #'Networks'      : network,
