@@ -162,10 +162,12 @@ def percolation_and_fractals():
     cols[1].pyplot(fig)
 
 
-    st.markdown(r"""By visualizing $N(p_c)$, we find that this lattice structure undergoes a phase transition at $p_c=\frac{1}{2}$. An easy way to notice this transition, and see just how *hard* it is, is to look at ...
+    st.markdown(r"""By visualizing $N(p_c)$, we find that this lattice structure undergoes a phase transition at $p_c=\frac{1}{2}$. An easy way to notice this transition, and see just how *hard* it is, is to look at domain weight distribution:
     """)
     st.video('assets/complex/images/percolation_animation.mp4')
-        
+    st.markdown(r"""Notice, at $p=p_c=\frac{1}{2}$ a domain starts to dominate.""")
+
+
     # Bethe lattice
     st.markdown(r"""
     ## Bethe Lattice""")
@@ -336,143 +338,35 @@ def selfOrganizedCriticality():
     
     st.markdown('## Evolution Model')
 
-def newNetwork():
-    def makeBetheLattice(n_nodes = 10):
-        M = np.zeros((n_nodes,n_nodes))
+def networks():
+    st.markdown(r"""
+    # Networks
+    A network is a set of nodes connected by edges. Networks are everywhere; examples include social-networks, paper-authors, and many others.
 
-        idx = 1
-        for i, _ in enumerate(M):
-            if i ==0: n =3
-            else: n =2
-            M[i, idx:idx+n] = 1
-            idx+=n
+    ### Amplification factor
+    **Amplification factor** is an attribute of a node in a directed network, which captures the ratio of outgoing nodes to incoming nodes.
 
-        return M+M.T
+    ### Scale-free networks
+    **Scale-free networks** are networks in the degree distribution follows a power law. Examples of scale free networks include:
+    * WWW
+    * Software dependency graphs
+    * Semantic networks
+    
 
-    import seaborn as sns
-
-    def checkOpenNeighbours(open_neighbours,visited, domain, open_arr):
-        
-        for j in open_neighbours:
-            if j not in visited:
-                domain.append(j)
-                visited.add(j)
-                open_neighbours = np.argwhere(M[j] * open_arr).flatten()
-                open_neighbours = open_neighbours[open_neighbours!=j]
-                visited_, domain_ = checkOpenNeighbours(open_neighbours,visited, domain,open_arr)
-                visited = visited.union(visited_)
-                domain += domain
-        return visited, domain
-        
-    def getDomains(M, p=0.3):
-        
-        open_arr = p>np.random.rand(len(M))
-        visited = set()
-        domains = []
-        for i in range(len(M)):
-
-            if i not in visited:
-                if open_arr[i]:
-                    domain = []
-                    visited.add(i)
-                    domain.append(i)
-
-                    open_neighbours = np.argwhere(M[i] * open_arr).flatten()
-                    open_neighbours = open_neighbours[open_neighbours!=i]
-                    if len(open_neighbours)>0:
-                        visited_, domain_ = checkOpenNeighbours(open_neighbours,visited, domain,open_arr)
-                        visited = visited.union(visited_)
-                        domain += domain
-                    domains.append(set(domain))
-
-        return domains
-                    
-                
+    ### Analyzing patterns of networks
 
 
-    def draw_from_matrix(M, domains) :
-        
-        inDomain = {}
-        for idx, d in enumerate(domains):
-            for i in d:
-                inDomain[i] = idx
-        inDomain   
-        
-        
-        G = nx.Graph()
-        for i, line in enumerate(M):
-            G.add_node(i)
-
-        for i, line in enumerate(M):
-            for j, val in enumerate(line):
-                if (i != j) and (val==1): 
-                    G.add_edge(i, j)
-        palette = sns.color_palette('hls', len(domains))
-        color_map = ['darkgrey' if i not in inDomain.keys() else palette[inDomain[i]] for i in range(len(M))]
-
-        nx.draw_networkx(G, node_color=color_map, pos=nx.kamada_kawai_layout(G))
-        
-        
-    import networkx as nx
-    import numpy as np
-    M = makeBetheLattice(34)
-    domains = getDomains(M,0.6)
-    open_arr = draw_from_matrix(M,domains)
-
-def network():
-
-    def makeBetheLattice(n_nodes = 10):
-        M = np.zeros((n_nodes,n_nodes))
-
-        idx = 1
-        for i, _ in enumerate(M):
-            if i ==0: n =3
-            else: n =2
-            M[i, idx:idx+n] = 1
-            idx+=n
-
-        return M+M.T
-
-    def make_network(n_persons = 5,alpha=.4):
-        
-        A = np.zeros((n_persons,n_persons))
-        for i in range(n_persons):
-            neighbours =  np.random.rand(n_persons)>alpha ; neighbours[i]=0
-            if sum(neighbours) == 0: 
-                a = np.random.randint(0,n_persons,4)
-                a = a[a!=i][0]
-                neighbours[a] =1
-            A[i] += neighbours; A[:,i] = neighbours
-        
-        return A
-
-    def draw_from_matrix(M, sick=[], pos=[]):
-        sick = np.zeros(len(M)) if len(sick) == 0 else sick
-        G = nx.Graph()
-        for i, line in enumerate(M):
-            G.add_node(i)
-
-        for i, line in enumerate(M):
-            for j, val in enumerate(line):
-                if (i != j) and (val==1): 
-                    G.add_edge(i, j)
-        color_map = ['r' if s==1 else 'white' for s in sick]
-        
-        pos = nx.nx_agraph.graphviz_layout(G) if len(pos)==0 else pos
-        
-        nx.draw_networkx(G,pos, node_color=color_map, edge_color='white')
-        return pos
-
-
+    ### Algorithms for generating scale-free networks
+    """)
     with st.sidebar:
-        network_type = st.selectbox('networt_type',['bethe', 'random'])
+        network_type = st.radio('networt_type',['bethe', 'random'])
         N = st.slider('N',1,42,22)
         if network_type == 'random':
             a = st.slider('alpha', 0.,1.,0.97)
         
-    fig, ax = plt.subplots()
+    
     net = make_network(N,a) if network_type == 'random' else makeBetheLattice(N)
-    draw_from_matrix(net)
+    fig = draw_from_matrix(net)
     st.pyplot(fig)
 
 def agent_event_models():
@@ -512,7 +406,7 @@ func_dict = {
     'Phase transitions & Critical phenomena' : phaseTransitions_CriticalPhenomena,
     'Percolation and Fractals'   : percolation_and_fractals,
 	'Self-organized Criticality'    : selfOrganizedCriticality,
-    'Networks'      : network,
+    'Networks'      : networks,
     'Agent/event based models' : agent_event_models,
     'Econophysics'  : run_betHedging,
 }

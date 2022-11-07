@@ -421,8 +421,6 @@ def ising_1d(size, beta, nsteps):
 
 
 # SOC
-
-
 def bakSneppen(size, nsteps):
     chain = np.random.rand(size)
 
@@ -451,7 +449,6 @@ def bakSneppen_plot_fill(L):
 
     plt.close()
     return fig
-
 
 def accumulate(x):
     X=np.zeros(len(x)) ; X[0] = x[0]
@@ -673,3 +670,46 @@ def bereaucrats(nsteps, size=20):
         status_text.text('Done!')
 
 
+# Networks
+def makeBetheLattice(n_nodes = 10):
+    M = np.zeros((n_nodes,n_nodes))
+
+    idx = 1
+    for i, _ in enumerate(M):
+        if i ==0: n =3
+        else: n =2
+        M[i, idx:idx+n] = 1
+        idx+=n
+
+    return M+M.T
+
+def make_network(n_persons = 5,alpha=.4):
+    
+    A = np.zeros((n_persons,n_persons))
+    for i in range(n_persons):
+        neighbours =  np.random.rand(n_persons)>alpha ; neighbours[i]=0
+        if sum(neighbours) == 0: 
+            a = np.random.randint(0,n_persons,4)
+            a = a[a!=i][0]
+            neighbours[a] =1
+        A[i] += neighbours; A[:,i] = neighbours
+    
+    return A
+
+def draw_from_matrix(M, sick=[], pos=[]):
+    sick = np.zeros(len(M)) if len(sick) == 0 else sick
+    G = nx.Graph()
+    for i, line in enumerate(M):
+        G.add_node(i)
+
+    for i, line in enumerate(M):
+        for j, val in enumerate(line):
+            if (i != j) and (val==1): 
+                G.add_edge(i, j)
+    color_map = ['r' if s==1 else 'white' for s in sick]
+    
+    #pos = nx.nx_agraph.graphviz_layout(G) if len(pos)==0 else pos
+    
+    fig, ax = plt.subplots()
+    nx.draw_networkx(G, node_color=color_map, edge_color='white')
+    return fig
