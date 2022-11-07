@@ -12,8 +12,6 @@ st.set_page_config(page_title="Scientific Computing",
 	menu_items=None)
 
 
-
-
 def home():
 	st.markdown(r"""
 	# Scientific Computing
