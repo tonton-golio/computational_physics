@@ -1,4 +1,5 @@
 from complex_utils import *
+devmod = False
 
 def homeComplex():
     text = getText_prep(textfile_path+'home.md',3)
@@ -91,12 +92,10 @@ def phaseTransitions_CriticalPhenomena():
     with st.expander(key, expanded=False):
         st.markdown(text_dict[key])
       
-    
-
 def percolation_and_fractals():
     # Side bar
     with st.sidebar:
-        st.markdown('#### Paramteres') 
+        st.markdown('**Extra Paramteres**') 
         with st.expander('square grid percolation'):
 
             cols_sidebar = st.columns(2)
@@ -224,38 +223,29 @@ def percolation_and_fractals():
     fractal_dimension(res)
 
 def selfOrganizedCriticality():
-        # Sidebar
-    with st.sidebar:
-        cols_sidebar = st.columns(2)
-        nsteps = cols_sidebar[0].slider('nsteps',  4,   100, 14)
-        seed   = cols_sidebar[1].slider('Seed',    0,   69 , 42)
-        sigma2 = cols_sidebar[0].slider('Variance',0.2, 1. ,0.32)
-        step_size = cols_sidebar[0].slider('Stepsize = random^x, x=', 0.,3.,0.)
-        axisscale = cols_sidebar[1].radio('axis-scales', ['linear', 'symlog'])
-        #yscale = cols_sidebar[1].radio('yscale', ['linear', 'symlog'])
+    st.title("Self organized criticality (SOC)")
     
-    st.markdown(r"""
-    # Self organized criticality (SOC)
-    Self-organized criticality, is a property of a dynamic system which have a critical point as an attractor. In this type of model, we may set initial values rather arbitrarily, as the system itself will evolve to the critical state. At the criticality, the model displays spatial or temporal scale-invariance.
+    text_dict = getText_prep(filename = textfile_path+'selfOrganizedCriticality.md', split_level = 2)
+    if devmod: a = text_dict.keys(); a
 
-    ## Bak-Sneppen
-    """)
+    st.markdown(text_dict['Intro'])
+    
+    key = 'Bak-Sneppen'
+    st.markdown('#### ' + key)
+    st.markdown(text_dict[key])
     # Main fig
-    cols = st.columns(2)
+    cols = st.columns(3)
     nsteps = cols[0].slider('nsteps',1,30000,5000)
     size = cols[1].slider('size',10,1000,300)
-    bakSneppen_fig, L = bakSneppen(size, nsteps)
+    random_func = cols[2].selectbox('random func',['uniform', 'normal'])
+    
+    bakSneppen_fig, L = bakSneppen(size, nsteps, random_func)
     st.pyplot(bakSneppen_fig)
 
     # fill
     cols = st.columns(2)
     cols[0].markdown(r"""
-    The Bak-Sneppen method starts with a random vector. At each
-    timestep the smallest element and its two neighbors, are each 
-    replaced with new random numbers.
-
-    The figure on the right depicts the mean magnitude of elements in
-    the vector.
+    We very quickly reach the critical state, indicated by the mean magnitude of values in $C$ stabilizing.
     """)
     fig_baksneppen_fill = bakSneppen_plot_fill(L)
     cols[1].pyplot(fig_baksneppen_fill)

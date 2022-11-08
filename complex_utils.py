@@ -136,8 +136,8 @@ def plotSusceptibility(data):
                     y = [data[key]['sus'] for key in data.keys()],
                     s = [data[key]['size'] for key in data.keys()],
                     color='cyan')
-    ax.set_ylabel('Susceptibility', color='white')
-    ax.set_xlabel('beta', color='white')
+    ax.set_ylabel(r'Susceptibility, $\chi$', color='white')
+    ax.set_xlabel(r'Inverse temperature, $\beta$', color='white')
     plt.close()
     return fig
 
@@ -499,21 +499,26 @@ def ising_1d(size, beta, nsteps):
 
 
 # SOC
-def bakSneppen(size, nsteps):
-    chain = np.random.rand(size)
+def bakSneppen(size, nsteps, random_func='uniform'):
 
-    X = np.empty((nsteps,size))
-    L = np.zeros(nsteps)
+    random = {
+            "uniform" : np.random.rand,
+            "normal" : np.random.randn,
+        }[random_func]
+
+    chain = random(size)
+    X, L = np.empty((nsteps,size)), np.zeros(nsteps)
+    
     for i in range(nsteps):
         lowest = np.argmin(chain)  # determine lowest
-        chain[(lowest-1+size)%size] = np.random.rand() # change left neighbour
-        chain[lowest] = np.random.rand() # change ego
-        chain[(lowest+1)%size] = np.random.rand() # change right neighbour
+        chain[(lowest-1+size)%size] = random() # change left neighbour
+        chain[lowest] = random() # change ego
+        chain[(lowest+1)%size] = random() # change right neighbour
         X[i] = chain
         L[i] = np.mean(chain)
 
     fig, ax = plt.subplots()
-    ax.imshow(X, aspect  = size/nsteps, vmin=0, vmax=1, cmap='gist_rainbow')
+    ax.imshow(X, aspect  = size/nsteps/2, vmin=0, vmax=1, cmap='gist_rainbow')
     plt.close()
     return fig, L
 
@@ -521,7 +526,7 @@ def bakSneppen_plot_fill(L):
     fig, ax = plt.subplots()
     ax.plot(range(len(L)), L, c='purple')
     fig.patch.set_facecolor((.04,.065,.03))
-    ax.set(facecolor=(.04,.065,.03))
+    ax.set(facecolor=(.04,.065,.03), xscale='log', xlabel='timestep', ylabel='Mean value')
     ax.tick_params(axis='x', colors='white')
     ax.tick_params(axis='y', colors='white')
 
