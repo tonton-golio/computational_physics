@@ -415,11 +415,10 @@ def run_fractals(size_fractal, a ,n):
         plt.xticks([]); plt.yticks([])
         plt.xlabel('Im',rotation=0, loc='right', color='blue')
         plt.ylabel('Re',rotation=0, loc='top', color='blue')
-        plt.text(12.5, 95, r"stable( mandelbrot($a-ib$) ) = stable( mandelbrot$(a+ib) )$", color='white')
         plt.close()
         return fig
 
-    res = stable(mandelbrot(makeGrid(size_fractal,  lims=[-1.85, 1.25, -1.25, 1.45]), a=a, n=n))
+    res = stable(mandelbrot(makeGrid(size_fractal,  lims=[-1.85, 1.25, -1.3, 1.3]), a=a, n=n))
     return plot_(res), res
 
 def fractal_dimension(res):

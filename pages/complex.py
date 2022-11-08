@@ -76,7 +76,7 @@ def phaseTransitions_CriticalPhenomena():
 def percolation_and_fractals():
     # Side bar
     with st.sidebar:
-        st.markdown('## Paramteres') 
+        st.markdown('#### Paramteres') 
         with st.expander('square grid percolation'):
 
             cols_sidebar = st.columns(2)
@@ -85,16 +85,6 @@ def percolation_and_fractals():
             marker_dict = {'point': '.','pixel': ',',}
             marker = marker_dict[cols_sidebar[0].radio('marker', marker_dict.keys())]
             seed = cols_sidebar[1].slider('seed',10,100)
-
-        with st.expander('Mandelbrot'):
-            cols_sidebar = st.columns(2)
-            logsize = cols_sidebar[0].slider(r'Resolution (log)',1.5,4., 2.)
-            size_fractal = int(10**logsize)
-            cols_sidebar[1].latex(r'10^{}\approx {}'.format("{"+str(logsize)+"}", size_fractal))
-            cols_sidebar = st.columns(2)
-            n = cols_sidebar[0].slider('n',1,50,27)
-            a = cols_sidebar[1].slider('a',0.01,13.,2.3)
-
 
     # Render
     st.markdown(r"""# Percolation and Fractals""")
@@ -119,7 +109,8 @@ def percolation_and_fractals():
 
     st.markdown(r"""By visualizing $N(p_c)$, we find that this lattice structure undergoes a phase transition at $p_c=\frac{1}{2}$. An easy way to notice this transition, and see just how *hard* it is, is to look at domain weight distribution:
     """)
-    st.video('assets/complex/images/percolation_animation.mp4')
+    with st.expander('video of percolation', expanded=False):
+        st.video('assets/complex/images/percolation_animation.mp4')
     st.markdown(r"""Notice, at $p=p_c=\frac{1}{2}$ a domain starts to dominate.""")
 
 
@@ -167,10 +158,19 @@ def percolation_and_fractals():
     st.markdown(r"""
     The Mandelbrot set contains complex numbers remaining stable through the mandelbrot function after successive iterations. Note; we let $z_0$ be 0. The two main essential pieces of code are displayed below the plot.
     """)
+    cols = st.columns(3)
+    size_fractal = int(10**cols[0].slider(r'Resolution (log)',1.5,4., 2.))
+    
+    n = cols[1].slider('n',1,50,27)
+    a = cols[2].slider('a',0.01,13.,2.3)
     fig, res = run_fractals(size_fractal, a, n)
     st.pyplot(fig)
     st.markdown(r"""
     To optimize I assume the output is symmetric across the real axis. 
+    $$
+    \textbf{stable}( \textbf{mandelbrot}(a-ib) ) = \textbf{stable}( \textbf{mandelbrot}(a+ib))
+    
+    $$
     """)
     
     def code(lvl, text):

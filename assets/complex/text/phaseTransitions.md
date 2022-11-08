@@ -16,15 +16,15 @@ $$
     \left(
     e^{-\beta \mathcal{H}}
     \right)
-    \\&= 
+    &= 
     \sum_{\{s_i\}} 
     e^{-\beta \mathcal{H}\left(\{s_i\}\right)}
-    \\&= 
+    &= 
     \sum_n^{2^N} 
     \left\langle n \right\vert
     e^{-\beta \mathcal{H}}
     \left\vert n \right\rangle
-    \\&= 
+    &= 
     \sum_{n}^{2^N} 
     e^{-\beta E_n}
 \end{align*}
