@@ -1,15 +1,34 @@
+import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sns
 from matplotlib.gridspec import GridSpec
-import streamlit as st
+import matplotlib as mpl
+import seaborn as sns
 import time
-try: import graphviz # having trouble with this when hosted
-except: pass
+import pandas as pd
 try: import networkx as nx # having trouble with this when hosted
 except: pass
+import sys; sys.setrecursionlimit(150000)
 
-# gerneral
+# Stremlit layout
+st.set_page_config(page_title="Scientific Computing", 
+    page_icon="🧊", 
+	layout="centered", 
+	initial_sidebar_state="collapsed", 
+	menu_items=None)
+
+
+# setting matplotlib style:
+mpl.rcParams['patch.facecolor'] = (0.04, 0.065, 0.03)
+mpl.rcParams['axes.facecolor'] = (0.04, 0.065, 0.03)
+mpl.rcParams['figure.facecolor'] = (0.04, 0.065, 0.03)
+mpl.rcParams['xtick.color'] = 'white'
+mpl.rcParams['ytick.color'] = 'white'
+mpl.rcParams['figure.autolayout'] = True  # 'tight_layout'
+# mpl.rcParams['axes.grid'] = True  # should we?
+
+# text parsing
+textfile_path = 'assets/complex/text/'
 def escapeCharacters(text, inverted=True):
     ecs = {'\0' : '\x00',   # null
             '\t' : '\x09',  # tab
@@ -403,7 +422,6 @@ def run_fractals(size_fractal, a ,n):
     res = stable(mandelbrot(makeGrid(size_fractal,  lims=[-1.85, 1.25, -1.25, 1.45]), a=a, n=n))
     return plot_(res), res
 
-
 def fractal_dimension(res):
     box_sizes_plot = [8,4,2]
     fig, ax = plt.subplots(1,len(box_sizes_plot))
@@ -431,7 +449,6 @@ def fractal_dimension(res):
     fig2 = plt.figure()
     plt.plot(box_sizes, [1*np.sum(SQUARES[box_size]) for box_size in box_sizes])
     st.pyplot(fig2)
-
 
 
 # Phase Transitions and Critical Phenomena

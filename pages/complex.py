@@ -1,45 +1,11 @@
-import numpy as np
-import matplotlib.pyplot as plt
-import time
-import streamlit as st
-import numpy as np
-import pandas as pd
 from complex_utils import *
-import matplotlib.pyplot as plt
-from matplotlib.gridspec import GridSpec
-import matplotlib as mpl
-import seaborn as sns
-try: import graphviz # having trouble with this when hosted
-except: pass
-try: import networkx as nx  # networkx too :(
-except: pass
-import time
-import sys
-
-sys.setrecursionlimit(150000)
-
-st.set_page_config(page_title="Scientific Computing", 
-    page_icon="🧊", 
-	layout="centered", 
-	initial_sidebar_state="collapsed", 
-	menu_items=None)
-
-# setting matplotlib style:
-
-mpl.rcParams['patch.facecolor'] = (0.04, 0.065, 0.03)
-mpl.rcParams['axes.facecolor'] = (0.04, 0.065, 0.03)
-mpl.rcParams['figure.facecolor'] = (0.04, 0.065, 0.03)
-mpl.rcParams['xtick.color'] = 'white'
-mpl.rcParams['ytick.color'] = 'white'
-mpl.rcParams['figure.autolayout'] = True  # 'tight_layout'
-# mpl.rcParams['axes.grid'] = True  # should we?
-
-textfile_path = 'assets/complex/text/'
 
 def homeComplex():
-    text = getText_prep(filename = textfile_path+'home.md')
+    text = getText_prep(textfile_path+'home.md',3)
     st.title('Complex Physics')
-    st.markdown(text['# Complex Physics'])
+    col1, col2 = st.columns(2)
+    col1.markdown(text['col1'])
+    col2.markdown(text['col2'])
 
 def statisticalMechanics():
     # Detailed Description
@@ -334,52 +300,21 @@ def selfOrganizedCriticality():
     st.markdown('## Evolution Model')
 
 def networks():
-    st.markdown(r"""
-    # Networks
-    A network is a set of nodes connected by edges. Networks are everywhere; examples include 
-    * social-networks, 
-    * paper-authors, 
-    * and many others.
+    st.title('Networks')
+    text_dict = getText_prep(textfile_path+'Networks.md', 3)
 
-    ### features of a network
-    * cliqueishness
-    * degree
-    * centrality
-    * connectedness
+    st.markdown(text_dict['Intro'])
+    cols = st.columns(2)
+    cols[0].markdown(r"**Social-networks**")
+    cols[0].markdown(text_dict['Social-networks'])
+    cols[1].markdown(r"**Paper-authors**")
+    cols[1].markdown(text_dict["Paper-authors"])
 
-    ### Amplification factor
-    **Amplification factor** is an attribute of a node in a directed network, which captures the ratio of outgoing nodes to incoming nodes;
-    $$
-        \mathcal{A} = \frac{k_\text{out}}{k_\text{in}},
-    $$
-    in which $k$ is the degree. We can expand this concept to un-directed graphs, for which
-    $
-        \mathcal{A} = k-1.
-    $
-    Rather than considering only a single node, we can determine the the weighted average amplification factor of a network:
-
-    $$
-        \mathcal{A} = \frac{\int k(k-1)n(k)dk}{\int kn(k)dk} = \frac{\left<k^2\right>}{\left<k\right>}-1
-    $$
-
-    so, degree times amplification factor times occurance, divided by the total degree of the network.
-
-    ### Scale-free networks
-    **Scale-free networks** are networks in the degree distribution follows a power law. Examples of scale free networks include:
-    * WWW
-    * Software dependency graphs
-    * Semantic networks
-    
-
-    ### Analyzing patterns of networks
-    A characterisitic of a network, which we can look for 
-
-
-    ### Algorithms for generating scale-free networks
-    """)
+    with st.expander(r"Features of networks"):
+        st.markdown(text_dict["Features of networks"])
 
     cols = st.columns(2)
-    network_type = cols[0].radio('networt_type',['bethe', 'random'])
+    network_type = cols[0].radio('network type',['bethe', 'random'])
     N = cols[0].slider('N',1,42,22)
     if network_type == 'random':
         a = cols[0].slider('alpha', 0.,1.,0.97)
@@ -390,72 +325,29 @@ def networks():
 
 def agent_event_models():
     st.title('Agent/event based models')
+    text_dict = getText_prep(filename = textfile_path+'agentbased.md', split_level = 3)
+    
+
+    key = 'Game of life'
     cols = st.columns(2)
-    cols[0].markdown(r"""
-    In this type of model, we consider autonomous agents follwoing a set of rules. The example which immediately springs to mind, is Conway's *Game of Life*. The rules simple, we consider each site to have 8 nieghbors. 
-
-    * If a site is alive it will stay alive iff either 2 or 3 of its neighbors are alive. 
-    * If a site is dead, it will spawn iff 3 of its neighbors are alive.
-    """)
-    initial_config = cols[1].radio('initial config', ['glider','square', "boat", "loaf", "ship"])
+    cols[0].markdown(text_dict[key])
+    initial_config = cols[1].selectbox('initial config', ['glider','square', "boat", "loaf", "ship"])
     st.pyplot(game_of_life(initial_config=initial_config))
+    st.markdown(text_dict['Game of life 2'])
 
-    st.markdown(r"""
-    In the figure above, I have initialized a *glider*. a glider is a self-replicating configurations which glides in some direction. For the one shown above, it is self-similar every 4 generations. Other configurations show self-similarity on much greater time-scales. 
 
-    ### simulation with discrete but random changes
-
-    Unlike cellular automata, we may have agent based models which act in a non-deterministic (random) fashion.
-
+    others = ['simulation with discrete but random changes', 'Gillespie algorithm, ', 'Example of agent based simulation', 'Advantages of agent based models']
+    for key in others:
+        st.markdown('### '+key)
+        st.markdown(text_dict[key])
     
-    ### Gillespie algorithm, 
-    *Traditional continuous and deterministic biochemical rate equations do not accurately predict cellular reactions since they rely on bulk reactions that require the interactions of millions of molecules. They are typically modeled as a set of coupled ordinary differential equations. In contrast, the Gillespie algorithm allows a discrete and stochastic simulation of a system with few reactants because every reaction is explicitly simulated. A trajectory corresponding to a single Gillespie simulation represents an exact sample from the probability mass function that is the solution of the master equation.*
-    
-    ### Example of agent based simulation
-    * spread in epidemics
-    * post spread on social networks
-    * ...
-
-    ### Advantages of agent based models
-    If actors in a model have different attirbutes (i.e. a heterogenous population) it makes sense to use an agent-based approach. This allows us to have super spreaders and things like that depending on what we are simulating.
-
-    In the opposite case, i.e., that with a homogenous population, we may derive results statistically.
-    """)
-
 def econophysics():
     st.title('Econophysics')
+    text_dict = getText_prep(filename = textfile_path+'econophysics.md', split_level = 3)
 
-    st.markdown(r"""
-    ### Hurst exponent
-    The Hurst exponent is a measure of long-term memory of timeseries.
-    $$
-        \mathbb {E} \left[{\frac {R(n)}{S(n)}}\right]=Cn^{H}{\text{  as }}n\to \infty \,,
-    $$
-    where;
-
-    * $R(n)$ is the range of the first $n$ cumulative deviations from the mean
-    * $S(n)$ is the series (sum) of the first n standard deviations
-    * $\mathbb {E} \left[x\right]\,$ is the expected value
-    * $n$ is the time span of the observation (number of data points in a time series)
-    * $C$ is a constant.
-
-    $H$ ranges between 0 and 1, with higher values indicating less volatility/roughness. For self-similar time-series, $H$ is directly related to fractal dimension, $D=2-H$.
-
-    
-    ### Fear-factor model
-    If we assume that stock prices move in a Brownian fashion, we may let the $q$ describe the probability of the stock moving up. Naturally $1-q$ is the probability of the stock moving down.
-
-    We let $p$ be the probability of a *collective fear event* which causes all stocks to move down. We thus have $(1-p)q$ probability of the stock increasing and $p+ (1-p)(1-q)$ probability of the opposite.
-
-    A neutral random walk (Brownian) requires that these probabilities are equal;
-    $$
-        (1-p)q = p+ (1-p)(1-q) \Rightarrow q = \frac{1}{2(1-p)}
-    $$
-    
-    ### Bet-Hedghing Model
-    Bet-hedghing ...
-    an important parameter in bet-hedghing models, is the noise size 
-    """)
+    st.markdown('#### Hurst exponent\n' + text_dict['Hurst exponent'])
+    st.markdown('#### Fear-factor model\n' + text_dict['Fear-factor model'])
+    st.markdown('#### Bet-Hedghing Model\n' + text_dict['Bet-Hedghing Model'])
 
     cols = st.columns(2)
     noise = cols[0].slider('noise',0.,3.,1.)
@@ -466,9 +358,10 @@ def econophysics():
     invest_per_round = cols[0].slider('invest per round', 0.,1.,.5) 
     nsteps = cols[0].slider('nsteps    ',1,3000,500)
     
-    fig = betHedging(p, noise, invest_per_round, nsteps)
+    fig = betHedging(p, noise, invest_per_round, nsteps, win_multiplier, loss_multiplier)
     cols[1].pyplot(fig)
 
+# View
 topic_dict = {
     'Contents' :                               homeComplex,
     'Statistical Mechanics' :                  statisticalMechanics,
