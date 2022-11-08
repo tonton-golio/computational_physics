@@ -73,7 +73,7 @@ def phaseTransitions_CriticalPhenomena():
 
     
     st.markdown(r"""
-    Let's have a look at how this approximation compares to the typical approach.
+    Let's have a look at how this approximation compares to the typical approach. I'll run the 1d Ising with NN with and without the mean-field approximation.
     """)
     #with st.sidebar:
     cols = st.columns(3)
@@ -85,7 +85,7 @@ def phaseTransitions_CriticalPhenomena():
     fig, _ = ising_1d(size, beta, nsteps)
     st.pyplot(fig)
 
-
+    st.markdown(r"Hmmm, my implementation is probably bad...")
 
     key = '1D Ising model and transfer matrix method'
     with st.expander(key, expanded=False):

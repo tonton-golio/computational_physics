@@ -1,15 +1,13 @@
 
 ## Mean-field Hamiltonian
-By approximating the energy acting on a spin in the 1D Ising model, not as the sum of nearest neighbors but instead the mean of the chain, we may simplify interesting terms.
-
-We obtain the mean-field Hamiltonian $\mathcal{H}_\mathrm{MF}$
+By approximating the energy acting on a spin in the 1D Ising model, not as the sum of nearest neighbors but instead the mean of the chain, we may simplify interesting terms. We obtain the mean-field Hamiltonian, 
     
 $$
 \begin{align*}
     \mathcal{H}_\mathrm{MF}
     &= 
     \frac{J N z}{2} m^2 
-    - \left( J z m + h \right) \sum_i s_i
+    - \left( J z m + h \right) \sum_i s_i.
 \end{align*}
 $$
 Here $z$ is number of nearest-neighbor spins and division by 2 is
@@ -205,7 +203,7 @@ $$
 $$
 
 ## MF: Z, m, Tc, F & critical exponent
-The partition function and other interesting characteristica, in this approximation, become:
+The partition function, magnetization, critical temperature and free energy, in this approximation, become:
 $$
     \begin{align*}
     Z_{\mathrm{MF}}

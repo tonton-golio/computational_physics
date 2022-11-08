@@ -453,7 +453,10 @@ def fractal_dimension(res):
 # Phase Transitions and Critical Phenomena
 def ising_1d(size, beta, nsteps):
     chain = np.zeros(size) ; chain[chain<.5] = -1; chain[chain>=.5] = 1
-    CHAINS = []
+    chain_MF = chain.copy()
+
+    # normal approach
+    CHAINS, dEs = [], []
     for _ in range(nsteps):
         # pick random site
         i = np.random.randint(0,size-1)
@@ -461,13 +464,36 @@ def ising_1d(size, beta, nsteps):
         if np.random.rand()<np.exp(-beta*dE):
             chain[i] *= -1
         CHAINS.append(chain.copy())
+        dEs.append(dE)
     CHAINS = np.array(CHAINS)
+
+    # MF
+    CHAINS_MF, dEs_MF = [], []
+    J, z, N = 1,2, len(chain_MF)
+    for _ in range(nsteps):
+        # pick random site
+        i = np.random.randint(0,size-1)
+        si = chain_MF[i]
+        m = np.mean(chain_MF)
+        dE = m * si
+        if np.random.rand()<np.exp(-beta*dE):
+            chain_MF[i] *= -1
+        CHAINS_MF.append(chain_MF.copy())
+        dEs_MF.append(dE)
+    CHAINS_MF = np.array(CHAINS_MF)
     
-    fig, ax = plt.subplots()
-    ax.imshow(CHAINS, cmap='copper', 
-    aspect = size/nsteps/3)
-    ax.set_ylabel('Timestep', color='white')
-    ax.set_xlabel('Site index', color='white')
+    fig, ax = plt.subplots(2,2, sharex=True)
+    ax[0,0].imshow(CHAINS.T, cmap='copper', aspect = nsteps/size/3)
+    ax[1,0].set_xlabel('Timestep', color='white')
+    ax[0,0].set_ylabel('Site index', color='white')
+    
+    ax[0,1].imshow(CHAINS_MF.T, cmap='copper', aspect = nsteps/size/3)
+    ax[1,1].set_xlabel('Timestep', color='white')
+    ax[1,0].set_ylabel(r'$\Delta E$', color='white')
+
+    ax[1,0].plot(dEs)
+    ax[1,1].plot(dEs_MF)
+    
     plt.close()
     return fig, CHAINS
 
