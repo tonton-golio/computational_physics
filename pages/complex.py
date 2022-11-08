@@ -53,25 +53,45 @@ def statisticalMechanics():
      
 def phaseTransitions_CriticalPhenomena():
     text_dict = getText_prep(filename = textfile_path+'phaseTransitions.md', split_level = 2)
-    
-    st.title('Phase Transitions and Critical Phenomena')
+    #a = text_dict.keys(); a
 
-    key = 'Mean Field Solution to Ising Model'
+    st.title('Phase Transitions and Critical Phenomena')
+    
+    key = 'Mean-field Hamiltonian'
+    st.markdown(text_dict[key])
+
+    key = 'Mean-field Hamiltonian (derivation)'
     with st.expander(key, expanded=False):
         st.markdown(text_dict[key])
     
+    key = 'MF: Z, m, Tc, F & critical exponent'
+    st.markdown(text_dict[key])
+    
+    key = 'MF: Z, m, Tc, F & critical exponent (derivation)'
+    with st.expander(key, expanded=False):
+        st.markdown(text_dict[key])
+
+    
+    st.markdown(r"""
+    Let's have a look at how this approximation compares to the typical approach.
+    """)
+    #with st.sidebar:
+    cols = st.columns(3)
+    size = cols[0].slider('size',3,100,30)
+    beta = cols[1].slider('beta',0.01,5.,1.5)
+    nsteps = cols[2].slider('nsteps',3,10000,100)
+
+    
+    fig, _ = ising_1d(size, beta, nsteps)
+    st.pyplot(fig)
+
+
+
     key = '1D Ising model and transfer matrix method'
     with st.expander(key, expanded=False):
         st.markdown(text_dict[key])
       
-    with st.sidebar:
-        size = st.slider('size',3,100,30)
-        beta = st.slider('beta',0.01,5.,1.5)
-        nsteps = st.slider('nsteps',3,10000,100)
     
-    
-    fig, _ = ising_1d(size, beta, nsteps)
-    st.pyplot(fig)
 
 def percolation_and_fractals():
     # Side bar

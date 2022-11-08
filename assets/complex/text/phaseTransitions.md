@@ -1,44 +1,35 @@
 
-# Phase transitions & Critical phenomena
-## Mean Field Solution to Ising Model
-### Hamiltonian and partition function
-Hamiltonian and partition function of Ising model are
+## Mean-field Hamiltonian
+By approximating the energy acting on a spin in the 1D Ising model, not as the sum of nearest neighbors but instead the mean of the chain, we may simplify interesting terms.
+
+We obtain the mean-field Hamiltonian $\mathcal{H}_\mathrm{MF}$
+    
+$$
+\begin{align*}
+    \mathcal{H}_\mathrm{MF}
+    &= 
+    \frac{J N z}{2} m^2 
+    - \left( J z m + h \right) \sum_i s_i
+\end{align*}
+$$
+Here $z$ is number of nearest-neighbor spins and division by 2 is
+for avoiding overlap.
+
+## Mean-field Hamiltonian (derivation)
+#### Hamiltonian
+The Hamiltonian of the Ising model is
 $$
     \mathcal{H} 
     = 
-    -J \sum_{\left<i j\right>} s_i s_j - h \sum_i s_i
+    -J \sum_{\left<i j\right>} s_i s_j - h \sum_i s_i.
 $$
-$$
-\begin{align*}
-    Z
-    &= 
-    \mathrm{Tr}
-    \left(
-    e^{-\beta \mathcal{H}}
-    \right)
-    &= 
-    \sum_{\{s_i\}} 
-    e^{-\beta \mathcal{H}\left(\{s_i\}\right)}
-    &= 
-    \sum_n^{2^N} 
-    \left\langle n \right\vert
-    e^{-\beta \mathcal{H}}
-    \left\vert n \right\rangle
-    &= 
-    \sum_{n}^{2^N} 
-    e^{-\beta E_n}
-\end{align*}
-$$
-Here $n$ is index of state, $\left\vert n \right\rangle$ is 
-ket state $n$, $N$ is total number of spins and $\{s_i\}$ means
-all possible configuration of Ising model.
 
 We cannot caliculate partition function directly except for 
 1D-lattice case and 2D-lattice case.
 However, by approximating Hamiltonian with mean field, we can 
 analytically obtain partition function.
 Let's approxiomate Hamiltonian.
-### Ignoring high-order fluctuation
+#### Ignoring high-order fluctuation
 First, let's replace $s_i$ with mean $\left< s_i \right>$ and 
 fluctuation from mean $\delta s_i = s_i - \left< s_i \right>$.
 $$
@@ -150,7 +141,7 @@ $$
     \approx 
     - m^2 + m(s_i + s_j)
 $$
-### Mean-field Hamiltonian
+#### Mean-field Hamiltonian
 Then, mean-field Hamiltonian $\mathcal{H}_\mathrm{MF}$ beocomes
 $$
 \begin{align*}
@@ -212,8 +203,72 @@ $$
     - \left( J z m + h \right) \sum_i s_i
 \end{align*}
 $$
-### Mean-field partition function
-We shut up and caliculate mean-field partition function.
+
+## MF: Z, m, Tc, F & critical exponent
+The partition function and other interesting characteristica, in this approximation, become:
+$$
+    \begin{align*}
+    Z_{\mathrm{MF}}
+    &= 
+    \exp 
+    \left(
+        - \beta\frac{J N z}{2} m^2 
+    \right)
+    \left[
+    2\cosh
+    \left(
+        \beta J z m + \beta h
+    \right)
+    \right]^N
+    \\
+    m 
+    &= \left<s_i\right>
+    =
+    \tanh
+    \left(
+        \beta J z m + \beta h 
+    \right)
+    \\
+    T_c &= \frac{Jz}{k_B}
+    \\
+    F_{\mathrm{MF}} &=
+    \frac{JNz}{2}m^2
+    - \frac{N}{\beta} \ln
+    \left[
+        2 \cosh \left(\beta Jzm + \beta h \right)
+    \right]
+\end{align*}
+$$
+
+## MF: Z, m, Tc, F & critical exponent (derivation)
+#### Mean-field partition function
+The partition function of the Ising model is
+$$
+    \begin{align*}
+        Z
+        &= 
+        \mathrm{Tr}
+        \left(
+        e^{-\beta \mathcal{H}}
+        \right)
+        &= 
+        \sum_{\{s_i\}} 
+        e^{-\beta \mathcal{H}\left(\{s_i\}\right)}
+        &= 
+        \sum_n^{2^N} 
+        \left\langle n \right\vert
+        e^{-\beta \mathcal{H}}
+        \left\vert n \right\rangle
+        &= 
+        \sum_{n}^{2^N} 
+        e^{-\beta E_n}
+    \end{align*}
+$$
+Here $n$ is index of state, $\left\vert n \right\rangle$ is 
+ket state $n$, $N$ is total number of spins and $\{s_i\}$ means
+all possible configuration of Ising model.
+
+We shut up and calculate the mean-field partition function.
 $$
     \begin{align*}
     Z_{\mathrm{MF}}
@@ -292,7 +347,8 @@ $$
     \right]^N
     \end{align*}
 $$
-### Self-consistent equation of magnetization
+
+#### Self-consistent equation of magnetization
 We can also caliculate statistical mechanically averaged magnetization
 $m=\left<s_i\right>$.
 $$
@@ -418,7 +474,7 @@ the self-consistent equation (consider $J$ and $z$ as constant).
 We clearly see that as the temperature increases, in a particular 
 temperature, number of solution become one from three.
 This qualitative change is phase transition.
-### Critical temperature of mean-field approximation
+#### Critical temperature of mean-field approximation
 At which temperature, does this transition happen? 
 When the slope of $y=\tanh \left( \beta J z m \right)$ is same as 
 $y=m$ at $m=0$, these two equation has single intersection.
@@ -448,7 +504,7 @@ depend on dimension of lattice.
 As we know, there is no phase transition in 1D-lattice Ising model.
 This results is qualitatively wrong in that case but as the dimension 
 become infinity this result become correct.
-### Free energy of mean-field approximation
+#### Free energy of mean-field approximation
 We already have partition function. 
 Why don't we get free energy?
 $$
@@ -498,7 +554,7 @@ $$
         \tanh \left(\beta Jzm + \beta h \right)
 \end{align*}
 $$
-### Critical exponent of mean-field approximation
+#### Critical exponent of mean-field approximation
 By introducint dimensionless temperature parameter $\theta$,
 $$
 \begin{align*}

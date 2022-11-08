@@ -464,7 +464,7 @@ def ising_1d(size, beta, nsteps):
     CHAINS = np.array(CHAINS)
     
     fig, ax = plt.subplots()
-    ax.imshow(CHAINS, #cmap=cmap, 
+    ax.imshow(CHAINS, cmap='copper', 
     aspect = size/nsteps/3)
     ax.set_ylabel('Timestep', color='white')
     ax.set_xlabel('Site index', color='white')
