@@ -618,8 +618,8 @@ def skipInit(chains, patience=100, tol=0.01):
 
 def plotAvalanches(idx_arr, skip_init, avalanches_dict):
     skip = 0
-    def power_law(x,k,a,b):
-        return a*np.exp(k*(b-x))
+    def power_law(x,k,a,b,c):
+        return a*np.exp(k*(b-x))+c
 
     fig, ax = plt.subplots(1,2, figsize=(8,6), dpi=300)
 
@@ -632,8 +632,10 @@ def plotAvalanches(idx_arr, skip_init, avalanches_dict):
     xdata = ((bins+np.roll(bins,-1))/2)[:-1]
 
 
-    popt, pcov = curve_fit(power_law, xdata[skip:], ydata[skip:])
+    popt, pcov = curve_fit(power_law, xdata[skip:], ydata[skip:],
+    p0=[.1, 420, 5,-100])
     ax[0].plot(xdata, power_law(xdata, *popt), label=f'fit: power law, k={round(popt[0],3)}')
+    #st.markdown(np.round(popt,2))
 
     ax[0].set_xlabel('avalanche tspan', color='white')
     ax[0].set_ylabel('occurance frequency', color='white')
@@ -648,7 +650,7 @@ def plotAvalanches(idx_arr, skip_init, avalanches_dict):
     xdata = ((bins+np.roll(bins,-1))/2)[:-1]
 
     #xdata, ydata = xdata[1:], yda
-    popt, pcov = curve_fit(power_law, xdata[skip:], ydata[skip:])
+    popt, pcov = curve_fit(power_law, xdata[skip:], ydata[skip:],p0=[.1, 420, 5,-100])
     xplot = np.linspace(min(xdata)*.9, max(xdata)*1.1, 100)
     ax[1].plot(xplot, power_law(xplot, *popt), label=f'fit: power law, k={round(popt[0],3)}')
 

@@ -11,18 +11,19 @@ At the criticality, scale invariant patterns imerge.
 *How do the pockets of water in a pourous, submerged material look?* Also; fractals.
 
 ### col2
-###### Self organized criticality
+##### Self organized criticality
 First return of Random walk, 
 critical branching?,  
 the sandpile model, 
 the evolution model?.
 
 
-###### Networks
-Amplification factor, scale free networks, analyzing patterns of networks, algorithms to make or evolve scale free networks.
+##### Networks
+Properties, scale free networks, analyzing patterns of networks, algorithms to make or evolve scale free networks.
 
-###### Agent based models & Event based simulation
+##### Agent based models & Event based simulation
 simulation with discrrete but random changes, Gillespie algorithm, Example of agent based simulation and its advantages.
 
-###### Econophysics
-Hurst exponent, Fear Factor model, Bet hedging with smal and big noise terms.
+##### Econophysics
+Stock movements exhibit some Brownian motion. 
+Hurst exponent, Fear Factor model, Bet hedging with small and big noise terms.
