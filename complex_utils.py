@@ -7,6 +7,7 @@ import seaborn as sns
 from scipy.optimize import curve_fit
 import time
 import pandas as pd
+import yfinance as yf
 try: import networkx as nx # having trouble with this when hosted
 except: pass
 import sys; sys.setrecursionlimit(150000)
@@ -393,6 +394,9 @@ def betheLattice(p=0.1, size=62, get_many=False, ps=[.5], degree=3):
             Ns[p] = len(getDomains(M,p))
         return Ns
 
+import numpy as np
+import matplotlib.pyplot as plt
+
 def run_fractals(size_fractal, a ,n):
     def stable(z):
         try: return False if abs(z) > 2 else True
@@ -422,34 +426,65 @@ def run_fractals(size_fractal, a ,n):
     res = stable(mandelbrot(makeGrid(size_fractal,  lims=[-1.85, 1.25, -1.3, 1.3]), a=a, n=n))
     return plot_(res), res
 
+
 def fractal_dimension(res):
-    box_sizes_plot = [8,4,2]
+
+    def get_box_counts(box_sizes):
+
+        boxcounts, SQUARES = {}, {}
+        for box_size in box_sizes:
+            box_size = int(box_size)
+            
+            steps = res.shape[0]//box_size - 1
+            squares = np.zeros((steps, steps))
+            
+            for i in range(steps):
+                for j in range(steps):
+                    _sum = np.sum(res[i*box_size : (i+1)*box_size, 
+                            j*box_size : (j+1)*box_size])
+                    squares[i,j] = 1 if _sum not in [0,box_size**2] else 0
+
+            SQUARES[box_size] = squares.copy()
+            boxcounts[box_size] = np.sum(squares)
+        return boxcounts, SQUARES
+    
+    box_sizes = np.arange(2,np.shape(res)[0]//15, dtype=float)
+    boxcounts, SQUARES = get_box_counts(box_sizes)
+    
+    box_sizes_plot = [box_sizes[0], 
+                        box_sizes[len(box_sizes)//2],
+                        box_sizes[-1]]
     fig, ax = plt.subplots(1,len(box_sizes_plot))
-
-    SQUARES = {}
-    box_sizes = np.arange(2,32)
-    for box_size in box_sizes:
-    
-        squares = np.zeros(np.array(res.shape)//box_size)
-        
-        for i, _ in enumerate(squares):
-            for j, _ in enumerate(squares[i]):
-                select = res[i*box_size:(i+1)*box_size, j*box_size:(j+1)*box_size]
-                if (0 in select) and (1 in select):
-                    squares[i,j] = 1
-
-        SQUARES[box_size] = squares
-    
     for i, box_size in enumerate(box_sizes_plot):
         ax[i].imshow(SQUARES[box_size].T)
-    st.pyplot(fig)
+        ax[i].set(xticks=[],yticks=[])
     plt.close()
+    def power_law(x,k,a,b):
+        return a*np.exp(k*(b-x))
 
+    y = np.log(list(boxcounts.values()))
+    x = np.log(res.shape[0]/box_sizes)
+    
+    def linear(x,a,b):
+        return a * x + b
+    
+    popt, pcov = curve_fit(linear, x, y)
+    fig2, ax = plt.subplots(1,1, figsize=(6,3))
 
-    fig2 = plt.figure()
-    plt.plot(box_sizes, [1*np.sum(SQUARES[box_size]) for box_size in box_sizes])
-    st.pyplot(fig2)
-
+    ax.scatter(x,y, label = 'data', marker='*',c='white', s=130)
+    (a, b) = (round(popt[i],3) for i in range(2))
+    ax.plot(x,linear(x, *popt), 
+                label = f'fit: ${a}x+{b}$', 
+                c='r', ls='--')
+    
+    
+    #ax.set(xscale='log', yscale='log')
+    ax.set_xlabel('box size (log)', color='white')
+    ax.set_ylabel(r'Boxcount, $N$ (log)', color='white')
+    ax.legend(facecolor='beige')
+    ax.grid()
+    plt.close()
+    return fig, fig2
 
 # Phase Transitions and Critical Phenomena
 def ising_1d(size, beta, nsteps):
@@ -500,6 +535,7 @@ def ising_1d(size, beta, nsteps):
 
 
 # SOC
+## BakSneppen
 def bakSneppen(size = 100, nsteps = 10000, random_func='uniform'):
     random = {
             "uniform" : np.random.rand,
@@ -580,9 +616,8 @@ def skipInit(chains, patience=100, tol=0.01):
         if abs(m[i] - np.mean(m[i-patience:i])) < tol:
             return i
 
-
 def plotAvalanches(idx_arr, skip_init, avalanches_dict):
-    skip = 7
+    skip = 0
     def power_law(x,k,a,b):
         return a*np.exp(k*(b-x))
 
@@ -592,6 +627,7 @@ def plotAvalanches(idx_arr, skip_init, avalanches_dict):
     log_min, log_max = np.log10(min(tspan)), np.log10(max(tspan))
     a = ax[0].hist(tspan, bins=np.logspace(log_min, log_max, 20))
     counts = ydata = a[0]
+    
     bins = a[1]
     xdata = ((bins+np.roll(bins,-1))/2)[:-1]
 
@@ -611,9 +647,10 @@ def plotAvalanches(idx_arr, skip_init, avalanches_dict):
     bins = a[1]
     xdata = ((bins+np.roll(bins,-1))/2)[:-1]
 
-
+    #xdata, ydata = xdata[1:], yda
     popt, pcov = curve_fit(power_law, xdata[skip:], ydata[skip:])
-    ax[1].plot(xdata, power_law(xdata, *popt), label=f'fit: power law, k={round(popt[0],3)}')
+    xplot = np.linspace(min(xdata)*.9, max(xdata)*1.1, 100)
+    ax[1].plot(xplot, power_law(xplot, *popt), label=f'fit: power law, k={round(popt[0],3)}')
 
     ax[1].set_xlabel('avalanche xspan (+1)', color='white')
     ax[1].set_ylabel('occurance frequency', color='white')
@@ -963,6 +1000,64 @@ def game_of_life(size=6, nsteps=4, initial_config = 'boat'):
 
 
 # Econophysics
+def var_of_stock(ticker = 'GOOGL'):
+    # Set the start and end date
+    start_date = '2020-01-01'
+    end_date = '2022-01-01'
+    # Get the data
+    data = yf.download(ticker, start_date, end_date)
+
+    S_t = data.Close.values
+    x_t = np.log(S_t)
+
+    var_s = {}
+    for s in range(1,25):
+        var = np.mean([(S_t[(i+1)*s]-S_t[i*s])**2 for i in range(1,len(S_t)//s-1)])
+        var_s[s] = (var)
+        #plt.plot(var)
+
+    fig, ax = plt.subplots(1,2, figsize=(8,5))
+    data["Adj Close"].plot(ax=ax[0])
+    ax[0].set_title(ticker, color='white')
+    ax[0].set_ylabel(r'Stock price', color='white')
+
+    ax[1].scatter(var_s.keys(), var_s.values())
+    reg = np.polyfit(list(var_s.keys()), list(var_s.values()), 1)
+    x = np.linspace(0,max(var_s.keys()),100)
+    ax[1].plot(x, reg[0]*x+reg[1], c='r', ls='--')
+    ax[1].set_xlabel(r'$\tau$', color='white')
+    ax[1].set_ylabel(r'var($\tau$)', color='white')
+    
+    plt.tight_layout()
+    plt.close()
+    return fig, data.Close.values
+
+def hurstExponent(time_series):
+    def get_hurst_exponent(time_series, max_lag=20):
+        """Returns the Hurst Exponent of the time series"""
+        
+        lags = range(2, max_lag)
+
+        # variances of the lagged differences
+        tau = [np.std( time_series[lag:] - time_series[:-lag]) for lag in lags]
+        
+        # calculate the slope of the log plot -> the Hurst Exponent
+        reg = np.polyfit(np.log(lags), np.log(tau), 1)
+
+        return reg[0]
+
+    H = []
+    lags = np.linspace(5,len(time_series),10, dtype=int)
+    for lag in lags:
+        hurst_exp = get_hurst_exponent(time_series, lag)
+        H.append(hurst_exp)
+    fig, ax = plt.subplots(figsize=(6,3))
+    ax.scatter(lags, H)
+    ax.set_xlabel(r'Lag, $\tau$', color='white')
+    ax.set_ylabel(r'Hurst exponent, $H$', color='white')
+    
+    plt.close()
+    return fig
 def betHedging(p, noise, invest_per_round, nsteps, win_multiplier=2, loss_multiplier=.5):
     capital = [1]
     

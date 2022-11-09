@@ -138,7 +138,7 @@ def percolation_and_fractals():
     ## Bethe Lattice""")
     cols = st.columns(2)
     cols[0].markdown(r"""
-    Bethe lattice (also called a regular tree)  is an infinite connected 
+    Bethe lattice (regular tree)  is an infinite connected 
     cycle-free graph where all vertices have the same number of neighbors.  
     """)
     degree = cols[0].slider("""degree""",       2, 5 , 3)
@@ -220,7 +220,9 @@ def percolation_and_fractals():
 
 
     """)
-    fractal_dimension(res)
+    fig, fig2 = fractal_dimension(res)
+    st.pyplot(fig)
+    st.pyplot(fig2)
 
 def selfOrganizedCriticality():
     st.title("Self organized criticality (SOC)")
@@ -261,10 +263,8 @@ def selfOrganizedCriticality():
     
 
     st.markdown(r"""
-    ## Critical branching
-    Critical branching is ...
-    
-    We may observe critial branching, by visualizing the first return of a random walk.
+    ## Branching
+    Branching is a stochastic process which let allow for continue evolution, or death. Random walks are an example of branching.
 
     In 1 dimension, we either take a step right or a step left at each iteration. It should be very likely that we return to the origin, however some *walks* may take us on a long trip.
     """)
@@ -327,8 +327,8 @@ def networks():
     cols[1].markdown(r"**Paper-authors**")
     cols[1].markdown(text_dict["Paper-authors"])
 
-    with st.expander(r"Features of networks"):
-        st.markdown(text_dict["Features of networks"])
+    with st.expander(r"Metrics and features of networks"):
+        st.markdown(text_dict["Metrics and features of networks"])
 
     cols = st.columns(2)
     network_type = cols[0].radio('network type',['bethe', 'random'])
@@ -361,8 +361,20 @@ def agent_event_models():
 def econophysics():
     st.title('Econophysics')
     text_dict = getText_prep(filename = textfile_path+'econophysics.md', split_level = 3)
+    
+    st.markdown('#### Brownian Motion\n' + text_dict['Brownian Motion'])
+    cols=st.columns(2)
+    cols[0].markdown(r'If we pull a stock')
+    ticker = cols[1].selectbox('Ticker',['GOOGL', 'AAPL', 'TSLA'])
+    fig, timeseries = var_of_stock(ticker = ticker)
+    st.pyplot(fig)
+
+    st.markdown(text_dict['Brownian Motion 2'])
+
 
     st.markdown('#### Hurst exponent\n' + text_dict['Hurst exponent'])
+    fig = hurstExponent(timeseries)
+    st.pyplot(fig)
     st.markdown('#### Fear-factor model\n' + text_dict['Fear-factor model'])
     st.markdown('#### Bet-Hedghing Model\n' + text_dict['Bet-Hedghing Model'])
 

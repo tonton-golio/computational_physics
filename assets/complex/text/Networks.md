@@ -9,13 +9,15 @@ Nodes represent bots and individuals, and edges mark connection. Edges may carry
 ### Paper-authors
 People tend to cite central people in their publication network. Thus these networks are also usually scale-free.
 
-### Features of networks
-* cliqueishness
-* degree
-* centrality
-* connectedness
+### Metrics and features of networks
+* *cliquishness* -- how clustered are sub-graphs. A clique is a complete subgraph. A complete graph is one which is densely connected.
+* *degree* -- How connected is a node.
+* *centrality* -- ranking of node, how many of the possible paths through the network pass through this node.
+* *connectedness* -- Resilience. How many nodes must be removed for the network to be dis-jointed.
+* *cycle* --  a loop of nodes. A network without these is termed acyclic.
+* *modularity* -- how strongly is the network divided into modules. An undivided network has modularity zero.
 
-#### Amplification factor
+
 **Amplification factor** is an attribute of a node in a directed network, which captures the ratio of outgoing nodes to incoming nodes;
 $$
     \mathcal{A} = \frac{k_\text{out}}{k_\text{in}},

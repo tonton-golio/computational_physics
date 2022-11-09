@@ -1,16 +1,32 @@
 
+
+### Brownian Motion
+Let $S_t$ be the closing price for a stock, and $x_t=\log(S_t)$. The variance for a lag $\tau$ is given by:
+$$
+    \text{var}(\tau) = \left<
+        (x_{t+\tau}-x_t)^2
+    \right>
+$$
+For geometric Brownian motion (random walk), the variance at an arbitrary lag is proportional to that lag, $\text{var}(\tau)\propto \tau$ .
+
+### Brownian Motion 2
+Notice, the plot on the right indicates that we are not very far from Brownian motion.
+
 ### Hurst exponent
 The Hurst exponent is a measure of long-term memory of timeseries.
-$$
-    \mathbb {E} \left[{\frac {R(n)}{S(n)}}\right]=Cn^{H}{\text{  as }}n\to \infty \,,
-$$
-where;
 
-* $R(n)$ is the range of the first $n$ cumulative deviations from the mean
-* $S(n)$ is the series (sum) of the first n standard deviations
-* $\mathbb {E} \left[x\right]\,$ is the expected value
-* $n$ is the time span of the observation (number of data points in a time series)
-* $C$ is a constant.
+$$
+\begin{align*}
+    \tau
+    &=
+    Cn^{H}{\text{  as }}n\to \infty \,
+    \\
+    &\Rightarrow
+    H =  \frac{\log(Cn)}{\log{\tau}}
+\end{align*}
+$$
+where; $n$ is the number of data points in a time series, and  $C$ is a constant.
+
 
 $H$ ranges between 0 and 1, with higher values indicating less volatility/roughness. For self-similar time-series, $H$ is directly related to fractal dimension, $D=2-H$.
 
