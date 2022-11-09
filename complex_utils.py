@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 import matplotlib as mpl
 import seaborn as sns
+from scipy.optimize import curve_fit
 import time
 import pandas as pd
 try: import networkx as nx # having trouble with this when hosted
@@ -499,39 +500,132 @@ def ising_1d(size, beta, nsteps):
 
 
 # SOC
-def bakSneppen(size, nsteps, random_func='uniform'):
-
+def bakSneppen(size = 100, nsteps = 10000, random_func='uniform'):
     random = {
             "uniform" : np.random.rand,
             "normal" : np.random.randn,
         }[random_func]
-
     chain = random(size)
-    X, L = np.empty((nsteps,size)), np.zeros(nsteps)
+    chains, idx_lst = [], []
     
-    for i in range(nsteps):
-        lowest = np.argmin(chain)  # determine lowest
-        chain[(lowest-1+size)%size] = random() # change left neighbour
-        chain[lowest] = random() # change ego
-        chain[(lowest+1)%size] = random() # change right neighbour
-        X[i] = chain
-        L[i] = np.mean(chain)
+    for n in range(nsteps):
+        min_idx = chain.argmin()
+        idx_lst.append(min_idx)
+        for i in [-1,0,1]: chain[(min_idx+i)%size] = random()
+        chains.append(chain.copy())
 
+    chains, idx_arr = np.array(chains), np.array(idx_lst)
+    return chains, idx_arr, np.mean(chains, axis=1)
+
+def bakSneppen_plot_imshow(X, size, nsteps):
     fig, ax = plt.subplots()
     ax.imshow(X, aspect  = size/nsteps/2, vmin=0, vmax=1, cmap='gist_rainbow')
     plt.close()
-    return fig, L
+    return fig
 
-def bakSneppen_plot_fill(L):
+def bakSneppen_plot_initial(chains, skip_init, idx_arr):
     fig, ax = plt.subplots()
-    ax.plot(range(len(L)), L, c='purple')
+    #ax.plot(range(len(chains)), np.mean, c='purple')
+
+    fig, ax = plt.subplots(2,1, figsize=(8,6), dpi=300, sharex=True)
+    
+
+    ax[0].plot(chains.mean(axis=1))
+    ax[0].axvline(skip_init, c='r', ls='--')
+    ax[0].set(xlabel='time', ylabel='average value')
+
+    ax[1].plot(idx_arr)
+    ax[1].set_xlabel('Timestep', color='white')
+    ax[1].set_ylabel('min index', color="white")
+
+    ax[1].axvline(skip_init, c='r', ls='--')
+    ax[1].set(xlabel='time', ylabel='min idx')
+
     fig.patch.set_facecolor((.04,.065,.03))
-    ax.set(facecolor=(.04,.065,.03), xscale='log', xlabel='timestep', ylabel='Mean value')
-    ax.tick_params(axis='x', colors='white')
-    ax.tick_params(axis='y', colors='white')
+    #ax.set(facecolor=(.04,.065,.03), xscale='log', xlabel='timestep', ylabel='Mean value')
+    ax[0].tick_params(axis='x', colors='white')
+    ax[0].tick_params(axis='y', colors='white')
+
+    ax[1].tick_params(axis='x', colors='white')
+    ax[1].tick_params(axis='y', colors='white')
 
     plt.close()
     return fig
+
+def avalanches(idx_arr, skip_init=10):
+    
+    idx_arr = idx_arr[skip_init:]
+    avalanches_dict = {}
+    dict_index, counter, indicies = 0, 0, []
+    
+    for prev, i in zip(idx_arr, idx_arr[1:]):
+        aval = abs(prev -  i)<2
+        
+        if aval: 
+            counter += 1
+            indicies.append(i)
+        elif counter > 0:
+            
+            avalanches_dict[dict_index] = {'tspan':counter, 
+                                           'xspan':max(indicies)-min(indicies)}
+            
+            counter = 0 
+            dict_index += 1 
+            indicies = []
+    return avalanches_dict
+
+def skipInit(chains, patience=100, tol=0.01):
+    m = chains.mean(axis=1)
+    for i, _ in enumerate(m, start=patience):
+        if abs(m[i] - np.mean(m[i-patience:i])) < tol:
+            return i
+
+
+def plotAvalanches(idx_arr, skip_init, avalanches_dict):
+    skip = 7
+    def power_law(x,k,a,b):
+        return a*np.exp(k*(b-x))
+
+    fig, ax = plt.subplots(1,2, figsize=(8,6), dpi=300)
+
+    tspan = [avalanches_dict[i]['tspan'] for i in avalanches_dict]
+    log_min, log_max = np.log10(min(tspan)), np.log10(max(tspan))
+    a = ax[0].hist(tspan, bins=np.logspace(log_min, log_max, 20))
+    counts = ydata = a[0]
+    bins = a[1]
+    xdata = ((bins+np.roll(bins,-1))/2)[:-1]
+
+
+    popt, pcov = curve_fit(power_law, xdata[skip:], ydata[skip:])
+    ax[0].plot(xdata, power_law(xdata, *popt), label=f'fit: power law, k={round(popt[0],3)}')
+
+    ax[0].set_xlabel('avalanche tspan', color='white')
+    ax[0].set_ylabel('occurance frequency', color='white')
+    ax[0].set(xscale = 'log',yscale = 'log')
+    ax[0].legend(facecolor='beige')
+
+    xspan = [avalanches_dict[i]['xspan']+1 for i in avalanches_dict]
+    log_min, log_max = np.log10(min(xspan)), np.log10(max(xspan))
+    a = ax[1].hist(xspan, bins=np.logspace(log_min, log_max, 20))
+    counts = ydata = a[0]
+    bins = a[1]
+    xdata = ((bins+np.roll(bins,-1))/2)[:-1]
+
+
+    popt, pcov = curve_fit(power_law, xdata[skip:], ydata[skip:])
+    ax[1].plot(xdata, power_law(xdata, *popt), label=f'fit: power law, k={round(popt[0],3)}')
+
+    ax[1].set_xlabel('avalanche xspan (+1)', color='white')
+    ax[1].set_ylabel('occurance frequency', color='white')
+
+    ax[1].set(xscale = 'log', yscale = 'log'
+                )
+    ax[1].legend(facecolor='beige')
+
+    plt.tight_layout()
+    plt.close()
+    return fig
+
 
 def accumulate(x):
     X=np.zeros(len(x)) ; X[0] = x[0]

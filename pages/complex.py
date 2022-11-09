@@ -239,19 +239,26 @@ def selfOrganizedCriticality():
     size = cols[1].slider('size',10,1000,300)
     random_func = cols[2].selectbox('random func',['uniform', 'normal'])
     
-    bakSneppen_fig, L = bakSneppen(size, nsteps, random_func)
-    st.pyplot(bakSneppen_fig)
+    chains, idx_arr, L = bakSneppen(size, nsteps, random_func)
+    st.pyplot(bakSneppen_plot_imshow(chains, size, nsteps))
 
     # fill
     cols = st.columns(2)
     cols[0].markdown(r"""
     We very quickly reach the critical state, indicated by the mean magnitude of values in $C$ stabilizing.
+
+    The red, dashed line is the cut-off we insert to mark that we have reached steady-state. We only utilize data from beyond this timestep in our avalanche analysis.
     """)
-    fig_baksneppen_fill = bakSneppen_plot_fill(L)
+    skip_init = skipInit(chains, patience=1000, tol=0.0001)
+    avalanches_dict = avalanches(idx_arr, skip_init)
+
+    fig_baksneppen_fill = bakSneppen_plot_initial(chains, skip_init, idx_arr)
     cols[1].pyplot(fig_baksneppen_fill)
 
     st.markdown(r"""
     To build further on this, we should identify power laws along each dimension.""")
+    st.pyplot(plotAvalanches(idx_arr, skip_init, avalanches_dict))
+    
 
     st.markdown(r"""
     ## Critical branching
@@ -307,7 +314,7 @@ def selfOrganizedCriticality():
     """)
     st.image('assets/complex/images/sandpile_2d_aval_dist.png')
     
-    st.markdown('## Evolution Model')
+    #st.markdown('## Evolution Model')
 
 def networks():
     st.title('Networks')
