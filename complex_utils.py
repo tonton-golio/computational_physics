@@ -952,30 +952,43 @@ def draw_from_matrix(M, sick=[], pos=[]):
     return fig, G
 
 def network_analysis(net, G):
-    fig, ax = plt.subplots(1,3, figsize=(9,4))
-    ax[0].hist(net.sum(axis=1))
-    ax[0].set_title('Degree distribution', color='white')
-    ax[0].set_xlabel('Degree', color='white')
-    ax[0].set_ylabel('Occurance frequency', color='white')
+    fig, ax = plt.subplots(2,2, figsize=(9,7))
+    ax[0,0].hist(net.sum(axis=1))
+    ax[0,0].set_title('Degree distribution', color='white')
+    ax[0,0].set_xlabel('Degree', color='white')
+    ax[0,0].set_ylabel('Occurance frequency', color='white')
 
     c = nx.betweenness_centrality(G).values()
-    hist = ax[1].hist(c)
-    ax[1].set_title('Centrality distribution', color='white')
-    ax[1].set_xlabel('Betweenness centrality', color='white')
+    hist = ax[0,1].hist(c)
+    ax[0,1].set_title('Centrality distribution', color='white')
+    ax[0,1].set_xlabel('Betweenness centrality', color='white')
     #ax[1].set_ylabel('Occurance frequency', color='white')
-    power_law_on_hist(hist, ax=ax[1], p0=None, legend=True)
+    power_law_on_hist(hist, ax=ax[0,1], p0=None, legend=True)
     
     cycles = nx.cycle_basis(G)
-    hist = ax[2].hist([len(c) for c in cycles])
-    ax[2].set_title('Cycle length distribution', color='white')
-    ax[2].set_xlabel('Cycle length', color='white')
-    #ax[2].set_ylabel('Occurance frequency', color='white')
-    power_law_on_hist(hist, ax=ax[2], p0=[.05,11,10,10], legend=True)
+    
+    hist = ax[1,0].hist([len(c) for c in cycles])
+    ax[1,0].set_title('Cycle length distribution', color='white')
+    ax[1,0].set_xlabel('Cycle length', color='white')
+    ax[1,0].set_ylabel('Occurance frequency', color='white')
+    power_law_on_hist(hist, ax=ax[1,0], p0=[.05,11,10,10], legend=True)
+
+    triangles = nx.triangles(G)
+    #st.write(triangles)
+    try:
+        hist = ax[1,1].hist(np.array(list(triangles.values()))+1)
+        
+        #ax[1,1].set_ylabel('Occurance frequency', color='white')
+        power_law_on_hist(hist, ax=ax[1,1], p0=[.2,1,1,1], legend=True)
+    except:
+        pass
+    ax[1,1].set_title('N triangles distribution', color='white')
+    ax[1,1].set_xlabel('N triangles (+1)', color='white')
+
 
     plt.tight_layout()
     plt.close()
     return fig
-
 
 
 # Agents
