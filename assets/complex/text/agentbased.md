@@ -8,9 +8,11 @@ In this type of model, we consider autonomous agents following a set of rules. T
 ### Game of life 2
 In the figure above, I have initialized a *glider*. a glider is a self-replicating configurations which glides in some direction. For the one shown above, it is self-similar every 4 generations. Other configurations show self-similarity on much greater time-scales. 
 
-### simulation with discrete but random changes
+### Stochastic simulation
 
 Unlike cellular automata, we may have agent based models which act in a non-deterministic (random) fashion.
+
+Let us initialize a square grid as our world, and let's put in 2 foxes and 6 rabbits.
 
 
 ### Gillespie algorithm, 

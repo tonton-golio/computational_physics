@@ -580,31 +580,18 @@ def bakSneppen_plot_imshow(X, size, nsteps):
     return fig
 
 def bakSneppen_plot_initial(chains, skip_init, idx_arr):
-    fig, ax = plt.subplots()
-    #ax.plot(range(len(chains)), np.mean, c='purple')
-
-    fig, ax = plt.subplots(2,1, figsize=(8,6), dpi=300, sharex=True)
+    fig, ax = plt.subplots(2,1, figsize=(6,6), dpi=300, sharex=True)
     
-
     ax[0].plot(chains.mean(axis=1))
     ax[0].axvline(skip_init, c='r', ls='--')
-    ax[0].set(xlabel='time', ylabel='average value')
+    ax[0].set_ylabel('average value', color="white")
 
     ax[1].plot(idx_arr)
-    ax[1].set_xlabel('Timestep', color='white')
-    ax[1].set_ylabel('min index', color="white")
-
     ax[1].axvline(skip_init, c='r', ls='--')
-    ax[1].set(xlabel='time', ylabel='min idx')
+    ax[1].set_xlabel('Timestep', color='white')
+    ax[1].set_ylabel('Argmin', color="white")
 
     fig.patch.set_facecolor((.04,.065,.03))
-    #ax.set(facecolor=(.04,.065,.03), xscale='log', xlabel='timestep', ylabel='Mean value')
-    ax[0].tick_params(axis='x', colors='white')
-    ax[0].tick_params(axis='y', colors='white')
-
-    ax[1].tick_params(axis='x', colors='white')
-    ax[1].tick_params(axis='y', colors='white')
-
     plt.close()
     return fig
 
@@ -651,11 +638,12 @@ def plotAvalanches(idx_arr, skip_init, avalanches_dict):
     bins = a[1]
     xdata = ((bins+np.roll(bins,-1))/2)[:-1]
 
-
-    popt, pcov = curve_fit(power_law, xdata[skip:], ydata[skip:],
-    p0=[.05, 420, -3,-70])
-    ax[0].plot(xdata, power_law(xdata, *popt), label=f'fit: power law, k={round(popt[0],3)}')
-    #st.markdown(np.round(popt,2))
+    try:
+        popt, pcov = curve_fit(power_law, xdata[skip:], ydata[skip:],
+        p0=[.05, 420, -3,-70])
+        ax[0].plot(xdata, power_law(xdata, *popt), label=f'fit: power law, k={round(popt[0],3)}')
+    except:
+        st.markdown('power-law fit failed')
 
     ax[0].set_xlabel('avalanche tspan', color='white')
     ax[0].set_ylabel('occurance frequency', color='white')
@@ -669,11 +657,14 @@ def plotAvalanches(idx_arr, skip_init, avalanches_dict):
     bins = a[1]
     xdata = ((bins+np.roll(bins,-1))/2)[:-1]
 
-    #xdata, ydata = xdata[1:], yda
-    popt, pcov = curve_fit(power_law, xdata[skip:], ydata[skip:],
-    p0=[.1, 420, -5,-100])
-    xplot = np.linspace(min(xdata)*.9, max(xdata)*1.1, 100)
-    ax[1].plot(xplot, power_law(xplot, *popt), label=f'fit: power law, k={round(popt[0],3)}')
+    try:
+        popt, pcov = curve_fit(power_law, xdata[skip:], ydata[skip:],
+        p0=[.1, 420, -5,-100])
+        xplot = np.linspace(min(xdata)*.9, max(xdata)*1.1, 100)
+        ax[1].plot(xplot, power_law(xplot, *popt), label=f'fit: power law, k={round(popt[0],3)}')
+    except:
+        st.markdown('power-law fit failed')
+
 
     ax[1].set_xlabel('avalanche xspan (+1)', color='white')
     ax[1].set_ylabel('occurance frequency', color='white')

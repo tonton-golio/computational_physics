@@ -251,19 +251,15 @@ def selfOrganizedCriticality():
 
     # fill
     cols = st.columns(2)
-    cols[0].markdown(r"""
-    We very quickly reach the critical state, indicated by the mean magnitude of values in $C$ stabilizing.
+    key = 'Bak-Sneppen 2'
+    cols[0].markdown(text_dict[key])
 
-    The red, dashed line is the cut-off we insert to mark that we have reached steady-state. We only utilize data from beyond this timestep in our avalanche analysis.
-    """)
     skip_init = skipInit(chains, patience=1000, tol=0.0001)
     avalanches_dict = avalanches(idx_arr, skip_init)
 
     fig_baksneppen_fill = bakSneppen_plot_initial(chains, skip_init, idx_arr)
     cols[1].pyplot(fig_baksneppen_fill)
-
-    st.markdown(r"""
-    To build further on this, we should identify power laws along each dimension.""")
+    
     st.pyplot(plotAvalanches(idx_arr, skip_init, avalanches_dict))
     
 
@@ -365,8 +361,82 @@ def agent_event_models():
     st.pyplot(game_of_life(initial_config=initial_config))
     st.markdown(text_dict['Game of life 2'])
 
+    key = 'Stochastic simulation'
+    st.markdown('### '+key)
+    st.markdown(text_dict[key])
+    
+    class Agent():
+        def __init__(self, pos, type='Rabbit', mapsize=10):
+            self.pos = pos
+            self.type = type
+            self.mapsize = mapsize
 
-    others = ['simulation with discrete but random changes', 'Gillespie algorithm, ', 'Example of agent based simulation', 'Advantages of agent based models']
+        def step(self):
+            (update_x, update_y) = (np.random.choice([-1,0,1]) for _ in range(2))
+            self.pos[0] = self.pos[0] + update_x if ((self.pos[0] + update_x) >=0) and ((self.pos[0] + update_x) <self.mapsize) else self.pos[0]
+
+            self.pos[1] = self.pos[1] + update_y if ((self.pos[1] + update_y) >=0) and ((self.pos[1] + update_y) <self.mapsize) else self.pos[1]
+
+        def __repr__(self) -> str:
+            return f"{self.type} at {tuple(self.pos)}"
+
+    # Init
+    size = 10
+    
+    agents = []
+    foxes = [(0,1), (2,2)]
+    for f in foxes: 
+        agents.append(Agent(pos=list(f), type='Fox'))
+    rabbits = [(4,1), (1,5), (3,9), (8,7), (9, 1), (5,5)]
+    for r in rabbits: 
+        agents.append(Agent(pos=list(r), type='Rabbit'))
+    
+    #agents
+    # fill map
+    X = np.zeros((size,size))
+    for agent in agents:
+        
+        X[tuple(agent.pos)] = 1 if agent.type=='Rabbit' else 2
+
+    fig, ax = plt.subplots(1,2,figsize=(16,8))
+    ax[0].imshow(X, aspect=.4)
+
+    # step
+    for agent in agents:
+        agent.step()
+        
+    # fill map
+    occupied_positons = []
+    X = np.zeros((size,size))
+    for agent in agents:
+        
+        X[tuple(agent.pos)] = 1 if agent.type=='Rabbit' else 2
+        occupied_positons.append(tuple(agent.pos))
+
+    ax[1].imshow(X, aspect=.4)
+
+    
+
+    #plt.grid()
+    
+    st.pyplot(fig)
+
+    """ **Rules**
+    * at each timestep, all agents step to a random nieghboring site.
+    * if a rabbit and fox meet, the fox will eat the rabbit
+    * if two rabbits meet, they will procreate
+    * if a fox hasn't eaten in 3 days, it will die
+    * if foxes meet, they will procreate
+    """
+
+
+    """
+    Hmm, question is: *should I do this object oriented style, or with matricies?*
+
+    I'll come back to this. Main take away is that this is a different and usually more realistic method for time-evolving dynamic systems than just applying forward-Euler to the partial differential equations.
+    """
+
+    others = ['Gillespie algorithm, ', 'Example of agent based simulation', 'Advantages of agent based models']
     for key in others:
         st.markdown('### '+key)
         st.markdown(text_dict[key])
