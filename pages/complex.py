@@ -93,6 +93,10 @@ def phaseTransitions_CriticalPhenomena():
         st.markdown(text_dict[key])
       
 def percolation_and_fractals():
+
+    text_dict = getText_prep(filename = textfile_path+'percolation_and_fractals.md', split_level = 3)
+    #a = text_dict.keys(); a
+
     # Side bar
     with st.sidebar:
         st.markdown('**Extra Paramteres**') 
@@ -223,6 +227,7 @@ def percolation_and_fractals():
     fig, fig2 = fractal_dimension(res)
     st.pyplot(fig)
     st.pyplot(fig2)
+    st.markdown('### Resources\n' + text_dict['Resources'])
 
 def selfOrganizedCriticality():
     st.title("Self organized criticality (SOC)")

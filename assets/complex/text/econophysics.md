@@ -44,3 +44,10 @@ $$
 ### Bet-Hedghing Model
 Bet-hedghing ...
 an important parameter in bet-hedghing models, is the noise size
+
+
+### Resources
+| name/link      | Description |
+| ----------- | ----------- |
+| Header      | Title       |
+| Paragraph   | Text        |

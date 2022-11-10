@@ -7,13 +7,12 @@ st.set_page_config(page_title="Computational Physics",
 	menu_items=None)
 st.markdown(r"""
 	# Computational Physics
-	#### Notes and simulations for courses""")
+	##### *by: Anton Golles*""")
 st.image('assets/images/mandel_front.png', width=420)
 
 st.markdown("""
 ### [github](https://www.github.com/tonton-golio/computational_physics)
 ###### Contributers
-* Anton
 * Riz
 * Yoshiaki""")
 

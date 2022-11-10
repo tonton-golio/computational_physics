@@ -653,7 +653,7 @@ def plotAvalanches(idx_arr, skip_init, avalanches_dict):
 
 
     popt, pcov = curve_fit(power_law, xdata[skip:], ydata[skip:],
-    p0=[.1, 420, 5,-100])
+    p0=[.05, 420, -3,-70])
     ax[0].plot(xdata, power_law(xdata, *popt), label=f'fit: power law, k={round(popt[0],3)}')
     #st.markdown(np.round(popt,2))
 
@@ -670,7 +670,8 @@ def plotAvalanches(idx_arr, skip_init, avalanches_dict):
     xdata = ((bins+np.roll(bins,-1))/2)[:-1]
 
     #xdata, ydata = xdata[1:], yda
-    popt, pcov = curve_fit(power_law, xdata[skip:], ydata[skip:],p0=[.1, 420, 5,-100])
+    popt, pcov = curve_fit(power_law, xdata[skip:], ydata[skip:],
+    p0=[.1, 420, -5,-100])
     xplot = np.linspace(min(xdata)*.9, max(xdata)*1.1, 100)
     ax[1].plot(xplot, power_law(xplot, *popt), label=f'fit: power law, k={round(popt[0],3)}')
 
