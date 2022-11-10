@@ -25,7 +25,7 @@ def statisticalMechanics():
         st.markdown(text_dict[key])
 
     key = "Ising Model "
-    with st.expander(key, expanded=False):
+    with st.expander(key, expanded=True):
         st.markdown(text_dict[key])
     
 
@@ -332,13 +332,21 @@ def networks():
 
     cols = st.columns(2)
     network_type = cols[0].radio('network type',['bethe', 'random'])
-    N = cols[0].slider('N',1,42,22)
+    N = cols[0].slider('N',1,420,22)
     if network_type == 'random':
-        a = cols[0].slider('alpha', 0.,1.,0.97)
+        a = cols[0].slider('alpha', 0.9,1.,0.99)
+    if network_type == 'bethe':
+        degree = cols[0].slider('degree', 2,5,3)
         
-    net = make_network(N,a) if network_type == 'random' else makeBetheLattice(N)
-    fig = draw_from_matrix(net)
+    net = make_network(N,a) if network_type == 'random' else makeBetheLattice(N,degree)
+    fig, G = draw_from_matrix(net)
     cols[1].pyplot(fig)
+
+
+    # lets take a look at the degree dist
+
+    fig = network_analysis(net, G)
+    st.pyplot(fig)
 
 def agent_event_models():
     st.title('Agent/event based models')

@@ -58,6 +58,29 @@ def text_expander(key, text_dict, expanded=False):
     with st.expander(key, expanded=expanded):
         st.markdown(text_dict[key])
 
+
+# General
+def power_law_on_hist(hist, ax=plt, p0=[.1, 420, 5,-100], legend=False):
+
+    def power_law(x,k,a,b,c):
+        return a*np.exp(k*(b-x))+c
+
+    counts = ydata = hist[0]
+    
+    bins = hist[1]
+    xdata = ((bins+np.roll(bins,-1))/2)[:-1]
+
+
+    popt, pcov = curve_fit(power_law, xdata, ydata, p0=p0, maxfev = 10000)
+    xplot = np.linspace(min(xdata), max(xdata), 100)
+    ax.plot(xplot, power_law(xplot, *popt), label=f'fit: power law, k={round(popt[0],3)}')
+    #st.markdown(np.round(popt,2))
+
+    ax.set(xscale = 'log',yscale = 'log')
+    if legend: ax.legend(facecolor='beige')
+    return popt[0]
+
+
 # statatistical mechanics
 def ising(size, nsteps, beta, nsnapshots):
     # initialize
@@ -393,9 +416,6 @@ def betheLattice(p=0.1, size=62, get_many=False, ps=[.5], degree=3):
         for p in ps:
             Ns[p] = len(getDomains(M,p))
         return Ns
-
-import numpy as np
-import matplotlib.pyplot as plt
 
 def run_fractals(size_fractal, a ,n):
     def stable(z):
@@ -887,13 +907,13 @@ def bereaucrats(nsteps, size=20):
 
 
 # Networks
-def makeBetheLattice(n_nodes = 10):
+def makeBetheLattice(n_nodes = 10, degree=3):
     M = np.zeros((n_nodes,n_nodes))
 
     idx = 1
     for i, _ in enumerate(M):
-        if i ==0: n =3
-        else: n =2
+        if i ==0: n =degree
+        else: n =degree-1
         M[i, idx:idx+n] = 1
         idx+=n
 
@@ -928,7 +948,33 @@ def draw_from_matrix(M, sick=[], pos=[]):
     
     fig, ax = plt.subplots()
     nx.draw_networkx(G, node_color=color_map, edge_color='white')
+    return fig, G
+
+def network_analysis(net, G):
+    fig, ax = plt.subplots(1,3, figsize=(9,4))
+    ax[0].hist(net.sum(axis=1))
+    ax[0].set_title('Degree distribution', color='white')
+    ax[0].set_xlabel('Degree', color='white')
+    ax[0].set_ylabel('Occurance frequency', color='white')
+
+    c = nx.betweenness_centrality(G).values()
+    hist = ax[1].hist(c)
+    ax[1].set_title('Centrality distribution', color='white')
+    ax[1].set_xlabel('Betweenness centrality', color='white')
+    #ax[1].set_ylabel('Occurance frequency', color='white')
+    power_law_on_hist(hist, ax=ax[1], p0=None, legend=True)
+    
+    cycles = nx.cycle_basis(G)
+    hist = ax[2].hist([len(c) for c in cycles])
+    ax[2].set_title('Cycle length distribution', color='white')
+    ax[2].set_xlabel('Cycle length', color='white')
+    #ax[2].set_ylabel('Occurance frequency', color='white')
+    power_law_on_hist(hist, ax=ax[2], p0=[.05,11,10,10], legend=True)
+
+    plt.tight_layout()
+    plt.close()
     return fig
+
 
 
 # Agents
@@ -1060,6 +1106,7 @@ def hurstExponent(time_series):
     
     plt.close()
     return fig
+
 def betHedging(p, noise, invest_per_round, nsteps, win_multiplier=2, loss_multiplier=.5):
     capital = [1]
     

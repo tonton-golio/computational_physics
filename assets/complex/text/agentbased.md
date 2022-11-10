@@ -19,7 +19,6 @@ Unlike cellular automata, we may have agent based models which act in a non-dete
 ### Example of agent based simulation
 * spread in epidemics
 * post spread on social networks
-* ...
 
 ### Advantages of agent based models
 If actors in a model have different attirbutes (i.e. a heterogenous population) it makes sense to use an agent-based approach. This allows us to have super spreaders and things like that depending on what we are simulating.
