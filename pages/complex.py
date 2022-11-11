@@ -259,8 +259,10 @@ def selfOrganizedCriticality():
 
     fig_baksneppen_fill = bakSneppen_plot_initial(chains, skip_init, idx_arr)
     cols[1].pyplot(fig_baksneppen_fill)
-    
-    st.pyplot(plotAvalanches(idx_arr, skip_init, avalanches_dict))
+    cols = st.columns(2)
+    cutoff1 = cols[0].slider('cutoff1', -5,5,0)
+    cutoff2 = cols[1].slider('cutoff2', -5,5,0)
+    st.pyplot(plotAvalanches(idx_arr, skip_init, avalanches_dict, cutoff1, cutoff2))
     
 
     st.markdown(r"""
