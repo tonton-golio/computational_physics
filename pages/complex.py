@@ -1,6 +1,7 @@
-from complex_utils import *
+from utils_complex import *
 devmod = False
 
+# Pages
 def homeComplex():
     text = getText_prep(textfile_path+'home.md',3)
     st.title('Complex Physics')
@@ -475,7 +476,7 @@ def econophysics():
     fig = betHedging(p, noise, invest_per_round, nsteps, win_multiplier, loss_multiplier)
     cols[1].pyplot(fig)
 
-# View
+# Navigator
 topic_dict = {
     'Contents' :                               homeComplex,
     'Statistical Mechanics' :                  statisticalMechanics,
@@ -486,7 +487,6 @@ topic_dict = {
     'Agent based models' :               agent_event_models,
     'Econophysics'  :                          econophysics, }
 
-with st.sidebar:
-	topic = st.selectbox("topic" , list(topic_dict.keys()))
+topic = st.sidebar.selectbox("topic" , list(topic_dict.keys()))
 
 run_topic = topic_dict[topic] ; run_topic()

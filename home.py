@@ -7,12 +7,13 @@ st.set_page_config(page_title="Computational Physics",
 	menu_items=None)
 st.markdown(r"""
 	# Computational Physics
-	##### *by: Anton Golles*""")
+	""")
 st.image('assets/images/mandel_front.png', width=420)
 
 st.markdown("""
 ### [github](https://www.github.com/tonton-golio/computational_physics)
 ###### Contributers
+* Anton
 * Riz
 * Yoshiaki""")
 
@@ -20,12 +21,9 @@ st.markdown("""
 with st.expander('TODO',expanded=False):
 	st.markdown(r"""
 	- [] dark mode by default (or style sheet for each theme)
-	- [] optimize bethelattice percolation search to make nice plots and confirm p_c
-	- [] find critical point for percolation on bethe lattice of different degrees
-	- [] big runs for susceptibility in 2d ising, add dashed line to plot
-
-	- [x] move functions from complex into complex_utils	
-	- [x] make graphic for front page
-	- [x] close plots
-	- [x] get networks to work in browser
+	- [] clean up notes for SciComp
+	- [] add simulations to SciComp
+		- [] solvers
+		- [] minimization
+		- [] eigenstates
 	""")
