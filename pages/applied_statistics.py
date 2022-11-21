@@ -23,11 +23,10 @@ def week1():
     if st.button('run roll_a_die'):
         st.pyplot(roll_a_die())
 
-
     # roll dice
     if st.button('run roll_dice'):
         st.pyplot(roll_dice())
-        
+
     st.markdown(text_dict['Header 4'])
     
 def week2():

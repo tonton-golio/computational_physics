@@ -36,6 +36,69 @@ def template():
     with st.expander('Go deeper', expanded=False):
         st.markdown(text_dict["Example"])
 
+# Linear Equations
+# C
+def lu_factorize(M):
+    """
+    Factorize M such that M = LU
+
+    Parameters
+    ----------
+    M : square 2D array
+        the 1st param name `first`
+
+    Returns
+    -------
+    L : A lower triangular matrix
+    U : An upper triangular matrix
+    """
+    m, U = M.shape[0], M.copy()
+    L = np.eye(M.shape[0]) # make identity 
+    for j in range(m-1):
+        for i in range(j+1,m):
+            scalar    = U[i, j] / U[j,j]
+            U[i]     -=  scalar*U[j]
+            L[i, j]   = scalar
+            
+    return L, U
+
+def forward_substitute(L,b):
+    '''
+    Takes a square lower triangular matrix $L$ 
+    and a vector $b$ as input, and returns the 
+    solution vector $y$ to $Ly = b$.
+    '''
+    y = np.zeros(np.shape(b))
+    for i in range(len(b)):
+        y[i] = ( b[i] - L[i] @ y) / L [i,i]
+    return y
+
+def backward_substitute(U,y):
+    '''which takes a square upper triangular matrix U and a vector  
+    y as input, and returns the solution vector  x  to  Ux=y .
+    '''
+    x = np.zeros(np.shape(y))
+
+    for i in range(1,1+len(x)):
+        x[-i] = ( y[-i] - U[-i] @ x )/U[-i,-i]
+
+    return x
+
+def C_print():
+    def solve_lin_eq(M,z):
+        L,U = lu_factorize(M)
+        y = forward_substitute(L,z)
+        return backward_substitute(U,y)
+
+    test_matrix = np.array([[2.,1.,1.],
+                        [4.,1.,4.],
+                        [-6.,-5.,3.]])
+
+    test_z = np.array([4.,11.,4.])
+    test_result = (np.round(solve_lin_eq(test_matrix, test_z),5) == np.round(np.linalg.solve(test_matrix, test_z),5)).all()
+    print(f'\nC\nsimilar results obtained via own method as np.linalg.solve?: {test_result}')
+
+
 # Least Squares
 def toy_sim_leastSquares():
         c = st.empty()
@@ -69,6 +132,7 @@ def toy_sim_leastSquares():
             plt.legend()
             c.pyplot(fig)
         plt.close()
+
 
 
 # Initial Value problems

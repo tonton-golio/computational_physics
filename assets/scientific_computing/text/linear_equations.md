@@ -2,6 +2,7 @@
 ## Header 1
 Linear systems are special: It's something we can solve really well, and it covers an enourmous amount of problems. Even when you've got a non-linear system, you can isolate the linearity and solve that, and treat the non-linearity in another way.
 
+## Header 2
 #### Going from abstract linear systems to matrices
 
 A **linear function** is anything that behaves in the way we call linear. They exist in vector spaces: A mapping $F: X \rightarrow Y$ (abstract, eg: wave functions) is linear if $F(ax + bx') = aF(x) + bF(x')$. 
@@ -32,6 +33,7 @@ Find all $x \in X$ such that $F(x) = y$ (some known $y\in Y$)
 3. Solve matrix equation $Fx=y$, where $F$ and $y$ are known
 4. Dot result $x$ with $e$ basis to get the result in the problem domain $x=x_1e_1+\dots+x_ne_n$
 
+## Can we solve
 #### Can we solve $F(x)=y$?
 Yes, when solutions exist!
 
@@ -63,11 +65,11 @@ Singular $F$ splits into two sub-cases:
 
 That was the mathematical part: Now we're going to look at a case where we have exact solutions: when are the solutions stable, and when do small perturbations cause it to blow up?
 
-#### Sensitivity of a Linear System of Equations:
+## Sensitivity of a Linear System of Equations
 
 The more orthogonal the matrix is, the lower the condition number. It's ~1 for orthogonal, but as they get closer to one another, i.e, they get closer to being linearly dependent on one another, condition number increases. The webpage has a calculation of the exact condition number.
 
-#### How to build the algorithms from scratch
+## How to build the algorithms from scratch
 
 Construct algoithms that transforms $b=Ax$ into $x$ using a modest number of operations that are linear, invertible, and simple to compute.
 
@@ -85,8 +87,32 @@ We can use 5. and 6. together: just scale the rows (if the leading term is nonze
 
 "Sorry Anton, I ain't taking notes on gaussian elimination"
 
+## lu_factorize
+def lu_factorize(M):
+    """
+    Factorize M such that M = LU
 
-## Header 2
+    Parameters
+    ----------
+    M : square 2D array
+        the 1st param name `first`
+
+    Returns
+    -------
+    L : A lower triangular matrix
+    U : An upper triangular matrix
+    """
+    m, U = M.shape[0], M.copy()
+    L = np.eye(M.shape[0]) # make identity 
+    for j in range(m-1):
+        for i in range(j+1,m):
+            scalar    = U[i, j] / U[j,j]
+            U[i]     -=  scalar*U[j]
+            L[i, j]   = scalar
+            
+    return L, U
+
+## Header 3
 Consider the matrix equation $Ax=b$
 For i in I, $m: a_{11}x_1 + a_{12}x_2 + \dots + a_{in}x_n \equiv A_i^T x=b_i$. A hypersphere
 

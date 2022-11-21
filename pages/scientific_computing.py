@@ -43,7 +43,42 @@ def linearEquations():
 	text_dict = getText_prep(filename = text_path+'linear_equations.md', split_level = 2)
 
 	st.markdown(text_dict["Header 1"])
-	st.markdown(text_dict["Header 2"])
+
+	with st.expander(r'Going from abstract linear systems to matrices', expanded=False):
+		st.markdown(text_dict['Header 2'])
+
+	with st.expander(r'Can we solve it?', expanded=False):
+		st.markdown(text_dict['Can we solve'])
+
+	with st.expander(r'Sensitivity of a Linear System of Equations', expanded=False):
+		st.markdown(text_dict['Sensitivity of a Linear System of Equations'])
+
+
+	with st.expander(r'How to build the algorithms from scratch', expanded=False):
+		st.markdown(text_dict['How to build the algorithms from scratch'])
+
+
+	st.markdown(r'### LU-factorization')
+
+	matrix = np.array([[1,4,12],
+						[5,4,2],
+						[9,5,67]])
+	cols = st.columns(2)
+	cols[0].markdown('If we start with a matrix like this one:')
+	cols[0].table(matrix)
+	cols[0].markdown('we may factorize into a pair of upper and lower triangular matricies')
+	L, U = lu_factorize(matrix.astype(float))
+	cols[0].table(np.round(U,2))
+	cols[0].table(np.round(L,2))
+
+	cols[1].code(text_dict['lu_factorize'])
+
+	'Multiplying $L$ and $U$ should yield the input matrix:'
+	matrix_out = (L@U).astype(float)
+	matrix_out
+		
+	with st.expander(r'Errors', expanded=False):
+		st.markdown(text_dict["Header 3"])
 	
 def linearLeastSquares():
 	st.title('Linear Least Squares')
