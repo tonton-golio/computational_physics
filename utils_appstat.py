@@ -36,6 +36,53 @@ def template():
     with st.expander('Go deeper', expanded=False):
         st.markdown(text_dict["Example"])
 
+# week 1
+def std_calculations():
+    fig, ax = plt.subplots(1,3, figsize=(12,4))
+    for idx, N in enumerate([5,10,20]):
+        res = {'N': [], 'N-1':[]}
+        for i in range(1000):
+            x = np.random.randn(N)
+            std_N = ( 1/(N) * np.sum(x-np.mean(x)))**.5
+            std_N_1 = ( 1/(N-1) * np.sum(x-np.mean(x)))**.5
+            res['N'].append(std_N)
+            res['N-1'].append(std_N_1)
+
+        
+        ax[idx].hist(res['N'], bins=20, label='N', fill=False, edgecolor='r')
+        ax[idx].hist(res['N-1'],bins=20, label='N-1', fill=False, edgecolor='b')
+        ax[idx].set_title(f'N={N}')
+        ax[idx].legend()
+    plt.tight_layout()
+    plt.close()
+    return fig
+
+def roll_a_die(num=100):
+    x = np.random.randint(1,7,num)
+    fig, ax = plt.subplots(figsize=(12,3))
+    for n in range(2, num):
+        plt.scatter([n], [np.mean(x[:n])], c='black')
+
+    plt.close()
+    return fig
+
+def roll_dice():
+    data = {}
+    nums = np.arange(2,40, dtype=int)
+    for num in nums:
+        data[num] = []
+        for n in range(100):
+            x = np.random.randint(1,7,num)
+            data[num].append(np.mean(x))
+
+    
+    y = [np.mean(data[num]) for num in nums]
+    yerr = [np.std(data[num]) for num in nums]
+
+    fig, ax = plt.subplots(figsize=(12,3))
+    ax.errorbar(nums, y, yerr, c='black')
+    plt.close()
+    return fig
 
 
 # Week 2
