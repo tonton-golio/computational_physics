@@ -5,7 +5,9 @@ Any stable physical/chemical system can be described with an eigensystem. Wavefu
 $$
 Ax = \lambda x
 $$
-$A$ is the operator (mapping $\mathbb{C}^n \rightarrow \mathbb{C}^n$), $x$ an eigevector, $\lambda$ an eigenvalue.
+$A$ is the operator (mapping $\mathbb{C}^n \rightarrow \mathbb{C}^n$), $x$ an eigevector, $\lambda$ an eigenvalue. The question is, **How do we obtain the eigen-vectors and -values?**
+
+## Header 2
 
 For any fixed $\lambda$, you've got a linear system
 $$(A-\lambda I)x = 0$$
@@ -34,7 +36,7 @@ Thankfully, most cases in natural sciences are not defective, and so we can anal
 
 Then $A = U \Lambda U^H$ ($\Lambda = Sp(A)$)
 
-### The power method
+## The power method
 
 Let $A:\mathbb{C}^n \rightarrow \mathbb{C}^n$ be a non-defective linear operator. $A=T\Lambda T^{-1}$, and let's order the eigenvalues in descending order: $\vert\lambda_1\vert\geq\vert\lambda_2\vert\geq\dots\geq\vert\lambda_n\vert$ ($\geq$ because the eigenvectors are not necessarily distinct)
 
@@ -53,7 +55,7 @@ as $\lambda_2$ is the second largest eigenvalue
 $$\lim_{k\to\infty}\frac{A^kx}{\Vert A^k x \Vert} = t_1, \qquad\text{if }\tilde{x}_1\neq0 \text{ and } \lambda_2<\lambda_1$$
 If $\lambda_1=\lambda_2=\dots=\lambda_n$, it still gives the eigenvector to $\lambda_1$: Namely, the projection $t_{\lambda_1}=P_{\lambda_t}x$
 
-### Power method algorithm
+#### Power method algorithm
 
 ```python
 def PowerIterate(A, x_0):
@@ -87,7 +89,55 @@ Now, we use _math_
 Let $f:\mathbb{C}\rightarrow\mathbb{C}$ be continuous, then there exists a sequence of $d$ degree polynomials $P_d(\lambda)$ such that $f(\lambda)=\lim_{d\to\infty} P_d(\lambda)$
 $$f(A) = \lim_{d\to\infty} P_d(\Lambda_A) = \lim_{d\to\infty}\left(T\;P(\Lambda_A)\;T^{-1}\right)$$
 $$ =T\left(\lim_{d\to\infty}P(\Lambda_A)\right)T^{-1} $$
-* Gershgorin centers
-* rayleigh quotient
-* power iterate (gives us the greatest eigenvalue)
-* rayleigh iterate
+
+## Gershgorin centers
+### Gershgorin centers
+We can appoximate the eigenvalues using the Gershgorin center method:
+
+## gershgorin
+def gershgorin(K, _sort=True):
+    # Starting with row one, we take the element on the diagonal, $a_{ii}$ as the center for the disc. # wikipedia
+    centers = np.array([K[i,i] for i in range(len(K))])
+
+    # We then take the remaining elements in the row and apply the formula:
+    # $$\sum _{{j\neq i}}|a_{{ij}}|=R_{i}$$
+    radii = np.array([np.sum(np.hstack( [np.abs(K[i,:i]), np.abs(K[i,i+1:])] )) for i in range(len(K))])
+    
+    if _sort:  # sorting
+        sort_index = np.argsort(centers)[::-1]
+        centers = centers[sort_index]; radii = radii[sort_index]
+    return centers, radii
+
+
+## rayleigh iterate
+
+
+#### Rayleigh quotient
+```python
+def rayleigh_qt(A,x=None):
+    return x.T @ A @ x / (x.T @ x)
+```
+
+#### Rayleigh iterate
+```python
+def rayleigh_iterate(A,x0, shift0, tol=0.001):
+    norm = lambda v : np.max(abs(v))
+    
+    A = A.copy()
+    
+    ys = [] ; xs = [x0] ; cs = []
+    lambda_ = 420 ; lambda_prev = -300
+    A_less_eig = A - shift0*np.eye(len(A))
+    i = 0
+    while abs(lambda_-lambda_prev) > tol:
+        lambda_prev = lambda_
+        ys.append(solve_lin_eq(A_less_eig, xs[i]))
+        cs.append( ( ys[i] @ xs[i] ) / (xs[i] @ xs[i]) )
+        xs.append( ys[i]/norm(ys[i]) )
+        
+        lambda_ = 1/cs[i] + shift0
+        i +=1
+        
+        
+    return lambda_, xs[-1], i
+```

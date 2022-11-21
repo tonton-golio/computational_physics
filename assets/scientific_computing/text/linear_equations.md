@@ -112,6 +112,36 @@ def lu_factorize(M):
             
     return L, U
 
+## forward_substitute
+def forward_substitute(L,b):
+    '''
+    Takes a square lower triangular matrix L 
+    and a vector b as input, and returns the 
+    solution vector y to Ly=b.
+    '''
+    y = np.zeros(np.shape(b))
+    for i in range(len(b)):
+        y[i] = ( b[i] - L[i] @ y) / L [i,i]
+    return y
+## backward_substitute
+def backward_substitute(U,y):
+    '''which takes a square upper triangular 
+    matrix U and a vector y as input, and returns
+    the solution vector  x  to  Ux=y.
+    '''
+    x = np.zeros(np.shape(y))
+
+    for i in range(1,1+len(x)):
+        x[-i] = ( y[-i] - U[-i] @ x )/U[-i,-i]
+
+    return x
+
+## solve_lin_eq
+def solve_lin_eq(M,z):
+    L,U = lu_factorize(M)
+    y = forward_substitute(L,z)
+    return backward_substitute(U,y)
+
 ## Header 3
 Consider the matrix equation $Ax=b$
 For i in I, $m: a_{11}x_1 + a_{12}x_2 + \dots + a_{in}x_n \equiv A_i^T x=b_i$. A hypersphere

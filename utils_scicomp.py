@@ -64,9 +64,9 @@ def lu_factorize(M):
 
 def forward_substitute(L,b):
     '''
-    Takes a square lower triangular matrix $L$ 
+    Takes a square lower triangular matrix L 
     and a vector $b$ as input, and returns the 
-    solution vector $y$ to $Ly = b$.
+    solution vector y to Ly = b.
     '''
     y = np.zeros(np.shape(b))
     for i in range(len(b)):
@@ -74,8 +74,9 @@ def forward_substitute(L,b):
     return y
 
 def backward_substitute(U,y):
-    '''which takes a square upper triangular matrix U and a vector  
-    y as input, and returns the solution vector  x  to  Ux=y .
+    '''which takes a square upper triangular 
+    matrix U and a vector y as input, and returns 
+    the solution vector  x  to  Ux=y.
     '''
     x = np.zeros(np.shape(y))
 
@@ -84,54 +85,52 @@ def backward_substitute(U,y):
 
     return x
 
-def C_print():
-    def solve_lin_eq(M,z):
-        L,U = lu_factorize(M)
-        y = forward_substitute(L,z)
-        return backward_substitute(U,y)
 
-    test_matrix = np.array([[2.,1.,1.],
-                        [4.,1.,4.],
-                        [-6.,-5.,3.]])
-
-    test_z = np.array([4.,11.,4.])
-    test_result = (np.round(solve_lin_eq(test_matrix, test_z),5) == np.round(np.linalg.solve(test_matrix, test_z),5)).all()
-    print(f'\nC\nsimilar results obtained via own method as np.linalg.solve?: {test_result}')
+def solve_lin_eq(M,z):
+    L,U = lu_factorize(M)
+    y = forward_substitute(L,z)
+    return backward_substitute(U,y)
 
 
 # Least Squares
 def toy_sim_leastSquares():
-        c = st.empty()
-        size = 20
-        x = np.random.uniform(0,1,size)
-        noise = np.random.rand(size)
-        a, b = 3, 1
-        y = a*x+b +noise
+    c = st.empty()
+    size = 50
+    x = np.random.uniform(0,1,size)
+    noise = np.random.rand(size)
+    a, b = 3, 1
+    y = a*x+b +noise
 
-        fig = plt.figure()
+    fig, ax = plt.subplots(figsize=(12,4))
+    plt.scatter(x,y, label="data")
+    plt.legend()
+    fig.set_facecolor('black')
+    ax.set_facecolor('black')
+    c.pyplot(fig)
+    
+    a_guess, b_guess = 1,1
+    step_size = 0.1
+    for i in range(20):
+        fig, ax = plt.subplots(figsize=(12,4))
+        sleep(.07)
         plt.scatter(x,y, label="data")
-        plt.legend()
-        c.pyplot(fig)
+        loss = lambda a_guess, b_guess: sum((y - (a_guess*x+b_guess))**2)**.5
+        plt.plot(x, a_guess*x+b_guess, label='fit', ls='--', c='r')
         
-        a_guess, b_guess = 1,1
-        step_size = 0.1
-        for i in range(30):
-            fig = plt.figure()
-            sleep(.07)
-            plt.scatter(x,y, label="data")
-            loss = lambda a_guess, b_guess: sum((y - (a_guess*x+b_guess))**2)**.5
-            plt.plot(x, a_guess*x+b_guess, label='fit', ls='--', c='r')
-            
-            #update guess
+        #update guess
 
-            dloss_da = loss(a_guess+step_size, b_guess)- loss(a_guess, b_guess)
-            dloss_db = (loss(a_guess, b_guess+step_size)- loss(a_guess, b_guess))
-            a_guess -= dloss_da
-            b_guess -= dloss_db     
-            
-            plt.legend()
-            c.pyplot(fig)
-        plt.close()
+        dloss_da = loss(a_guess+step_size, b_guess)- loss(a_guess, b_guess)
+        dloss_db = (loss(a_guess, b_guess+step_size)- loss(a_guess, b_guess))
+        a_guess -= dloss_da
+        b_guess -= dloss_db
+
+
+        step_size *= .95
+        plt.legend(facecolor='beige')
+        fig.set_facecolor('black')
+        ax.set_facecolor('black')
+        c.pyplot(fig)
+    plt.close()
 
 
 

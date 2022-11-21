@@ -1,10 +1,9 @@
 
 ## Header 1
-with given data and a desired function, determine the paramters of the function to minimize the distance to data points.
+With given data and a desired function, determine the paramters of the function to minimize the distance to data points.
 
 
-## Header 2
-### Least Square Solution:
+## Least Square Solution
 * **Always Exists:** solution to $Ax=\tilde{b}$ is the least square solution. 
 $\tilde{b}$ is the projection on the image space, and $b^\perp$ 
 the projection on the orthogonal component
@@ -32,7 +31,7 @@ COND($A^TA$) = COND($A^2$), but COND($Q^TA$) = COND($A$).
 
 We just need to construct the effect of multiplying our matrix by $Q^T$. In general, you never want to calculate $Q$ cause it can be really large (million x million).
 
-### Building a least squares algorithm from scratch
+## Building a least squares algorithm from scratch
 
 Note: Norm $\left(\,||x||\,\right)$ always refers to the Euclidean Norm $\left(\,||x||_2\,\right)$ when we're talking about least squares.
 
@@ -85,3 +84,21 @@ def reflect_columns(v, A):
 
 ## Header 3
 the last line RHS is the same as `np.outer(S,V)`
+
+This then yields a much better least squares optimizer:
+
+
+## least_squares
+def least_squares(A, b):
+    '''
+    Solves Ax = b, for x
+    '''
+    Q, R = householder_QR_slow(A)
+    v = Q.T @ b
+    size = np.shape(A)[1]
+    R_cropped = R[:size,:size]
+    v_cropped = v[:size]
+    x = backward_substitute(R_cropped, v_cropped)
+    
+    residual = max(abs(v[size-1:]))
+    return x, residual

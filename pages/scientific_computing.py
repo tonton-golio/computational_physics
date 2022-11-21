@@ -76,7 +76,16 @@ def linearEquations():
 	'Multiplying $L$ and $U$ should yield the input matrix:'
 	matrix_out = (L@U).astype(float)
 	matrix_out
-		
+
+	
+	st.markdown('Now that we have a factorization algorithm, we almost can solve a linear equation, we just need a forward and backward substitution')
+	cols = st.columns(2)
+	cols[0].code(text_dict['forward_substitute'])
+	cols[1].code(text_dict['backward_substitute'])
+	
+	"As it usually goes with programming, things are simple when the pieces are in place"
+	st.code(text_dict['solve_lin_eq'])
+	"For QR-factorization, see least squares page"
 	with st.expander(r'Errors', expanded=False):
 		st.markdown(text_dict["Header 3"])
 	
@@ -88,13 +97,19 @@ def linearLeastSquares():
 
 	st.markdown(text_dict["Header 1"])
 
-	run_least_squares = st.button('run',)
+	run_least_squares = st.button('Run toy simulation',)
 	if run_least_squares: toy_sim_leastSquares()
 
+	with st.expander('Least Square Solution', expanded=False):
+		st.markdown(text_dict["Least Square Solution"])
 
-	st.markdown(text_dict["Header 2"])
+	with st.expander('Building a least squares algorithm from scratch', expanded=False):
+		st.markdown(text_dict["Building a least squares algorithm from scratch"])
+
+	
 	st.code(text_dict["Code"])
 	st.markdown(text_dict["Header 3"])
+	st.code(text_dict['least_squares'])
 
 def eigenSystems():
 	st.title('EigenSystems')
@@ -103,6 +118,18 @@ def eigenSystems():
 	text_dict = getText_prep(filename = text_path+'eigenSystems.md', split_level = 2)
 
 	st.markdown(text_dict["Header 1"])
+	with st.expander('Deets', expanded=False):
+		st.markdown(text_dict["Header 2"])
+
+	with st.expander('The power method', expanded=False):
+		st.markdown(text_dict['The power method'])
+
+	with st.expander('Gershgorin', expanded=False):
+		st.markdown(text_dict['Gershgorin centers'])
+		st.code(text_dict['gershgorin'])
+
+	with st.expander('rayleigh iterate', expanded=True):
+		st.markdown(text_dict['rayleigh iterate'])
 
 def nonlinearEquationsOptimization():
 	st.title('Non-linear Equations Optimization')
