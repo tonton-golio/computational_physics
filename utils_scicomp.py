@@ -194,7 +194,7 @@ def run_reactionDiffusion():
         
         #nsteps = int(10**(col1.slider('Number of steps = 10^x', 0.,5., 2.5)))
         T_end = int(2**(col1.slider('T_end = 2^x, x=', 0,8, 1)))
-        resolution = int(2**col2.slider('resolution = 2^x, x=', 3,13, 3))
+        resolution = int(2**col2.slider('resolution = 2^x, x=', 3,13, 4))
         method = col1.selectbox('Method', ['forward-Euler', 'Runge-Kutta', 'backward-Euler'])
         dt = 2**(col2.slider('dt = 2^x, x=',-14,-3,-5))
         
@@ -258,10 +258,9 @@ def run_reactionDiffusion():
         #nabla[-1,0] = ((right+up)/dx**2)[-1,0]
         #nabla[-1,-1] = ((left+up)/dx**2)[-1,-1]
 
-        #, nabla[:,-1], nabla[0,:], nabla[-1,:] = 0, 0, 0, 0  # should i set border equal to zero?
         return nabla
         
-    @st.cache
+    
     def run():
         # initialize
         start_time = time()

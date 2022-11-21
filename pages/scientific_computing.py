@@ -75,7 +75,7 @@ def linearEquations():
 
 	'Multiplying $L$ and $U$ should yield the input matrix:'
 	matrix_out = (L@U).astype(float)
-	matrix_out
+	#matrix_out
 
 	
 	st.markdown('Now that we have a factorization algorithm, we almost can solve a linear equation, we just need a forward and backward substitution')
@@ -128,7 +128,7 @@ def eigenSystems():
 		st.markdown(text_dict['Gershgorin centers'])
 		st.code(text_dict['gershgorin'])
 
-	with st.expander('rayleigh iterate', expanded=True):
+	with st.expander('Rayleigh iterate', expanded=True):
 		st.markdown(text_dict['rayleigh iterate'])
 
 def nonlinearEquationsOptimization():
@@ -153,7 +153,7 @@ def initialValueProblems():
 def partialDifferentialEquations():
 	st.title('Partial, differential Equations (PDEs)')
 	# Main text
-	text_dict = getText_prep(filename = text_path+'initialValueProblems.md')
+	text_dict = getText_prep(filename = text_path+'partialDifferentialEquations.md')
 	st.markdown(text_dict["Header 1"])
 
 # Navigator
@@ -165,7 +165,7 @@ func_dict = {
 	"Eigensystems" : eigenSystems,
 	"Nonlinear Equations Optimization" : nonlinearEquationsOptimization,
 	"Initial Value Problems" : initialValueProblems,
-	"Partial Differential Equations":partialDifferentialEquations,
+	#"Partial Differential Equations":partialDifferentialEquations,
 }
 
 topic = st.sidebar.selectbox("topic" , list(func_dict.keys()))
