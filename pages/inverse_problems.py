@@ -1,4 +1,4 @@
-from utils_inverse import *
+from utils.utils_inverse import *
 st.title('Inverse Problems')
 
 

@@ -1,4 +1,4 @@
-from utils_appstat import *
+from utils.utils_appstat import *
 st.title('Applied statistics')
 
 

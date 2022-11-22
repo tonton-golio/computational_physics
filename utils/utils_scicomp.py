@@ -17,7 +17,7 @@ st.set_page_config(page_title="Scientific Computing",
     menu_items=None)
 
 def getText_prep(filename = 'pages/stat_mech.md', split_level = 2):
-    with open(filename,'r' ) as f:
+    with open(filename,'r', encoding='utf8') as f:
         file = f.read()
     level_topics = file.split('\n'+"#"*split_level+' ')
     text_dict = {i.split("\n")[0].replace('### ','') : 

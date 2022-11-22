@@ -1,4 +1,4 @@
-from utils_scicomp import *
+from utils.utils_scicomp import *
 
 # Pages
 def home():
