@@ -1,7 +1,11 @@
 from utils.utils_appstat import *
-st.title('Applied statistics')
+
+
+def home():
+    st.title('Applied statistics')
 
 def week1():
+    st.title('Week 1')
     text_dict = getText_prep(filename = text_path+'week1.md', split_level = 1)
      
     #st.header('Week 1')
@@ -10,7 +14,7 @@ def week1():
 
     st.markdown(text_dict['Header 1'])
 
-    with st.expander('Mean', expanded=False):
+    with st.expander('Mean & Standard Deviation', expanded=False):
         st.markdown(text_dict['Mean'])
         
         mean_picker = st.selectbox('There are different measures hereof',['Geometric mean', 'Arithmetic mean', 'Median',  'Mode', 'Harmonic', 'Truncated'])
@@ -36,7 +40,7 @@ def week1():
         st.pyplot(fig)
 
 
-    with st.expander('Standard Deviation', expanded=False):
+    #with st.expander('Standard Deviation', expanded=False):
         st.markdown(text_dict['STD'])
 
         # compare N-1 and N...
@@ -44,7 +48,7 @@ def week1():
         st.pyplot(std_calculations())
 
 
-    st.markdown(text_dict['Weighted mean'])
+        st.markdown(text_dict['Weighted mean'])
 
 
     with st.expander('Correlations', expanded=False):

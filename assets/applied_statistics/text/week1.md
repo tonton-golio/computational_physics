@@ -1,17 +1,16 @@
 
 
 # description
-(Introduction, General Concepts, ChiSquare Method):
-Nov 21: 8:15-10:00: Introduction to course and overview of curriculum.
-Mean and Standard Deviation. Correlations. Significant digits. Central limit theorem. (12-13 Measuring in Aud. A!)
-Nov 22: Error propagation (which is a science!). Estimate g measurement uncertainties.
-Nov 25: ChiSquare method, evaluation, and test. Formation of Project groups.
+##### Introduction, General Concepts, ChiSquare Method
+
+* Nov 21: Introduction to course and overview of curriculum. Mean and Standard Deviation. Correlations. Significant digits. Central limit theorem. 
+* Nov 22: Error propagation (which is a science!). Estimate g measurement uncertainties.
+* Nov 25: ChiSquare method, evaluation, and test. Formation of Project groups.
 
 
 # Header 1
 *Don't worry too much about the theory, this is an **applied** course*.
 *We'll try to build a generally applicable `code repo`*.
-
 
 # Mean
 Mean is a metric telling us about bulk magnitude-tendency of data. 
@@ -112,7 +111,7 @@ Lets compare these:
 
 # Weighted mean
 
-#### Weighted mean
+###### Weighted mean
 How to average data which has different uncertainties and what is the uncertainty on the average?
 
 $$
