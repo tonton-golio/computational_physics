@@ -3,6 +3,7 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import pandas as pd    
 from time import time
+import seaborn as sns
 from time import sleep
 
 
@@ -36,26 +37,93 @@ def template():
     with st.expander('Go deeper', expanded=False):
         st.markdown(text_dict["Example"])
 
-# week 1
-def std_calculations():
-    fig, ax = plt.subplots(1,3, figsize=(12,4))
-    for idx, N in enumerate([5,10,20]):
-        res = {'N': [], 'N-1':[]}
-        for i in range(1000):
-            x = np.random.randn(N)
-            std_N = ( 1/(N) * np.sum(x-np.mean(x)))**.5
-            std_N_1 = ( 1/(N-1) * np.sum(x-np.mean(x)))**.5
-            res['N'].append(std_N)
-            res['N-1'].append(std_N_1)
 
+###########################################
+# week 1
+
+#
+def means(arr, truncate=1):
+	"""
+	determines mean of sorts = ['Geometric mean', 'Arithmetic mean', 'Median',  'Mode', 'Harmonic', 'Truncated']
+	"""
+	arr = arr.copy().astype(float)
+	n = len(arr)
+	arr = np.sort(arr) # for median
+	def geometric(arr):
+		return np.prod(arr)**(1/n)
+	def arithmetic(arr):
+		return np.sum(arr) / n
+	def median(arr):
+		return arr[n//2] if n%2==0 else arr[n//2+1]
+	def mode(arr):
+		unique, counts = np.unique(arr, return_counts=True)
+		return arithmetic(unique[np.argwhere(counts==np.max(counts))])
+	def harmonic(arr):
+		return (np.sum( arr**(-1) ) / n)**(-1)
+	def truncated(arr):
+		arr = arr[truncate:-truncate]
+		return arithmetic(arr)
+
+
+	return {
+			'Geometric mean' : geometric(arr),
+			'Arithmetic mean' :  arithmetic(arr), 
+			'Median': median(arr),  
+			#'Mode': mode(arr),
+			'Harmonic': harmonic(arr), 
+			'Truncated' : truncated(arr)
+			}
+
+def showMeans(arr, truncate=1):
+	'''
+		on a hist, shows means
+	'''
+	fig, ax = plt.subplots(figsize=(6,2))
+	arr = np.sort(arr)
+	d = means(arr, truncate=truncate)
+	arr_truncated = arr[truncate:-truncate]
+	counts, bins = np.histogram(arr_truncated)
+	
+	ax.hist(arr_truncated, bins=len(arr)//50)
+	colors = sns.color_palette("hls", 8)
+	for i, c in zip(d, colors):
+		ax.axvline(d[i], label=i, c=c)
+	#ax.legend(facecolor='beige')
+	
+	#ax.set()##xscale='log')#, yscale='log')
+	_ = [plt.text(d[key], (idx+1)*max(counts)//9 , s = key, color='white') for idx, key in enumerate(d)]
+	plt.close()
+
+	return fig
+
+
+def std_calculations(n=400):
+	fig, ax = plt.subplots(3,1, figsize=(8,4), sharex=True, sharey=True)
+	for idx, N in enumerate([5,10,20]):
+		res = {'N': [], 'N-1':[]}
+		for i in range(n):
+			x = np.random.randn(N)
+			std_N   = ( 1/(N)   * np.sum( (x-np.mean(x))**2) )**.5
+			std_N_1 = ( 1/(N-1) * np.sum( (x-np.mean(x))**2) )**.5
+			res['N'].append(std_N)
+			res['N-1'].append(std_N_1)
+
+		minmin = min([min(res['N']), min(res['N-1'])])
+		maxmax = max([max(res['N']), max(res['N-1'])])
+		shared_bins = np.linspace(minmin,maxmax,20)
+		
+
+		ax[idx].hist(res['N'], bins=shared_bins, label='N', fill=True, alpha=.6,	facecolor='pink')
+		ax[idx].hist(res['N-1'],bins=shared_bins, label='N-1', fill=True, alpha=.6,		facecolor='yellow')
+		ax[idx].set_title(f'N={N}', color="white")
         
-        ax[idx].hist(res['N'], bins=20, label='N', fill=False, edgecolor='r')
-        ax[idx].hist(res['N-1'],bins=20, label='N-1', fill=False, edgecolor='b')
-        ax[idx].set_title(f'N={N}')
-        ax[idx].legend()
-    plt.tight_layout()
-    plt.close()
-    return fig
+		ax[idx].set(xticks=[], yticks=[])
+	ax[0].legend(facecolor='beige')
+	ax[idx].set_xlabel(r'standard devitation, $\sigma$', color='beige')
+	fig.suptitle(f'Distributions of standard deviations, n={n}', color='beige')
+	plt.tight_layout()
+	plt.close()
+	return fig
 
 def roll_a_die(num=100):
     x = np.random.randint(1,7,num)

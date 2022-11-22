@@ -9,38 +9,87 @@ Nov 25: ChiSquare method, evaluation, and test. Formation of Project groups.
 
 
 # Header 1
-*Don't worry too much about the theory, this is an **applied** course* 😗
-The central goal is to *build a generally applicable `code repo`*.
+*Don't worry too much about the theory, this is an **applied** course*.
+*We'll try to build a generally applicable `code repo`*.
 
 
 # Mean
-We have a bunch (6) of different means:
+Mean is a metric telling us about bulk magnitude-tendency of data. 
 
-# mean 1
-* Geometric mean
-* Arithmetic mean
-* Median - *half below, half above*
+# Geometric mean
+root of the product,
+$$
+     \bar{x}_\text{geo} = \left( \prod_i^n x_i\right)^{1/n}
+$$
+is equivalent to the arithmetic mean in logscale
+$$
+     \exp\left(\frac{1}{n}\sum_{i}^n\ln x_i \right)
+$$
+# Geometric mean code
+```python
+def geometric():
+     return np.prod(arr)**(1/n)
+```
 
-# mean 2
-* Mode
-* Harmonic mean
-* Truncated mean
+# Arithmetic mean
+Equally weighted center,
+$$
+     \hat{\mu} = \bar{x} = \left< x \right> = \frac{1}{N}\sum_i^N x_i.
+$$
 
-# means
-##### Geometric mean
-
-mean (*average*) is the geometric midpoint of a data-set, ``np.mean(x)``.
+*can we define this differently, i.e. in a more intuitive manner?* The arithmetic mean is that in which:
 
 $$
-     \hat{\mu} = \bar{x} = \left< x \right> = \frac{1}{N}\sum_i^N x_i
+     x_i = \bar{x} + \delta_i.
 $$
+# Arithmetic mean code
+```python
+def arithmetic():
+     return np.sum(arr) / n
 
-*can we define this differently, i.e. in a more intuitive manner?*
+def arithmetic():
+     return np.mean(arr)
+```
 
-$$
-     x_i = \bar{x} + \delta_i\\
-$$
-the deviations from the mean of every data-point, must neccessarily sum to null.
+# Median
+The counting center point of the data
+# Median code
+```python
+def median():
+     return arr[n/2] if n%2==0 else arr[n//2+1]
+```
+
+# Mode
+The most typical data point
+# Mode code
+```python
+def mode():
+     v2c = value_counts = {}
+     for i in arr:
+          v2c[i] = v2c[i] + 1 if i in v2c else 1
+     
+     c2v = dict((val, key) for (key, val) in dict.items())
+     return c2v[max(c2v.keys())]
+```
+
+# Harmonic
+Harmony
+# Harmonic code
+```python
+def harmonic():
+     return (np.sum( arr**(-1) ) / n)**(-1)
+```
+
+# Truncated
+Truncated
+# Truncated code
+```python
+def truncated():
+     arr = arr[truncate:-truncate]
+     return arithmetic(arr)
+```
+
+
 
 # STD
 

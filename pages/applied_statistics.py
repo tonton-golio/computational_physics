@@ -1,7 +1,6 @@
 from utils.utils_appstat import *
 st.title('Applied statistics')
 
-
 def week1():
     text_dict = getText_prep(filename = text_path+'week1.md', split_level = 1)
      
@@ -13,17 +12,36 @@ def week1():
 
     with st.expander('Mean', expanded=False):
         st.markdown(text_dict['Mean'])
+        
+        mean_picker = st.selectbox('There are different measures hereof',['Geometric mean', 'Arithmetic mean', 'Median',  'Mode', 'Harmonic', 'Truncated'])
+
         cols = st.columns(2)
-        cols[0].markdown(text_dict['mean 1'])
-        cols[1].markdown(text_dict['mean 2'])
-        st.markdown(text_dict['means'])
+        cols[0].markdown(text_dict[mean_picker])
+        cols[1].markdown(text_dict[mean_picker+' code'])
+        
+        '##### _____________________________________________________________________________________________'
+        
+        cols = st.columns(4)
+        dists = 'n_normal, n_exp, n_cauchy, truncate'.split(', ')
+        
+        n_normal, n_exp, n_cauchy, truncate = (cols[i].slider(name, 0, 100, 1000) for i, name in enumerate(dists))
+        
+        normal = np.random.randn(n_normal)
+        exp = np.random.exponential(n_exp) 
+        cauchy = np.random.standard_cauchy(n_cauchy)
+        
+        arr = np.hstack([normal, exp, cauchy])
+
+        fig = showMeans(arr)
+        st.pyplot(fig)
+
 
     with st.expander('Standard Deviation', expanded=False):
         st.markdown(text_dict['STD'])
 
         # compare N-1 and N...
-        if st.button('run std_calculations'):
-            st.pyplot(std_calculations())
+        #if st.button('run std_calculations'):
+        st.pyplot(std_calculations())
 
 
     st.markdown(text_dict['Weighted mean'])
@@ -111,7 +129,6 @@ def week6():
     X = makeBlobs(100)
     st.pyplot(scatter(X[:,0], X[:,1]))
      
-
 def week7():
     #st.header('Week 7')
     
