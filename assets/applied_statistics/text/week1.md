@@ -8,32 +8,28 @@ Nov 22: Error propagation (which is a science!). Estimate g measurement uncertai
 Nov 25: ChiSquare method, evaluation, and test. Formation of Project groups.
 
 
-
 # Header 1
 *Don't worry too much about the theory, this is an **applied** course* ðŸ˜—
+The central goal is to *build a generally applicable `code repo`*.
 
 
-In this course, a central goal is to *build a generally applicable repository*.
-
-
-
-### mean and standard deviation
-#### MEAN
+# Mean
 We have a bunch (6) of different means:
 
+# mean 1
 * Geometric mean
-* arithmetic mean
-* median - *half below, half above*
-* 
-* 
-* 
+* Arithmetic mean
+* Median - *half below, half above*
 
+# mean 2
+* Mode
+* Harmonic mean
+* Truncated mean
+
+# means
 ##### Geometric mean
 
-
-mean (*average*) is the geometric midpoint of a data-set. 
-
-``np.mean(x)``
+mean (*average*) is the geometric midpoint of a data-set, ``np.mean(x)``.
 
 $$
      \hat{\mu} = \bar{x} = \left< x \right> = \frac{1}{N}\sum_i^N x_i
@@ -46,12 +42,9 @@ $$
 $$
 the deviations from the mean of every data-point, must neccessarily sum to null.
 
-#### STD
+# STD
 
-Standard deviation is a measure of how much datapoint deviates from the dataset mean.
-
-``np.std(x)``
-
+Standard deviation is a measure of how much datapoint deviates from the dataset mean, ``np.std(x)``.
 
 $$
      \hat{\sigma} = \sqrt{\frac{1}{N}\sum_i^N ( \left< x \right> -x_i)^2}
@@ -66,12 +59,14 @@ $$
 $$
 we subtract 1, because something something degrees of freedom...
 
-Lets compare these...
+Lets compare these:
 
 # Header 2
-Weighted mean:
+How to average data which has different uncertainties and what is the uncertainty on the average?
+
+#### Weighted mean:
 $$
-     \hat{\mu} = \frac{\ldots}{\ldots}
+     \hat{\mu} = \frac{\sum x_i / \sigma_i^2}{\sum 1 / \sigma_i^2}
 $$
 
 check out (guess the correlation)[https://guessthecorrelation.com]
@@ -159,7 +154,74 @@ In summary: **The central limit theorem ensures that uncertanties are gaussian ð
 
 
 ### Error propagation
-hmm, how do we propagate these errors?
+hmm, how do we propagate these errors? no se?
+
+If we have a function $y(x_i)$ and we know the uncertainty on $\sigma(x_i) = 0.8$, how do we find $\sigma(y(x_i))$?. Well obviously it depends on the gradient of $y$ with respect to $x$.
+
+A simple way of doing this:
+$$
+    \sigma(y(x_i)) = \frac{\partial y}{\partial x}\sigma(x_i)
+$$
+If the function $y$, is smooth around $x_i$, this is fine, but if we have a crazy looking function, we should be careful. (The slope should be relatively constant over the uncertainty in $x_i$.)
+
+
+
+If we Taylor expand:
+$$
+    y(\bar{x}) = \ldots\\
+$$
+
+bla bla bla, this lets us expand to further dimensions:
+
+$$
+     \sigma_y^2 = \sum^n_{i,j}\left[
+     \frac{\partial y}{\partial x_i}
+     \frac{\partial y}{\partial x_j}
+     \right]_{x=y}V_{i,j}
+$$
+if there are no correlations, only the diagonal (individual erros) enter!
+This lets us choose wisely which parameter we should work hard to minimize error on.
+
+
+#### Addition
+
+$$
+    y = x_1 + x_2\\
+    \sigma_y^2 = \sigma_{x1}^2 + \sigma_{x2}^2 + 2V_{x1, x2}
+$$
+
+
+#### Multiplication
+
+$$
+    y = x_1x_2\\
+    \sigma_y^2 = (x_2\sigma_{x1})^2 + (x_1\sigma_{x2})^2 + 2x_1x_2V_{x1, x2}
+$$
+divide by $x^2$ to get the relative terms...
+
+
+
+By using negative error correlations, we can cancel out errors, think: Harrisons girdiron pendulum
+
+
+Also prediction of Neptune!!!!!
+
+
+#### Simulating error propagation
+choose random input, $x_i$, and record output, $y$. If $y(x)$ is not smooth, this will not yield Gaussian distributed $y$, even with gaussian error in $x_i$.
+
+
+how do we quantify the error stemming from limited random sampling
+
+
+
+
+### Reporting errors 
+
+do this:
+$$
+    0.24 + 0.05_\text{stat} + 0.07_\text{systematic} 
+$$
 
 
 

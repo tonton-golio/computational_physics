@@ -11,21 +11,55 @@ def week1():
 
     st.markdown(text_dict['Header 1'])
 
-    # compare N-1 and N...
-    if st.button('run std_calculations'):
-        st.pyplot(std_calculations())
+    with st.expander('Mean', expanded=False):
+        st.markdown(text_dict['Mean'])
+        cols = st.columns(2)
+        cols[0].markdown(text_dict['mean 1'])
+        cols[1].markdown(text_dict['mean 2'])
+        st.markdown(text_dict['means'])
+
+    with st.expander('Standard Deviation', expanded=False):
+        st.markdown(text_dict['STD'])
+
+        # compare N-1 and N...
+        if st.button('run std_calculations'):
+            st.pyplot(std_calculations())
+
 
     st.markdown(text_dict['Header 2'])
 
-    st.markdown(text_dict['Header 3'])
 
-    # roll a die
-    if st.button('run roll_a_die'):
-        st.pyplot(roll_a_die())
+    with st.expander('Mean 1', expanded=False):
+        
+        
 
-    # roll dice
-    if st.button('run roll_dice'):
-        st.pyplot(roll_dice())
+        
+
+
+        
+
+
+        st.markdown(text_dict['Header 3'])
+
+        # roll a die
+        if st.button('run roll_a_die'):
+            st.pyplot(roll_a_die())
+
+        # roll dice
+        if st.button('run roll_dice'):
+            st.pyplot(roll_dice())
+
+    
+    st.markdown(r"""
+        ### Insert central limit theorem code
+
+        Why do we have to do the $\sqrt{12}$ thing? --> we have to have the right standard deviation to fit a unit gaussian.
+
+        It doesn't work with the Cauchy distribution, becaue the limits are not well defined. Thus it works only if we truncate the ends.
+
+        """)
+
+
 
     st.markdown(text_dict['Header 4'])
     
