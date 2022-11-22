@@ -26,20 +26,13 @@ def week1():
             st.pyplot(std_calculations())
 
 
-    st.markdown(text_dict['Header 2'])
+    st.markdown(text_dict['Weighted mean'])
 
 
-    with st.expander('Mean 1', expanded=False):
-        
-        
-
+    with st.expander('Correlations', expanded=False):
         
 
-
-        
-
-
-        st.markdown(text_dict['Header 3'])
+        st.markdown(text_dict['Correlations'])
 
         # roll a die
         if st.button('run roll_a_die'):
@@ -49,6 +42,7 @@ def week1():
         if st.button('run roll_dice'):
             st.pyplot(roll_dice())
 
+    st.markdown(text_dict['Central limit theorem'])
     
     st.markdown(r"""
         ### Insert central limit theorem code
@@ -62,6 +56,9 @@ def week1():
 
 
     st.markdown(text_dict['Header 4'])
+
+
+    st.markdown(text_dict['Links'])
     
 def week2():
     text_dict = getText_prep(filename = text_path+'week2.md', split_level = 1)

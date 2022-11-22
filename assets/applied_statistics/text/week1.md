@@ -61,27 +61,36 @@ we subtract 1, because something something degrees of freedom...
 
 Lets compare these:
 
-# Header 2
+# Weighted mean
+
+#### Weighted mean
 How to average data which has different uncertainties and what is the uncertainty on the average?
 
-#### Weighted mean:
 $$
-     \hat{\mu} = \frac{\sum x_i / \sigma_i^2}{\sum 1 / \sigma_i^2}
+    \begin{align*}
+        \hat{\mu} = \frac{\sum x_i / \sigma_i^2}{\sum 1 / \sigma_i^2}
+        , &&
+        \hat{\sigma_\mu} = \sqrt{\frac{1}{\sum 1/\sigma_i^2}}
+    \end{align*}
 $$
-
-check out (guess the correlation)[https://guessthecorrelation.com]
-
-
-
-Variance = 
+Uncertainty descreases with the squares of the number of sampels;
 $$
-     V = \sigma^2 = \frac{1}{N}\sum_i^N(x_i-\mu)^2 = E[(x-\mu)^2]
+    \hat{\sigma_\mu} = \hat{\mu}/\sqrt{N}.
 $$
 
-this yields the covariance:
+
+# Correlations
+Speaks to whether a feature varies in concordance with another.
+
+With variance defined as  
+$$
+     V = \sigma^2 = \frac{1}{N}\sum_i^N(x_i-\mu)^2 = E[(x-\mu)^2],
+$$
+
+we may obtain the covariance:
 
 $$
-     V_{xy} = E[(x_i-\mu_x)(y_i-\mu_y)]
+     V_{xy} = E[(x_i-\mu_x)(y_i-\mu_y)].
 $$
 
 Normalizing by the widths gives the Pearson's linear correlation coefficient:
@@ -91,7 +100,6 @@ $$
 $$
 
 Do bare in mind that we may get zero, but this just tells us that the correlation is not linear, so remember to plot 😉
-
 
 
 The covariance matrix looks like:
@@ -115,18 +123,7 @@ Non-linear correlations include
 * 3rd one >?? (slide 15)
 
 
-# Header 3
-
-### Correlations
-speaks to whether a feature varies in concordance with another.
-
-iris = sns.load_dataset('iris')
-corr = pd.corr(iris)
-
-$$
-     math
-$$
-
+# Central limit theorem
 ### Central limit theorem
 **law of large numbers...**
 
@@ -233,4 +230,8 @@ $$
 
 ###  ChiSquare method, evaluation, and test
 
+
+# Links
+## Liinks
+check out [guess the correlation](https://guessthecorrelation.com)
 
