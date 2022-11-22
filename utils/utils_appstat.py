@@ -5,11 +5,21 @@ import pandas as pd
 from time import time
 import seaborn as sns
 from time import sleep
-
+import matplotlib as mpl
 
 # General
 
 text_path = 'assets/applied_statistics/text/'
+
+# setting matplotlib style:
+mpl.rcParams['patch.facecolor'] = (0.04, 0.065, 0.03)
+mpl.rcParams['axes.facecolor'] = (0.04, 0.065, 0.03)
+mpl.rcParams['figure.facecolor'] = (0.04, 0.065, 0.03)
+mpl.rcParams['xtick.color'] = 'white'
+mpl.rcParams['ytick.color'] = 'white'
+mpl.rcParams['figure.autolayout'] = True  # 'tight_layout'
+# mpl.rcParams['axes.grid'] = True  # should we?
+
 
 st.set_page_config(page_title="Applied Statistics", 
     page_icon="🧊", 
