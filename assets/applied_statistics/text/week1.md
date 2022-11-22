@@ -147,15 +147,15 @@ Standard deviations of the gaussian distribution
 
 In summary: **The central limit theorem ensures that uncertanties are gaussian 🔥**
 
- ### Insert central limit theorem code
+### Insert central limit theorem code
 
 Why do we have to do the $\sqrt{12}$ thing? --> we have to have the right standard deviation to fit a unit gaussian.
 
 It doesn't work with the Cauchy distribution, becaue the limits are not well defined. Thus it works only if we truncate the ends.
 
-# Header 4
 
 
+# Error propagation
 ### Error propagation
 hmm, how do we propagate these errors? no se?
 
@@ -228,16 +228,18 @@ $$
 
 
 
+# Estimating uncertainties
 ### Estimating uncertainties
 
 
 
 
 
-###  ChiSquare method, evaluation, and test
+# ChiSquare method, evaluation, and test
+### ChiSquare method, evaluation, and test
 
 
 # Links
-## Liinks
+### Links
 check out [guess the correlation](https://guessthecorrelation.com)
 

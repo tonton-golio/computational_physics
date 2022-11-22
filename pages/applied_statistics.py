@@ -42,9 +42,15 @@ def week1():
         if st.button('run roll_dice'):
             st.pyplot(roll_dice())
 
-    st.markdown(text_dict['Central limit theorem'])
+    with st.expander('Central limit theorem', expanded=False):
+        st.markdown(text_dict['Central limit theorem'])
     
-    st.markdown(text_dict['Header 4'])
+    with st.expander('Error propagation', expanded=True):
+        st.markdown(text_dict['Error propagation'])
+
+    st.markdown(text_dict['Estimating uncertainties'])
+    st.markdown(text_dict['ChiSquare method, evaluation, and test'])
+
 
 
     st.markdown(text_dict['Links'])
