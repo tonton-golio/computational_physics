@@ -48,8 +48,9 @@ def week1():
     fig, ax = plt.subplots(figsize=(8,3))
     ax.contourf(ms,10, cmap=plt.cm.inferno)
     fig.set_facecolor('lightgray')
-    ax.set_yticks(range(len(eps_space))[::len(eps_space)//10], 
-                    np.round(eps_space,13)[::len(eps_space)//10])
+    tick_locs = np.arange(len(eps_space))[::len(eps_space)//10]
+    tick_vals = np.round(eps_space,13)[::len(eps_space)//10]
+    ax.set(yticks=tick_locs,yticklabels=tick_vals)
     ax.set_ylabel('epsilon', color='black')
     ax.set_xlabel('depth', color='black')
 
