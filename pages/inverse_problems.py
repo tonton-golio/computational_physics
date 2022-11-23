@@ -42,7 +42,7 @@ def week1():
     cols[1].pyplot(contour_of_G(G.T))
 
     ## calc and show ms
-    eps_space = np.logspace(-13, -9, 400)
+    eps_space = np.logspace(-13, -9, 60)
     ms = getParams(G, d_obs, eps_space)
 
     fig, ax = plt.subplots(figsize=(8,3))
