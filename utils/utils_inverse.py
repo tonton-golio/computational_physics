@@ -49,7 +49,7 @@ def G_matrix(xs, zs):
 
 
 def contour_of_G(G, xlabel='$x$-position', ylabel='depth'):
-    fig, ax = plt.subplots(constrained_layout=True, figsize=(5,3))
+    fig, ax = plt.subplots( figsize=(5,3))
     CS = ax.contourf(G, 10, cmap=plt.cm.bone)
 
     CS2 = ax.contour(CS, levels=CS.levels[::2], colors='r')
@@ -63,6 +63,7 @@ def contour_of_G(G, xlabel='$x$-position', ylabel='depth'):
     plt.gca().invert_yaxis()
 
     fig.set_facecolor('lightgray')
+    plt.tight_layout()
     plt.close()
     return fig 
 
