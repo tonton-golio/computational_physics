@@ -222,7 +222,7 @@ $$
     y(\bar{x}) = \ldots\\
 $$
 
-bla bla bla, this lets us expand to further dimensions:
+something something, this lets us expand to further dimensions:
 
 $$
      \sigma_y^2 = \sum^n_{i,j}\left[
