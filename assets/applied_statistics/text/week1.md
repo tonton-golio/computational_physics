@@ -127,80 +127,76 @@ $$
 $$
 
 
-# Correlations
-Speaks to whether a feature varies in concordance with another.
+# Correlation
+Correlation speaks to whether a feature varies in concordance with another.
 
-With variance defined as  
+From the variance we can obtain the covariance; 
 $$
-     V = \sigma^2 = \frac{1}{N}\sum_i^N(x_i-\mu)^2 = E[(x-\mu)^2],
+     \begin{align*}
+     V = \sigma^2 &= \frac{1}{N}\sum_i^N(x_i-\mu)^2 = E[(x-\mu)^2] = E[x^2] - \mu^2\\
+     &\Rightarrow \\ 
+     V_{xy} &= E[(x_i-\mu_x)(y_i-\mu_y)]=
+     \begin{bmatrix}
+          \sigma_{11}^2 & \sigma_{12}^2 & \ldots\\
+          \sigma_{21}^2 & \ldots & \ldots
+     \end{bmatrix}
+     \end{align*}
 $$
 
-we may obtain the covariance:
+Normalizing by the widths gives the Pearson's (linear) correlation coefficient:
 
 $$
-     V_{xy} = E[(x_i-\mu_x)(y_i-\mu_y)].
-$$
-
-Normalizing by the widths gives the Pearson's linear correlation coefficient:
-
-$$
-     \rho_{xy} = \ldots
+\begin{align*}
+     \rho_{xy} = \frac{V_{xy}}{\sigma_x\sigma_y} , && \text{i.e., } -1 < \rho_{xy} < 1 
+\end{align*}
 $$
 
 Do bare in mind that we may get zero, but this just tells us that the correlation is not linear, so remember to plot 😉
 
+##### Rank correlation
+**Test for non-linear correlation.**
 
-The covariance matrix looks like:
+Rank correlation compares the ranking between two sets, i.e., 
+if the lowest x is also the lowest y, and so on, we get a rank-correlation of 1 😁 *Spearman’s $\rho$* and *Kendall’s $\tau$* are the most typical rank correlations.
 
 $$
-     V_{xy} = \begin{bmatrix}
-     \sigma_{11}^2 & \sigma_{12}^2 & \ldots\\
-     \sigma_{21}^2 & \ldots & \ldots
-     \end{bmatrix}
+     \rho = 1 - 6\sum_i \frac{(r_i - s_i)^2}{n^3-n}
 $$
 
+*Kendall’s $\tau$* compares the number of concorant pairs to discoratant pair of data-points [[wiki]](https://en.wikipedia.org/wiki/Kendall_rank_correlation_coefficient).
 
-### Rank correlation
 
-if the lowest x is also the lowest y, and so on, we get a rank-correlation of 1 😁
+##### Non-linear correlation-measures include
 
-Non-linear correlations include
+* Maximal Information Coefficient (MIC)
+* Mutual Information (MI)
+* Distance Correlation (DC)
 
-* maximal intfortimaton
-* mutual ...
-* 3rd one >?? (slide 15)
+*see wikipedia*
 
 
 # Central limit theorem
-### Central limit theorem
-**law of large numbers...**
+##### Central limit theorem (*law of large numbers*)
 
 The central limit theorem answers the question: *why do statistics in the limit of large N tend toward a Gaussian?*
 
 **The sum of N independent continous random variables $x_i$ with means $\mu_i$ and variances $\sigma_i^2$ becouse a Gaussian random varianble with mean $\mu=\sum_u\mu_i$ and variance $\sigma^2 = \sim_i \sigma_i^2$ in the limit than N approaches infinity.**
 
+If we roll dice consecutively, does the mean converge?
 
-The reason a small system shows a soft transition has something to do with the central limit theorem.
+# Central limit theorem 2
+###### Standard deviations of the gaussian distribution
 
 
-Standard deviations of the gaussian distribution
 
-(table plz)
-1 std = 68%
-2 std = 95%
-3 std = 99.7%
-5 std = 99.99995%
-
-(show a plot of this)
-
-In summary: **The central limit theorem ensures that uncertanties are gaussian 🔥**
-
+# Central limit theorem 3
 ### Insert central limit theorem code
 
 Why do we have to do the $\sqrt{12}$ thing? --> we have to have the right standard deviation to fit a unit gaussian.
 
 It doesn't work with the Cauchy distribution, becaue the limits are not well defined. Thus it works only if we truncate the ends.
 
+In summary: **The central limit theorem ensures that uncertanties are gaussian 🔥**
 
 
 # Error propagation
@@ -214,7 +210,6 @@ $$
     \sigma(y(x_i)) = \frac{\partial y}{\partial x}\sigma(x_i)
 $$
 If the function $y$, is smooth around $x_i$, this is fine, but if we have a crazy looking function, we should be careful. (The slope should be relatively constant over the uncertainty in $x_i$.)
-
 
 
 If we Taylor expand:

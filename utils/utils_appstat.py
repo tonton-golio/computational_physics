@@ -14,7 +14,7 @@ text_path = 'assets/applied_statistics/text/'
 # setting matplotlib style:
 mpl.rcParams['patch.facecolor'] = (0.04, 0.065, 0.03)
 mpl.rcParams['axes.facecolor'] = (0.04, 0.065, 0.03)
-mpl.rcParams['figure.facecolor'] = (0.04, 0.065, 0.03)
+mpl.rcParams['figure.facecolor'] = 'gray'#(0.04, 0.065, 0.03)
 mpl.rcParams['xtick.color'] = 'white'
 mpl.rcParams['ytick.color'] = 'white'
 mpl.rcParams['figure.autolayout'] = True  # 'tight_layout'
@@ -135,21 +135,23 @@ def std_calculations(n=400):
 	plt.close()
 	return fig
 
+
 def roll_a_die(num=100):
     x = np.random.randint(1,7,num)
-    fig, ax = plt.subplots(figsize=(12,3))
-    for n in range(2, num):
-        plt.scatter([n], [np.mean(x[:n])], c='black')
-
+    fig, ax = plt.subplots(figsize=(5,4))
+    means = [np.mean(x[:n]) for n in range(2, num)]
+    
+    ax.scatter(range(2, num), means, c='pink', alpha=.7)
+    ax.set(xlabel='number of rolls in mean', ylabel='mean')
     plt.close()
     return fig
 
-def roll_dice():
+def roll_dice(rolls=200):
     data = {}
     nums = np.arange(2,40, dtype=int)
     for num in nums:
         data[num] = []
-        for n in range(100):
+        for n in range(rolls):
             x = np.random.randint(1,7,num)
             data[num].append(np.mean(x))
 
@@ -157,8 +159,9 @@ def roll_dice():
     y = [np.mean(data[num]) for num in nums]
     yerr = [np.std(data[num]) for num in nums]
 
-    fig, ax = plt.subplots(figsize=(12,3))
-    ax.errorbar(nums, y, yerr, c='black')
+    fig, ax = plt.subplots(figsize=(5,4))
+    ax.errorbar(nums, y, yerr, c='white')
+    ax.set(xlabel='number of rolls in mean', ylabel='mean')
     plt.close()
     return fig
 

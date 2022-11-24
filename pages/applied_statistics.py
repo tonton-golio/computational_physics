@@ -51,21 +51,58 @@ def week1():
         st.markdown(text_dict['Weighted mean'])
 
 
-    with st.expander('Correlations', expanded=False):
+    with st.expander('Correlation', expanded=False):
         
 
-        st.markdown(text_dict['Correlations'])
+        st.markdown(text_dict['Correlation'])
 
-        # roll a die
-        if st.button('run roll_a_die'):
-            st.pyplot(roll_a_die())
-
-        # roll dice
-        if st.button('run roll_dice'):
-            st.pyplot(roll_dice())
 
     with st.expander('Central limit theorem', expanded=False):
         st.markdown(text_dict['Central limit theorem'])
+        
+
+        cols = st.columns(2)
+        # roll a die
+        cols[0].pyplot(roll_a_die(420))
+
+        # roll dice
+        cols[1].pyplot(roll_dice())
+
+
+
+        cols = st.columns(2)
+
+        cols[0].markdown(text_dict['Central limit theorem 2'])
+
+
+        
+        n_points = cols[1].slider('n_points',10,10000, 100)
+        x = np.random.randn(n_points)
+        std = np.std(x)
+        mean = np.mean(x)
+        fig, ax = plt.subplots(figsize=(3,3))
+        ax.hist(x, bins=42)
+        for n in range(-2,3):
+            ax.axvline(mean+n*std, c='r', ls='--')
+        tick_locs = [mean+n*std for n in range(-2,3)]
+        tick_vals = [f'{n}$\sigma$' for n in range(-2,3)]
+        ax.set_xticks(tick_locs, tick_vals)
+        plt.close()
+        cols[1].pyplot(fig)
+
+        x -= mean
+        sigs = [len(x[abs(x)<mean+n*std])/n_points for n in range(1,5)]
+        sigs = np.round(sigs, 3)*100
+        cols[0].markdown(f'''
+            |num. $\sigma$   | percentage inside theoretical  | percentage inside {n_points} samples |
+            |---|---|---|
+            |1   |68   | {sigs[0]} |
+            |2   |95   | {sigs[1]} |
+            |3   |99.7   | {sigs[2]} |
+            |4   |99.99995   | {sigs[3]} |
+        ''')
+
+        st.markdown(text_dict['Central limit theorem 3'])
     
     with st.expander('Error propagation', expanded=True):
         st.markdown(text_dict['Error propagation'])
