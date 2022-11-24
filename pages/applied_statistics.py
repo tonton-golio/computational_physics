@@ -86,7 +86,8 @@ def week1():
             ax.axvline(mean+n*std, c='r', ls='--')
         tick_locs = [mean+n*std for n in range(-2,3)]
         tick_vals = [f'{n}$\sigma$' for n in range(-2,3)]
-        ax.set_xticks(tick_locs, tick_vals)
+        ax.set_xticks(tick_locs)
+        ax.set_xticklabels(tick_vals)
         plt.close()
         cols[1].pyplot(fig)
 
