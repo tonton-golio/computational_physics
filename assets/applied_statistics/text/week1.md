@@ -12,6 +12,8 @@
 *Don't worry too much about the theory, this is an **applied** course*.
 *We'll try to build a generally applicable `code repo`*.
 
+* The magic happens outside your comfort zone.
+
 # Mean
 Mean is a metric telling us about bulk magnitude-tendency of data. 
 
@@ -253,6 +255,11 @@ By using negative error correlations, we can cancel out errors, think: Harrisons
 Also prediction of Neptune!!!!!
 
 
+#### Analytical solution
+..... with sympy.
+
+
+
 #### Simulating error propagation
 choose random input, $x_i$, and record output, $y$. If $y(x)$ is not smooth, this will not yield Gaussian distributed $y$, even with gaussian error in $x_i$.
 
@@ -275,11 +282,91 @@ $$
 ### Estimating uncertainties
 
 
-
-
-
 # ChiSquare method, evaluation, and test
 ### ChiSquare method, evaluation, and test
+
+A linear fit, can be done analytically.
+
+Least squares -> doesnt include uncertainties
+chi-square -> includes uncertainties.
+
+$$
+     \chi^2(\theta) = \sum_i^N \frac{(y_i - f(x_i,\theta))^2}{\sigma_i^2}
+$$
+
+So its like least-sqares, but we scale by the uncertainty.
+
+*Why don't we normalize by the number of samples, $N$*
+
+
+To compare chi-square fits,
+* number of degrees of freedom = samples - fitparameters.
+$$
+     N_\text{Dof} = N_\text{samples} - N_\text{fit parameters}
+$$
+* take the probability of the data with that Ndof, i.e., the $p$-value.
+$$
+     \text{Prob}(\chi^2 = 65.7, Ndof=42) = 0.011
+$$
+
+With large errors, quality of fits with different models become the same. With small errors, there is a huge discrepancy in the fit-quality.
+
+
+When we do this fitting: we get back the optimal parameters, their uncertainties and the covariance of the parameters.
+
+
+Notice: the weighted mean is just a special case of chi-squared, i.e., the value of a fit with just a constant.
+
+
+(**Show this with a plot**)
+
+
+
+If we plot the distribution of the errors as $\frac{y_i-f(x_i, \theta)}{\sigma_i}$, they should be Gaussian.
+
+
+```python
+chi2_prob = stats.chi2.sf(chi2_calue, N_dof)
+```
+
+Now we have a way to evaluate our uncertainty-estimates.
+
+
+
+
+###### Chi2 for binned data
+based on Poisson statistics
+$$
+     \chi^2 = \sum_{i\in \text{bin}} \frac{(O_i-E_i)^2}{E_i}
+$$
+The problem with this, is where to truncate?
+
+
+The alternative:
+
+use counts in bins! But then what about empty bins!!! Minuit does it this way but all methods have their draw-backs.
+
+
+###### Why the chi2 is (near) magic
+(Inser chi2_minimization_animation_original)
+
+
+Nicely behaving fits have parabolic minima. --> The chi2 miracle
+
+
+## Header to call below
+
+minuit can fin the uncertainty on chi2 even though it does not know that we are fitting with a Gaussian... HOW?!?!?!?! The way it does this is by looking at the curvature of the parabolic...
+
+
+
+### Question: How do we deal with uncertainties in $x$?
+Fit without, and then: 
+$$
+     \sigma_{yi}^{new} = \sqrt{\sigma_{yi}^2 + \left( \frac{\partial y}{\partial x}|_{xi} \sigma_{xi} \right)^2}
+$$
+Its iterative, but it converges FaST
+
 
 
 # Links
