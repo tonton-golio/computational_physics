@@ -56,7 +56,61 @@ def week1():
 
         st.markdown(text_dict['Correlation'])
 
+    'New central limits:'
 
+    def makeDistibutions(n_experi = 1000,
+                        N_uni= 1000, 
+                        N_exp= 1000, 
+                        N_cauchy = 1000):
+        # input distributions
+        uni = np.random.uniform(-1,1, size=(n_experi, N_uni))*12**.5
+
+        exp = np.random.exponential(size=(n_experi,N_exp))-1
+
+        c = np.random.standard_cauchy(size=(n_experi,N_cauchy))
+        c = np.sort(c)
+        c = c[:,N_cauchy//10:-N_cauchy//10]
+        
+        # combined dist
+        concat = np.hstack([uni.copy(), exp.copy(), c.copy()])
+        
+        # sums
+        N = [N_uni, N_exp, N_cauchy]; N.append(sum(N))
+        sums = [np.sum(dist, axis=1) / n**.5 for dist, n in zip([c,uni,exp,concat], N)]
+        
+        
+        return sums
+
+    # Define your PDF / model 
+    def gauss_pdf(x, mu, sigma):
+        """Normalized Gaussian"""
+        return 1 / np.sqrt(2 * np.pi) / sigma * np.exp(-(x - mu) ** 2 / 2. / sigma ** 2)
+
+    def gauss_extended(x, N, mu, sigma):
+        """Non-normalized Gaussian"""
+        return N * gauss_pdf(x, mu, sigma)
+
+    sums = makeDistibutions()
+
+    N_bins = 100
+    fig, ax = plt.subplots(1,4,figsize = (8,4))
+    for i, (s, name) in enumerate(zip(sums, ['uni', 'exp', 'chauchy','combined'])):
+        ax[i].hist( s, bins=N_bins , histtype='step')
+        ax[i].set_title(name)
+        ax[i].set(yticks=[], ylim=(0,ax[i].get_ylim()[1]*1.2 ))
+        
+        text = {'mean':s.mean(),
+            'std' : s.std(ddof=1)}
+        text = nice_string_output(text, extra_spacing=2, decimals=3)
+        add_text_to_ax(0.1, 0.97, text, ax[i], fontsize=12)
+        
+    N_scale = (xmax-xmin) / N_bins            # The scale factor between histogram and the fit. Takes e.g. bin width into account.
+    x_gauss = np.linspace(xmin, xmax, 1000)   # Create the x-axis for the plot of the fitted function
+    y_gauss = N_scale*gauss_extended(x_gauss, len(x_sum), 0, 1)                   # Unit Gaussian
+    ax[3].plot(x_gauss, y_gauss, '-', color='blue', label='Unit Gauss (no fit)') 
+
+    plt.tight_layout()
+    #c
     with st.expander('Central limit theorem', expanded=False):
         
         cols = st.columns(2)
