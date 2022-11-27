@@ -5,6 +5,7 @@ import pandas as pd
 from time import time
 import seaborn as sns
 from time import sleep
+from sympy import * 
 import matplotlib as mpl
 
 # General
@@ -271,6 +272,47 @@ def plotdists(sums, N_bins = 100):
 	plt.tight_layout()
 	plt.close()
 	return fig
+
+
+
+def demoArea():
+            "Demo"
+            cols = st.columns(4)
+
+            W = cols[0].slider('W', 1, 10, 5)
+            L = cols[2].slider('L', 1, 10, 5)
+            sig_W = cols[1].slider('\sigma_W', 0., 1., .05)
+            sig_L = cols[3].slider('\sigma_L', 0., 1., .05)
+
+            fig = plt.figure()
+            
+            
+            fig, ax = plt.subplots(1,2,figsize=(7,3))
+
+            ax[0].axvline(0, color="white")
+            ax[0].axhline(0, color="white")
+
+            # W
+            size = 1000
+            Ws = np.random.normal(loc= W, scale=sig_W, size=size)
+            Ls = np.random.normal(loc= L, scale=sig_L, size=size)
+            ax[0].scatter(np.random.uniform(0,W, size=size),
+                        Ls,
+                        color='yellow', alpha=.2)
+
+            ax[0].scatter(Ws, np.random.uniform(0,L, size=size),
+                            color='yellow', alpha=.2)
+            ax[0].set_xlabel('Width', color='black', fontsize=15)
+            ax[0].set_ylabel('Length', color='black', fontsize=15)
+
+            ax[1].set_title('AREA dist')
+            ax[1].hist(Ws*Ls)
+            st.pyplot(fig)
+
+
+
+### ERROR PROP FROM TEACHERS
+from IPython.core.display import Latex
 
 # Define your PDF / model 
 def gauss_pdf(x, mu, sigma):

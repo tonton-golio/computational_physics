@@ -204,7 +204,7 @@ A simple way of doing this:
 $$
     \sigma(y(x_i)) = \frac{\partial y}{\partial x}\sigma(x_i)
 $$
-If the function $y$, is smooth around $x_i$, this is fine, but if we have a crazy looking function, we should be careful. (The slope should be relatively constant over the uncertainty in $x_i$.)
+If the function $y$ is smooth around $x_i$, this is fine, but if we have a crazy looking function, we should be careful. (The slope should be relatively constant over the uncertainty in $x_i$.)
 
 
 If we Taylor expand:
@@ -239,34 +239,27 @@ $$
     \sigma_y^2 = (x_2\sigma_{x1})^2 + (x_1\sigma_{x2})^2 + 2x_1x_2V_{x1, x2}
 $$
 
-# Error propagation 2
+
 divide by $x^2$ to get the relative terms... 
 
 By using negative error correlations, we can cancel out errors, think: Harrisons girdiron pendulum, and the prediction of Neptune!
 
 
-#### Analytical solution
-..... with sympy.
 
 
 
-#### Simulating error propagation
-choose random input, $x_i$, and record output, $y$. If $y(x)$ is not smooth, this will not yield Gaussian distributed $y$, even with gaussian error in $x_i$.
+# Demo
+#####  Simulating error propagation
+Choose random input, $x_i$, and record output, $y$. If $y(x)$ is not smooth, this will not yield Gaussian distributed $y$, even with gaussian error in $x_i$.
 
 
-how do we quantify the error stemming from limited random sampling
+How do we quantify the error stemming from limited random sampling? -- *don't worry about it.*
 
 
 
-
-### Reporting errors 
-
-do this:
-$$
-    0.24 + 0.05_\text{stat} + 0.07_\text{systematic} 
-$$
-
-
+# Error propagation 2
+##### Analytical solution
+... sympy
 
 # Estimating uncertainties
 ### Estimating uncertainties
@@ -357,6 +350,13 @@ $$
 $$
 Its iterative, but it converges FaST
 
+
+### Reporting errors 
+
+do this:r
+$$
+    0.24 + 0.05_\text{stat} + 0.07_\text{systematic} 
+$$
 
 
 # Links

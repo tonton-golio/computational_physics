@@ -105,8 +105,15 @@ def week1():
         cols = st.columns(2)
         cols[0].markdown(text_dict['Error propagation add'])
         cols[1].markdown(text_dict['Error propagation mul'])
+
+        st.markdown(text_dict['Demo'])
+        demoArea()
+        
+        
         st.markdown(text_dict['Error propagation 2'])
 
+
+      
     st.markdown(text_dict['Estimating uncertainties'])
     with st.expander('ChiSquare method, evaluation, and test', expanded=False):
         st.markdown(text_dict['ChiSquare method, evaluation, and test'])
