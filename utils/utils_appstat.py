@@ -310,8 +310,6 @@ def demoArea():
 
 
 
-### ERROR PROP FROM TEACHERS
-from IPython.core.display import Latex
 
 # Define your PDF / model 
 def gauss_pdf(x, mu, sigma):
