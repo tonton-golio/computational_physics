@@ -198,9 +198,7 @@ In summary: **The central limit theorem ensures that uncertanties are gaussian ð
 
 # Error propagation
 ### Error propagation
-hmm, how do we propagate these errors? no se?
-
-If we have a function $y(x_i)$ and we know the uncertainty on $\sigma(x_i) = 0.8$, how do we find $\sigma(y(x_i))$?. Well obviously it depends on the gradient of $y$ with respect to $x$.
+If we have a function $y(x_i)$ and we know the uncertainty on $\sigma(x_i)$, how do we find $\sigma(y(x_i))$?. Well obviously it depends on the gradient of $y$ with respect to $x$.
 
 A simple way of doing this:
 $$
@@ -225,29 +223,26 @@ $$
 if there are no correlations, only the diagonal (individual erros) enter!
 This lets us choose wisely which parameter we should work hard to minimize error on.
 
-
-#### Addition
+# Error propagation add
+###### Addition
 
 $$
     y = x_1 + x_2\\
     \sigma_y^2 = \sigma_{x1}^2 + \sigma_{x2}^2 + 2V_{x1, x2}
 $$
 
-
-#### Multiplication
+# Error propagation mul
+###### Multiplication
 
 $$
     y = x_1x_2\\
     \sigma_y^2 = (x_2\sigma_{x1})^2 + (x_1\sigma_{x2})^2 + 2x_1x_2V_{x1, x2}
 $$
-divide by $x^2$ to get the relative terms...
 
+# Error propagation 2
+divide by $x^2$ to get the relative terms... 
 
-
-By using negative error correlations, we can cancel out errors, think: Harrisons girdiron pendulum
-
-
-Also prediction of Neptune!!!!!
+By using negative error correlations, we can cancel out errors, think: Harrisons girdiron pendulum, and the prediction of Neptune!
 
 
 #### Analytical solution

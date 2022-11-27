@@ -102,33 +102,38 @@ def week1():
 
     with st.expander('Error propagation', expanded=False):
         st.markdown(text_dict['Error propagation'])
+        cols = st.columns(2)
+        cols[0].markdown(text_dict['Error propagation add'])
+        cols[1].markdown(text_dict['Error propagation mul'])
+        st.markdown(text_dict['Error propagation 2'])
 
     st.markdown(text_dict['Estimating uncertainties'])
-    st.markdown(text_dict['ChiSquare method, evaluation, and test'])
+    with st.expander('ChiSquare method, evaluation, and test', expanded=False):
+        st.markdown(text_dict['ChiSquare method, evaluation, and test'])
 
-    # fit binned data
-    x = np.random.randn(100)*1.1+0.2
-    Nbins = 20
-    xmin, xmax = -3,3
-    sy = 1 # for now, to avoid error, insert correct
-    def func_gauss():
-        pass
-    
-    def chi2_owncalc(N,mu,sigma):
-        y_fit = func_gauss(x,N,mu,sigma)
-        chi2 = np.sum(((y-y_fit) / sy)**2)
-        return chi2
+        # fit binned data
+        x = np.random.randn(100)*1.1+0.2
+        Nbins = 20
+        xmin, xmax = -3,3
+        sy = 1 # for now, to avoid error, insert correct
+        def func_gauss():
+            pass
+        
+        def chi2_owncalc(N,mu,sigma):
+            y_fit = func_gauss(x,N,mu,sigma)
+            chi2 = np.sum(((y-y_fit) / sy)**2)
+            return chi2
 
-    # fit minuit
+        # fit minuit
 
-    fig, ax = plt.subplots()
-    counts, bins = np.histogram(x, bins = Nbins, range=(xmin, xmax))
+        fig, ax = plt.subplots()
+        counts, bins = np.histogram(x, bins = Nbins, range=(xmin, xmax))
 
-    ax.hist(x)
-    plt.close()
-    st.pyplot(fig)
+        ax.hist(x)
+        plt.close()
+        st.pyplot(fig)
 
-    # note: fix, number of decials in nice text plot in External functions.
+        # note: fix, number of decials in nice text plot in External functions.
 
 
     st.markdown(text_dict['Links'])
