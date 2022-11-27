@@ -187,17 +187,11 @@ The sum of N independent continous random variables $x_i$ with means $\mu_i$ and
 *The distribution of numbers samples from a variety of distrutions, is gaussian given that they share variance and mean.*
 
 # Central limit theorem 2
-###### Gaussian
- How much is captured by a standard deviation given a Normal distribution
-
-
+###### Combining samples from different distributions
+if we concatenate data from different distributions, the mean will be Gaussian.
 
 # Central limit theorem 3
-### Insert central limit theorem code
-
-Why do we have to do the $\sqrt{12}$ thing? --> we have to have the right standard deviation to fit a unit gaussian.
-
-It doesn't work with the Cauchy distribution, becaue the limits are not well defined. Thus it works only if we truncate the ends.
+For this to work, the std of the different distributions must be similar. Thus we have to scale the uniform by a factor $\sqrt{12}$, and we have to truncate the very large values in the chauchy distribution.
 
 In summary: **The central limit theorem ensures that uncertanties are gaussian 🔥**
 

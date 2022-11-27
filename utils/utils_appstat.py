@@ -48,6 +48,68 @@ def template():
         st.markdown(text_dict["Example"])
 
 
+def format_value(value, decimals):
+    """ 
+    Checks the type of a variable and formats it accordingly.
+    Floats has 'decimals' number of decimals.
+    """
+    
+    if isinstance(value, (float, np.float)):
+        return f'{value:.{decimals}f}'
+    elif isinstance(value, (int, np.integer)):
+        return f'{value:d}'
+    else:
+        return f'{value}'
+
+
+def values_to_string(values, decimals):
+    """ 
+    Loops over all elements of 'values' and returns list of strings
+    with proper formating according to the function 'format_value'. 
+    """
+    
+    res = []
+    for value in values:
+        if isinstance(value, list):
+            tmp = [format_value(val, decimals) for val in value]
+            res.append(f'{tmp[0]} +/- {tmp[1]}')
+        else:
+            res.append(format_value(value, decimals))
+    return res
+
+
+def len_of_longest_string(s):
+    """ Returns the length of the longest string in a list of strings """
+    return len(max(s, key=len))
+
+
+def nice_string_output(d, extra_spacing=5, decimals=3):
+    """ 
+    Takes a dictionary d consisting of names and values to be properly formatted.
+    Makes sure that the distance between the names and the values in the printed
+    output has a minimum distance of 'extra_spacing'. One can change the number
+    of decimals using the 'decimals' keyword.  
+    """
+    
+    names = d.keys()
+    max_names = len_of_longest_string(names)
+    
+    values = values_to_string(d.values(), decimals=decimals)
+    max_values = len_of_longest_string(values)
+    
+    string = ""
+    for name, value in zip(names, values):
+        spacing = extra_spacing + max_values + max_names - len(name) - 1 
+        string += "{name:s} {value:>{spacing}} \n".format(name=name, value=value, spacing=spacing)
+    return string[:-2]
+
+
+def add_text_to_ax(x_coord, y_coord, string, ax, fontsize=12, color='k'):
+    """ Shortcut to add text to an ax with proper font. Relative coords."""
+    ax.text(x_coord, y_coord, string, family='monospace', fontsize=fontsize,
+            transform=ax.transAxes, verticalalignment='top', color=color)
+    return None
+
 ###########################################
 # week 1
 
@@ -165,6 +227,59 @@ def roll_dice(rolls=200):
     plt.close()
     return fig
 
+def makeDistibutions(n_experi = 1000,
+					N_uni= 1000, 
+					N_exp= 1000, 
+					N_cauchy = 1000):
+	# input distributions
+	uni = np.random.uniform(-1,1, size=(n_experi, N_uni))*12**.5
+
+	exp = np.random.exponential(size=(n_experi,N_exp))-1
+
+	c = np.random.standard_cauchy(size=(n_experi,N_cauchy))
+	c = np.sort(c)
+	c = c[:,N_cauchy//10:-N_cauchy//10]
+	
+	# combined dist
+	concat = np.hstack([uni.copy(), exp.copy(), c.copy()])
+	
+	# sums
+	N = [N_uni, N_exp, N_cauchy]; N.append(sum(N))
+	sums = [np.sum(dist, axis=1) / n**.5 for dist, n in zip([c,uni,exp,concat], N)]
+	
+	
+	return sums
+
+
+def plotdists(sums, N_bins = 100):
+	fig, ax = plt.subplots(1,4,figsize = (8,4))
+	for i, (s, name) in enumerate(zip(sums, ['uni', 'exp', 'chauchy','combined'])):
+		ax[i].hist( s, bins=N_bins , histtype='step')
+		ax[i].set_title(name)
+		ax[i].set(yticks=[], ylim=(0,ax[i].get_ylim()[1]*1.2 ))
+		
+		text = {'mean':s.mean(),
+			'std' : s.std(ddof=1)}
+		text = nice_string_output(text, extra_spacing=2, decimals=3)
+		add_text_to_ax(0.1, 0.97, text, ax[i], fontsize=12, color='white')
+		
+	N_scale = (max(s)-min(s)) / N_bins            # The scale factor between histogram and the fit. Takes e.g. bin width into account.
+	x_gauss = np.linspace(min(s), max(s), 1000)   # Create the x-axis for the plot of the fitted function
+	y_gauss = N_scale*gauss_extended(x_gauss, len(s), 0, 1)                   # Unit Gaussian
+	ax[3].plot(x_gauss, y_gauss, '-', color='blue', label='Unit Gauss (no fit)') 
+
+	plt.tight_layout()
+	plt.close()
+	return fig
+
+# Define your PDF / model 
+def gauss_pdf(x, mu, sigma):
+	"""Normalized Gaussian"""
+	return 1 / np.sqrt(2 * np.pi) / sigma * np.exp(-(x - mu) ** 2 / 2. / sigma ** 2)
+
+def gauss_extended(x, N, mu, sigma):
+	"""Non-normalized Gaussian"""
+	return N * gauss_pdf(x, mu, sigma)
 
 # Week 2
 def PDFs(size = 1000):
