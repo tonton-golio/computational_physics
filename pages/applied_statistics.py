@@ -5,10 +5,10 @@ def home():
     st.title('Applied statistics')
 
 def week1():
-    st.title('Week 1')
+    
     text_dict = getText_prep(filename = text_path+'week1.md', split_level = 1)
      
-    #st.header('Week 1')
+    st.header(text_dict['title'])
     with st.expander('Week 1 description', expanded=False):
         st.markdown(text_dict['description'])
 
@@ -49,7 +49,6 @@ def week1():
 
 
         st.markdown(text_dict['Weighted mean'])
-
 
     with st.expander('Correlation', expanded=False):
         st.markdown(text_dict['Correlation'])
