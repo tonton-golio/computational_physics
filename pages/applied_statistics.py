@@ -58,53 +58,125 @@ def week1():
 
 
     with st.expander('Central limit theorem', expanded=False):
-        st.markdown(text_dict['Central limit theorem'])
         
-
         cols = st.columns(2)
-        # roll a die
-        cols[0].pyplot(roll_a_die(420))
-
+        cols[0].markdown(text_dict['Central limit theorem'])
+        
         # roll dice
-        cols[1].pyplot(roll_dice())
+        #cols[1].pyplot(roll_dice())
 
+        # roll a die
+        cols[1].pyplot(roll_a_die(420))
+        cols[1].caption('rolls of a die')
 
+    
+        st.markdown(text_dict['Central limit theorem 2'])
+        
+        
+        cols = st.columns(3)
 
-        cols = st.columns(2)
-
-        cols[0].markdown(text_dict['Central limit theorem 2'])
-
+        n_points = [cols[i].slider('n_points_'+name,10,2000, 100) for i, name in enumerate('gauss, exponential, chauchy'.split(', '))]
+        n_experiments = st.slider("n_experiments",1, 10, 1)
+        truncation = st.slider("truncate",0,6 )
 
         
-        n_points = cols[1].slider('n_points',10,2000, 100)
-        x = np.random.randn(n_points)
-        std = np.std(x)
-        mean = np.mean(x)
-        fig, ax = plt.subplots(figsize=(3,3))
-        ax.hist(x, bins=42)
-        for n in range(-2,3):
-            ax.axvline(mean+n*std, c='r', ls='--')
-        tick_locs = [mean+n*std for n in range(-2,3)]
-        tick_vals = [f'{n}$\sigma$' for n in range(-2,3)]
-        ax.set_xticks(tick_locs)
-        ax.set_xticklabels(tick_vals)
-        plt.close()
-        cols[1].pyplot(fig)
 
-        x -= mean
-        sigs = [len(x[abs(x)<mean+n*std])/n_points for n in range(1,5)]
-        sigs = np.round(sigs, 3)*100
-        cols[0].markdown(f'''
-            |num. $\sigma$   | percentage inside theoretical  | percentage inside {n_points} samples |
-            |---|---|---|
-            |1   |68   | {sigs[0]} |
-            |2   |95   | {sigs[1]} |
-            |3   |99.7   | {sigs[2]} |
-            |4   |99.99995   | {sigs[3]} |
+        def plot(x, ax):
+            std = np.std(x)
+            mean = np.mean(x)
+            
+
+            x = x[abs(x-mean)<10*std ]
+            std = np.std(x)
+            mean = np.mean(x)
+
+            ax.hist(x, bins=100)
+            for n in range(-2,3):
+                ax.axvline(mean+n*std, c='pink', ls='--', lw=1)
+            tick_locs = [mean+n*std for n in range(-2,3)]
+            tick_vals = [f'{n}' for n in range(-2,3)]
+            ax.set(xlabel='$\sigma$')
+            ax.set_xticks(tick_locs)
+            ax.set_yticks([])
+            ax.set_xticklabels(tick_vals)
+            #if truncation > 3:
+            #    ax.set_xlim(-truncation*std, truncation*std)
+            #else:
+            ax.set_xlim(-3*std, 3*std)
+            return mean, std
+        
+        distsbig = [   (np.random.uniform(size=(n_experiments, n_points[0])) - 0.5)*12**.5,
+                    np.random.exponential(size=(n_experiments, n_points[1])) - 1,
+                    np.random.standard_cauchy(size=(n_experiments, n_points[2])),
+                ]
+        dists =   [distsbig[0].copy().flatten(), 
+                    distsbig[1].copy().flatten(), 
+                    distsbig[2].copy().flatten()]
+        x_ = np.hstack(dists)
+        
+        dists.append(x_)
+        n_points.append(len(x_))
+        n_points = np.array(n_points).astype(float)
+        
+
+        import matplotlib.pyplot as plt
+        from matplotlib.gridspec import GridSpec
+
+
+        fig = plt.figure(constrained_layout=True)
+
+        gs = GridSpec(3, 3, figure=fig)
+        ax1 = fig.add_subplot(gs[0, 0])
+        ax2 = fig.add_subplot(gs[0, 1])
+        ax3 = fig.add_subplot(gs[0, 2])
+        ax4 = fig.add_subplot(gs[1:, :])
+
+        ax = [ax1, ax2, ax3, ax4]
+
+
+        mean_lst, std_lst, sigs_lst = [], [], []
+        for idx, x in enumerate(dists):
+            mean, std = plot(x, ax[idx])
+            x -= mean
+            sigs = [len(x[abs(x)<mean+n*std])/n_points[idx] for n in range(1,5)]
+            sigs = np.round(sigs, 3)*100
+            mean_lst.append(mean)
+            std_lst.append(std)
+            sigs_lst.append(sigs)
+
+        sigs_lst = np.round(np.array(sigs_lst)).astype(int)
+
+        n_points = n_points.astype(int)
+
+        plt.close()
+        st.pyplot(fig)
+        
+       
+
+        # combination
+        st.markdown(f'''
+            |num. $\sigma$   | inside %, $p$, theo.  | N_concat: {sum(n_points)} | N_gauss: {n_points[0]} | N_exp: {n_points[1]} | N_chaucy: {n_points[2]}  |
+            |---|---|---|---|---|---|
+            |1   |68         | {sigs_lst[3,0]} | {sigs_lst[0,0]}  |{sigs_lst[1,0]}  |{sigs_lst[2,0]}  |
+            |2   |95         | {sigs_lst[3,1]} | {sigs_lst[0,1]}  | {sigs_lst[1,1]} | {sigs_lst[2,1]} |
+            |3   |99.7       | {sigs_lst[3,2]} | {sigs_lst[0,2]}   | {sigs_lst[1,2]} |  {sigs_lst[2,2]}|
+            |4   |99.99995   | {sigs_lst[3,3]} | {sigs_lst[0,3]}   |{sigs_lst[1,3]}  | {sigs_lst[2,3]} |
         ''')
+        
+        
+
+        st.write('if we sum each experiment:')
+        sum_ = np.hstack([distsbig[0].sum(axis=1),
+                            distsbig[1].sum(axis=1),
+                            distsbig[2].sum(axis=1)])
+        
+        fig = plt.figure()
+        plt.hist(sum_)
+        st.pyplot(fig)
+        
 
         st.markdown(text_dict['Central limit theorem 3'])
-    
+
     with st.expander('Error propagation', expanded=True):
         st.markdown(text_dict['Error propagation'])
 

@@ -178,16 +178,17 @@ $$
 
 
 # Central limit theorem
-##### Central limit theorem (*law of large numbers*)
+##### *law of large numbers*
 
 The central limit theorem answers the question: *why do statistics in the limit of large N tend toward a Gaussian?*
 
-**The sum of N independent continous random variables $x_i$ with means $\mu_i$ and variances $\sigma_i^2$ becouse a Gaussian random varianble with mean $\mu=\sum_u\mu_i$ and variance $\sigma^2 = \sim_i \sigma_i^2$ in the limit than N approaches infinity.**
+The sum of N independent continous random variables $x_i$ with means $\mu_i$ and variances $\sigma_i^2$ becouse a Gaussian random varianble with mean $\mu=\sum_u\mu_i$ and variance $\sigma^2 = \sim_i \sigma_i^2$ in the limit than N approaches infinity.
 
-If we roll dice consecutively, does the mean converge?
+*The distribution of numbers samples from a variety of distrutions, is gaussian given that they share variance and mean.*
 
 # Central limit theorem 2
-###### Standard deviations of the gaussian distribution
+###### Gaussian
+ How much is captured by a standard deviation given a Normal distribution
 
 
 
