@@ -5,7 +5,6 @@ import pandas as pd
 from time import time
 import seaborn as sns
 from time import sleep
-from sympy import * 
 import matplotlib as mpl
 
 # General
