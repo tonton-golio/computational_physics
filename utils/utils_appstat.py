@@ -374,7 +374,7 @@ def maximum_likelihood_finder(mu, sample,
 	
 	# linear search
 	start_linear_search = time()
-	mus, sigs = np.linspace(-2,2, 100), np.linspace(.3, 4, 100)
+	mus, sigs = np.linspace(-2,2, 1000), np.linspace(.3, 4, 1000)
 	estimates_mu = [log_likelihood(mu, sig=1) for mu in mus]
 	
 	mu_best_linear = mus[estimates_mu.index(np.max(estimates_mu))]
@@ -398,18 +398,19 @@ def maximum_likelihood_finder(mu, sample,
 	
 	stop_golden_search = time()
 	cols = st.columns(2)
+	num_round = 4
 	cols[0].write(f"""
 		linear:
 
-			mu_best = {round(mu_best_linear, 3)}
-			sig_best = {round(sig_best_linear, 3)}
+			mu_best = {round(mu_best_linear, num_round)}
+			sig_best = {round(sig_best_linear, num_round)}
 			time = {round(stop_linear_search-start_linear_search,3)}
 		""")
 	cols[1].write(f"""
 		golden_section_min: 
 			
-			mu_best = {round(mu_best, 3)}
-			sig_best = {round(sig_best, 3)}
+			mu_best = {round(mu_best, num_round)}
+			sig_best = {round(sig_best, num_round)}
 			ncalls_mu =  {ncalls_mu}
 			ncalls_sig =  {ncalls_sig}
 			time = {round(stop_golden_search-start_golden_search,3)}

@@ -79,7 +79,7 @@ $$
 
 We are on the look out for the maximum likelihood given the observed data, assuming a normal distribution of the sample.
 $$
-     likelihood = math\\
+     likelihood = 
      \mathcal{L}
 $$
 

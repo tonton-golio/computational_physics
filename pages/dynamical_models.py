@@ -135,14 +135,15 @@ def week7():
 
 # Navigator
 topic_dict = {
-    'Welcome': home,
-    'week 1': week1,
+    #'Welcome': home,
+    #'week 1': week1,
     'week 2': week2,
-    'week 3': week3,
-    'week 4': week4,
-    'week 5': week5,
-    'week 6': week6,
-    'week 7': week7,    }
+    #'week 3': week3,
+    #'week 4': week4,
+    #'week 5': week5,
+    #'week 6': week6,
+    #'week 7': week7,    
+    }
 
 topic = st.sidebar.selectbox("topic" , list(topic_dict.keys()))
 

@@ -17,7 +17,7 @@ def week1():
 
     st.markdown(text_dict['Header 1'])
 
-    with st.expander('Mean & Standard Deviation', expanded=False):
+    with st.expander('Mean', expanded=False):
         st.markdown(text_dict['Mean'])
         
         mean_picker = st.selectbox('There are different measures hereof',['Geometric mean', 'Arithmetic mean', 'Median',  'Mode', 'Harmonic', 'Truncated'])
@@ -43,7 +43,7 @@ def week1():
         st.pyplot(fig)
 
 
-    #with st.expander('Standard Deviation', expanded=False):
+    with st.expander('Standard Deviation', expanded=False):
         st.markdown(text_dict['STD'])
 
         # compare N-1 and N...
@@ -51,7 +51,7 @@ def week1():
         st.pyplot(std_calculations())
 
 
-        st.markdown(text_dict['Weighted mean'])
+    st.markdown(text_dict['Weighted mean'])
 
     with st.expander('Correlation', expanded=False):
         st.markdown(text_dict['Correlation'])
@@ -182,8 +182,6 @@ def week2():
     mu, sig, fig = maximum_likelihood_finder(mu, sample, return_plot=True)
     st.pyplot(fig)
 
-
-
 def week3():
     text_dict = getText_prep(filename = text_path+'week3.md', split_level = 1)
      
@@ -235,17 +233,21 @@ def week7():
 
     st.markdown(text_dict['Header 1'])
 
+def utils_explorer():
+    pass
 
 # Navigator
 topic_dict = {
     'Welcome': home,
-    'week 1': week1,
-    'week 2': week2,
-    'week 3': week3,
-    'week 4': week4,
-    'week 5': week5,
-    'week 6': week6,
-    'week 7': week7,    }
+    'Intro & ChiSquare': week1,
+    'Likelihood & Sys. Errors': week2,
+    #'week 3': week3,
+    #'week 4': week4,
+    #'week 5': week5,
+    #'week 6': week6,
+    #'week 7': week7,
+    #'Utils explorer' : utils_explorer,
+    }
 
 topic = st.sidebar.selectbox("topic" , list(topic_dict.keys()))
 
