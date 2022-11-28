@@ -321,31 +321,31 @@ def gauss_extended(x, N, mu, sigma):
 	return N * gauss_pdf(x, mu, sigma)
 
 # Week 2
-def PDFs(size = 1000):
+def PDFs(size = 1000, n_binomial=42, p_binomial=0.8):
 	x_uniform = np.random.rand(size)
 	x_normal = np.random.randn(size)
-	x_binomial = np.random.binomial(10, .3, size)
+	x_binomial = np.random.binomial(n_binomial, p_binomial, size)
 	x_poisson = np.random.randn(size)
 	x_gaussian = np.random.randn(size)
 
-	fig, ax = plt.subplots(1,5, figsize=(12,3))
+	fig, ax = plt.subplots(1,5, figsize=(12,3), sharey=True)
 
 	counts, bins = np.histogram(x_uniform)
 
-	ax[0].hist(x_uniform)
+	ax[0].hist(x_uniform, bins=40, color='orange')
 	ax[0].set_title('Uniform', color='white')
-	ax[1].hist(x_normal)
+	ax[1].hist(x_normal, bins=40, color='pink')
 	ax[1].set_title('Normal', color='white')
-	ax[2].hist(x_poisson)
+
+	ax[2].hist(x_poisson, bins=40, color='orange')
 	ax[2].set_title('Poisson', color='white')
-	ax[3].hist(x_binomial)
-	ax[3].set_title('Binomial', color='white')
-	ax[4].hist(x_gaussian)
+	ax[3].hist(x_binomial, bins=40, color='pink')
+	ax[3].set_title(f'Binomial n={n_binomial}, p={p_binomial}', color='white')
+	ax[4].hist(x_gaussian, bins=20, color='orange')
 	ax[4].set_title('Gaussian', color='white')
 	plt.close()
 
 	return fig
-
 
 def fitSimple(size =  100, nsteps = 100):
 
@@ -383,6 +383,11 @@ def fitSimple(size =  100, nsteps = 100):
 	plt.legend(facecolor='beige')
 	plt.close()
 	return fig
+
+
+
+
+
 
 
 # Week 6

@@ -147,12 +147,19 @@ def week1():
 def week2():
     text_dict = getText_prep(filename = text_path+'week2.md', split_level = 1)
      
-    #st.header('Week 2')
+    st.header('PDFs, Likelihood, Systematic Errors')
     with st.expander('Week 2 description', expanded=False):
         st.markdown(text_dict['description'])
 
     st.markdown(text_dict['Header 1'])
+    text_dict2 = getText_prep(filename = text_path+'week2.md', split_level = 3)
+    with st.expander('Distributions', expanded=False):
+        dist = st.selectbox('Picker:', 'Binomial, Poisson, Gaussian'.split(', '))
 
+        st.markdown(text_dict2[dist])
+
+    
+        
     st.pyplot(PDFs(1000))
 
     st.markdown(text_dict['Header 2'])
@@ -224,6 +231,3 @@ topic_dict = {
 topic = st.sidebar.selectbox("topic" , list(topic_dict.keys()))
 
 run_topic = topic_dict[topic] ; run_topic()
-
-
-
