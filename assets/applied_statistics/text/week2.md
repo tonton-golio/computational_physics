@@ -58,9 +58,11 @@ If $\lambda \rightarrow \infty$, the Poisson becomes gaussian ($\infty\approx20$
 
 
 ### Gaussian
+The normal normal distribution;
 $$
-     \frac{1}{2\pi}\ldots
+     f(x) = \frac{1}{\sigma\sqrt{2\pi}}e^{-\frac{1}{2}\left(\frac{x-\mu}{\sigma}\right)^2}
 $$
+This is awesome, because given large number of samples we usually always observe this and its easy to work with.
 
 
 ### Student's t-distribution

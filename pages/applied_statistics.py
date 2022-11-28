@@ -1,8 +1,9 @@
 from utils.utils_appstat import *
 
-
 def home():
     st.title('Applied statistics')
+    st.image('assets/images/Stable_diffusion__Mathematician_discovering_Neptune.png', width=420)
+    st.caption('Stable diffusion response to prompt: *Mathematician discovering Neptune*.')
 
 def week1():
     
@@ -157,10 +158,8 @@ def week2():
         dist = st.selectbox('Picker:', 'Binomial, Poisson, Gaussian'.split(', '))
 
         st.markdown(text_dict2[dist])
-
-    
-        
-    st.pyplot(PDFs(1000))
+   
+    st.pyplot(PDFs(st.slider('number of experiments:', 1,1000,420)))
 
     st.markdown(text_dict['Header 2'])
 
@@ -220,6 +219,7 @@ def week7():
 
 # Navigator
 topic_dict = {
+    'Welcome': home,
     'week 1': week1,
     'week 2': week2,
     'week 3': week3,
