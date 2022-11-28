@@ -74,10 +74,16 @@ $$
 $$
 
 
-# Header 2
-### Principle of maximum likelihood and fitting
+# maximum likelihood
+### Maximum likelihood estimation
+
+We are on the look out for the maximum likelihood given the observed data, assuming a normal distribution of the sample.
 $$
-     likelihood = math
+     likelihood = math\\
+     \mathcal{L}
 $$
 
-we want to maximize this term ^^
+
+The way we figure this out is;
+* take a normal dist, and move the center to where it fits best
+* next up; $\sigma$.

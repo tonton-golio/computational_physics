@@ -1,5 +1,7 @@
 from utils.utils_appstat import *
 
+
+
 def home():
     st.title('Applied statistics')
     st.image('assets/images/Stable_diffusion__Mathematician_discovering_Neptune.png', width=420)
@@ -146,24 +148,41 @@ def week1():
     st.markdown(text_dict['Links'])
     
 def week2():
+    # Import text dicts
     text_dict = getText_prep(filename = text_path+'week2.md', split_level = 1)
-     
+    text_dict3 = getText_prep(filename = text_path+'week2.md', split_level = 3)
+
+    # Header and description
     st.header('PDFs, Likelihood, Systematic Errors')
     with st.expander('Week 2 description', expanded=False):
         st.markdown(text_dict['description'])
 
-    st.markdown(text_dict['Header 1'])
-    text_dict2 = getText_prep(filename = text_path+'week2.md', split_level = 3)
+    # PDFs
+    with st.expander('PDFs', expanded=False):
+        st.markdown(text_dict['Header 1'])
+
+    # distributions 
     with st.expander('Distributions', expanded=False):
         dist = st.selectbox('Picker:', 'Binomial, Poisson, Gaussian'.split(', '))
+        st.markdown(text_dict3[dist])
 
-        st.markdown(text_dict2[dist])
-   
-    st.pyplot(PDFs(st.slider('number of experiments:', 1,1000,420)))
+    # View distributions
+    with st.expander('View distributions', expanded=False):
+        st.pyplot(PDFs(st.slider('number of experiments:', 1,999,69)))
 
-    st.markdown(text_dict['Header 2'])
+    # Maximum likelihood estimation
+    st.markdown(text_dict['maximum likelihood'])
+    cols = st.columns(3)
+    mu =          cols[0].slider('mu', -2.,2.,0.)
+    sig =         cols[1].slider('sig', 0.,5.,1.)
+    sample_size = cols[2].slider('sample_size', 1,10000,100)
+    
+    sample = np.random.normal(loc=mu,scale=sig, size=sample_size)
 
-    st.pyplot(fitSimple(size =  100, nsteps = 100))
+    mu, sig, fig = maximum_likelihood_finder(mu, sample, return_plot=True)
+    st.pyplot(fig)
+
+
 
 def week3():
     text_dict = getText_prep(filename = text_path+'week3.md', split_level = 1)
