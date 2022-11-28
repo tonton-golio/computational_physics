@@ -50,5 +50,43 @@ $$
 $$
 
 
+> OMG, look out for noise!!!
 
-> we may deal with cases which are either under- or over-determined.
+$$
+    \mathbf{\hat{m}} = \mathbf{G}^T (\mathbf{G}\mathbf{G}^T)^{-1}\mathbf{d}
+$$
+
+
+
+> we may deal with cases which are either under- or over-determined. 
+* **Over determined** -> 1 solution but its not exact
+* **under determined** -> many solutions...
+
+
+To get around this over- or under-determination, *use*:
+
+$$
+     E(\mathbf{m}) = ||\mathbf{d}-\mathbf{Gm}||^2 + \epsilon^2||\mathbf{m}||^2
+$$
+which yields a minimum given by:
+$$
+    \mathbf{\hat{m}} = \mathbf{G}^T (\mathbf{G}\mathbf{G}^T + \epsilon^2\mathbf{I})^{-1}\mathbf{d}\\
+    \Rightarrow\\
+    \mathbf{\hat{m}} = (\mathbf{G}\mathbf{G}^T + \epsilon^2\mathbf{I})^{-1}\mathbf{G}^T \mathbf{d}
+$$
+
+
+
+##### How do we know if we have a mixed-determined problem?
+
+> Overdetermined if we have more samples, $N$, than we have parameters, $m$. i.e., if the matrix rank is smaller than the number of rows.
+
+> Underdetermine if we have less samples, $N$, than we have parameters, $m$. i.e., if the matrix rank is smaller than the number of columns.
+
+
+If the rank is smaller than $N$ and $m$, then we have a mixed-determined system.
+
+
+###### Summary of the key-points
+
+Almost all linear inverse problems we will face are mixed-determined!?!?!?! So we have to use Tikinov's formula ❤️
