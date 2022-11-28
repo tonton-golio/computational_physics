@@ -60,6 +60,10 @@ def week2():
     ax.set_ylabel("Value of Hill function")
     st.pyplot(fig)
 
+    name = 'Transcriptional regulation: Activation'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
     threshold = 1
     coeff = 2
     x = np.linspace(0, threshold*2, 1000)
@@ -72,10 +76,6 @@ def week2():
     ax.set_xlabel("Concentration of TF $c_\mathrm{TF}$")
     ax.set_ylabel("Value of Hill function")
     st.pyplot(fig)
-
-    name = 'Transcriptional regulation: Activation'
-    with st.expander(name, expanded=False):
-        st.markdown(text_dict[name])
 
     name = 'Transcriptional regulation: sRNA'
     with st.expander(name, expanded=False):
