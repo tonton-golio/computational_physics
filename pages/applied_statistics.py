@@ -3,7 +3,7 @@ from utils.utils_appstat import *
 def home():
     st.title('Applied statistics')
     st.image('assets/images/Stable_diffusion__Mathematician_discovering_Neptune.png', width=420)
-    st.caption('Stable diffusion response to prompt: *Mathematician discovering Neptune*.')
+    st.caption('Stable diffusion response to prompt: *Mathematician discovering Neptune* [[stable diffusion]](https://huggingface.co/spaces/stabilityai/stable-diffusion).')
 
 def week1():
     

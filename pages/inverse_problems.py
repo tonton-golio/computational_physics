@@ -2,8 +2,6 @@ from utils.utils_inverse import *
 st.title('Inverse Problems')
 
 
-
-
 def week1():
     text_dict = getText_prep(filename = text_path+'week1.md', split_level = 1)
 
@@ -72,6 +70,13 @@ def week1():
 
     
     
+def week2():
+    text_dict = getText_prep(filename = text_path+'week2.md', split_level = 1)
+
+    # Notes
+    with st.expander('Lecture notes', expanded=False):
+        cols = st.columns(2)
+        st.markdown(text_dict['Header 1'])
 
 
 
@@ -81,6 +86,7 @@ def week1():
 # Navigator
 topic_dict = {
     'week 1': week1,
+    'Week 2': week2,
   }
 
 topic = st.sidebar.selectbox("topic" , list(topic_dict.keys()))
