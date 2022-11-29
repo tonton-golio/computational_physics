@@ -7,7 +7,7 @@ import seaborn as sns
 from time import sleep
 import matplotlib as mpl
 from scipy.stats import expon, norm
-
+import pylab as pl
 # General
 
 text_path = 'assets/applied_statistics/text/'
@@ -365,7 +365,7 @@ def golden_section_min(f,a,b,tolerance=1e-3, maxitr=1e3):
     return (c+d)/2, n_calls
 
 def maximum_likelihood_finder(mu, sample, 
-								return_plot=False):
+								return_plot=False, verbose=False):
 	
 	xs = np.linspace(min(sample), max(sample), 100)
 
@@ -397,24 +397,26 @@ def maximum_likelihood_finder(mu, sample,
 	sig_best, ncalls_sig = golden_section_min(f_sig_neg,a_sig,b_sig,tolerance=1e-5, maxitr=1e3)
 	
 	stop_golden_search = time()
-	cols = st.columns(2)
-	num_round = 4
-	cols[0].write(f"""
-		linear:
+	
+	if verbose:
+		cols = st.columns(2)
+		num_round = 4
+		cols[0].write(f"""
+			linear:
 
-			mu_best = {round(mu_best_linear, num_round)}
-			sig_best = {round(sig_best_linear, num_round)}
-			time = {round(stop_linear_search-start_linear_search,3)}
-		""")
-	cols[1].write(f"""
-		golden_section_min: 
-			
-			mu_best = {round(mu_best, num_round)}
-			sig_best = {round(sig_best, num_round)}
-			ncalls_mu =  {ncalls_mu}
-			ncalls_sig =  {ncalls_sig}
-			time = {round(stop_golden_search-start_golden_search,3)}
-		""")
+				mu_best = {round(mu_best_linear, num_round)}
+				sig_best = {round(sig_best_linear, num_round)}
+				time = {round(stop_linear_search-start_linear_search,3)}
+			""")
+		cols[1].write(f"""
+			golden_section_min: 
+				
+				mu_best = {round(mu_best, num_round)}
+				sig_best = {round(sig_best, num_round)}
+				ncalls_mu =  {ncalls_mu}
+				ncalls_sig =  {ncalls_sig}
+				time = {round(stop_golden_search-start_golden_search,3)}
+			""")
 
 	def plot():
 		fig, ax = plt.subplots(1,2, figsize=(8,3))
@@ -432,7 +434,7 @@ def maximum_likelihood_finder(mu, sample,
 		ax[1].plot(sigs, 1*np.array(estimates_sig), label='sigma')
 		ax[1].set_ylabel('likelihood', color='beige')
 		#ax[1].set_yscale('log')
-		import pylab as pl
+		
 		for i in ax:
 			l = i.legend(fontsize=12)
 			for text in l.get_texts():
@@ -442,8 +444,8 @@ def maximum_likelihood_finder(mu, sample,
 		plt.tight_layout()
 		plt.close()
 		return fig
-	if return_plot: return mu_best, sig_best, plot()
-	else: return mu_best, sig_best
+	if return_plot: return mu_best, sig_best, log_likelihood(mu_best, sig_best), plot()
+	else: return mu_best, sig_best, log_likelihood(mu_best, sig_best)
 
 
 

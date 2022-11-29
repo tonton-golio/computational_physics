@@ -1,6 +1,6 @@
 from utils.utils_appstat import *
 
-
+from scipy.optimize import curve_fit
 
 def home():
     st.title('Applied statistics')
@@ -144,6 +144,19 @@ def week1():
 
         # note: fix, number of decials in nice text plot in External functions.
 
+    with st.expander('New ChiSquare method', expanded=False):
+        'make random data'
+        x_range = np.linspace(0,10, 100)
+        sample = np.random.normal(3,2,100)
+        # Define signal PDF:
+        def gauss_pdf(x, mu, sigma) :
+            """Gaussian"""
+            return 1.0 / np.sqrt(2*np.pi) / sigma * np.exp( -0.5 * (x-mu)**2 / sigma**2)
+        
+
+
+
+
 
     st.markdown(text_dict['Links'])
     
@@ -179,10 +192,46 @@ def week2():
     
     sample = np.random.normal(loc=mu,scale=sig, size=sample_size)
 
-    mu, sig, fig = maximum_likelihood_finder(mu, sample, return_plot=True)
+    mu, sig, L, fig = maximum_likelihood_finder(mu, sample, return_plot=True, verbose=True)
     st.pyplot(fig)
 
     st.markdown(text_dict['maximum likelihood 2'])
+
+    Ls = []
+    N_random_sample_runs = st.slider('number of random sample runs', 10, 100, 23)
+    for i in range(N_random_sample_runs):
+        sample_new = np.random.normal(loc=mu,scale=sig, size=sample_size)
+        _, _, L_new = maximum_likelihood_finder(mu, sample_new, return_plot=False, verbose=False)
+        Ls.append(L_new)
+
+    Ls = np.array(Ls)
+    
+    fig = plt.figure(figsize=(8,3))
+    counts, bins = np.histogram(Ls)
+    plt.hist(Ls, label='sample dist', bins=20)
+    plt.axvline(L, c='r', ls='--', label='original fit')
+    plt.legend(facecolor='beige')
+    #\int (gauss_{-\infty}^L)
+    def gauss_pdf(x, mu, sigma) :
+        """Gaussian PDF"""
+        return 1.0 / np.sqrt(2*np.pi) / sigma * np.exp( -0.5 * (x-mu)**2 / sigma**2)
+    
+    
+
+    x = (bins[1:]+bins[:-1])/2
+    y = counts
+    #st.write(x,y)
+    plt.scatter(x,y, c='r')
+    popt, pcov = curve_fit(gauss_pdf, x, y, p0=[L, 100])
+    st.write(popt)
+    x_plot = np.linspace(min(x), max(x), 100)
+    my_gauss_pdf = gauss_pdf(x_plot, *popt)
+    plt.plot(x_plot, my_gauss_pdf)
+    prob_worse = np.sum(my_gauss_pdf)
+
+    st.write('probability of worse:', prob_worse)
+
+    st.pyplot(fig)
 
     
 def week3():
