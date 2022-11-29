@@ -163,11 +163,11 @@ def week2():
 
     # distributions 
     with st.expander('Distributions', expanded=False):
-        dist = st.selectbox('Picker:', 'Binomial, Poisson, Gaussian'.split(', '))
+        dist = st.selectbox('Picker:', "Binomial, Poisson, Gaussian, Student's t-distribution".split(', '))
         st.markdown(text_dict3[dist])
 
     # View distributions
-    with st.expander('View distributions', expanded=False):
+    #with st.expander('View distributions', expanded=False):
         st.pyplot(PDFs(st.slider('number of experiments:', 1,999,69)))
 
     # Maximum likelihood estimation
@@ -175,13 +175,16 @@ def week2():
     cols = st.columns(3)
     mu =          cols[0].slider('mu', -2.,2.,0.)
     sig =         cols[1].slider('sig', 0.,5.,1.)
-    sample_size = cols[2].slider('sample_size', 1,10000,100)
+    sample_size = cols[2].slider('sample_size', 1,10000,10)
     
     sample = np.random.normal(loc=mu,scale=sig, size=sample_size)
 
     mu, sig, fig = maximum_likelihood_finder(mu, sample, return_plot=True)
     st.pyplot(fig)
 
+    st.markdown(text_dict['maximum likelihood 2'])
+
+    
 def week3():
     text_dict = getText_prep(filename = text_path+'week3.md', split_level = 1)
      

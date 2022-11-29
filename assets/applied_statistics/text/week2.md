@@ -73,17 +73,52 @@ $$
      \ldots
 $$
 
+### blank
 
 # maximum likelihood
 ### Maximum likelihood estimation
 
-We are on the look out for the maximum likelihood given the observed data, assuming a normal distribution of the sample.
+We are on the look out for the maximum likelihood, $\mathcal{L}$, given the observed data, assuming a normal distribution of the sample.
 $$
-     likelihood = 
-     \mathcal{L}
+     \mathcal{L}(\theta) = \prod_i f(x_i, \theta) dx_i
 $$
+We are prone to rounding errors when multiplying a bunch of small numebrs together; so lets instead sum the logs. Assuming that things are Gaussian;
+$$
+     \log{\mathcal{L}} = \sum N  \exp\left(
+          \frac{x-\mu}{r}
+     \right)^2 +c\\
+     -2\ln(\mathcal{L}) = \chi^2 + c
+$$
+
+* It consistent
+* Asymptotically normal (converges with Gaussian errors.)
+* Efficient (reaches the Minimum variance bound (MVB, Cramer-Rao) for large N)
+
+
 
 
 The way we figure this out is;
 * take a normal dist, and move the center to where it fits best
 * next up; $\sigma$.
+
+
+
+# maximum likelihood 2
+Notice there are different methods depending on whether we are using individual data-points or the bins and counts obtained from `np.histogram`.
+
+Consider doing the binned approach if we are working with a really large sample (because the likelihood calculation is $O(n^2)$). 
+
+
+**Next up we have to test our fit: sample new number from the Gaussian with the found parameters.**
+
+###r## The likelihood ratio test
+if we have two different hypothesis
+$$
+     \begin{align*}
+          d &= -2\ln\frac{\text{likelihood for null hypo.}}{\text{likelihood for alternative hypo.}}\\
+          &= -2\ln\frac{\mathcal{L}_\text{null}}{\mathcal{L}_\text{alt.}}\\
+          & = -2\ln(\mathcal{L}_\text{null}) + 2\ln(\mathcal{L}_\text{alt.}r)
+     \end{align*}
+$$
+
+Consider the DOF for each hypothesis. Greater DOF with nessecarily yield likelihood. 
