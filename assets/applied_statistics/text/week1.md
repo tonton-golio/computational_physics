@@ -269,10 +269,8 @@ How do we quantify the error stemming from limited random sampling? -- *don't wo
 # ChiSquare method, evaluation, and test
 ### ChiSquare method, evaluation, and test
 
-A linear fit, can be done analytically.
-
-Least squares -> doesnt include uncertainties
-chi-square -> includes uncertainties.
+Your typical least squares algorithm does **not** include uncertainties, the
+chi-square does.
 
 $$
      \chi^2(\theta) = \sum_i^N \frac{(y_i - f(x_i,\theta))^2}{\sigma_i^2}
@@ -280,11 +278,8 @@ $$
 
 So its like least-sqares, but we scale by the uncertainty.
 
-*Why don't we normalize by the number of samples, $N$*
-
-
-To compare chi-square fits,
-* number of degrees of freedom = samples - fitparameters.
+###### *Why don't we normalize by the number of samples, $N$?*
+Well, they are not neccessary for comparison. To compare chi-square fits, we need the number of degrees of freedom, $N_\text{dof}$, as given by the the the number of samples, $N_\text{samples}$, less the number of fit-parameters, $N_\text{fit parameters}$.
 $$
      N_\text{Dof} = N_\text{samples} - N_\text{fit parameters}
 $$
@@ -318,27 +313,28 @@ Now we have a way to evaluate our uncertainty-estimates.
 
 
 
-###### Chi2 for binned data
-based on Poisson statistics
+##### Chi2 for binned data
+Based on Poisson statistics,
+$$
+     \chi^2 = \int
+$$
+but if if have a whole lot of points this can get expensive. So instead, we can bin our data first;
+
 $$
      \chi^2 = \sum_{i\in \text{bin}} \frac{(O_i-E_i)^2}{E_i}
 $$
-The problem with this, is where to truncate?
 
-
-The alternative:
-
-use counts in bins! But then what about empty bins!!! Minuit does it this way but all methods have their draw-backs.
+*But then what about empty bins?* !(ahh)! $\Rightarrow$ chuck 'em out. **We lose fedility**. (iminuit does all of this.)
 
 
 ###### Why the chi2 is (near) magic
 (Inser chi2_minimization_animation_original)
 
 
-Nicely behaving fits have parabolic minima. --> The chi2 miracle
+Stable fits have parabolic minima (*The chi2 miracle*). We thus have an easily assessable local gradient - this provides us with confidence regarding our findings.
 
 
-## Header to call below
+# Header to call below
 
 minuit can fin the uncertainty on chi2 even though it does not know that we are fitting with a Gaussian... HOW?!?!?!?! The way it does this is by looking at the curvature of the parabolic...
 

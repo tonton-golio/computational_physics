@@ -365,6 +365,53 @@ def gauss_extended(x, N, mu, sigma):
 	"""Non-normalized Gaussian"""
 	return N * gauss_pdf(x, mu, sigma)
 
+def chi2_demo(resolution=128):
+
+    def chi2_own(f, y_gt, x,
+                a_lst= np.linspace(-2,5,resolution), 
+                b_lst = np.linspace(2,6,resolution)): 
+        expected = y_gt
+        
+        Z = np.zeros((a_lst.shape[0], b_lst.shape[0]))
+        for i, a in enumerate(a_lst):
+            for j, b in enumerate(b_lst):
+                noise=  np.random.randn(len(x))
+                y_pred =  observed = f(x, a, b) + noise
+                chi2 = np.sum((observed-expected)**2/expected)
+
+                Z[i,j] = chi2
+        X, Y = np.meshgrid(a_lst, b_lst)
+        return X,Y,Z
+    
+    def plot(X,Y,Z):
+        fig = plt.figure(figsize=(8,5))
+        ax = plt.axes(projection='3d')
+        ax.contour3D(X, Y, Z, 100, cmap='inferno', )
+        ax.set_xlabel('a', color='white')
+        ax.set_ylabel('b', color='white')
+        ax.set_zlabel(r'$\chi^2$', color='white')
+
+        ax.set_title('$\chi^2$ of phasespace', color="white")
+
+        ax.view_init(20, 50)
+        
+        plt.tight_layout()
+        return fig
+
+    def f(x,a,b):
+        return a*x+b
+    
+
+    size=1000
+    x = np.linspace(-1,1,size) 
+    y_gt = expected = f(x, a=2, b = 4 )
+    X,Y,Z = chi2_own(f, y_gt, x,
+                a_lst= np.linspace(-2,5,resolution),
+                 b_lst = np.linspace(2,6,resolution))
+    
+    return Z, X, Y, plot(X,Y,Z)
+
+
 # Week 2
 def PDFs(size = 1000, n_binomial=100, p_binomial=0.2):
     # extra function
