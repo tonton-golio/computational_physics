@@ -111,14 +111,12 @@ Consider doing the binned approach if we are working with a really large sample 
 
 **Next up we have to test our fit: sample new number from the Gaussian with the found parameters.**
 
-###r## The likelihood ratio test
+##### The likelihood ratio test
 if we have two different hypothesis
 $$
-     \begin{align*}
-          d &= -2\ln\frac{\text{likelihood for null hypo.}}{\text{likelihood for alternative hypo.}}\\
-          &= -2\ln\frac{\mathcal{L}_\text{null}}{\mathcal{L}_\text{alt.}}\\
-          & = -2\ln(\mathcal{L}_\text{null}) + 2\ln(\mathcal{L}_\text{alt.}r)
-     \end{align*}
+          d 
+          = -2\ln\frac{\mathcal{L}_\text{null}}{\mathcal{L}_\text{alt.}}
+          = -2\ln(\mathcal{L}_\text{null}) + 2\ln(\mathcal{L}_\text{alt.})
 $$
 
 Consider the DOF for each hypothesis. Greater DOF with nessecarily yield likelihood. 

@@ -157,43 +157,29 @@ def add_text_to_ax(x_coord, y_coord, string, ax, fontsize=12, color='k'):
 
 #
 def means(arr, truncate=1):
-	"""
-        determines mean as obtained by different methods.
-        The different means are 
-            * Geometric mean
-            * Arithmetic mean
-            * Median 
-            * Mode
-            * Harmonic
-            * Truncated
-        returns:
-            dictionary with means
+	"""Determines mean as obtained by different methods.
 
-	"""
-	arr = arr.copy().astype(float)
+            The different means are:
+                * Geometric mean, Arithmetic mean, Median , Mode, Harmonic, Truncated
+            returns: dictionary with means"""
+
 	n = len(arr)
 	arr = np.sort(arr) # for median
-	def geometric(arr):
-		return np.prod(arr)**(1/n)
-	def arithmetic(arr):
-		return np.sum(arr) / n
-	def median(arr):
-		return arr[n//2] if n%2==0 else arr[n//2+1]
+	def geometric(arr): return np.prod(arr)**(1/n)
+	def arithmetic(arr): return np.sum(arr) / n
+	def median(arr): return arr[n//2] if n%2==0 else arr[n//2+1]
+	def harmonic(arr): return (np.sum( arr**(-1) ) / n)**(-1)
+	def truncated(arr): return arithmetic(arr[truncate:-truncate])
 	def mode(arr):
 		unique, counts = np.unique(arr, return_counts=True)
-		return arithmetic(unique[np.argwhere(counts==np.max(counts))])
-	def harmonic(arr):
-		return (np.sum( arr**(-1) ) / n)**(-1)
-	def truncated(arr):
-		arr = arr[truncate:-truncate]
-		return arithmetic(arr)
-
+		which = np.argwhere(counts==np.max(counts))
+		return arithmetic(unique[which])
 
 	return {
 			'Geometric mean' : geometric(arr),
 			'Arithmetic mean' :  arithmetic(arr), 
 			'Median': median(arr),  
-			#'Mode': mode(arr),
+			'Mode': mode(arr),
 			'Harmonic': harmonic(arr), 
 			'Truncated' : truncated(arr)
 			}
@@ -205,13 +191,13 @@ def showMeans(arr, truncate=1):
 	"""
     # extra function
 	fig, ax = plt.subplots(figsize=(6,2))
-	arr = np.sort(arr)
+	arr = np.sort(arr.copy())
 	d = means(arr, truncate=truncate)
 	arr_truncated = arr[truncate:-truncate]
 	counts, bins = np.histogram(arr_truncated)
 	
-	ax.hist(arr_truncated, bins=len(arr)//50)
-	colors = sns.color_palette("hls", 8)
+	ax.hist(arr_truncated, bins=max([10,len(arr)//50]))
+	colors = sns.color_palette("RdBu", 8)
 	for i, c in zip(d, colors):
 		ax.axvline(d[i], label=i, c=c)
 	#ax.legend(facecolor='beige')
@@ -224,6 +210,7 @@ def showMeans(arr, truncate=1):
 
 
 def std_calculations(n=400):
+    # extra function
 	fig, ax = plt.subplots(3,1, figsize=(8,4), sharex=True, sharey=True)
 	for idx, N in enumerate([5,10,20]):
 		res = {'N': [], 'N-1':[]}
@@ -253,6 +240,7 @@ def std_calculations(n=400):
 
 
 def roll_a_die(num=100):
+    # extra function
     x = np.random.randint(1,7,num)
     fig, ax = plt.subplots(figsize=(5,4))
     means = [np.mean(x[:n]) for n in range(2, num)]
@@ -263,6 +251,7 @@ def roll_a_die(num=100):
     return fig
 
 def roll_dice(rolls=200):
+    # extra function
     data = {}
     nums = np.arange(2,40, dtype=int)
     for num in nums:
@@ -282,6 +271,7 @@ def roll_dice(rolls=200):
     return fig
 
 def makeDistibutions(n_experi = 1000, N_uni= 1000,  N_exp= 1000,  N_cauchy = 1000):
+    # extra function
 	# input distributions
 	uni = np.random.uniform(-1,1, size=(n_experi, N_uni))*12**.5
 
@@ -303,6 +293,7 @@ def makeDistibutions(n_experi = 1000, N_uni= 1000,  N_exp= 1000,  N_cauchy = 100
 
 
 def plotdists(sums, N_bins = 100):
+    # extra function
 	fig, ax = plt.subplots(1,4,figsize = (8,4))
 	for i, (s, name) in enumerate(zip(sums, ['uni', 'exp', 'chauchy','combined'])):
 		ax[i].hist( s, bins=N_bins , histtype='step')
@@ -326,44 +317,49 @@ def plotdists(sums, N_bins = 100):
 
 
 def demoArea():
-            "Demo"
-            cols = st.columns(4)
+    # extra function
+    "Demo"
+    cols = st.columns(4)
 
-            W = cols[0].slider('W', 1, 10, 5)
-            L = cols[2].slider('L', 1, 10, 5)
-            sig_W = cols[1].slider('\sigma_W', 0., 1., .05)
-            sig_L = cols[3].slider('\sigma_L', 0., 1., .05)
+    W = cols[0].slider('W', 1, 10, 5)
+    L = cols[2].slider('L', 1, 10, 5)
+    sig_W = cols[1].slider('\sigma_W', 0., 1., .05)
+    sig_L = cols[3].slider('\sigma_L', 0., 1., .05)
 
-            fig = plt.figure()
-            
-            
-            fig, ax = plt.subplots(1,2,figsize=(7,3))
+    fig = plt.figure()
+    
+    
+    fig, ax = plt.subplots(1,2,figsize=(7,3))
 
-            ax[0].axvline(0, color="white")
-            ax[0].axhline(0, color="white")
+    ax[0].axvline(0, color="white")
+    ax[0].axhline(0, color="white")
 
-            # W
-            size = 1000
-            Ws = np.random.normal(loc= W, scale=sig_W, size=size)
-            Ls = np.random.normal(loc= L, scale=sig_L, size=size)
-            ax[0].scatter(np.random.uniform(0,W, size=size),
-                        Ls,
-                        color='yellow', alpha=.2)
+    # W
+    size = 1000
+    Ws = np.random.normal(loc= W, scale=sig_W, size=size)
+    Ls = np.random.normal(loc= L, scale=sig_L, size=size)
+    ax[0].scatter(np.random.uniform(0,W, size=size),
+                Ls,
+                color='yellow', alpha=.2)
 
-            ax[0].scatter(Ws, np.random.uniform(0,L, size=size),
-                            color='yellow', alpha=.2)
-            ax[0].set_xlabel('Width', color='black', fontsize=15)
-            ax[0].set_ylabel('Length', color='black', fontsize=15)
+    ax[0].scatter(Ws, np.random.uniform(0,L, size=size),
+                    color='yellow', alpha=.2)
+    ax[0].set_xlabel('Width', color='black', fontsize=15)
+    ax[0].set_ylabel('Length', color='black', fontsize=15)
 
-            ax[1].set_title('AREA dist')
-            ax[1].hist(Ws*Ls)
-            st.pyplot(fig)
+    ax[1].set_title('AREA dist')
+    ax[1].hist(Ws*Ls)
+    st.pyplot(fig)
 
 
 # Define your PDF / model 
 def gauss_pdf(x, mu, sigma):
 	"""Normalized Gaussian"""
 	return 1 / np.sqrt(2 * np.pi) / sigma * np.exp(-(x - mu) ** 2 / 2. / sigma ** 2)
+
+def gauss_pdf_scaled(x, mu, sigma, a):
+	"""Normalized Gaussian"""
+	return a * gauss_pdf(x, mu, sigma)
 
 def gauss_extended(x, N, mu, sigma):
 	"""Non-normalized Gaussian"""
@@ -496,7 +492,7 @@ def maximum_likelihood_finder(mu, sample,
 	if return_plot: return mu_best, sig_best, log_likelihood(mu_best, sig_best), plot()
 	else: return mu_best, sig_best, log_likelihood(mu_best, sig_best)
 
-def evalv_likelihood_fit(mu, sig, sample_size, N_random_sample_runs=10,nbins = 20, plot=True):
+def evalv_likelihood_fit(mu, sig, L,  sample_size, N_random_sample_runs=10,nbins = 20, plot=True):
         
     # evaluate likelihood of different samplings
     Ls = []
@@ -512,13 +508,13 @@ def evalv_likelihood_fit(mu, sig, sample_size, N_random_sample_runs=10,nbins = 2
     y = counts
     x=x[y!=0] ;  y=y[y!=0]  # rid of empy bins
     
-    popt, pcov = curve_fit(gauss_pdf, x, y, p0=[L, 100, 2])
+    popt, pcov = curve_fit(gauss_pdf_scaled, x, y, p0=[L, 100, 2])
     #st.write(popt)
     x_plot = np.linspace(min(x)*1.05, max(x), 100)
-    plot_gauss_pdf = gauss_pdf(x_plot, *popt)
+    plot_gauss_pdf = gauss_pdf_scaled(x_plot, *popt)
     
     x_worse = np.linspace(-10000, L, 100)
-    worse_gauss_pdf = gauss_pdf(x_worse, popt[0], popt[1], 1)
+    worse_gauss_pdf = gauss_pdf_scaled(x_worse, popt[0], popt[1], 1)
     prob_worse = np.sum(worse_gauss_pdf)  #\int (gauss_{-\infty}^L)
     if plot:
         fig = plt.figure(figsize=(8,3))
@@ -532,7 +528,7 @@ def evalv_likelihood_fit(mu, sig, sample_size, N_random_sample_runs=10,nbins = 2
 
         # area
         x_area = np.linspace(L-popt[1]*5, L, 100)
-        plt.fill_between(x_area, gauss_pdf(x_area, *popt), alpha=.3, color='pink')
+        plt.fill_between(x_area, gauss_pdf_scaled(x_area, *popt), alpha=.3, color='pink')
 
     return fig, prob_worse
 

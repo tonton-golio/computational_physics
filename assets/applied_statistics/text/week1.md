@@ -20,17 +20,16 @@ Introduction, General Concepts, ChiSquare Method
 Mean is a metric telling us about bulk magnitude-tendency of data. 
 
 # Geometric mean
-root of the product,
+root of the product (is equivalent to the arithmetic mean in logscale);
 $$
      \bar{x}_\text{geo} = \left( \prod_i^n x_i\right)^{1/n}
-$$
-is equivalent to the arithmetic mean in logscale
-$$
+     =
      \exp\left(\frac{1}{n}\sum_{i}^n\ln x_i \right)
 $$
+a sum of logs is less prone to under-/over-flow than a product.
 # Geometric mean code
 ```python
-def geometric():
+def geometric(arr):
      return np.prod(arr)**(1/n)
 ```
 

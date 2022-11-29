@@ -26,20 +26,22 @@ def week1():
         cols[0].markdown(text_dict[mean_picker])
         cols[1].markdown(text_dict[mean_picker+' code'])
         
-        '##### _____________________________________________________________________________________________'
+        '##### Demo'
         
-        cols = st.columns(4)
-        dists = 'n_normal, n_exp, n_cauchy, truncate'.split(', ')
-        
-        n_normal, n_exp, n_cauchy, truncate = (cols[i].slider(name, 0, 100, 1000) for i, name in enumerate(dists))
-        
+        cols = st.columns(5)
+        n_normal = cols[0].slider("n_normal", 1, 1000, 100)
+        n_exp= cols[1].slider("n_exp", 1, 1000, 0)
+        n_cauchy= cols[2].slider("n_cauchy", 1, 1000, 0)
+        truncate = cols[3].slider("truncate", 1, 100, 1)
+        seed = cols[4].slider("seed", 1, 100, 42)
+        np.random.seed(seed)
         normal = np.random.randn(n_normal)
         exp = np.random.exponential(n_exp) 
         cauchy = np.random.standard_cauchy(n_cauchy)
         
-        arr = np.hstack([normal, exp, cauchy])
+        arr = np.hstack([normal, exp, cauchy]).flatten()
 
-        fig = showMeans(arr)   # Perhaps change this to 2D
+        fig = showMeans(arr, truncate)   # Perhaps change this to 2D
         st.pyplot(fig)
 
 
@@ -188,7 +190,7 @@ def week2():
     cols = st.columns(3)
     mu =          cols[0].slider('mu', -2.,2.,0.)
     sig =         cols[1].slider('sig', 0.,5.,1.)
-    sample_size = cols[2].slider('sample_size', 1,10000,10)
+    sample_size = cols[2].slider('sample_size', 1,10000,120)
     
     sample = np.random.normal(loc=mu,scale=sig, size=sample_size)
 
@@ -201,7 +203,7 @@ def week2():
     N_random_sample_runs = st.slider('number of random sample runs', 10, 100, 23)
     
 
-    fig, prob_worse = evalv_likelihood_fit(mu, sig, sample_size, N_random_sample_runs)
+    fig, prob_worse = evalv_likelihood_fit(mu, sig, L, sample_size, N_random_sample_runs)
     st.pyplot(fig)
     st.write('probability of worse:', prob_worse)
 
@@ -260,10 +262,7 @@ def week7():
 def utils_explorer():
     st.markdown(r'''
     ## Utils explorer
-    below are the:
-    * coore functions;
-    * ploot functions; and,
-    * extra functions.
+    below are the *coore functions* and *extra functions*.
     ''')
     func_dict_core, func_dict_extras = makeFunc_dict(filename='utils/utils_appstat.py')
 
