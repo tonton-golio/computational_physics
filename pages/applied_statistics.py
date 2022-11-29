@@ -199,49 +199,7 @@ def week2():
 
     
     N_random_sample_runs = st.slider('number of random sample runs', 10, 100, 23)
-    def evalv_likelihood_fit(mu, sig, sample_size, N_random_sample_runs=10,nbins = 20, plot=True):
-        
-        # evaluate likelihood of different samplings
-        Ls = []
-        for i in range(N_random_sample_runs):
-            sample_new = np.random.normal(loc=mu,scale=sig, size=sample_size)
-            _, _, L_new = maximum_likelihood_finder(mu, sample_new, return_plot=False, verbose=False)
-            Ls.append(L_new)
-        Ls = np.array(Ls)
-
-        # make hist
-        counts, bins = np.histogram(Ls, bins=nbins)
-        x = (bins[1:]+bins[:-1])/2
-        y = counts
-        x=x[y!=0] ;  y=y[y!=0]  # rid of empy bins
-        
-        def gauss_pdf(x, mu, sigma, a) :
-            """Gaussian PDF"""
-            return a* 1.0 / np.sqrt(2*np.pi) / sigma * np.exp( -0.5 * (x-mu)**2 / sigma**2)
-        
-        popt, pcov = curve_fit(gauss_pdf, x, y, p0=[L, 100, 2])
-        #st.write(popt)
-        x_plot = np.linspace(min(x)*1.05, max(x), 100)
-        plot_gauss_pdf = gauss_pdf(x_plot, *popt)
-        
-        x_worse = np.linspace(-10000, L, 100)
-        worse_gauss_pdf = gauss_pdf(x_worse, popt[0], popt[1], 1)
-        prob_worse = np.sum(worse_gauss_pdf)  #\int (gauss_{-\infty}^L)
-        if plot:
-            fig = plt.figure(figsize=(8,3))
-            
-            plt.hist(Ls, label='sample dist', bins=nbins)
-            plt.axvline(L, c='r', ls='--', label='original fit')
-            plt.legend(facecolor='beige')
-            
-            plt.plot(x_plot, plot_gauss_pdf)
-            plt.scatter(x,y, c='r')
-
-            # area
-            x_area = np.linspace(L-popt[1]*5, L, 100)
-            plt.fill_between(x_area, gauss_pdf(x_area, *popt), alpha=.3, color='pink')
-
-        return fig, prob_worse
+    
 
     fig, prob_worse = evalv_likelihood_fit(mu, sig, sample_size, N_random_sample_runs)
     st.pyplot(fig)
@@ -300,11 +258,19 @@ def week7():
     st.markdown(text_dict['Header 1'])
 
 def utils_explorer():
-    st.header('Utils explorer')
+    st.markdown(r'''
+    ## Utils explorer
+    below are the:
+    * coore functions;
+    * ploot functions; and,
+    * extra functions.
+    ''')
     func_dict_core, func_dict_extras = makeFunc_dict(filename='utils/utils_appstat.py')
 
-    func_name = st.selectbox('function', func_dict_core.keys())
+    func_name = st.selectbox('function (core)', func_dict_core.keys())
     st.code(func_dict_core[func_name] )
+    func_name_extra = st.selectbox('function (extras)', func_dict_extras.keys())
+    st.code(func_dict_extras[func_name_extra] )
     
 # Navigator
 topic_dict = {

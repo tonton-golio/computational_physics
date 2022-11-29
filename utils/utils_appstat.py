@@ -5,6 +5,7 @@ import pandas as pd
 from time import time
 import seaborn as sns
 from time import sleep
+from scipy.optimize import curve_fit
 import matplotlib as mpl
 from scipy.stats import expon, norm
 import pylab as pl
@@ -370,6 +371,7 @@ def gauss_extended(x, N, mu, sigma):
 
 # Week 2
 def PDFs(size = 1000, n_binomial=100, p_binomial=0.2):
+    # extra function
 	x_uniform = np.random.rand(size)
 	
 	x_binomial = np.random.binomial(n_binomial, p_binomial, size)
@@ -494,7 +496,45 @@ def maximum_likelihood_finder(mu, sample,
 	if return_plot: return mu_best, sig_best, log_likelihood(mu_best, sig_best), plot()
 	else: return mu_best, sig_best, log_likelihood(mu_best, sig_best)
 
+def evalv_likelihood_fit(mu, sig, sample_size, N_random_sample_runs=10,nbins = 20, plot=True):
+        
+    # evaluate likelihood of different samplings
+    Ls = []
+    for i in range(N_random_sample_runs):
+        sample_new = np.random.normal(loc=mu,scale=sig, size=sample_size)
+        _, _, L_new = maximum_likelihood_finder(mu, sample_new, return_plot=False, verbose=False)
+        Ls.append(L_new)
+    Ls = np.array(Ls)
 
+    # make hist
+    counts, bins = np.histogram(Ls, bins=nbins)
+    x = (bins[1:]+bins[:-1])/2
+    y = counts
+    x=x[y!=0] ;  y=y[y!=0]  # rid of empy bins
+    
+    popt, pcov = curve_fit(gauss_pdf, x, y, p0=[L, 100, 2])
+    #st.write(popt)
+    x_plot = np.linspace(min(x)*1.05, max(x), 100)
+    plot_gauss_pdf = gauss_pdf(x_plot, *popt)
+    
+    x_worse = np.linspace(-10000, L, 100)
+    worse_gauss_pdf = gauss_pdf(x_worse, popt[0], popt[1], 1)
+    prob_worse = np.sum(worse_gauss_pdf)  #\int (gauss_{-\infty}^L)
+    if plot:
+        fig = plt.figure(figsize=(8,3))
+        
+        plt.hist(Ls, label='sample dist', bins=nbins)
+        plt.axvline(L, c='r', ls='--', label='original fit')
+        plt.legend(facecolor='beige')
+        
+        plt.plot(x_plot, plot_gauss_pdf)
+        plt.scatter(x,y, c='r')
+
+        # area
+        x_area = np.linspace(L-popt[1]*5, L, 100)
+        plt.fill_between(x_area, gauss_pdf(x_area, *popt), alpha=.3, color='pink')
+
+    return fig, prob_worse
 
 # Week 6
 def makeBlobs(size=100):
@@ -509,12 +549,6 @@ def makeBlobs(size=100):
 
 	noise = np.random.randn(size, 2)*.1
 	return X+noise
-
-def fake_end():# extra function
-    # extra function
-    # extra function
-
-    pass
 
 
 
