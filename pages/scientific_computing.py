@@ -2,7 +2,7 @@ from utils.utils_scicomp import *
 
 # Pages
 def home():
-	st.markdown(r"""
+	st.markdown("""
 	# Scientific Computing
 
 	Welcome to scientific computing!
@@ -13,8 +13,7 @@ def home():
 	* implemented methods for matrix diagonalization.
 	* time evolved initial value problems.
 	* looked at partial differential equations
-	
-	Use the sidebar to navigate!
+	Course taught by: Kurt Valentin Mikkelsen & James Emil Avery.
 	""")
 
 def boundingErrors():

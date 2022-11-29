@@ -3,8 +3,12 @@ devmod = False
 
 # Pages
 def homeComplex():
+
     text = getText_prep(textfile_path+'home.md',3)
     st.title('Complex Physics')
+    st.markdown("""
+        Course taught by: Kim Sneppen.""") 
+
     col1, col2 = st.columns(2)
     col1.markdown(text['col1'])
     col2.markdown(text['col2'])

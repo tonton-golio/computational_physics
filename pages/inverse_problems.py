@@ -1,6 +1,8 @@
 from utils.utils_inverse import *
 st.title('Inverse Problems')
 
+("""
+        Course taught by: Klaus Mosegaard.""")
 
 def week1():
     text_dict = getText_prep(filename = text_path+'week1.md', split_level = 1)
