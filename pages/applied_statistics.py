@@ -197,41 +197,55 @@ def week2():
 
     st.markdown(text_dict['maximum likelihood 2'])
 
-    Ls = []
+    
     N_random_sample_runs = st.slider('number of random sample runs', 10, 100, 23)
-    for i in range(N_random_sample_runs):
-        sample_new = np.random.normal(loc=mu,scale=sig, size=sample_size)
-        _, _, L_new = maximum_likelihood_finder(mu, sample_new, return_plot=False, verbose=False)
-        Ls.append(L_new)
+    def evalv_likelihood_fit(mu, sig, sample_size, N_random_sample_runs=10,nbins = 20, plot=True):
+        
+        # evaluate likelihood of different samplings
+        Ls = []
+        for i in range(N_random_sample_runs):
+            sample_new = np.random.normal(loc=mu,scale=sig, size=sample_size)
+            _, _, L_new = maximum_likelihood_finder(mu, sample_new, return_plot=False, verbose=False)
+            Ls.append(L_new)
+        Ls = np.array(Ls)
 
-    Ls = np.array(Ls)
-    
-    fig = plt.figure(figsize=(8,3))
-    counts, bins = np.histogram(Ls)
-    plt.hist(Ls, label='sample dist', bins=20)
-    plt.axvline(L, c='r', ls='--', label='original fit')
-    plt.legend(facecolor='beige')
-    #\int (gauss_{-\infty}^L)
-    def gauss_pdf(x, mu, sigma) :
-        """Gaussian PDF"""
-        return 1.0 / np.sqrt(2*np.pi) / sigma * np.exp( -0.5 * (x-mu)**2 / sigma**2)
-    
-    
+        # make hist
+        counts, bins = np.histogram(Ls, bins=nbins)
+        x = (bins[1:]+bins[:-1])/2
+        y = counts
+        x=x[y!=0] ;  y=y[y!=0]  # rid of empy bins
+        
+        def gauss_pdf(x, mu, sigma, a) :
+            """Gaussian PDF"""
+            return a* 1.0 / np.sqrt(2*np.pi) / sigma * np.exp( -0.5 * (x-mu)**2 / sigma**2)
+        
+        popt, pcov = curve_fit(gauss_pdf, x, y, p0=[L, 100, 2])
+        #st.write(popt)
+        x_plot = np.linspace(min(x)*1.05, max(x), 100)
+        plot_gauss_pdf = gauss_pdf(x_plot, *popt)
+        
+        x_worse = np.linspace(-10000, L, 100)
+        worse_gauss_pdf = gauss_pdf(x_worse, popt[0], popt[1], 1)
+        prob_worse = np.sum(worse_gauss_pdf)  #\int (gauss_{-\infty}^L)
+        if plot:
+            fig = plt.figure(figsize=(8,3))
+            
+            plt.hist(Ls, label='sample dist', bins=nbins)
+            plt.axvline(L, c='r', ls='--', label='original fit')
+            plt.legend(facecolor='beige')
+            
+            plt.plot(x_plot, plot_gauss_pdf)
+            plt.scatter(x,y, c='r')
 
-    x = (bins[1:]+bins[:-1])/2
-    y = counts
-    #st.write(x,y)
-    plt.scatter(x,y, c='r')
-    popt, pcov = curve_fit(gauss_pdf, x, y, p0=[L, 100])
-    st.write(popt)
-    x_plot = np.linspace(min(x), max(x), 100)
-    my_gauss_pdf = gauss_pdf(x_plot, *popt)
-    plt.plot(x_plot, my_gauss_pdf)
-    prob_worse = np.sum(my_gauss_pdf)
+            # area
+            x_area = np.linspace(L-popt[1]*5, L, 100)
+            plt.fill_between(x_area, gauss_pdf(x_area, *popt), alpha=.3, color='pink')
 
-    st.write('probability of worse:', prob_worse)
+        return fig, prob_worse
 
+    fig, prob_worse = evalv_likelihood_fit(mu, sig, sample_size, N_random_sample_runs)
     st.pyplot(fig)
+    st.write('probability of worse:', prob_worse)
 
     
 def week3():
