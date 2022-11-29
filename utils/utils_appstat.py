@@ -9,18 +9,21 @@ import matplotlib as mpl
 from scipy.stats import expon, norm
 import pylab as pl
 # General
-
 text_path = 'assets/applied_statistics/text/'
 
-# setting matplotlib style:
-mpl.rcParams['patch.facecolor'] = (0.04, 0.065, 0.03)
-mpl.rcParams['axes.facecolor'] = 'black'
-mpl.rcParams['figure.facecolor'] = (0.04, 0.065, 0.03)
-mpl.rcParams['xtick.color'] = 'white'
-mpl.rcParams['ytick.color'] = 'white'
-mpl.rcParams['figure.autolayout'] = True  # 'tight_layout'
-# mpl.rcParams['axes.grid'] = True  # should we?
-
+def set_rcParams():
+	"""
+		setting matplotlib style
+	"""
+	# extra function
+	mpl.rcParams['patch.facecolor'] = (0.04, 0.065, 0.03)
+	mpl.rcParams['axes.facecolor'] = 'black'
+	mpl.rcParams['figure.facecolor'] = (0.04, 0.065, 0.03)
+	mpl.rcParams['xtick.color'] = 'white'
+	mpl.rcParams['ytick.color'] = 'white'
+	# mpl.rcParams['axes.grid'] = True  # should we?
+	mpl.rcParams['figure.autolayout'] = True  # 'tight_layout'
+set_rcParams()
 
 st.set_page_config(page_title="Applied Statistics", 
     page_icon="🧊", 
@@ -29,32 +32,71 @@ st.set_page_config(page_title="Applied Statistics",
     menu_items=None)
 
 def getText_prep(filename = text_path+'week1.md', split_level = 2):
-    with open(filename,'r', encoding='utf8') as f:
-        file = f.read()
-    level_topics = file.split('\n'+"#"*split_level+' ')
-    text_dict = {i.split("\n")[0].replace('### ','') : 
+	"""
+		get text from markdown and puts in dict
+	"""
+	# extra function
+	with open(filename,'r', encoding='utf8') as f:
+		file = f.read()
+	level_topics = file.split('\n'+"#"*split_level+' ')
+	text_dict = {i.split("\n")[0].replace('### ','') : 
                 "\n".join(i.split("\n")[1:]) for i in level_topics}
     
-    return text_dict  
+	return text_dict  
 
-def template():
-    st.title('')
+def makeFunc_dict(filename='utils/utils_appstat.py'):
+    with open(filename) as f:
+        lines = f.read().split('\n')
+    # start marked by def
+    # end marked by no indent
+    func_now = False
+    key = None
+    func_dict = {}
+    for line in lines:#[150:220]:
+        #st.write(func_now, line)
+        
+        if ("def" == line[:3]):# and (func_now == False):
+            #st.write(line)
+            # look for def to start function
+            func_now = True
+            if key != None:
+                # stitch
+                func_dict[key] = '\n'.join(func_dict[key])
+            key = line.split('def')[1].split("(")[0]
+            func_dict[key] = [line]
 
-    # Main text
-    text_dict = getText_prep(filename = text_path+'bounding_errors.md', split_level = 2)
+        elif (func_now == True) and (key != None ):
+            if len(line.strip())==0:
+                # if line is empty, append it
+                func_dict[key].append(line)
 
-    st.markdown(text_dict["Header 1"])
-    st.markdown(text_dict["Header 2"])
-    with st.expander('Go deeper', expanded=False):
-        st.markdown(text_dict["Example"])
+            elif (line[:1] == '\t' or line[:4] == ' '*len(line[:4])) :
+                func_dict[key].append(line)
+            
+            else:
+                
+                # end func
+                func_now = False
 
+        else: pass
+            #print(line[:2])
+    func_dict[key] = '\n'.join(func_dict[key])
+    func_dict_core = {}
+    func_dict_extras = {}
+    for func in func_dict:
+        #st.code(func_dict[func])
+        if '# extra function' in func_dict[func]: func_dict_extras[func] = func_dict[func]
+        else: func_dict_core[func] = func_dict[func]
+
+    # omg, this was a hassel
+    return func_dict_core, func_dict_extras
 
 def format_value(value, decimals):
     """ 
     Checks the type of a variable and formats it accordingly.
     Floats has 'decimals' number of decimals.
     """
-    
+    # extra function
     if isinstance(value, (float, np.float)):
         return f'{value:.{decimals}f}'
     elif isinstance(value, (int, np.integer)):
@@ -62,13 +104,12 @@ def format_value(value, decimals):
     else:
         return f'{value}'
 
-
 def values_to_string(values, decimals):
     """ 
     Loops over all elements of 'values' and returns list of strings
     with proper formating according to the function 'format_value'. 
     """
-    
+    # extra function
     res = []
     for value in values:
         if isinstance(value, list):
@@ -78,11 +119,10 @@ def values_to_string(values, decimals):
             res.append(format_value(value, decimals))
     return res
 
-
 def len_of_longest_string(s):
     """ Returns the length of the longest string in a list of strings """
+    # extra function
     return len(max(s, key=len))
-
 
 def nice_string_output(d, extra_spacing=5, decimals=3):
     """ 
@@ -91,7 +131,7 @@ def nice_string_output(d, extra_spacing=5, decimals=3):
     output has a minimum distance of 'extra_spacing'. One can change the number
     of decimals using the 'decimals' keyword.  
     """
-    
+    # extra function
     names = d.keys()
     max_names = len_of_longest_string(names)
     
@@ -104,9 +144,9 @@ def nice_string_output(d, extra_spacing=5, decimals=3):
         string += "{name:s} {value:>{spacing}} \n".format(name=name, value=value, spacing=spacing)
     return string[:-2]
 
-
 def add_text_to_ax(x_coord, y_coord, string, ax, fontsize=12, color='k'):
     """ Shortcut to add text to an ax with proper font. Relative coords."""
+    # extra function
     ax.text(x_coord, y_coord, string, family='monospace', fontsize=fontsize,
             transform=ax.transAxes, verticalalignment='top', color=color)
     return None
@@ -117,7 +157,17 @@ def add_text_to_ax(x_coord, y_coord, string, ax, fontsize=12, color='k'):
 #
 def means(arr, truncate=1):
 	"""
-	determines mean of sorts = ['Geometric mean', 'Arithmetic mean', 'Median',  'Mode', 'Harmonic', 'Truncated']
+        determines mean as obtained by different methods.
+        The different means are 
+            * Geometric mean
+            * Arithmetic mean
+            * Median 
+            * Mode
+            * Harmonic
+            * Truncated
+        returns:
+            dictionary with means
+
 	"""
 	arr = arr.copy().astype(float)
 	n = len(arr)
@@ -147,10 +197,12 @@ def means(arr, truncate=1):
 			'Truncated' : truncated(arr)
 			}
 
+
 def showMeans(arr, truncate=1):
-	'''
+	"""
 		on a hist, shows means
-	'''
+	"""
+    # extra function
 	fig, ax = plt.subplots(figsize=(6,2))
 	arr = np.sort(arr)
 	d = means(arr, truncate=truncate)
@@ -228,10 +280,7 @@ def roll_dice(rolls=200):
     plt.close()
     return fig
 
-def makeDistibutions(n_experi = 1000,
-					N_uni= 1000, 
-					N_exp= 1000, 
-					N_cauchy = 1000):
+def makeDistibutions(n_experi = 1000, N_uni= 1000,  N_exp= 1000,  N_cauchy = 1000):
 	# input distributions
 	uni = np.random.uniform(-1,1, size=(n_experi, N_uni))*12**.5
 
@@ -308,8 +357,6 @@ def demoArea():
             ax[1].set_title('AREA dist')
             ax[1].hist(Ws*Ls)
             st.pyplot(fig)
-
-
 
 
 # Define your PDF / model 
@@ -449,14 +496,12 @@ def maximum_likelihood_finder(mu, sample,
 
 
 
-
-
-
 # Week 6
 def makeBlobs(size=100):
 	'''
 	Makes 2d random blobs
 	'''
+    # extra function
 	X = np.random.rand(size, 2)
 
 	X[0][X[0]<0.5] -= .5
@@ -465,12 +510,11 @@ def makeBlobs(size=100):
 	noise = np.random.randn(size, 2)*.1
 	return X+noise
 
-def scatter(x,y):
-	fig, ax = plt.subplots()
-	ax.scatter(x, y)
-	plt.close()
-	return fig
+def fake_end():# extra function
+    # extra function
+    # extra function
 
+    pass
 
 
 

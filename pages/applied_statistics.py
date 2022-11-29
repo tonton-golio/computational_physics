@@ -286,8 +286,12 @@ def week7():
     st.markdown(text_dict['Header 1'])
 
 def utils_explorer():
-    pass
+    st.header('Utils explorer')
+    func_dict_core, func_dict_extras = makeFunc_dict(filename='utils/utils_appstat.py')
 
+    func_name = st.selectbox('function', func_dict_core.keys())
+    st.code(func_dict_core[func_name] )
+    
 # Navigator
 topic_dict = {
     'Welcome': home,
@@ -298,7 +302,7 @@ topic_dict = {
     #'week 5': week5,
     #'week 6': week6,
     #'week 7': week7,
-    #'Utils explorer' : utils_explorer,
+    'Utils explorer' : utils_explorer,
     }
 
 topic = st.sidebar.selectbox("topic" , list(topic_dict.keys()))
