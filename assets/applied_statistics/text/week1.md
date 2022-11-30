@@ -17,30 +17,30 @@ Introduction, General Concepts, ChiSquare Method
 Mean is a metric telling us about bulk magnitude-tendency of data. 
 
 # Geometric mean
-root of the product (is equivalent to the arithmetic mean in logscale);
+The root of the product;
 $$
      \bar{x}_\text{geo} = \left( \prod_i^n x_i\right)^{1/n}
      =
      \exp\left(\frac{1}{n}\sum_{i}^n\ln x_i \right)
 $$
-a sum of logs is less prone to under-/over-flow than a product.
+*is equivalent to the arithmetic mean in logscale*
 # Geometric mean code
 ```python
 def geometric(arr):
      return np.prod(arr)**(1/n)
+
+def geometric(arr):
+     # a sum of logs is less prone to 
+     # under-/over-flow than a product.
+     return np.exp(1/n * np.sum(np.log(x)))
 ```
 
 # Arithmetic mean
-Equally weighted center,
+The equal-weight center,
 $$
      \hat{\mu} = \bar{x} = \left< x \right> = \frac{1}{N}\sum_i^N x_i.
 $$
 
-*can we define this differently, i.e. in a more intuitive manner?* The arithmetic mean is that in which:
-
-$$
-     x_i = \bar{x} + \delta_i.
-$$
 # Arithmetic mean code
 ```python
 def arithmetic():
@@ -51,7 +51,7 @@ def arithmetic():
 ```
 
 # Median
-The counting center point of the data
+The counting center of the data
 # Median code
 ```python
 def median():
@@ -72,15 +72,18 @@ def mode():
 ```
 
 # Harmonic
-Harmony
+$$
+     \text{Harmony} = \left[\frac{1}{n}\left(\sum_i^n \frac{1}{x_i}\right)\right]^{-1}
+$$
+
 # Harmonic code
 ```python
-def harmonic():
-     return (np.sum( arr**(-1) ) / n)**(-1)
+def harmonic(x):
+     return (np.sum( x**(-1) ) / N)**(-1)
 ```
 
 # Truncated
-Truncated
+Arithmetic mean of the data with its tails cut off.
 # Truncated code
 ```python
 def truncated():
@@ -101,13 +104,11 @@ $$
 In estimating this, we assume that we know the real mean. But in reality we dont really know this so we use:
 
 $$
-     \hat{\sigma} \approx \sqrt{
+     \hat{\sigma} \approx \tilde{\sigma} = \sqrt{
      \frac{1}{N-1}\sum_i(x_i-\bar{x})^2
      }
 $$
 we subtract 1, because something something degrees of freedom...
-
-Lets compare these:
 
 # Weighted mean
 
@@ -178,11 +179,13 @@ $$
 # Central limit theorem intro
 ##### *law of large numbers*
 
-The central limit theorem answers the question: *why do statistics in the limit of large N tend toward a Gaussian?*
-# Central limit theorem
-The sum of N independent continous random variables $x_i$ with means $\mu_i$ and variances $\sigma_i^2$ becouse a Gaussian random varianble with mean $\mu=\sum_u\mu_i$ and variance $\sigma^2 = \sim_i \sigma_i^2$ in the limit than N approaches infinity.
+The central limit theorem answers the question: *why do statistics in the limit of large N tend toward a Gaussian?* 
 
-*The distribution of numbers samples from a variety of distrutions, is gaussian given that they share variance and mean.*
+If we roll sufficiently many dice; they will naturally find a mean around 3.5;
+
+# Central limit theorem
+
+The mean of many such extravagent rolls, will often tend towards a gaussian. In fact, *The distribution of numbers samples from a variety of distributions, is Gaussian given that they share variance and mean.*
 
 # Central limit theorem 2
 ###### Combining samples from different distributions

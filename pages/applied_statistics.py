@@ -2,6 +2,10 @@ from utils.utils_appstat import *
 
 from scipy.optimize import curve_fit
 #st.markdown('<div align="center"> Hello</div>' , unsafe_allow_html=True)
+
+
+fig_counter[0] = 0
+
 def home():
     st.title('Applied statistics')
     st.image('assets/images/Stable_diffusion__Mathematician_discovering_Neptune.png', width=420)
@@ -29,29 +33,16 @@ def week1():
         cols[1].markdown(text_dict[mean_picker+' code'])
         
         '##### Demo'
+        'Select number of points from each distribution, as well as, how many to truncate.'
         
-        cols = st.columns(5)
-        n_normal = cols[0].slider("n_normal", 1, 1000, 100)
-        n_exp= cols[1].slider("n_exp", 1, 1000, 0)
-        n_cauchy= cols[2].slider("n_cauchy", 1, 1000, 0)
-        truncate = cols[3].slider("truncate", 1, 100, 1)
-        seed = cols[4].slider("seed", 1, 100, 42)
-        np.random.seed(seed)
-        normal = np.random.randn(n_normal)
-        exp = np.random.exponential(n_exp) 
-        cauchy = np.random.standard_cauchy(n_cauchy)
-        
-        arr = np.hstack([normal, exp, cauchy]).flatten()
-
-        fig = showMeans(arr, truncate)   # Perhaps change this to 2D
-        st.pyplot(fig)
+        demo_comparing_means()
 
     with st.expander('Standard Deviation', expanded=False):
-        st.markdown(text_dict['STD'])
-
-        # compare N-1 and N...
-        #if st.button('run std_calculations'):
-        st.pyplot(std_calculations())
+        cols = st.columns(2)
+        cols[0].markdown(text_dict['STD'])
+        n = 400
+        cols[1].pyplot(std_calculations(n))
+        caption_figure(f'Standard deviation with two different methods. N is the sample size, and I have done this {n} times.', cols[1])
 
 
     st.markdown(text_dict['Weighted mean'])
@@ -68,27 +59,20 @@ def week1():
         #cols[1].pyplot(roll_dice())
 
         # roll a die
-        st.pyplot(roll_a_die(2000))
-        st.caption('rolls of a die')
+        st.pyplot(roll_a_die(200))
+        caption_figure('rolls of a die')
 
         st.markdown(text_dict['Central limit theorem'])
         st.markdown(text_dict['Central limit theorem 2'])
         
         
         cols = st.columns(4)
-
         n_points = [cols[i].slider('n_'+name,10,2000, 100) for i, name in enumerate('uniform, exponential, chauchy'.split(', '))]
         n_experiments = cols[3].slider("N_experiments",1, 1000, 100)
 
-        sums = makeDistibutions(n_experi = n_experiments, 
-                                N_uni= n_points[0], 
-                                N_exp= n_points[1], 
-                                N_cauchy = n_points[2])
-
-        
+        sums = makeDistibutions(n_experiments, *n_points)
         st.pyplot(plotdists(sums))
-
-        
+        caption_figure('plots')
        
 
         # combination

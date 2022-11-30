@@ -9,8 +9,9 @@ from scipy.optimize import curve_fit
 import matplotlib as mpl
 from scipy.stats import expon, norm
 import pylab as pl
+
+
 # General
-text_path = 'assets/applied_statistics/text/'
 
 def set_rcParams():
 	"""
@@ -24,6 +25,9 @@ def set_rcParams():
 	mpl.rcParams['ytick.color'] = 'white'
 	# mpl.rcParams['axes.grid'] = True  # should we?
 	mpl.rcParams['figure.autolayout'] = True  # 'tight_layout'
+
+fig_counter = np.array([0])
+text_path = 'assets/applied_statistics/text/'
 set_rcParams()
 
 st.set_page_config(page_title="Applied Statistics", 
@@ -92,6 +96,16 @@ def makeFunc_dict(filename='utils/utils_appstat.py'):
     # omg, this was a hassel
     return func_dict_core, func_dict_extras
 
+def figNum():
+    fig_counter[0] += 1
+    return f"Figure {fig_counter[0]}: "
+
+def caption_figure(text, st=st):
+    st.caption('<div align="center">' +figNum()+ text+'</div>' , unsafe_allow_html=True)
+
+
+
+## from teachers
 def format_value(value, decimals):
     """ 
     Checks the type of a variable and formats it accordingly.
@@ -152,6 +166,8 @@ def add_text_to_ax(x_coord, y_coord, string, ax, fontsize=12, color='k'):
             transform=ax.transAxes, verticalalignment='top', color=color)
     return None
 
+
+
 ###########################################
 # week 1
 
@@ -184,7 +200,6 @@ def means(arr, truncate=1):
 			'Truncated' : truncated(arr)
 			}
 
-
 def showMeans(arr, truncate=1):
 	"""
 		on a hist, shows means
@@ -196,22 +211,41 @@ def showMeans(arr, truncate=1):
 	arr_truncated = arr[truncate:-truncate]
 	counts, bins = np.histogram(arr_truncated)
 	
-	ax.hist(arr_truncated, bins=max([10,len(arr)//50]))
+	ax.hist(arr_truncated, bins=max([15,len(arr)//40]), color='lightblue', alpha=.7)
 	colors = sns.color_palette("RdBu", 8)
 	for i, c in zip(d, colors):
 		ax.axvline(d[i], label=i, c=c)
 	#ax.legend(facecolor='beige')
 	
 	#ax.set()##xscale='log')#, yscale='log')
-	_ = [plt.text(d[key], (idx+1)*max(counts)//9 , s = key, color='white') for idx, key in enumerate(d)]
+	_ = [plt.text(d[key], (idx+1)*max(counts)//9-5 , s = key, color='purple') for idx, key in enumerate(d)]
 	plt.close()
 
 	return fig
 
+def demo_comparing_means():
+    'extra function'
+    cols = st.columns(5)
+    n_normal = cols[0].slider("n_normal", 1, 1000, 100)
+    n_exp= cols[1].slider("n_exp", 1, 1000, 0)
+    n_cauchy= cols[2].slider("n_cauchy", 1, 1000, 0)
+    truncate = cols[3].slider("truncate", 1, 100, 1)
+    seed = cols[4].slider("seed", 1, 100, 42)
+    np.random.seed(seed)
+    normal = np.random.randn(n_normal)
+    exp = np.random.exponential(n_exp) 
+    cauchy = np.random.standard_cauchy(n_cauchy)
+    
+    arr = np.hstack([normal, exp, cauchy]).flatten()
+
+    fig = showMeans(arr, truncate)   # Perhaps change this to 2D
+    st.pyplot(fig)
+    caption_figure('Different mean-metrics shown for a distribution.')
+
 
 def std_calculations(n=400):
     # extra function
-	fig, ax = plt.subplots(3,1, figsize=(8,4), sharex=True, sharey=True)
+	fig, ax = plt.subplots(3,1, figsize=(4,4), sharex=True, sharey=True)
 	for idx, N in enumerate([5,10,20]):
 		res = {'N': [], 'N-1':[]}
 		for i in range(n):
@@ -226,14 +260,21 @@ def std_calculations(n=400):
 		shared_bins = np.linspace(minmin,maxmax,20)
 		
 
-		ax[idx].hist(res['N'], bins=shared_bins, label='N', fill=True, alpha=.6,	facecolor='pink')
-		ax[idx].hist(res['N-1'],bins=shared_bins, label='N-1', fill=True, alpha=.6,		facecolor='yellow')
+		ax[idx].hist(res['N'], bins=shared_bins, label=r'$\hat{\sigma}$', fill=True, alpha=.6,	facecolor='pink')
+		ax[idx].hist(res['N-1'],bins=shared_bins, label=r'$\tilde{\sigma}$', fill=True, alpha=.6,		facecolor='yellow')
 		ax[idx].set_title(f'N={N}', color="white")
         
 		ax[idx].set(xticks=[], yticks=[])
-	ax[0].legend(facecolor='beige')
+	ax[0].legend(facecolor='black', edgecolor=None)
+	for i in ax[:1]:
+        
+		l = i.legend(fontsize=12)
+		frame = l.get_frame()
+		for text in l.get_texts():
+			text.set_color("white")
+			frame.set_edgecolor('black')
 	ax[idx].set_xlabel(r'standard devitation, $\sigma$', color='beige')
-	fig.suptitle(f'Distributions of standard deviations, n={n}', color='beige')
+	#fig.suptitle(f'Distributions of standard deviations, n={n}', color='beige')
 	plt.tight_layout()
 	plt.close()
 	return fig
