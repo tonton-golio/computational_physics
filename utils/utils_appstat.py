@@ -395,7 +395,7 @@ def chi2_demo(resolution=128):
 
         ax.view_init(20, 50)
         
-        plt.tight_layout()
+        #plt.tight_layout()
         return fig
 
     def f(x,a,b):

@@ -207,9 +207,6 @@ def week2():
 
 
 
-
-
-
 # Navigator
 topic_dict = {
     'week 1': week1,
