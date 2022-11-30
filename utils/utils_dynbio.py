@@ -18,7 +18,7 @@ text_path = 'assets/dynamical_models/text/'
 #mpl.rcParams['xtick.color'] = 'white'
 #mpl.rcParams['ytick.color'] = 'white'
 #mpl.rcParams['figure.autolayout'] = True  # 'tight_layout'
-# mpl.rcParams['axes.grid'] = True  # should we?
+#mpl.rcParams['axes.grid'] = True  # should we?
 
 
 st.set_page_config(page_title="Dynamical Models", 
