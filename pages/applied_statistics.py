@@ -6,7 +6,8 @@ def home():
     st.title('Applied statistics')
     st.image('assets/images/Stable_diffusion__Mathematician_discovering_Neptune.png', width=420)
     st.caption('Stable diffusion response to prompt: *Mathematician discovering Neptune* [[stable diffusion]](https://huggingface.co/spaces/stabilityai/stable-diffusion).')
-
+    
+    
 def week1():
     
     text_dict = getText_prep(filename = text_path+'week1.md', split_level = 1)
@@ -15,7 +16,7 @@ def week1():
     with st.expander('Week 1 description', expanded=False):
         st.markdown(text_dict['description'])
 
-    st.markdown(text_dict['Header 1'])
+    st.markdown(text_dict['Header 1'], unsafe_allow_html=True)
 
     with st.expander('Mean', expanded=False):
         st.markdown(text_dict['Mean'])
@@ -129,7 +130,8 @@ def week1():
         $$
         we have $x$, and we want ot find $a$ and $b$. Let's determine $\chi^2$ usign a grid-search. 
         """
-        Z,X,Y, fig = chi2_demo(resolution=128)
+        fig = chi2_demo(resolution=128)
+        
         st.pyplot(fig)
         st.markdown(text_dict['Links'])
     

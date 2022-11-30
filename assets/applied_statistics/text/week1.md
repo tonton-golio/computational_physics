@@ -11,10 +11,14 @@ Introduction, General Concepts, ChiSquare Method
 
 
 # Header 1
+<div align="center">
+
 *Don't worry too much about the theory, this is an **applied** course*.
+
 *We'll try to build a generally applicable `code repo`*.
 
-* The magic happens outside your comfort zone.
+*The magic happens outside your comfort zone.*
+</div>
 
 # Mean
 Mean is a metric telling us about bulk magnitude-tendency of data. 

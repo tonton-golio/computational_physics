@@ -376,25 +376,35 @@ def chi2_demo(resolution=128):
         for i, a in enumerate(a_lst):
             for j, b in enumerate(b_lst):
                 noise=  np.random.randn(len(x))
-                y_pred =  observed = f(x, a, b) + noise
+                observed = f(x, a, b) + noise
                 chi2 = np.sum((observed-expected)**2/expected)
 
                 Z[i,j] = chi2
         X, Y = np.meshgrid(a_lst, b_lst)
         return X,Y,Z
     
-    def plot(X,Y,Z):
-        fig = plt.figure(figsize=(8,5))
-        ax = plt.axes(projection='3d')
-        ax.contour3D(X, Y, Z, 100, cmap='inferno', )
+    def plot(X,Y,Z, # for contour 
+                x, y_gt, # for scatter
+                f, popt # for fit on scatter
+                ):
+        fig = plt.figure(figsize=plt.figaspect(0.5))
+
+        ax = fig.add_subplot(1, 2, 1)
+        
+        ax.plot(x,y_gt)
+
+        x_fit = np.linspace(min(x), max(x), 20)
+        ax.plot(x_fit, f(x_fit, *popt),  c='r')
+
+        ax = fig.add_subplot(1, 2, 2, projection='3d')
+        ax.contour3D(X, Y, Z, 100, cmap='gist_heat_r', )
         ax.set_xlabel('a', color='white')
         ax.set_ylabel('b', color='white')
         ax.set_zlabel(r'$\chi^2$', color='white')
 
         ax.set_title('$\chi^2$ of phasespace', color="white")
 
-        ax.view_init(20, 50)
-        
+        ax.view_init(30, 50)
         plt.tight_layout()
         return fig
 
@@ -404,12 +414,18 @@ def chi2_demo(resolution=128):
 
     size=1000
     x = np.linspace(-1,1,size) 
-    y_gt = expected = f(x, a=2, b = 4 )
+    y_gt = expected = f(x, a=2, b = 4 )+np.random.randn(size)*.2
+
     X,Y,Z = chi2_own(f, y_gt, x,
                 a_lst= np.linspace(-2,5,resolution),
                  b_lst = np.linspace(2,6,resolution))
+    popt = [X[:,np.argmin(Z)//resolution][0],
+            Y[np.argmin(Z)//resolution,:][0]
+            ]
     
-    return Z, X, Y, plot(X,Y,Z)
+    fig = plot(X,Y,Z, x, y_gt, f, popt) # for fit on scatter
+     
+    return fig
 
 
 # Week 2
