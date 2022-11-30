@@ -76,8 +76,8 @@ def week2():
     text_dict = getText_prep(filename = text_path+'week2.md', split_level = 1)
 
     # Notes
-    with st.expander('Lecture notes', expanded=False):
-        cols = st.columns(2)
+    with st.expander('Lecture notes monday', expanded=False):
+        #cols = st.columns(2)
         st.markdown(text_dict['Header 1'])
 
 
@@ -197,14 +197,42 @@ def week2():
 
 
     # excercise: entropy
-    st.markdown(r"""
-        define the entropy of a probability density 𝑓(𝑥) as: 
-        $$
-            H(f) = -\int_X f(x) \log f(x) dx
-        $$    
-        since its a pdf $\int_X f(𝑥) dx = 1$
-        """)
+    with st.expander('Excercise: entropy', expanded=False):
+        st.markdown(r"""
+            define the entropy of a probability density 𝑓(𝑥) as: 
+            $$
+                H(f) = -\int_X f(x) \log f(x) dx
+            $$    
+            since its a pdf $\int_X f(𝑥) dx = 1$
+            """)
 
+    with st.expander('Lecture notes Wednesday', expanded=False):
+        st.markdown(text_dict['Header 2'])
+
+    cols = st.columns(2)
+    cols[0].markdown(text_dict['assignment'])
+    
+
+
+    x = np.linspace(0,1, 10)
+    y = np.linspace(0,1, 10)
+    X, Y = np.meshgrid(x,y)
+    ground = np.zeros((x.shape[0],y.shape[0]))
+    ground[(.4<X) * (X<.6) * (.3<Y) * (Y<.7)] = 1
+
+    fig, ax = plt.subplots()
+    ax.imshow(ground)
+    cols[1].pyplot(fig)
+    plt.close()
+
+
+
+    speed_outside_medium = 1.
+    speed_inside_medium = .5
+
+    # rays should be angled at 45 degrees, so lets just keep dx and dy the same. This will let us travel along the matrix diagonal.
+
+    # figure out the matrix which connects this matrix of speeds with the parameters...
 
 
 # Navigator
