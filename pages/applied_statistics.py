@@ -5,9 +5,12 @@ from scipy.optimize import curve_fit
 def home():
     st.title('Applied statistics')
     st.image('assets/images/Stable_diffusion__Mathematician_discovering_Neptune.png', width=420)
-    st.caption('Stable diffusion response to prompt: *Mathematician discovering Neptune* [[stable diffusion]](https://huggingface.co/spaces/stabilityai/stable-diffusion).')
-    
-    
+    st.caption('*Mathematician discovering Neptune* [[AI-generated with stable diffusion]](https://huggingface.co/spaces/stabilityai/stable-diffusion).')
+    st.markdown("""
+        Course taught by: Troels C. Petersen. 
+
+        [course website](https://www.nbi.dk/~petersen/Teaching/AppliedStatistics2021.html)""")
+
 def week1():
     
     text_dict = getText_prep(filename = text_path+'week1.md', split_level = 1)

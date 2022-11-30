@@ -404,7 +404,8 @@ def chi2_demo(resolution=128):
 
         ax.set_title('$\chi^2$ of phasespace', color="white")
 
-        ax.view_init(30, 50)
+        ax.view_init(20, 50)
+        
         plt.tight_layout()
         return fig
 
