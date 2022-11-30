@@ -56,35 +56,18 @@ def week2():
     threshold = cols[0].slider('Dissociation constant K', 0.0, 2.0, 1.0)
     coeff = cols[1].slider('Hill coefficient H', 1, 10, 1)
 
-    x = np.linspace(0, 2, 1000)
-    y = 1.0 / (1.0 + (x/threshold)**coeff)
-    fig, ax = plt.subplots()
-    ax.plot(x, y)
-    ax.axhline(0.5, c='k', ls='--')
-    ax.axvline(threshold, c='k', ls='--')
-    ax.set_xlim(0, 2)
-    ax.set_ylim(0, 1)
-    ax.set_title("Hill function for repression")
-    ax.set_xlabel("Concentration of TF $c_\mathrm{TF}$")
-    ax.set_ylabel("Value of Hill function")
+    fig = plot_hill_function(threshold, coeff, activation=False)
     cols[0].pyplot(fig)
 
-    #x = np.linspace(0, threshold*2, 1000)
-    y = (x/threshold)**coeff / (1.0 + (x/threshold)**coeff)
-    fig, ax = plt.subplots()
-    ax.plot(x, y)
-    ax.axhline(0.5, c='k', ls='--')
-    ax.axvline(threshold, c='k', ls='--')
-    ax.set_xlim(0, 2)
-    ax.set_ylim(0, 1)
-    ax.set_title("Hill function for activation")
-    ax.set_xlabel("Concentration of TF $c_\mathrm{TF}$")
-    ax.set_ylabel("Value of Hill function")
+    fig = plot_hill_function(threshold, coeff, activation=True)
     cols[1].pyplot(fig)
 
     name = 'Transcriptional regulation: sRNA'
     with st.expander(name, expanded=False):
         st.markdown(text_dict[name])
+
+    #fig = srna_simulation()
+    #st.pyplot(fig)
 
 def week3():
     text_dict = getText_prep(filename = text_path+'week3.md', split_level = 1)
