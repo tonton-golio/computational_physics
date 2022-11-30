@@ -242,11 +242,19 @@ def std_calculations(n=400):
 def roll_a_die(num=100):
     # extra function
     x = np.random.randint(1,7,num)
-    fig, ax = plt.subplots(figsize=(5,4))
     means = [np.mean(x[:n]) for n in range(2, num)]
+
+    fig, ax = plt.subplots(1, 2, figsize=(6,2))
     
-    ax.scatter(range(2, num), means, c='pink', alpha=.7)
-    ax.set(xlabel='number of rolls in mean', ylabel='mean')
+    ax[0].hist(x, bins=np.arange(1,7, 0.5), color='pink', alpha=.5)
+    ax[0].set_xticks(np.arange(1,7)+.25, np.arange(1,7))
+    ax[0].set_xlabel('roll', color='white')
+    ax[0].set_ylabel('freq', color='white')
+
+    ax[1].plot(range(2, num), means, c='r', alpha=.7)
+    ax[1].set_xlabel('number of rolls in mean', color='white')
+    ax[1].set_ylabel('mean', color='white')
+    
     plt.close()
     return fig
 
@@ -296,8 +304,9 @@ def plotdists(sums, N_bins = 100):
     # extra function
 	fig, ax = plt.subplots(1,4,figsize = (8,4))
 	for i, (s, name) in enumerate(zip(sums, ['uni', 'exp', 'chauchy','combined'])):
-		ax[i].hist( s, bins=N_bins , histtype='step')
-		ax[i].set_title(name)
+		ax[i].hist( s, bins=N_bins , histtype='step', 
+                        color='pink', alpha=.4)
+		ax[i].set_title(name, color='beige')
 		ax[i].set(yticks=[], ylim=(0,ax[i].get_ylim()[1]*1.2 ))
 		
 		text = {'mean':s.mean(),
@@ -308,7 +317,7 @@ def plotdists(sums, N_bins = 100):
 	N_scale = (max(s)-min(s)) / N_bins            # The scale factor between histogram and the fit. Takes e.g. bin width into account.
 	x_gauss = np.linspace(min(s), max(s), 1000)   # Create the x-axis for the plot of the fitted function
 	y_gauss = N_scale*gauss_extended(x_gauss, len(s), 0, 1)                   # Unit Gaussian
-	ax[3].plot(x_gauss, y_gauss, '-', color='blue', label='Unit Gauss (no fit)') 
+	ax[3].plot(x_gauss, y_gauss, '-', color='cyan', label='Unit Gauss (no fit)') 
 
 	plt.tight_layout()
 	plt.close()
@@ -365,7 +374,7 @@ def gauss_extended(x, N, mu, sigma):
 	"""Non-normalized Gaussian"""
 	return N * gauss_pdf(x, mu, sigma)
 
-def chi2_demo(resolution=128):
+def chi2_demo(resolution=128, n_samples=10):
 
     def chi2_own(f, y_gt, x,
                 a_lst= np.linspace(-2,5,resolution), 
@@ -391,37 +400,44 @@ def chi2_demo(resolution=128):
 
         ax = fig.add_subplot(1, 2, 1)
         
-        ax.plot(x,y_gt)
+        ax.scatter(x,y_gt, marker='x', s=42, c='cyan')
+
+        text = {'RMSE':sum((y_gt - f(x, *popt))**2)**.5,
+                }
+        text = nice_string_output(text, extra_spacing=2, decimals=3)
+        add_text_to_ax(0.1, 0.97, text, ax, fontsize=12, color='white')
+		
 
         x_fit = np.linspace(min(x), max(x), 20)
         ax.plot(x_fit, f(x_fit, *popt),  c='r')
 
         ax = fig.add_subplot(1, 2, 2, projection='3d')
-        ax.contour3D(X, Y, Z, 100, cmap='gist_heat_r', )
+        ax.contour3D(X, Y, Z, 100, cmap='gist_heat_r', alpha=.5)
         ax.set_xlabel('a', color='white')
         ax.set_ylabel('b', color='white')
         ax.set_zlabel(r'$\chi^2$', color='white')
 
+
         ax.set_title('$\chi^2$ of phasespace', color="white")
 
-        ax.view_init(20, 50)
+        ax.view_init(30, 50)
         
         plt.tight_layout()
+        fig.set_facecolor('black')
         return fig
 
     def f(x,a,b):
         return a*x+b
     
 
-    size=1000
-    x = np.linspace(-1,1,size) 
-    y_gt = expected = f(x, a=2, b = 4 )+np.random.randn(size)*.2
+    x = np.linspace(-1,1,n_samples) 
+    y_gt = expected = f(x, a=2, b = 4 )+np.random.randn(n_samples)*.2
 
     X,Y,Z = chi2_own(f, y_gt, x,
                 a_lst= np.linspace(-2,5,resolution),
                  b_lst = np.linspace(2,6,resolution))
     popt = [X[:,np.argmin(Z)//resolution][0],
-            Y[np.argmin(Z)//resolution,:][0]
+            Y[np.argmin(Z)%resolution,:][0]
             ]
     
     fig = plot(X,Y,Z, x, y_gt, f, popt) # for fit on scatter

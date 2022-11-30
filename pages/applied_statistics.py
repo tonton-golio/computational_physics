@@ -1,7 +1,7 @@
 from utils.utils_appstat import *
 
 from scipy.optimize import curve_fit
-
+#st.markdown('<div align="center"> Hello</div>' , unsafe_allow_html=True)
 def home():
     st.title('Applied statistics')
     st.image('assets/images/Stable_diffusion__Mathematician_discovering_Neptune.png', width=420)
@@ -18,8 +18,6 @@ def week1():
     st.header(text_dict['title'])
     with st.expander('Week 1 description', expanded=False):
         st.markdown(text_dict['description'])
-
-    st.markdown(text_dict['Header 1'], unsafe_allow_html=True)
 
     with st.expander('Mean', expanded=False):
         st.markdown(text_dict['Mean'])
@@ -48,7 +46,6 @@ def week1():
         fig = showMeans(arr, truncate)   # Perhaps change this to 2D
         st.pyplot(fig)
 
-
     with st.expander('Standard Deviation', expanded=False):
         st.markdown(text_dict['STD'])
 
@@ -64,17 +61,17 @@ def week1():
 
     with st.expander('Central limit theorem', expanded=False):
         
-        cols = st.columns(2)
-        cols[0].markdown(text_dict['Central limit theorem'])
+        
+        st.markdown(text_dict['Central limit theorem intro'])
         
         # roll dice
         #cols[1].pyplot(roll_dice())
 
         # roll a die
-        cols[1].pyplot(roll_a_die(420))
-        cols[1].caption('rolls of a die')
+        st.pyplot(roll_a_die(2000))
+        st.caption('rolls of a die')
 
-    
+        st.markdown(text_dict['Central limit theorem'])
         st.markdown(text_dict['Central limit theorem 2'])
         
         
@@ -133,7 +130,10 @@ def week1():
         $$
         we have $x$, and we want ot find $a$ and $b$. Let's determine $\chi^2$ usign a grid-search. 
         """
-        fig = chi2_demo(resolution=128)
+        cols=st.columns(2)
+        resolution = cols[1].slider('resolution', 10, 100, 12)
+        n_samples = cols[0].slider('n_points', 10, 100, 12)
+        fig = chi2_demo(resolution=resolution, n_samples=n_samples)
         
         st.pyplot(fig)
         st.markdown(text_dict['Links'])
