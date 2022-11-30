@@ -81,6 +81,131 @@ def week2():
         st.markdown(text_dict['Header 1'])
 
 
+    # Ex
+    with st.expander('Excercise: The Good, The Bad, and The Ugly ', expanded=False):
+        st.markdown("""
+            ## Error Propagation in Inverse Problems 
+            ### The Good, The Bad, and The Ugly 
+
+            $$
+                d = Gm
+            $$
+            """)
+
+        inv = np.linalg.inv
+
+        cols = st.columns(3)
+
+        
+        G = np.array([[1.0, 0.0],[0.0, 0.7]])
+        rank = np.linalg.matrix_rank(G)
+
+        d_pure = np.array([[0.500],[0.001]])
+        m_pure = inv(G)@d_pure
+        
+        cols[0].write('#### The good')
+        cols[0].write(r"""The matrix $G$ """)
+        cols[0].write(G) 
+        cols[0].write(f"""has rank= {rank}"""),
+        cols[0].write(r"""Given the data, $d_\text{pure}$""")
+        cols[0].write(d_pure)
+        cols[0].write(r"we obtain the parameter vector $m_\text{pure}$ : ")
+        cols[0].write(m_pure)
+
+        cols[0].write('##### Now lets add some noise:')
+        n = np.array([[0.008],[0.011]])
+        n_norm = np.linalg.norm(n)
+        cols[0].write('n_norm')
+        cols[0].write(n_norm)
+
+        d_norm = np.linalg.norm(d_pure)
+
+
+        cols[0].write('signal to noise ratio: ')
+        cols[0].write(d_norm/n_norm)
+
+
+        d = d_pure + n
+
+        m = inv(G) @ d
+        cols[0].write('m:')
+        cols[0].write(m)
+
+        propagated_noise = np.linalg.norm(m - m_pure)
+        cols[0].write('propagated_noise')
+        cols[0].write(propagated_noise)
+        cols[0].write('ratio')
+        cols[0].write(propagated_noise/np.linalg.norm(m_pure))
+
+
+        # The bad
+        cols[1].write('#### The bad')
+        G_B = np.array([[1.0, 0.0],[0.002, 0.0]])
+        rank = np.linalg.matrix_rank(G_B)
+
+        d_pure = np.array([[0.500],[0.001]])
+        m_pure = inv(G) @ d_pure
+        
+        cols[1].write(r"""The matrix $G_B$ """)
+        cols[1].write(G_B) 
+        cols[1].write(f"""has rank= {rank}"""),
+        cols[1].write(r"""Given the data, $d_\text{pure}$""")
+        cols[1].write(d_pure)
+        cols[1].write(r"we obtain the parameter vector $m_\text{pure}$ : ")
+        cols[1].write(m_pure)
+
+
+        cols[2].write('#### The ugly')
+        G = np.array([[1.0, 0.0],[0.002, 10e-24]])
+        rank = np.linalg.matrix_rank(G)
+
+        d_pure = np.array([[0.500],[0.001]])
+        m_pure = inv(G)@d_pure
+        
+        cols[2].write(r"""The matrix $G$ """)
+        cols[2].write(G) 
+        cols[2].write(f"""has rank= {rank}"""),
+        cols[2].write(r"""Given the data, $d_\text{pure}$""")
+        cols[2].write(d_pure)
+        cols[2].write(r"we obtain the parameter vector $m_\text{pure}$ : ")
+        cols[2].write(m_pure)
+
+        cols[2].write('##### Now lets add some noise:')
+        n = np.array([[0.008],[0.011]])
+        n_norm = np.linalg.norm(n)
+        cols[2].write('n_norm')
+        cols[2].write(n_norm)
+
+        d_norm = np.linalg.norm(d_pure)
+
+
+        cols[2].write('signal to noise ratio: ')
+        cols[2].write(d_norm/n_norm)
+
+
+        d = d_pure + n
+
+        m = inv(G) @ d
+        cols[2].write('m:')
+        cols[2].write(m)
+
+        propagated_noise = np.linalg.norm(m - m_pure)
+        cols[2].write('propagated_noise')
+        cols[2].write(propagated_noise)
+        cols[2].write('ratio')
+        cols[2].write(propagated_noise/np.linalg.norm(m_pure))
+
+
+    # excercise: entropy
+    st.markdown(r"""
+        define the entropy of a probability density 𝑓(𝑥) as: 
+        $$
+            H(f) = -\int_X f(x) \log f(x) dx
+        $$    
+        since its a pdf $\int_X f(𝑥) dx = 1$
+        """)
+
+
 
 
 
