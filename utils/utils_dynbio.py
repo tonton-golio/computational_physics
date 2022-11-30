@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 import seaborn as sns
 import pandas as pd    
-from scipy.integrate import odeint
+#from scipy.integrate import odeint
 
 # General
 
@@ -150,6 +150,7 @@ def plot_hill_function(threshold, coeff, activation=True):
     return fig
 
 ## Solving ODE
+'''
 def srna_simulation():
     def model(x, t, k_mRNA, g_mRNA, k_pro, g_pro, k_sRNA, g_sRNA, delta):
         # x[0] is the concentration of mRNA,m, and 
@@ -200,6 +201,7 @@ n
     ax.legend(frameon=False)
     sns.despine()
     return fig
+'''
 
 
 
