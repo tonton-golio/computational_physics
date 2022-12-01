@@ -30,7 +30,7 @@ fig_counter = np.array([0])
 text_path = 'assets/applied_statistics/text/'
 set_rcParams()
 
-st.set_page_config(page_title="Applied Statistics", 
+st.set_page_config(page_title="help wanted", 
     page_icon="🧊", 
     layout="wide", 
     initial_sidebar_state="collapsed", 
