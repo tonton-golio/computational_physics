@@ -263,7 +263,7 @@ def std_calculations(n=400):
 		
 
 		ax[idx].hist(res['N'], bins=shared_bins, label=r'$\hat{\sigma}$', fill=True, alpha=.6,	facecolor='pink')
-		ax[idx].hist(res['N-1'],bins=shared_bins, label=r'$tilde{\sigma}$', fill=True, alpha=.6,		facecolor='yellow')
+		ax[idx].hist(res['N-1'],bins=shared_bins, label=r'$\tilde{\sigma}$', fill=True, alpha=.6,		facecolor='yellow')
 		ax[idx].set_title(f'N={N}', color="white")
         
 		ax[idx].set(xticks=[], yticks=[])
@@ -397,10 +397,10 @@ def demoArea():
 
     ax[0].scatter(Ws, np.random.uniform(0,L, size=size),
                     color='yellow', alpha=.2)
-    ax[0].set_xlabel('Width', color='black', fontsize=15)
-    ax[0].set_ylabel('Length', color='black', fontsize=15)
+    ax[0].set_xlabel('Width', color='white', fontsize=15)
+    ax[0].set_ylabel('Length', color='white', fontsize=15)
 
-    ax[1].set_title('AREA dist')
+    ax[1].set_title('AREA dist', color='white')
     ax[1].hist(Ws*Ls)
     st.pyplot(fig)
 
@@ -472,21 +472,21 @@ def chi2_demo(resolution=128, n_samples=10):
         fig.set_facecolor('black')
         return fig
 
-    def f(x,a,b):
+    def f1(x,a,b):
         return a*x+b
     
 
     x = np.linspace(-1,1,n_samples) 
-    y_gt = expected = f(x, a=2, b = 4 )+np.random.randn(n_samples)*.2
+    y_gt = expected = f1(x, a=2, b = 4 )+np.random.randn(n_samples)*.2
 
-    X,Y,Z = chi2_own(f, y_gt, x,
+    X,Y,Z = chi2_own(f1, y_gt, x,
                 a_lst= np.linspace(-2,5,resolution),
                  b_lst = np.linspace(2,6,resolution))
     popt = [X[:,np.argmin(Z)//resolution][0],
             Y[np.argmin(Z)%resolution,:][0]
             ]
     
-    fig = plot(X,Y,Z, x, y_gt, f, popt) # for fit on scatter
+    fig = plot(X,Y,Z, x, y_gt, f1, popt) # for fit on scatter
      
     return fig
 
@@ -514,18 +514,19 @@ def chi2_minimizer(f, x, y_gt, p0,h=0.01,
             chi2_grad[idx], _   = chi2_of_f(x, y_gt,f, p_tmp)
 
         chi2_grad -= chi2_
-        chi2_grad /= h
+        chi2_grad /= h 
 
         
-        return chi2_grad
+        return chi2_grad, chi2_
 
     def minimize(f, x, y_gt, p0 = np.array([2.5, 3.0]),h=0.01, 
-                    lr = .1, tol=.5, max_fev=400):
+                    lr = .1, tol=.05, max_fev=400):
         popt = p0.copy()
-        grad = 9 ; i =0
+        grad = 9 ; i =0 ; chi2_=9
         #print(popt)
-        while np.linalg.norm(grad)>tol and (i < max_fev):
-            grad =  getGrad(f, x, y_gt, popt, h=h)
+        #while np.linalg.norm(grad)>
+        while (chi2_>tol) and (i < max_fev):
+            grad, chi2_ =  getGrad(f, x, y_gt, popt, h=h)
             #print(grad)
             popt = popt - lr * grad
             i += 1
@@ -539,7 +540,7 @@ def chi2_minimizer(f, x, y_gt, p0,h=0.01,
     return chi2_val, popt
 
 def chi2_demo_2(f, p_true, p0,n_samples, noise_scale=0.2,
-            h=0.01, lr = .1, tol=.05, max_fev=400):
+            h=0.01, lr = .1, tol=.02, max_fev=400):
 
     # extra function
     # define data

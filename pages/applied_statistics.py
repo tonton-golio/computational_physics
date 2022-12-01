@@ -119,18 +119,28 @@ def week1():
     cols = st.columns(2)
 
     ezfuncs = {
-        'linear' : lambda x, a, b : a*x**1+b,
-        'parabolic' : lambda x, a, b : a*x**2+b,
-        'poly 3' : lambda x, a, b : a*x**3+b,
-        'sine' : lambda x, a, b: a*np.sin(b+x)
+        'linear' : {'func' : lambda x, a, b : a*x**1+b,
+                    'p0' : np.array([1.5,2.7]),
+                    'ptrue' : np.array([-2,10])},
+        'parabolic' : {'func' :lambda x, a, b : a*x**2+b,
+                    'p0' : np.array([-3,6]),
+                    'ptrue' : [3,5]},
+        'poly3' : {'func' : lambda x, a, b, c: a*x**3 + b*x**2 + c*x,
+                    'p0' : np.array([1,2,5]),
+                    'ptrue' : np.array([5,2,-4])},
+        'sine' : {'func' : lambda x, a, b: a*np.sin(b+x),
+                    'p0' : np.array([1.1,1.5]),
+                    'ptrue' : np.array([1,1])},
         }
-    f = ezfuncs[cols[0].radio('function', ezfuncs.keys())]
+    f_dict = ezfuncs[cols[0].radio('function', ezfuncs.keys())]
+    f = f_dict['func']
+    p0 = f_dict['p0']
+    p_true = f_dict['ptrue']
 
     n_samples = cols[0].slider('n_samples', 3,25,10)
     noise_scale = cols[0].slider('noise_scale', 0.0,1.,.2)
-    fig = chi2_demo_2(f,p_true=[1,2], p0 = np.array([2.5, 3.0]), 
-                    n_samples=n_samples, noise_scale=noise_scale,
-                    h=0.01, lr = 0.01, tol=.05, max_fev=400)
+    fig = chi2_demo_2(f,p_true, p0, n_samples, noise_scale,
+                    h=0.1, lr = 0.1, tol=.1, max_fev=500)
     cols[1].pyplot(fig)
     with st.expander('Links', expanded=True):
         st.markdown(text_dict['Links'])
