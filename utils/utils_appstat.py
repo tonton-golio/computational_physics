@@ -263,7 +263,7 @@ def std_calculations(n=400):
 		
 
 		ax[idx].hist(res['N'], bins=shared_bins, label=r'$\hat{\sigma}$', fill=True, alpha=.6,	facecolor='pink')
-		ax[idx].hist(res['N-1'],bins=shared_bins, label=r'$\tilde{\sigma}$', fill=True, alpha=.6,		facecolor='yellow')
+		ax[idx].hist(res['N-1'],bins=shared_bins, label=r'$tilde{\sigma}$', fill=True, alpha=.6,		facecolor='yellow')
 		ax[idx].set_title(f'N={N}', color="white")
         
 		ax[idx].set(xticks=[], yticks=[])
