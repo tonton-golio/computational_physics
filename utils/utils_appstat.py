@@ -10,6 +10,8 @@ import matplotlib as mpl
 from scipy.stats import expon, norm
 import pylab as pl
 
+# physics with python live stream @ https://www.twitch.tv/iamtontonton
+
 
 # General
 
@@ -104,7 +106,6 @@ def figNum():
 def caption_figure(text, st=st):
     # extra function
     st.caption('<div align="center">' +figNum()+ text+'</div>' , unsafe_allow_html=True)
-
 
 
 ## from teachers
@@ -486,6 +487,79 @@ def chi2_demo(resolution=128, n_samples=10):
     fig = plot(X,Y,Z, x, y_gt, f, popt) # for fit on scatter
      
     return fig
+
+# new chi2
+def chi2_minimizer(f, x, y_gt, p0,h=0.01, 
+                    lr = .1, tol=.05, max_fev=400):
+    def chi2(y_pred, y_gt):
+        #print(y_pred.shape, y_gt.shape)
+        return np.sum((y_pred-y_gt)**2/y_gt)
+
+    def chi2_of_f(x, y_gt,f, p):
+        y_pred = f(x, *p)
+        #print(y_pred.shape, y_gt.shape)
+        return chi2(y_pred, y_gt), y_pred
+
+    def getGrad(f, x, y_gt, p0, h=0.01):
+        # determine gradient
+        chi2_, y_p0 = chi2_of_f(x, y_gt,f, p0)
+
+        chi2_grad = np.zeros(len(p0))#np.array([dC_da, dC_db])
+        for idx, pi in enumerate(p0):
+            p_tmp = p0.copy()
+            #print(p_tmp)
+            p_tmp[idx] += h
+            chi2_grad[idx], _   = chi2_of_f(x, y_gt,f, p_tmp)
+
+        chi2_grad -= chi2_
+        chi2_grad /= h
+
+        
+        return chi2_grad
+
+    def minimize(f, x, y_gt, p0 = np.array([2.5, 3.0]),h=0.01, 
+                    lr = .1, tol=.5, max_fev=400):
+        popt = p0.copy()
+        grad = 9 ; i =0
+        #print(popt)
+        while np.linalg.norm(grad)>tol and (i < max_fev):
+            grad =  getGrad(f, x, y_gt, popt, h=h)
+            #print(grad)
+            popt = popt - lr * grad
+            i += 1
+        
+        print(i)
+        return popt
+
+
+    popt = minimize(f, x, y_gt, p0,h, lr, tol, max_fev)
+    chi2_val, y_pred = chi2_of_f(x, y_gt,f, popt)
+    return chi2_val, popt
+
+def chi2_demo_2(f, p_true, p0,n_samples, noise_scale=0.2,
+            h=0.01, lr = .1, tol=.05, max_fev=400):
+    # define data
+    x = np.linspace(-1,1,n_samples) # where is the function located
+    noise =  np.random.normal(loc=0, scale=noise_scale, size=n_samples)
+    y_gt = expected = f(x, *p_true ) + noise
+    #print("y_gt.shape",y_gt.shape)
+    chi2_val, popt = chi2_minimizer(f, x, y_gt, p0,h, 
+                        lr, tol, max_fev)
+    
+    fig = plt.figure()
+    plt.scatter(x, y_gt, label='data')
+
+    x_plot = np.linspace(min(x), max(x), 100)
+    plt.plot(x_plot,f(x_plot, *p0), label='initial guess')
+    plt.plot(x_plot,f(x_plot, *popt), label=f'popt, $\chi^2=${round(chi2_val, 3)}')
+
+    l = plt.legend(fontsize=12)
+    frame = l.get_frame()
+    for text in l.get_texts():
+        text.set_color("white")
+        frame.set_edgecolor('black')
+    return fig
+
 
 
 # Week 2

@@ -113,6 +113,25 @@ def week1():
         fig = chi2_demo(resolution=resolution, n_samples=n_samples)
         
         st.pyplot(fig)
+
+
+    
+    cols = st.columns(2)
+
+    ezfuncs = {
+        'linear' : lambda x, a, b : a*x**1+b,
+        'parabolic' : lambda x, a, b : a*x**2+b,
+        'poly 3' : lambda x, a, b : a*x**3+b,
+        'sine' : lambda x, a, b: a*np.sin(b+x)
+        }
+    f = ezfuncs[cols[0].radio('function', ezfuncs.keys())]
+
+    n_samples = cols[0].slider('n_samples', 3,25,10)
+    noise_scale = cols[0].slider('noise_scale', 0.0,1.,.2)
+    fig = chi2_demo_2(f,p_true=[1,2], p0 = np.array([2.5, 3.0]), 
+                    n_samples=n_samples, noise_scale=noise_scale,
+                    h=0.01, lr = 0.01, tol=.05, max_fev=400)
+    cols[1].pyplot(fig)
     with st.expander('Links', expanded=True):
         st.markdown(text_dict['Links'])
     
