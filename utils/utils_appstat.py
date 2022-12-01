@@ -412,14 +412,16 @@ def gauss_pdf(x, mu, sigma):
 
 def gauss_pdf_scaled(x, mu, sigma, a):
 	"""Normalized Gaussian"""
+    # extra function
 	return a * gauss_pdf(x, mu, sigma)
 
 def gauss_extended(x, N, mu, sigma):
 	"""Non-normalized Gaussian"""
+    # extra function
 	return N * gauss_pdf(x, mu, sigma)
 
 def chi2_demo(resolution=128, n_samples=10):
-
+    # extra function
     def chi2_own(f, y_gt, x,
                 a_lst= np.linspace(-2,5,resolution), 
                 b_lst = np.linspace(2,6,resolution)): 
@@ -538,6 +540,8 @@ def chi2_minimizer(f, x, y_gt, p0,h=0.01,
 
 def chi2_demo_2(f, p_true, p0,n_samples, noise_scale=0.2,
             h=0.01, lr = .1, tol=.05, max_fev=400):
+
+    # extra function
     # define data
     x = np.linspace(-1,1,n_samples) # where is the function located
     noise =  np.random.normal(loc=0, scale=noise_scale, size=n_samples)
@@ -551,7 +555,7 @@ def chi2_demo_2(f, p_true, p0,n_samples, noise_scale=0.2,
 
     x_plot = np.linspace(min(x), max(x), 100)
     plt.plot(x_plot,f(x_plot, *p0), label='initial guess')
-    plt.plot(x_plot,f(x_plot, *popt), label=f'popt, $\chi^2=${round(chi2_val, 3)}')
+    plt.plot(x_plot,f(x_plot, *popt), label=fr'popt, $\chi^2=${round(chi2_val, 3)}')
 
     l = plt.legend(fontsize=12)
     frame = l.get_frame()
