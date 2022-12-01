@@ -97,10 +97,12 @@ def makeFunc_dict(filename='utils/utils_appstat.py'):
     return func_dict_core, func_dict_extras
 
 def figNum():
+    # extra function
     fig_counter[0] += 1
     return f"Figure {fig_counter[0]}: "
 
 def caption_figure(text, st=st):
+    # extra function
     st.caption('<div align="center">' +figNum()+ text+'</div>' , unsafe_allow_html=True)
 
 
@@ -224,7 +226,7 @@ def showMeans(arr, truncate=1):
 	return fig
 
 def demo_comparing_means():
-    'extra function'
+    # extra function
     cols = st.columns(5)
     n_normal = cols[0].slider("n_normal", 1, 1000, 100)
     n_exp= cols[1].slider("n_exp", 1, 1000, 0)
@@ -241,7 +243,6 @@ def demo_comparing_means():
     fig = showMeans(arr, truncate)   # Perhaps change this to 2D
     st.pyplot(fig)
     caption_figure('Different mean-metrics shown for a distribution.')
-
 
 def std_calculations(n=400):
     # extra function
@@ -288,7 +289,8 @@ def roll_a_die(num=100):
     fig, ax = plt.subplots(1, 2, figsize=(6,2))
     
     ax[0].hist(x, bins=np.arange(1,7, 0.5), color='pink', alpha=.5)
-    ax[0].set_xticks(np.arange(1,7)+.25, np.arange(1,7))
+    ax[0].set_xticks(np.arange(1,7)+.25)
+    ax[0].set_xticklabels(np.arange(1,7))
     ax[0].set_xlabel('roll', color='white')
     ax[0].set_ylabel('freq', color='white')
 

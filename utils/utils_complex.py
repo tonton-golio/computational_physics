@@ -13,7 +13,7 @@ except: pass
 import sys; sys.setrecursionlimit(150000)
 
 # Stremlit layout
-st.set_page_config(page_title="Scientific Computing", 
+st.set_page_config(page_title="Complex Physics", 
     page_icon="🧊", 
 	layout="centered", 
 	initial_sidebar_state="collapsed", 

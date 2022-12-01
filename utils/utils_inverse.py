@@ -11,7 +11,7 @@ from scipy.constants import gravitational_constant
 
 text_path = 'assets/inverse_problems/text/'
 
-st.set_page_config(page_title="Applied Statistics", 
+st.set_page_config(page_title="plt contribute", 
     page_icon="🧊", 
     layout="wide", 
     initial_sidebar_state="collapsed", 
