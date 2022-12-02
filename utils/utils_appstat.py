@@ -281,6 +281,11 @@ def std_calculations(n=400):
 	plt.close()
 	return fig
 
+def weightedMean(measurements, uncertainties):
+    x = measurements
+    sigs = uncertainties 
+    return sum([x_i/s_i**2 for x_i, s_i in zip(x, sigs)]) / sum([s_i**(-2) for s_i in sigs])
+
 
 def roll_a_die(num=100):
     # extra function
