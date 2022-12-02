@@ -734,6 +734,7 @@ def evalv_likelihood_fit(mu, sig, L,  sample_size, N_random_sample_runs=10,nbins
 
     return fig, prob_worse
 
+
 # Week 6
 def makeBlobs(size=100):
 	'''
