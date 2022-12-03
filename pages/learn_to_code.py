@@ -2,15 +2,15 @@ import streamlit as st
 import importlib
 
 import matplotlib. pyplot as plt
-import numpy as np # for now
-from numpy import mean
-from numpy.random import uniform,normal
+from numpy import mean, vstack, array, argmin
+from numpy.random import uniform, normal
 from seaborn import load_dataset
 
 
-# further functionality
-# check answers
-# save user answers
+# Further functionality
+# * check answers
+# * save user answers
+
 
 def getText_prep(filename = 'assets/learn_to_code/initial.md', split_level = 1):
 	"""
@@ -24,7 +24,6 @@ def getText_prep(filename = 'assets/learn_to_code/initial.md', split_level = 1):
                 "\n".join(i.split("\n")[1:]) for i in level_topics}
     
 	return text_dict  
-
 
 def code_interpreter(level, cols):
     def take_user_input(st=st):
@@ -61,7 +60,7 @@ def code_interpreter(level, cols):
     string = format_user_code(user_code)
     str2py(string)
 
-def run(cols):
+def run():
     try:
         import tmp  # import python file
         importlib.reload(tmp)
@@ -74,8 +73,6 @@ def run(cols):
     except OverflowError:
         return """Error: OverflowError\n you seem to have made a number greater than $2^{127}$. For more info see *scientific computing week 1*."""
     return tmp.fun
-    ####
-    
     
     
 # Levels
@@ -91,7 +88,7 @@ def helloWorld():
     code_interpreter(level, cols)
 
     cols[1].caption('output:')
-    if cols[1].button('run'): run(cols)(st=cols[1])
+    if cols[1].button('run'): run()(st=cols[1])
 
 def variables():
     key = 'Variables'
@@ -105,7 +102,7 @@ def variables():
     code_interpreter(level, cols)
 
     cols[1].caption('output:')
-    if cols[1].button('run'): run(cols)(st=cols[1])
+    if cols[1].button('run'): run()(st=cols[1])
     
 def operators():
     key = 'Operators'
@@ -119,7 +116,7 @@ def operators():
     code_interpreter(level, cols)
 
     cols[1].caption('output:')
-    if cols[1].button('run'): run(cols)(st=cols[1])
+    if cols[1].button('run'): run()(st=cols[1])
 
 def forLoops():
     key = 'For-loops'
@@ -133,7 +130,7 @@ def forLoops():
     code_interpreter(level, cols)
 
     cols[1].caption('output:')
-    if cols[1].button('run'): run(cols)(st=cols[1])
+    if cols[1].button('run'): run()(st=cols[1])
     
 def functions():
     key = 'Functions'
@@ -147,8 +144,7 @@ def functions():
     code_interpreter(level, cols)
 
     cols[1].caption('output:')
-    if cols[1].button('run'): run(cols)(st=cols[1])
-
+    if cols[1].button('run'): run()(st=cols[1])
 
 def bubbleSort():
     key = 'Bubble-sort'
@@ -162,8 +158,7 @@ def bubbleSort():
     code_interpreter(level, cols)
 
     cols[1].caption('output:')
-    if cols[1].button('run'): run(cols)(st=cols[1])
-    
+    if cols[1].button('run'): run()(st=cols[1])
      
 def kMeans():
     key = 'kMeans'
@@ -182,10 +177,10 @@ def kMeans():
     ## init
     x = uniform(0,1,(100,2))
     x = load_dataset('iris').values[:,:2]
-    cs = np.vstack([normal(loc=mean(x, axis=0)[0], scale = .1, size=3),
+    cs = vstack([normal(loc=mean(x, axis=0)[0], scale = .6, size=3),
                     normal(loc=mean(x, axis=0)[1], scale = .1, size=3)]).T
     
-    if cols[1].button('run'): run(cols)(st=cols[1], x=x)
+    if cols[1].button('run'): run()(st=cols[1], x=x)
     
     if st.button('Show solution'):
         st.markdown(text_dict['kMeans solution'])
@@ -193,11 +188,11 @@ def kMeans():
         # solution
         fig, ax = plt.subplots(1,5, figsize=(16,4))
         for i in range(5):
-            d2c = np.array([(x-c)**2 for c in cs]).sum(axis=2).T  # ditance to centroids
-            aff = np.argmin(d2c, axis=1)
+            d2c = array([(x-c)**2 for c in cs]).sum(axis=2).T  # ditance to centroids
+            aff = argmin(d2c, axis=1)
             
             # update cs
-            cs = np.array([np.mean(x[aff == a], axis=0) for a in set(aff)])
+            cs = array([mean(x[aff == a], axis=0) for a in set(aff)])
 
             for a in set(aff):
                 xa = x[aff==a]
@@ -236,7 +231,6 @@ level_dict = {
     6 : kMeans,
 }
 
-lvl = -1
 level = cols[1].select_slider('select level', level_dict.keys())
 
 f = level_dict[level]; f()

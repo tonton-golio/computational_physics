@@ -54,3 +54,4 @@ for i in range(5):
     # update centroids
     cs = np.array([np.mean(x[aff == a], axis=0) for a in set(aff)])
 ```
+
