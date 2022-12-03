@@ -1,7 +1,16 @@
 import streamlit as st
 import importlib
-from numpy.random import uniform
 
+import matplotlib. pyplot as plt
+import numpy as np # for now
+from numpy import mean
+from numpy.random import uniform,normal
+from seaborn import load_dataset
+
+
+# further functionality
+# check answers
+# save user answers
 
 def getText_prep(filename = 'assets/learn_to_code/initial.md', split_level = 1):
 	"""
@@ -16,9 +25,11 @@ def getText_prep(filename = 'assets/learn_to_code/initial.md', split_level = 1):
     
 	return text_dict  
 
-def code_interpreter(level = 1, args = [None, None, None]):
+
+def code_interpreter(level, cols):
     def take_user_input(st=st):
         user_code = st.text_area('Python input here:'+' '*level)
+        st.caption('Ctrl+Enter to render')
         st.code(user_code)
         return user_code
 
@@ -43,83 +54,189 @@ def code_interpreter(level = 1, args = [None, None, None]):
     def str2py(string): # save to python file
         with open("tmp"+'.py', 'w') as the_file:
                 the_file.write(string)
-
-    def run():
-        try:
-            import tmp  # import python file
-            importlib.reload(tmp)
-            tmp.fun(st=cols[1], x=uniform(0,1,100))   # run and display
-        except SyntaxError:
-            cols[1].write('Error: SyntaxError')
-        except NameError:
-            cols[1].write('Error: NameError')
-        except KeyError:
-            cols[1].write('Error: KeyError')
-        except OverflowError:
-            cols[1].write("""Error: OverflowError\n you seem to have made a number greater than $2^{127}$. For more info see *scientific computing week 1*.""") 
-
-    ####
-    cols = st. columns(2)
-
     # User input --> .py file
     user_code = take_user_input(cols[0])
     if firewall(user_code, st=cols[1]) == 'block': 
         return 0
     string = format_user_code(user_code)
     str2py(string)
+
+def run(cols):
+    try:
+        import tmp  # import python file
+        importlib.reload(tmp)
+    except SyntaxError:
+        return 'Error: SyntaxError'
+    except NameError:
+        return 'Error: NameError'
+    except KeyError:
+        return 'Error: KeyError'
+    except OverflowError:
+        return """Error: OverflowError\n you seem to have made a number greater than $2^{127}$. For more info see *scientific computing week 1*."""
+    return tmp.fun
+    ####
     
     
+    
+# Levels
+def helloWorld():
+    key = 'Hello world!'
+    level = 0
+
+    st.markdown(f'### lvl {level} - {key}')
+    st.markdown(f'{text_dict[key]}')
+
+    cols = st.columns(2)
+    
+    code_interpreter(level, cols)
+
     cols[1].caption('output:')
-    c = cols[1].empty()
-    if c.button('run'): run()
+    if cols[1].button('run'): run(cols)(st=cols[1])
+
+def variables():
+    key = 'Variables'
+    level = 1
+
+    st.markdown(f'### lvl {level} - {key}')
+    st.markdown(f'{text_dict[key]}')
+
+    cols = st.columns(2)
     
+    code_interpreter(level, cols)
 
-def level0():
-    st.markdown(text_dict['Hello world!'])
-    code_interpreter(level)
-
-def level1():
-    st.markdown(text_dict['Variables'])
-    code_interpreter(level)
+    cols[1].caption('output:')
+    if cols[1].button('run'): run(cols)(st=cols[1])
     
-def level2():
-    st.markdown(text_dict['Operators'])
-    code_interpreter(level)
+def operators():
+    key = 'Operators'
+    level = 2
 
-def level3():
-    st.markdown(text_dict['For loops!'])
-    code_interpreter(level)
+    st.markdown(f'### lvl {level} - {key}')
+    st.markdown(f'{text_dict[key]}')
+
+    cols = st.columns(2)
     
-def level4():
-    st.markdown(text_dict['Functions'])
+    code_interpreter(level, cols)
+
+    cols[1].caption('output:')
+    if cols[1].button('run'): run(cols)(st=cols[1])
+
+def forLoops():
+    key = 'For-loops'
+    level = 3
+
+    st.markdown(f'### lvl {level} - {key}')
+    st.markdown(f'{text_dict[key]}')
+
+    cols = st.columns(2)
     
-    code_interpreter(level)
+    code_interpreter(level, cols)
 
-def level5():
-    st.markdown(text_dict['Bubble-sort'])
+    cols[1].caption('output:')
+    if cols[1].button('run'): run(cols)(st=cols[1])
     
-    code_interpreter(level,)
+def functions():
+    key = 'Functions'
+    level = 4
+
+    st.markdown(f'### lvl {level} - {key}')
+    st.markdown(f'{text_dict[key]}')
+
+    cols = st.columns(2)
+    
+    code_interpreter(level, cols)
+
+    cols[1].caption('output:')
+    if cols[1].button('run'): run(cols)(st=cols[1])
 
 
-text_dict = getText_prep()
+def bubbleSort():
+    key = 'Bubble-sort'
+    level = 5
 
+    st.markdown(f'### lvl {level} - {key}')
+    st.markdown(f'{text_dict[key]}')
+
+    cols = st.columns(2)
+    
+    code_interpreter(level, cols)
+
+    cols[1].caption('output:')
+    if cols[1].button('run'): run(cols)(st=cols[1])
+    
+     
+def kMeans():
+    key = 'kMeans'
+    level = 6
+
+    st.markdown(f'### lvl {level} - {key}')
+    st.markdown(f'{text_dict[key]}')
+
+    cols = st.columns(2)
+    
+    code_interpreter(level, cols)
+
+    cols[1].caption('output:')
+
+    
+    ## init
+    x = uniform(0,1,(100,2))
+    x = load_dataset('iris').values[:,:2]
+    cs = np.vstack([normal(loc=mean(x, axis=0)[0], scale = .1, size=3),
+                    normal(loc=mean(x, axis=0)[1], scale = .1, size=3)]).T
+    
+    if cols[1].button('run'): run(cols)(st=cols[1], x=x)
+    
+    if st.button('Show solution'):
+        st.markdown(text_dict['kMeans solution'])
+
+        # solution
+        fig, ax = plt.subplots(1,5, figsize=(16,4))
+        for i in range(5):
+            d2c = np.array([(x-c)**2 for c in cs]).sum(axis=2).T  # ditance to centroids
+            aff = np.argmin(d2c, axis=1)
+            
+            # update cs
+            cs = np.array([np.mean(x[aff == a], axis=0) for a in set(aff)])
+
+            for a in set(aff):
+                xa = x[aff==a]
+                ax[i].scatter(xa[:,0], xa[:,1])
+            ax[i].set(yticks=[], xticks=[])
+        st.pyplot(fig)
+
+        shapes = {
+            'x' : x.shape,
+            'd2c' : d2c.shape,
+            'aff' : aff.shape,
+            'cs' : cs.shape,
+        } ; # st.write(shapes)
+    
+    
 # main render script
-c = st.columns(2)
+text_dict = getText_prep()
+cols = st.columns(2)
 # render header
-c[0].markdown("""
+cols[0].markdown("""
     # Learn to code
-    *tab doesn't work, use spaces*
+    * *tab doesn't work, use spaces*
+    * *press c to clear cache if its buggy*
     """)
 st.markdown("---")
 
+
 # render level
 level_dict = {
-    0 : level0,
-    1 : level1,
-    2 : level2,
-    3 : level3,
-    4 : level4,
-    5 : level5,
+    0 : helloWorld,
+    1 : variables,
+    2 : operators,
+    3 : forLoops,
+    4 : functions,
+    5 : bubbleSort,
+    6 : kMeans,
 }
-level = c[1].select_slider('select level', level_dict.keys())
+
+lvl = -1
+level = cols[1].select_slider('select level', level_dict.keys())
+
 f = level_dict[level]; f()
