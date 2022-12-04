@@ -189,8 +189,7 @@ def week2():
     fig, prob_worse = evalv_likelihood_fit(mu, sig, L, sample_size, N_random_sample_runs)
     st.pyplot(fig)
     st.write('probability of worse:', prob_worse)
-
-    
+   
 def week3():
     text_dict = getText_prep(filename = text_path+'week3.md', split_level = 1)
      
