@@ -72,11 +72,28 @@ def week2():
 def week3():
     text_dict = getText_prep(filename = text_path+'week3.md', split_level = 1)
      
-    #st.header('Week 3')
-    with st.expander('Week 3 description', expanded=False):
-        st.markdown(text_dict['description'])
+    st.header('Mutational Analysis')
 
-    st.markdown(text_dict['Header 1'])
+    name = 'Week 3 description'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
+    name = 'What causes mutations?'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
+    name = 'Fidelity in DNA replication and gene expression'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
+    name = 'Proofreading in DNA replication'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
+    name = 'Recombination'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
 
 def week4():
     #st.header('Week 4')
@@ -126,7 +143,7 @@ topic_dict = {
     #'Welcome': home,
     #'week 1': week1,
     'week 2': week2,
-    #'week 3': week3,
+    'week 3': week3,
     #'week 4': week4,
     #'week 5': week5,
     #'week 6': week6,
