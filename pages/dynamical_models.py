@@ -94,6 +94,48 @@ def week3():
     with st.expander(name, expanded=False):
         st.markdown(text_dict[name])
 
+    name = 'Mutants'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
+    name = 'Distribution for mutation'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
+    name = 'Binomial distribution'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
+    cols = st.columns(2)
+    N = cols[0].slider('Number of trials N', 0, 100, 10)
+    p = cols[1].slider('Probability of finding mutated cell p', 0.0, 1.0, 1.0/6.0)
+    k = np.arange(21)
+    y = factorial(N) * p**k * (1.0-p)**(N-k) / (factorial(N-k)*factorial(k)) 
+    fig, ax = plt.subplots()
+    ax.plot(k, y)
+    ax.set_xlim(0, 20)
+    ax.set_ylim(0, 1)
+    ax.set_title("Binomial distribution")
+    ax.set_xlabel("$k$")
+    ax.set_ylabel("$P_N(k)$")
+    st.pyplot(fig)
+
+    name = 'Poisson distribution'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
+    m = st.slider('m', 0, 32, 1)
+    k = np.arange(21)
+    y = factorial(N) * p**k * (1.0-p)**(N-k) / (factorial(N-k)*factorial(k)) 
+    fig, ax = plt.subplots()
+    ax.plot(k, y)
+    ax.set_xlim(0, 20)
+    ax.set_ylim(0, 1)
+    ax.set_title("Binomial distribution")
+    ax.set_xlabel("$k$")
+    ax.set_ylabel("$P_N(k)$")
+    st.pyplot(fig)
+
 
 def week4():
     #st.header('Week 4')

@@ -8,7 +8,8 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 import seaborn as sns
 import pandas as pd    
-#from scipy.integrate import odeint
+from scipy.integrate import odeint
+from scipy.special import factorial
 
 # General
 
