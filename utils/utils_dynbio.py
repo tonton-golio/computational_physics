@@ -10,6 +10,7 @@ import seaborn as sns
 import pandas as pd    
 from scipy.integrate import odeint
 from scipy.special import factorial
+from scipy.stats import binom, poisson
 
 # General
 
@@ -23,6 +24,7 @@ text_path = 'assets/dynamical_models/text/'
 #mpl.rcParams['ytick.color'] = 'white'
 #mpl.rcParams['figure.autolayout'] = True  # 'tight_layout'
 #mpl.rcParams['axes.grid'] = True  # should we?
+plt.rcdefaults()
 
 
 st.set_page_config(page_title="Dynamical Models", 
@@ -203,9 +205,66 @@ n
     sns.despine()
     return fig
 '''
+##################
+# week3
+def binomial(N, p, k):
+    return factorial(N) * p**k * (1.0-p)**(N-k) / (factorial(N-k)*factorial(k)) 
 
+def plot_binomial(N1, p1, N2, p2):
+    k_max = 50
+    k = np.arange(np.max([N1, N2])+1)
+    #y1 = binomial(N1, p1, k)
+    #y2 = binomial(N2, p2, k)
+    y1 = binom.pmf(k, N1, p1)
+    y2 = binom.pmf(k, N2, p2)
 
+    fig, ax = plt.subplots()
+    ax.plot(k, y1, marker='o', markersize=2, 
+            label="$N_1$={}, $p_1$={:.2f}".format(N1, p1))
+    ax.plot(k, y2, marker='o', markersize=2, 
+            label="$N_2$={}, $p_2$={:.2f}".format(N2, p2))
+    ax.set_xlim(0, k_max)
+    ax.set_ylim(0, 1)
+    ax.set_title("Binomial distribution")
+    ax.set_xlabel("$k$")
+    ax.set_ylabel("$P_N(k)$")
+    ax.legend(frameon=False)
+    return fig, ax
 
+def plot_poisson(m1, m2):
+    k_max = 50
+    k = np.arange(k_max+1)
+    #y = np.exp(-m) * np.power(m, k) / factorial(k) 
+    y1 = poisson.pmf(k, m1)
+    y2 = poisson.pmf(k, m2)
 
+    fig, ax = plt.subplots()
+    ax.plot(k, y1, marker='o', markersize=2, label="$m_1$={}".format(m1))
+    ax.plot(k, y2, marker='o', markersize=2, label="$m_2$={}".format(m2))
+    ax.set_xlim(0, k_max)
+    ax.set_ylim(0, 0.4)
+    ax.set_title("Poisson distribution")
+    ax.set_xlabel("$k$")
+    ax.set_ylabel("$P_p(k)$")
+    ax.legend(frameon=False)
+    return fig
 
+def plot_binomial_poisson(N, m):
+    p = m/N
+    k_max = 100
+    k = np.arange(k_max+1)
+    y_binomial = binom.pmf(k, N, p)
+    y_poisson = poisson.pmf(k, m)
 
+    fig, ax = plt.subplots()
+    ax.plot(k, y_binomial, marker='o', markersize=2, 
+            label="Binomial, $N$={}, $p$={:.2f}".format(N, p))
+    ax.plot(k, y_poisson,  marker='o', markersize=2, 
+            label="Poisson, $m=Np$={:.2f}".format(m))
+    ax.set_xlim(0, k_max)
+    ax.set_ylim(0, 0.4)
+    ax.set_title("Binomial vs Poisson distribution")
+    ax.set_xlabel("$k$")
+    ax.set_ylabel("$P(k)$")
+    ax.legend(frameon=False)
+    return fig

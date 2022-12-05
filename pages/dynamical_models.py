@@ -107,33 +107,31 @@ def week3():
         st.markdown(text_dict[name])
 
     cols = st.columns(2)
-    N = cols[0].slider('Number of trials N', 0, 100, 10)
-    p = cols[1].slider('Probability of finding mutated cell p', 0.0, 1.0, 1.0/6.0)
-    k = np.arange(21)
-    y = factorial(N) * p**k * (1.0-p)**(N-k) / (factorial(N-k)*factorial(k)) 
-    fig, ax = plt.subplots()
-    ax.plot(k, y)
-    ax.set_xlim(0, 20)
-    ax.set_ylim(0, 1)
-    ax.set_title("Binomial distribution")
-    ax.set_xlabel("$k$")
-    ax.set_ylabel("$P_N(k)$")
+    N1 = cols[0].slider('Number of trials N1', 1, 50, 10)
+    p1 = cols[0].slider('Probability of finding mutated cell p1', 0.0, 1.0, 1.0/6.0)
+    N2 = cols[1].slider('Number of trials N2', 1, 50, 20)
+    p2 = cols[1].slider('Probability of finding mutated cell p2', 0.0, 1.0, 2.0/6.0)
+    fig, ax = plot_binomial(N1, p1, N2, p2)
     st.pyplot(fig)
 
     name = 'Poisson distribution'
     with st.expander(name, expanded=False):
         st.markdown(text_dict[name])
 
-    m = st.slider('m', 0, 32, 1)
-    k = np.arange(21)
-    y = factorial(N) * p**k * (1.0-p)**(N-k) / (factorial(N-k)*factorial(k)) 
-    fig, ax = plt.subplots()
-    ax.plot(k, y)
-    ax.set_xlim(0, 20)
-    ax.set_ylim(0, 1)
-    ax.set_title("Binomial distribution")
-    ax.set_xlabel("$k$")
-    ax.set_ylabel("$P_N(k)$")
+    cols = st.columns(2)
+    m1 = cols[0].slider('Average number of mutation m1', 1, 32, 1)
+    m2 = cols[1].slider('Average number of mutation m2', 1, 32, 10)
+    fig = plot_poisson(m1, m2)
+    st.pyplot(fig)
+
+    name = 'Binomial vs Poisson'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
+    cols = st.columns(2)
+    m = cols[1].slider('Average number of mutation m', 1, 100, 8)
+    N = cols[0].slider('Number of trials N', m, 100, m)
+    fig = plot_binomial_poisson(N, m)
     st.pyplot(fig)
 
 
