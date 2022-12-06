@@ -192,12 +192,24 @@ def week2():
    
 def week3():
     text_dict = getText_prep(filename = text_path+'week3.md', split_level = 1)
+    text_dict2 = getText_prep(filename = text_path+'week3.md', split_level = 2)
      
     #st.header('Week 3')
     with st.expander('Week 3 description', expanded=False):
         st.markdown(text_dict['description'])
 
     st.markdown(text_dict['Header 1'])
+    st.markdown(text_dict['Header 2'])
+    cols = st.columns(2)
+    cols[0].markdown(text_dict['Header 3'])
+    cols[1].markdown(text_dict['Header 4'])
+    
+    cols = st.columns(2)
+    cols[0].markdown(text_dict['Header 5'])
+    cols[1].markdown(text_dict2['Header 6'])
+    
+    st.markdown(text_dict['Header 7'])
+
 
 def week4():
     #st.header('Week 4')
@@ -258,7 +270,7 @@ topic_dict = {
     'Welcome': home,
     'Intro & ChiSquare': week1,
     'Likelihood & Sys. Errors': week2,
-    #'week 3': week3,
+    'week 3': week3,
     #'week 4': week4,
     #'week 5': week5,
     #'week 6': week6,
