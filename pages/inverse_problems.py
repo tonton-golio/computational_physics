@@ -453,14 +453,15 @@ def ass1():
         fig, ax1 = plt.subplots()
         #T_E = np.arange(1,max(T)+1,1)
         # The data.
-        ax1.plot(epss, offs, c='black')
+        ax1.plot(epss, offs, c='white')
         ax1.set_xlabel(r'$T\,/\mathrm{K}$')
         ax1.set_ylabel(r'$C_p\,/\mathrm{J\,K^{-1}\,mol^{-1}}$')
-        ax1.legend(loc=0)
+        
 
-        ax1.set(yscale = 'log', xscale = 'log',)
-        ax1.set_xlabel('epsilon', color='white')
-        ax1.set_ylabel('|t_obs - G@m|', color='white')
+        ax1.set(yscale = 'log', xscale = 'log',facecolor=dark_color)
+        
+        ax1.set_xlabel('epsilon', color='white', fontsize=14)
+        ax1.set_ylabel('|t_obs - G@m|', color='white', fontsize=14)
 
         # Inset figure of low-temperature fit, located by data coordinates in ax1.
         bb_data_ax2 = Bbox.from_bounds(min(epss)*1e1, min(offs)*10, max(epss)*1e-3, max(offs)*0.3)
@@ -468,6 +469,7 @@ def ass1():
         fig_coords_ax2 = fig.transFigure.inverted().transform(disp_coords)
         bb_ax2 = Bbox(fig_coords_ax2)
         ax2 = fig.add_axes(bb_ax2)
+        ax2.set_facecolor('beige')
         ax2.plot(epss_zoom, offs_zoom, c='black')
 
         return fig
