@@ -29,7 +29,7 @@ text_path = 'assets/inverse_problems/text/'
 
 st.set_page_config(page_title="plt contribute", 
     page_icon="🧊", 
-    layout="wide", 
+    #layout="wide", 
     initial_sidebar_state="collapsed", 
     menu_items=None)
 
@@ -95,6 +95,7 @@ def getParams(G, d_obs, eps_space = np.logspace(-12, -10, 200)):
 
 
 def find_minimum(G, ms, d_obs, 
+
     eps_space,
     data_error = [10**(-9)] * 18,
     data_error1 = [10**(-8)] * 18):
@@ -130,3 +131,5 @@ def find_minimum(G, ms, d_obs,
 
     plt.close()
     return fig
+
+

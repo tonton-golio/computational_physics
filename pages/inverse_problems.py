@@ -239,8 +239,11 @@ def ass1():
     import matplotlib.pyplot as plt
     import streamlit as st
     from matplotlib.transforms import Bbox
-
     dark_color = (0,.1,.15)
+    mpl.rcParams['patch.facecolor'] = dark_color
+    mpl.rcParams['axes.facecolor'] = 'grey'
+    mpl.rcParams['figure.facecolor'] = dark_color
+    
 
     def getText_prep_1(filename = text_path+'linear_tomography.md', split_level = 1):
         """
@@ -451,24 +454,20 @@ def ass1():
         fig, ax1 = plt.subplots()
         #T_E = np.arange(1,max(T)+1,1)
         # The data.
-        ax1.plot(epss, offs, c='white')
+        ax1.plot(epss, offs, c='white', lw=4)
         ax1.set_xlabel(r'$T\,/\mathrm{K}$')
         ax1.set_ylabel(r'$C_p\,/\mathrm{J\,K^{-1}\,mol^{-1}}$')
         
-
         ax1.set(yscale = 'log', xscale = 'log',facecolor=dark_color)
-        
+    
         ax1.set_xlabel('epsilon', color='white', fontsize=14)
         ax1.set_ylabel('|t_obs - G@m|', color='white', fontsize=14)
-
-        # Inset figure of low-temperature fit, located by data coordinates in ax1.
-        bb_data_ax2 = Bbox.from_bounds(min(epss)*1e1, min(offs)*10, max(epss)*1e-3, max(offs)*0.3)
-        disp_coords = ax1.transData.transform(bb_data_ax2)
-        fig_coords_ax2 = fig.transFigure.inverted().transform(disp_coords)
-        bb_ax2 = Bbox(fig_coords_ax2)
-        ax2 = fig.add_axes(bb_ax2)
-        ax2.set_facecolor('beige')
-        ax2.plot(epss_zoom, offs_zoom, c='black')
+        
+        ax2 = fig.add_axes((0.3,.6,0.4,.3))
+        
+        ax2.set(yscale = 'log', xscale = 'log')#,facecolor=dark_color)
+        ax2.set_facecolor('white')
+        ax2.plot(epss_zoom, offs_zoom, c=dark_color)
 
         return fig
 
