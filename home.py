@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
-st.set_page_config(page_title="plz contribute", 
-	page_icon=":taxi:", 
+st.set_page_config(page_title='Computational Physics',#"plz contribute", 
+	page_icon=":microscope:", 
 	layout="wide", 
 	initial_sidebar_state="collapsed", 
 	menu_items=None)
