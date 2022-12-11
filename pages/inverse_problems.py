@@ -1,8 +1,7 @@
 from utils.utils_inverse import *
-st.title('Inverse Problems')
+#st.title('Inverse Problems')
 
-("""
-        Course taught by: Klaus Mosegaard.""")
+#"Course taught by: Klaus Mosegaard."
 
 def week1():
     text_dict = getText_prep(filename = text_path+'week1.md', split_level = 1)
@@ -69,8 +68,7 @@ def week1():
     st.markdown(text_dict['Ex 5'])
     st.pyplot(fig)
     
-
-    
+  
     
 def week2():
     text_dict = getText_prep(filename = text_path+'week2.md', split_level = 1)
@@ -537,6 +535,7 @@ def ass1():
     st.pyplot(fig)
 
     st.markdown(text_dict['A delta function'])
+
 
 # Navigator
 topic_dict = {

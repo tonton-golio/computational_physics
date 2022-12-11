@@ -14,7 +14,10 @@ def home():
         Course taught by: Troels C. Petersen. 
 
         [course website](https://www.nbi.dk/~petersen/Teaching/AppliedStatistics2021.html)""")
+    from streamlit.components.v1 import html
+    my_html = """<iframe width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1399648774&color=%23ff5500&auto_play=true&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"></iframe><div style="font-size: 10px; color: #cccccc;line-break: anywhere;word-break: normal;overflow: hidden;white-space: nowrap;text-overflow: ellipsis; font-family: Interstate,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Garuda,Verdana,Tahoma,sans-serif;font-weight: 100;"><a href="https://soundcloud.com/antartica_traffic_control" title="Goblin Mode" target="_blank" style="color: #cccccc; text-decoration: none;">Goblin Mode</a> · <a href="https://soundcloud.com/antartica_traffic_control/other-eyes" title="Other Eyes" target="_blank" style="color: #cccccc; text-decoration: none;">Other Eyes</a></div>"""
 
+    html(my_html)
 def week1():
     
     text_dict = getText_prep(filename = text_path+'week1.md', split_level = 1)
