@@ -334,15 +334,15 @@ def ass1():
             #for axi in ax:
                 #axi.set(facecolor=dark_color)
 
-            ax[0].set_xlabel('x',# color='white',
+            ax[0].set_xlabel('x', color='white',
             size=14)
-            ax[0].set_ylabel('depth', #color='white',
+            ax[0].set_ylabel('depth', color='white',
             size=14)
             
             
-            ax[1].set_xlabel('Siesmograph index', #color='white', 
+            ax[1].set_xlabel('Siesmograph index', color='white', 
             size=14)
-            ax[1].set_ylabel('$t_\gamma$',# color='white', 
+            ax[1].set_ylabel('$t_\gamma$', color='white', 
             size=14)
             ax[1].bar(np.arange(len(d_left))-0.35, d_left,width=.25)
             ax[1].bar(np.arange(len(d_right))+0.35, d_right,width=.25)
@@ -404,16 +404,16 @@ def ass1():
         fig, ax = plt.subplots(1, 3, figsize=(12,3))
 
         ax[0].imshow(G, aspect=6)
-        ax[0].set(title='$G$')
+        ax[0].set_title('$G$', color='white')
         ax[1].imshow(m_true.reshape(N,N), extent=(0,N,N,0))
-        ax[1].set(title='$m$')  
+        ax[1].set_title('$m$', color='white')  
 
-        ax[2].set(title=r'$d_{obs}$')
-        ax[2].bar(np.arange(N)-0.35, d_obs[:N],width=.35 , label='ray from left')
-        ax[2].bar(np.arange(N)+0.35, d_obs[N:],width=.5, label='ray from right')
+        ax[2].set_title(r'$d_{obs}$', color='white')
+        ax[2].bar(np.arange(N)-0.35, d_obs[:N],width=.35 , label='left')
+        ax[2].bar(np.arange(N)+0.35, d_obs[N:],width=.5, label='ight')
         ax[2].legend()
         ax[2].set_xticks(*[range(N)[::4]]*2)
-        ax[2].set_xlabel('Detector number')
+        ax[2].set_xlabel('Detector number', color='white')
         st.pyplot(fig)
 
     def backward(d_obs, n_norm, G, n_eps=10):
@@ -443,7 +443,9 @@ def ass1():
         
         ax.imshow(m_opt.reshape(N,N), extent=(0,N,N,0))
         
-        ax.set(title='Pred. density of earth', xlabel='x', xticks=np.arange(2,14,2)-.5, xticklabels=range(2,14,2))
+        ax.set(xticks=np.arange(2,14,2)-.5, xticklabels=range(2,14,2))
+        ax.set_title('Pred. density of earth', color='white')
+        ax.set_xlabel('x', color='white')
 
         return fig
 
@@ -456,7 +458,9 @@ def ass1():
         ax1.set_ylabel(r'$C_p\,/\mathrm{J\,K^{-1}\,mol^{-1}}$')
         ax1.legend(loc=0)
 
-        ax1.set(yscale = 'log', xscale = 'log', xlabel = 'epsilon', ylabel = '|t_obs - G@m|')
+        ax1.set(yscale = 'log', xscale = 'log',)
+        ax1.set_xlabel('epsilon', color='white')
+        ax1.set_ylabel('|t_obs - G@m|', color='white')
 
         # Inset figure of low-temperature fit, located by data coordinates in ax1.
         bb_data_ax2 = Bbox.from_bounds(min(epss)*1e1, min(offs)*10, max(epss)*1e-3, max(offs)*0.3)
@@ -482,7 +486,7 @@ def ass1():
         bot = cols[1].slider('bot', 0., 11., 4.5)
         left = cols[2].slider('left', 0., 11., 9.)
         right = cols[3].slider('right', 0., 13., 13.)
-        n_seismographs = cols[4].select_slider('n seis.', range(3,100,12))
+        n_seismographs = cols[4].select_slider('n seis.', range(12,99,20))
         return top, bot, left, right, n_seismographs
     top, bot, left, right, n_seismographs = sliders_5()
 
@@ -534,9 +538,9 @@ def ass1():
 
 # Navigator
 topic_dict = {
-    'week 1': week1,
-    'Week 2': week2,
     'Linear Tomography' : ass1,
+    'week 1': week1,
+    'Week 2': week2, 
   }
 
 topic = st.sidebar.selectbox("topic" , list(topic_dict.keys()))

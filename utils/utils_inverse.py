@@ -4,8 +4,24 @@ import matplotlib.pyplot as plt
 import pandas as pd    
 from time import time
 from time import sleep
+import matplotlib as mpl
 from scipy.constants import gravitational_constant
 
+
+def set_rcParams():
+	"""
+		setting matplotlib style
+	"""
+	# extra function
+	mpl.rcParams['patch.facecolor'] = (0.04, 0.065, 0.03)
+	mpl.rcParams['axes.facecolor'] = 'grey'
+	mpl.rcParams['figure.facecolor'] = (0.04, 0.065, 0.03)
+	mpl.rcParams['xtick.color'] = 'white'
+	mpl.rcParams['ytick.color'] = 'white'
+	# mpl.rcParams['axes.grid'] = True  # should we?
+	mpl.rcParams['figure.autolayout'] = True  # 'tight_layout'
+
+set_rcParams()
 
 # General
 
