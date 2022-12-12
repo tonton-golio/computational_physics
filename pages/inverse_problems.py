@@ -1,5 +1,5 @@
 from utils.utils_inverse import *
-import  streamlit_toggle as tog
+import streamlit_toggle as tog
 #st.title('Inverse Problems')
 
 #"Course taught by: Klaus Mosegaard."
@@ -560,7 +560,7 @@ def week4():
         p_norm = cols[0].slider('p (for norm)', 0.,8.,2.)
         cols[0].markdown(r"""
         $$
-            |x|_p = \left(\sum_i x_i^p\right)^{1/p}
+            ||x||_p = \left(\sum_i |x_i|^p\right)^{1/p}
         $$
         """)
 
@@ -571,7 +571,7 @@ def week4():
 
         # plotting
         colors = [{0 : 'gold', 1 : 'green'}[n<=1] for n in norm]
-        ax.scatter(X[:,0], X[:,1], c=colors,  norm = np.sum(X**2, axis=1)**.5, cmap='winter', alpha=.8)
+        ax.scatter(X[:,0], X[:,1], c=colors,  norm = np.sum(X**2, axis=1)**.5, cmap='winter', alpha=.4)
         extent = 1.1 ; ax.set(xlim=(-extent,extent), ylim=(-extent,extent))
         
         # output
