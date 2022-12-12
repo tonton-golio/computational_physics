@@ -10,3 +10,4 @@ gspread==5.5.0
 networkx
 graphviz
 yfinance
+streamlit_toggle_switch

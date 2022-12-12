@@ -15,7 +15,7 @@ def home():
 
         [course website](https://www.nbi.dk/~petersen/Teaching/AppliedStatistics2022.html)""")
     from streamlit.components.v1 import html
-    my_html = """<iframe width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1399648774&color=%23ff5500&auto_play=true&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"></iframe><div style="font-size: 10px; color: #cccccc;line-break: anywhere;word-break: normal;overflow: hidden;white-space: nowrap;text-overflow: ellipsis; font-family: Interstate,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Garuda,Verdana,Tahoma,sans-serif;font-weight: 100;"><a href="https://soundcloud.com/antartica_traffic_control" title="Goblin Mode" target="_blank" style="color: #cccccc; text-decoration: none;">Goblin Mode</a> · <a href="https://soundcloud.com/antartica_traffic_control/other-eyes" title="Other Eyes" target="_blank" style="color: #cccccc; text-decoration: none;">Other Eyes</a></div>"""
+    my_html = """<iframe width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1399648774&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"></iframe><div style="font-size: 10px; color: #cccccc;line-break: anywhere;word-break: normal;overflow: hidden;white-space: nowrap;text-overflow: ellipsis; font-family: Interstate,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Garuda,Verdana,Tahoma,sans-serif;font-weight: 100;"><a href="https://soundcloud.com/antartica_traffic_control" title="Goblin Mode" target="_blank" style="color: #cccccc; text-decoration: none;">Goblin Mode</a> · <a href="https://soundcloud.com/antartica_traffic_control/other-eyes" title="Other Eyes" target="_blank" style="color: #cccccc; text-decoration: none;">Other Eyes</a></div>"""
 
     html(my_html)
 def week1():
@@ -213,17 +213,40 @@ def week3():
     
     st.markdown(text_dict['Header 7'])
 
-    # accept, reject to get pi
-    cols = st.columns(2)
-    n_points = cols[0].slider('n_points', 4, 10000,100)
-    X = np.random.uniform(-1,1,(n_points, 2))
-    fig = plt.figure()
-    n = np.sum(X**2, axis=1)
-    plt.scatter(X[:,0], X[:,1], c=n<=1)
-    cols[1].pyplot(fig)
-    cols[0].write(r'$\pi \approx$ = {}'.format(4*sum(abs(n)<1)/n_points))
+    def sphereINcube_demo():
+        # accept, reject to get pi
+        cols = st.columns(2)
 
 
+        # inputs
+        n_points = cols[0].select_slider('Number of points', np.logspace(1,14,14,base=2, dtype=int))
+        
+        
+        n_dim = cols[0].select_slider('Number of dimensions', np.arange(2,10,1, dtype=int))
+        cols[0].markdown('We can kinda see how 3 dim. is showing a ball with air trapped in the corners.')
+        p_norm = cols[0].slider('p (for norm)',0.,10.,2.)
+        cols[0].markdown(r"""
+        $$
+            |x| = \left(\sum_i x_i^p\right)^{1/p}
+        $$
+        """)
+
+        # make vecs and check norms
+        X = np.random.uniform(-1,1,(n_points, n_dim))
+        fig, ax = plt.subplots(figsize=(5,5))
+        norm = np.sum(abs(X)**p_norm, axis=1)
+
+        # plotting
+        colors = [{0 : 'gold', 1 : 'green'}[n<=1] for n in norm]
+        ax.scatter(X[:,0], X[:,1], c=colors,  norm = np.sum(X**2, axis=1)**.5, cmap='winter', alpha=.8)
+        extent = 1.1 ; ax.set(xlim=(-extent,extent), ylim=(-extent,extent))
+        
+        # output
+        cols[1].pyplot(fig)
+        percentage = sum(abs(norm)<1)/n_points
+        cols[0].write('Percentage inside the unit hypersphere = {:0.2f} giving us $\pi = {:0.4f}$'.format(percentage, percentage*4))
+
+    sphereINcube_demo()
 def week4():
     #st.header('Week 4')
     text_dict = getText_prep(filename = text_path+'week4.md', split_level = 1)

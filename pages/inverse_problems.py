@@ -1,4 +1,5 @@
 from utils.utils_inverse import *
+import  streamlit_toggle as tog
 #st.title('Inverse Problems')
 
 #"Course taught by: Klaus Mosegaard."
@@ -204,31 +205,6 @@ def week2():
 
     with st.expander('Lecture notes Wednesday', expanded=False):
         st.markdown(text_dict['Header 2'])
-
-    cols = st.columns(2)
-    cols[0].markdown(text_dict['assignment'])
-    
-
-
-    x = np.linspace(0,1, 10)
-    y = np.linspace(0,1, 10)
-    X, Y = np.meshgrid(x,y)
-    ground = np.zeros((x.shape[0],y.shape[0]))
-    ground[(.4<X) * (X<.6) * (.3<Y) * (Y<.7)] = 1
-
-    fig, ax = plt.subplots()
-    ax.imshow(ground)
-    cols[1].pyplot(fig)
-    plt.close()
-
-
-
-    speed_outside_medium = 1.
-    speed_inside_medium = .5
-
-    # rays should be angled at 45 degrees, so lets just keep dx and dy the same. This will let us travel along the matrix diagonal.
-
-    # figure out the matrix which connects this matrix of speeds with the parameters...
 
 def ass1():
     import numpy as np
@@ -537,48 +513,91 @@ def week4():
 
     text_dict = getText_prep(filename = text_path+'week4.md', split_level = 1)
 
+    st.title('Non linearities')
+    cols = st.columns(2)
+    cols[0].markdown(text_dict['Header 1'])
+    cols[1].markdown(text_dict['Header 2'])
+    st.markdown(text_dict['Header 3'])
     
-    st.markdown(text_dict['Header 1'])
-
-    fig = plt.figure()
-
-    n_dims = np.arange(2,16)
-    p = np.pi/2**n_dims
-
-    plt.plot(n_dims, p, c='black', lw=3)
-    plt.xlabel('number of dimensions', color='white')
-    plt.ylabel('probability of being inside the unit hypersphere', color='white')
-    st.pyplot(fig)
-
-    r"""we could make this algorithm more sofiticated (rejection sampling) by adding a term $q$. 
     
-    $$
-        p_\text{accept} = \frac{p(\mathbf{x}_\text{cand})}{M q(\mathbf{x}_\text{cand})}
-    $$
     
+    def sphereINcube_demo(data = []):
+        # guess
+        fig_guess, ax_guess = plt.subplots(figsize=(4,2))
 
-    MCMC
-    * propose jump chosen from a probability distribution
+        n_dims = np.arange(2,10)
+        p = np.pi/2**n_dims
+        plt.title('guess', color='white')
+        plt.plot(n_dims, p, c='black', lw=2, ls='--', label="guess")
+        plt.xlabel('number of dimensions', color='white')
+        plt.ylabel(r'% inside unit hypersphere', color='white')
+        #
+        plt.legend()
+        
+        logscale = tog.st_toggle_switch(label="Log scale", 
+                    key="Key1", 
+                    default_value=False, 
+                    label_after = False, 
+                    inactive_color = '#D3D3D3', 
+                    active_color="#11567f", 
+                    track_color="#29B5E8"
+                    )
+        cols = st.columns(2)
+        #logscale = cols[1].radio('log scale?', [True, False])
+        if logscale:plt.yscale('log')
+        c = cols[1].empty()
 
-    accept $\mathbf{x}_j$ only with probability
+        
+        # accept, reject to get pi
+        
 
-    $$
-        p_\text{accept} = \text{min}\left( 1, \frac{p(\mathbf{x}_i)}{p(\mathbf{x}_j)}\right)
-    $$
-    otherwise repeat $\mathbf{x}_j$
-    """
+        # inputs
+        n_points = cols[0].select_slider('Number of points', np.logspace(1,14,14,base=2, dtype=int))
+        
+        
+        n_dim = cols[0].select_slider('Number of dimensions', np.arange(2,10,1, dtype=int))
+        cols[0].markdown('My guess might be slightly high?... Also, notice how in 3 dim. a ball (sort of) appeares.')
+        p_norm = cols[0].slider('p (for norm)', 0.,8.,2.)
+        cols[0].markdown(r"""
+        $$
+            |x|_p = \left(\sum_i x_i^p\right)^{1/p}
+        $$
+        """)
+
+        # make vecs and check norms
+        X = np.random.uniform(-1,1,(n_points, n_dim))
+        fig, ax = plt.subplots(figsize=(5,5))
+        norm = np.sum(abs(X)**p_norm, axis=1)
+
+        # plotting
+        colors = [{0 : 'gold', 1 : 'green'}[n<=1] for n in norm]
+        ax.scatter(X[:,0], X[:,1], c=colors,  norm = np.sum(X**2, axis=1)**.5, cmap='winter', alpha=.8)
+        extent = 1.1 ; ax.set(xlim=(-extent,extent), ylim=(-extent,extent))
+        
+        # output
+        cols[1].pyplot(fig)
+        percentage = sum(abs(norm)<1)/n_points
+        cols[0].write('Percentage inside the unit hypersphere = {:0.2f} giving us $\pi = {:0.4f}$'.format(percentage, percentage*4))
+        
+        data.append((n_dim, percentage))
+        for d, perc in data:
+            ax_guess.scatter(d, perc, label="data")
+        ax_guess.legend()
+        c.pyplot(fig_guess)
+        
+        cols[1].caption("we just show the first two dimensions, and the color indicates whether we are within the unit (hyper)sphere")
+    sphereINcube_demo()
+    
 
 # Navigator
 topic_dict = {
     'Linear Tomography' : ass1,
     'week 1': week1,
     'Week 2': week2, 
-    'Week 4': week4,
+    'Non linearities': week4,
   }
 
 topic = st.sidebar.selectbox("topic" , list(topic_dict.keys()))
 
 run_topic = topic_dict[topic] ; run_topic()
 
-
-G@m
