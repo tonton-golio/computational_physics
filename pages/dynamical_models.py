@@ -1,5 +1,7 @@
 from utils.utils_dynbio import *
 
+plt.rcdefaults()
+
 def home():
     st.title('Dynamical Models in Molecular Biology')
     #st.image('assets/images/Stable_diffusion__Mathematician_discovering_Neptune.png', width=420)
@@ -138,13 +140,39 @@ def week3():
 def week4():
     #st.header('Week 4')
     text_dict = getText_prep(filename = text_path+'week4.md', split_level = 1)
+    
+    st.header('Bactearial Growth Physiology')
      
-    with st.expander('Week 4 description', expanded=False):
-        st.markdown(text_dict['description'])
-    st.markdown(text_dict['Header 1'])
+    name = 'Week 4 description'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
 
-    def random(size, dist = 'normal', mu=0, sigma=1):
-        return [i for i in range(size)]
+    name = 'Phase of bacterial growth'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
+    name = 'Difinition of steady-state growth'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
+    name = 'Bacterial growth las by Jacques Monod (1949)'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
+    cols = st.columns(2)
+    lambda_max = cols[0].slider('lambda_max', 0.0, 2.0, 1.25)
+    K_S = cols[1].slider('K_S', 0.0, 10.0, 0.5)
+    fig, ax = plot_michaelis_menten1(lambda_max, K_S)
+    st.pyplot(fig)
+
+    name = 'Frederick C. Neidhardt (1999)'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
+    name = 'Bacterial biomass is mainly protein'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
 
 def week5():
     #st.header('Week 5')
@@ -184,7 +212,7 @@ topic_dict = {
     #'week 1': week1,
     'week 2': week2,
     'week 3': week3,
-    #'week 4': week4,
+    'week 4': week4,
     #'week 5': week5,
     #'week 6': week6,
     #'week 7': week7,    

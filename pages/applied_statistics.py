@@ -213,6 +213,16 @@ def week3():
     
     st.markdown(text_dict['Header 7'])
 
+    # accept, reject to get pi
+    cols = st.columns(2)
+    n_points = cols[0].slider('n_points', 4, 10000,100)
+    X = np.random.uniform(-1,1,(n_points, 2))
+    fig = plt.figure()
+    n = np.sum(X**2, axis=1)
+    plt.scatter(X[:,0], X[:,1], c=n<=1)
+    cols[1].pyplot(fig)
+    cols[0].write(r'$\pi \approx$ = {}'.format(4*sum(abs(n)<1)/n_points))
+
 
 def week4():
     #st.header('Week 4')
