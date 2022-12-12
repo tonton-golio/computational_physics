@@ -268,3 +268,24 @@ def plot_binomial_poisson(N, m):
     ax.set_ylabel("$P(k)$")
     ax.legend(frameon=False)
     return fig
+
+
+################
+# Week 4
+def plot_michaelis_menten1(lambda_max, K_S):
+    x = np.linspace(0, 10.0, 100)
+    y = lambda_max * x / (K_S + x)
+    fig, ax = plt.subplots()
+    ax.plot(x, y)
+    ax.axhline(lambda_max, c='k', ls='--')
+    ax.hlines(lambda_max*0.5, 0, K_S, colors='k', ls='--')
+    ax.vlines(K_S, 0, lambda_max*0.5, colors='k', ls='--')
+    ax.text(0.05, lambda_max*1.05, '$\lambda_\mathrm{max}$', )
+    ax.text(K_S+0.05, lambda_max*0.5**1.05, '$\lambda_\mathrm{max}/2$', )
+    ax.text(K_S+0.05, 0.02, '$K_S$', )
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 2)
+    ax.set_title('$\lambda = \lambda_\mathrm{max} \\frac{S}{K_S + S}$')
+    ax.set_xlabel('$S$ concentration of the limiting nutrient')
+    ax.set_ylabel('$\lambda$ growth rate')
+    return fig, ax
