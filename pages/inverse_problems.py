@@ -68,8 +68,6 @@ def week1():
     st.markdown(text_dict['Ex 5'])
     st.pyplot(fig)
     
-  
-    
 def week2():
     text_dict = getText_prep(filename = text_path+'week2.md', split_level = 1)
 
@@ -535,12 +533,47 @@ def ass1():
 
     st.markdown(text_dict['A delta function'])
 
+def week4():
+
+    text_dict = getText_prep(filename = text_path+'week4.md', split_level = 1)
+
+    
+    st.markdown(text_dict['Header 1'])
+
+    fig = plt.figure()
+
+    n_dims = np.arange(2,16)
+    p = np.pi/2**n_dims
+
+    plt.plot(n_dims, p, c='black', lw=3)
+    plt.xlabel('number of dimensions', color='white')
+    plt.ylabel('probability of being inside the unit hypersphere', color='white')
+    st.pyplot(fig)
+
+    r"""we could make this algorithm more sofiticated (rejection sampling) by adding a term $q$. 
+    
+    $$
+        p_\text{accept} = \frac{p(\mathbf{x}_\text{cand})}{M q(\mathbf{x}_\text{cand})}
+    $$
+    
+
+    MCMC
+    * propose jump chosen from a probability distribution
+
+    accept $\mathbf{x}_j$ only with probability
+
+    $$
+        p_\text{accept} = \text{min}\left( 1, \frac{p(\mathbf{x}_i)}{p(\mathbf{x}_j)}\right)
+    $$
+    otherwise repeat $\mathbf{x}_j$
+    """
 
 # Navigator
 topic_dict = {
     'Linear Tomography' : ass1,
     'week 1': week1,
     'Week 2': week2, 
+    'Week 4': week4,
   }
 
 topic = st.sidebar.selectbox("topic" , list(topic_dict.keys()))
