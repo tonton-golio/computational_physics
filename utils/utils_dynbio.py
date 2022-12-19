@@ -289,3 +289,25 @@ def plot_michaelis_menten1(lambda_max, K_S):
     ax.set_xlabel('$S$ concentration of the limiting nutrient')
     ax.set_ylabel('$\lambda$ growth rate')
     return fig, ax
+
+################
+# Week 5
+def plot_solve_regulation(H, gamma_P, positive=True):
+    x = np.linspace(0, 4, 100)
+    y1 = gamma_P*x
+    fig, ax = plt.subplots()
+    if positive:
+        y0 = x**H/(1+x**H)
+        ax.plot(x, y0, label="$y = \\frac{P^H}{1+P^H}$")
+    else:
+        y0 = 1/(1+x**H)
+        ax.plot(x, y0, label="$y = \\frac{1}{1+P^H}$")
+    ax.plot(x, y1, label="$y = \Gamma_\mathrm{p} P$")
+    ax.set_xlim(0, 4)
+    ax.set_ylim(0, 1)
+    ax.set_xlabel('Protein concentration $P$')
+    ax.set_ylabel('y')
+    ax.legend(frameon=False)
+    sns.despine()
+    return fig, ax
+

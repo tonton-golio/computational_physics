@@ -9,8 +9,7 @@ def home():
 
 def week1():
     text_dict = getText_prep(filename = text_path+'week1.md', split_level = 1)
-     
-    #st.header('Week 3')
+
     with st.expander('Week 1 description', expanded=False):
         st.markdown(text_dict['description'])
 
@@ -138,7 +137,6 @@ def week3():
 
 
 def week4():
-    #st.header('Week 4')
     text_dict = getText_prep(filename = text_path+'week4.md', split_level = 1)
     
     st.header('Bactearial Growth Physiology')
@@ -175,35 +173,86 @@ def week4():
 
 
 def week5():
-    #st.header('Week 5')
-     
     text_dict = getText_prep(filename = text_path+'week5.md', split_level = 1)
-    with st.expander('Week 5 description', expanded=False):
-        st.markdown(text_dict['description'])
+    
+    st.header('Gene Regulatory Networks')
+     
+    name = 'Week 5 description'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
 
-    st.markdown(text_dict['Header 1'])
+    name = 'Type of regulation'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
+    name = 'Statistics of regulatory function'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
+    name = 'Real network and how we understand gene regulation'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
+    name = 'Type of network motif'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
+    name = 'How can we find positive feedback and negative feedback'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
+    name = 'Biological example of positive/negative regulation'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
+    name = 'Biological example of feed-forward loops'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
+    name = 'Simplification of dynamical equation'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
+    name = 'Obtaining steady state concentration from graph'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
+    cols = st.columns(2)
+    H = cols[0].slider('Hill coefficient H', 1, 10, 1, key=0)
+    gamma_P = cols[1].slider('Gamma_P', 0.0, 1.0, 0.5, key=1)
+    fig, ax = plot_solve_regulation(H, gamma_P)
+    st.pyplot(fig)
+
+    name = 'How about negative regulation?'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
+    cols = st.columns(2)
+    H = cols[0].slider('Hill coefficient H', 1, 10, 1, key=2)
+    gamma_P = cols[1].slider('Gamma_P', 0.0, 1.0, 0.5, key=3)
+    fig, ax = plot_solve_regulation(H, gamma_P, positive=False)
+    st.pyplot(fig)
+
+
 
 def week6():
-    #st.header('Week 6')
+    text_dict = getText_prep(filename = text_path+'week5.md', split_level = 1)
+    
+    st.header('Bactearial Growth Physiology')
 
-    text_dict = getText_prep(filename = text_path+'week6.md', split_level = 1)
-    with st.expander('Week 6 description', expanded=False):
-        st.markdown(text_dict['description'])
-
-    st.markdown(text_dict['Header 1'])
-
-    X = makeBlobs(100)
-    st.pyplot(scatter(X[:,0], X[:,1]))
+    name = 'Week 4 description'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+     
      
 def week7():
-    #st.header('Week 7')
+    text_dict = getText_prep(filename = text_path+'week5.md', split_level = 1)
     
-    text_dict = getText_prep(filename = text_path+'week7.md', split_level = 1)
-    
-    with st.expander('Week 7 description', expanded=False):
-        st.markdown(text_dict['description'])
-
-    st.markdown(text_dict['Header 1'])
+    st.header('Bactearial Growth Physiology')
+     
+    name = 'Week 4 description'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
 
 
 # Navigator
@@ -213,7 +262,7 @@ topic_dict = {
     'week 2': week2,
     'week 3': week3,
     'week 4': week4,
-    #'week 5': week5,
+    'week 5': week5,
     #'week 6': week6,
     #'week 7': week7,    
     }
