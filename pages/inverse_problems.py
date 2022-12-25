@@ -527,6 +527,7 @@ def week4():
 
         n_dims = np.arange(2,10)
         p = np.pi/2**n_dims
+        cols[1].markdown('p = np.pi/2**n_dims')
         plt.title('guess', color='white')
         plt.plot(n_dims, p, c='black', lw=2, ls='--', label="guess")
         plt.xlabel('number of dimensions', color='white')
