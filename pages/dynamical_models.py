@@ -236,13 +236,46 @@ def week5():
 
 
 def week6():
-    text_dict = getText_prep(filename = text_path+'week5.md', split_level = 1)
+    text_dict = getText_prep(filename = text_path+'week6.md', split_level = 1)
     
-    st.header('Bactearial Growth Physiology')
+    st.header('Signal transduction')
 
-    name = 'Week 4 description'
+    name = 'Week 6 description'
     with st.expander(name, expanded=False):
         st.markdown(text_dict[name])
+     
+    name = 'Beginning of signal transduction'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+     
+    name = 'Signla transduction involves many step'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+     
+    name = 'A well studied example of sinal transduction'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+     
+    name = 'How tumbling frequency depends on ligand concentraion'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
+    name = 'Chemotaxis requires adaptation'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+     
+    name = 'Modeling chemotaxis'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+     
+    name = 'Signal transduction in space'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+     
+    name = 'Cell-to-cell communication'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+     
      
      
 def week7():
@@ -263,7 +296,7 @@ topic_dict = {
     'week 3': week3,
     'week 4': week4,
     'week 5': week5,
-    #'week 6': week6,
+    'week 6': week6,
     #'week 7': week7,    
     }
 
