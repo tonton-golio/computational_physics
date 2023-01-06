@@ -69,7 +69,7 @@ Equation for methylation/demethylation:
 $$
     \frac{\mathrm{d} [E_m]}{\mathrm{d} t}
     =
-    k^R [\mathrm{CheR}] - \frac{k^B B*(l) E_m}{K_M^B+E_m}
+    k^R [\mathrm{CheR}] - \frac{k^B B^{*}(l) E_m}{K_M^B+E_m}
 $$
 
 # Signal transduction in space
