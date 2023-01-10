@@ -1,34 +1,26 @@
 
-# Header 1
+# 1
+## Least-squares - Tikonov regularization
+Least square in the case of inverse problems is quite straight forward:
+minmize the norm of $g(m)-d$, in which $g$ is the function, $m$ are the parameters and $d$ is the observed data.
 
-###### Monte Carlo
-> We wanna sample our space, typically using Monte Carlo... This is done to save compute. We will save a point depending on the value evaluated at that specific parameter configuration.
+This simple approach is however prone to overfitting.
 
-> If we wanna locate the minimum on an array of size $n=8$, we must sub-divide our space and ask "which contains the extrema". The number of questions meccesitated in obtaining the extrema is $\log_2(n)$.
-
-> in the case where we dont have equiprobable events, we use $H(p_k) = \sum_k p_k \log(\frac{1}{p})$ to define the entropy.
-
-> This case above is only valid for the discrete case however... How do we expand to the continous domain?!?!?!?!!?
-
-> We do this:
+We thus have Tikhonov regularization, which for linear regression can be represented by the following cost function:
 $$
-    H(f) = -\int_{-\infty}^\infty f(x)\log_2(f(x))dx
+\mathcal{L} = ||d - g(m)||^2 + \epsilon \times ||m||^2
 $$
-> it not really entropy because we made it by subtraction of two functions. Thus we call it differential entropy.
+Where:
+$\epsilon$ is the regularization parameter, a scalar that determines the strength of the regularization term.
 
-> @Horiike --> I love this way of typing 🤍
+The cost function is minimized over the parameters in order to obtain the optimal solution of Ridge Regression.
 
-
-> Relative entropy is translation invaritant: Also called the Kullback Leibler distance between $p(x)$ and $q(x)$, i.e., the different between two probability densities.
-$$
-    D(p||q) = \sum_x p(x)\log\frac{p(x)}{q(x)}
-$$
-which has the properties: 
+The above cost function can be minimized by solving the following regularized normal equations:
 
 $$
-    D(p||q) \geq 0\\
-    D(p||p) = 0 \\
+    m = (X^TX + \epsilon I)^-1 \cdot X^TY
 $$
+Where X is the training data input, Y is the training data output, and I is the identity matrix.
 
 
 
