@@ -11,3 +11,5 @@ networkx
 graphviz
 yfinance
 streamlit_toggle_switch
+numba
+cv2

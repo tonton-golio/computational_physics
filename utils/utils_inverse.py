@@ -13,7 +13,6 @@ import matplotlib.pyplot as plt
 from scipy.constants import gravitational_constant
 import matplotlib.cm as cm
 import matplotlib as mpl
-from tqdm import tqdm
 from matplotlib.gridspec import GridSpec
 import streamlit as st
 from numba import prange, jit
