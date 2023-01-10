@@ -4,20 +4,36 @@ import streamlit_toggle as tog
 
 #"Course taught by: Klaus Mosegaard."
 
-def week1():
-    text_dict = getText_prep(filename = text_path+'week1.md', split_level = 1)
+def landingPage():
+    ''
+    """# Inverse Problems"""
+    text_dict = getText_prep(filename = text_path+'landingPage.md', split_level = 1)
+    for key in text_dict:
+        text_dict[key]
 
-    # Notes
-    with st.expander('Lecture notes', expanded=False):
-        cols = st.columns(2)
-        cols[0].markdown(text_dict['Header 1'])
-        cols[1].markdown(text_dict['Header 2'])
+    """
+    Inverse problems are problems in which the goal is to infer an unknown cause from its known effect.
+    """
 
-        st.markdown(text_dict['Examples'])
-        st.markdown(text_dict['Header 3'])
+    cols = st.columns(3)
+    cols[0].image('https://nci-media.cancer.gov/pdq/media/images/428431-571.jpg')
+    cols[0].caption('magnetic resonance imaging (MRI)')
+
+    cols[1].image('https://d2jx2rerrg6sh3.cloudfront.net/image-handler/ts/20170104105121/ri/590/picture/Brain_SPECT_with_Acetazolamide_Slices_thumb.jpg')
+    cols[1].caption('single-photon emission computed tomography (SPECT')
+
+
+    cols[2].image('http://www.earth.ox.ac.uk/~smachine/cgi/images/welcome_fig_tomo_depth.jpg')
+    cols[2].caption('Seismic tomography')
+
+    '''
+    Inverse problems lets us *see* what's inside.
+    '''
 
     
 
+def DensityVar_LeastSquare():
+    text_dict = getText_prep(filename = text_path+'week1.md', split_level = 1)
     # Excercise
     st.markdown(text_dict['Ex 1'])
 
@@ -68,143 +84,12 @@ def week1():
 
     st.markdown(text_dict['Ex 5'])
     st.pyplot(fig)
+    st.caption('Precision becomes as resolution is increased.')
     
-def week2():
-    text_dict = getText_prep(filename = text_path+'week2.md', split_level = 1)
+def Least_squares():
+    text_dict = getText_prep(filename = text_path+'Tikonov.md', split_level = 1)
+    st.markdown(r'{}'.format(text_dict['1']))
 
-    # Notes
-    with st.expander('Lecture notes monday', expanded=False):
-        #cols = st.columns(2)
-        st.markdown(text_dict['Header 1'])
-
-
-    # Ex
-    with st.expander('Excercise: The Good, The Bad, and The Ugly ', expanded=False):
-        st.markdown("""
-            ## Error Propagation in Inverse Problems 
-            ### The Good, The Bad, and The Ugly 
-
-            $$
-                d = Gm
-            $$
-            """)
-
-        inv = np.linalg.inv
-
-        cols = st.columns(3)
-
-        
-        G = np.array([[1.0, 0.0],[0.0, 0.7]])
-        rank = np.linalg.matrix_rank(G)
-
-        d_pure = np.array([[0.500],[0.001]])
-        m_pure = inv(G)@d_pure
-        
-        cols[0].write('#### The good')
-        cols[0].write(r"""The matrix $G$ """)
-        cols[0].write(G) 
-        cols[0].write(f"""has rank= {rank}"""),
-        cols[0].write(r"""Given the data, $d_\text{pure}$""")
-        cols[0].write(d_pure)
-        cols[0].write(r"we obtain the parameter vector $m_\text{pure}$ : ")
-        cols[0].write(m_pure)
-
-        cols[0].write('##### Now lets add some noise:')
-        n = np.array([[0.008],[0.011]])
-        n_norm = np.linalg.norm(n)
-        cols[0].write('n_norm')
-        cols[0].write(n_norm)
-
-        d_norm = np.linalg.norm(d_pure)
-
-
-        cols[0].write('signal to noise ratio: ')
-        cols[0].write(d_norm/n_norm)
-
-
-        d = d_pure + n
-
-        m = inv(G) @ d
-        cols[0].write('m:')
-        cols[0].write(m)
-
-        propagated_noise = np.linalg.norm(m - m_pure)
-        cols[0].write('propagated_noise')
-        cols[0].write(propagated_noise)
-        cols[0].write('ratio')
-        cols[0].write(propagated_noise/np.linalg.norm(m_pure))
-
-
-        # The bad
-        cols[1].write('#### The bad')
-        G_B = np.array([[1.0, 0.0],[0.002, 0.0]])
-        rank = np.linalg.matrix_rank(G_B)
-
-        d_pure = np.array([[0.500],[0.001]])
-        m_pure = inv(G) @ d_pure
-        
-        cols[1].write(r"""The matrix $G_B$ """)
-        cols[1].write(G_B) 
-        cols[1].write(f"""has rank= {rank}"""),
-        cols[1].write(r"""Given the data, $d_\text{pure}$""")
-        cols[1].write(d_pure)
-        cols[1].write(r"we obtain the parameter vector $m_\text{pure}$ : ")
-        cols[1].write(m_pure)
-
-
-        cols[2].write('#### The ugly')
-        G = np.array([[1.0, 0.0],[0.002, 10e-24]])
-        rank = np.linalg.matrix_rank(G)
-
-        d_pure = np.array([[0.500],[0.001]])
-        m_pure = inv(G)@d_pure
-        
-        cols[2].write(r"""The matrix $G$ """)
-        cols[2].write(G) 
-        cols[2].write(f"""has rank= {rank}"""),
-        cols[2].write(r"""Given the data, $d_\text{pure}$""")
-        cols[2].write(d_pure)
-        cols[2].write(r"we obtain the parameter vector $m_\text{pure}$ : ")
-        cols[2].write(m_pure)
-
-        cols[2].write('##### Now lets add some noise:')
-        n = np.array([[0.008],[0.011]])
-        n_norm = np.linalg.norm(n)
-        cols[2].write('n_norm')
-        cols[2].write(n_norm)
-
-        d_norm = np.linalg.norm(d_pure)
-
-
-        cols[2].write('signal to noise ratio: ')
-        cols[2].write(d_norm/n_norm)
-
-
-        d = d_pure + n
-
-        m = inv(G) @ d
-        cols[2].write('m:')
-        cols[2].write(m)
-
-        propagated_noise = np.linalg.norm(m - m_pure)
-        cols[2].write('propagated_noise')
-        cols[2].write(propagated_noise)
-        cols[2].write('ratio')
-        cols[2].write(propagated_noise/np.linalg.norm(m_pure))
-
-
-    # excercise: entropy
-    with st.expander('Excercise: entropy', expanded=False):
-        st.markdown(r"""
-            define the entropy of a probability density 𝑓(𝑥) as: 
-            $$
-                H(f) = -\int_X f(x) \log f(x) dx
-            $$    
-            since its a pdf $\int_X f(𝑥) dx = 1$
-            """)
-
-    with st.expander('Lecture notes Wednesday', expanded=False):
-        st.markdown(text_dict['Header 2'])
 
 def ass1():
     import numpy as np
@@ -509,93 +394,27 @@ def ass1():
 
     st.markdown(text_dict['A delta function'])
 
-def week4():
+def monteCarlo():
 
     text_dict = getText_prep(filename = text_path+'week4.md', split_level = 1)
 
     st.title('Non linearities')
     cols = st.columns(2)
-    cols[0].markdown(text_dict['Header 1'])
-    cols[1].markdown(text_dict['Header 2'])
-    st.markdown(text_dict['Header 3'])
+    st.markdown(text_dict['Header 1'])
+    st.markdown(text_dict['Header 2'])
+
     
-    
-    
-    def sphereINcube_demo(data = []):
-        # guess
-        fig_guess, ax_guess = plt.subplots(figsize=(4,2))
-
-        n_dims = np.arange(2,10)
-        p = np.pi/2**n_dims
-        cols[1].markdown('p = np.pi/2**n_dims')
-        plt.title('guess', color='white')
-        plt.plot(n_dims, p, c='black', lw=2, ls='--', label="guess")
-        plt.xlabel('number of dimensions', color='white')
-        plt.ylabel(r'% inside unit hypersphere', color='white')
-        #
-        plt.legend()
-        
-        logscale = tog.st_toggle_switch(label="Log scale", 
-                    key="Key1", 
-                    default_value=False, 
-                    label_after = False, 
-                    inactive_color = '#D3D3D3', 
-                    active_color="#11567f", 
-                    track_color="#29B5E8"
-                    )
-        cols = st.columns(2)
-        #logscale = cols[1].radio('log scale?', [True, False])
-        if logscale:plt.yscale('log')
-        c = cols[1].empty()
-
-        
-        # accept, reject to get pi
-        
-
-        # inputs
-        n_points = cols[0].select_slider('Number of points', np.logspace(1,14,14,base=2, dtype=int))
-        
-        
-        n_dim = cols[0].select_slider('Number of dimensions', np.arange(2,10,1, dtype=int))
-        cols[0].markdown('My guess might be slightly high?... Also, notice how in 3 dim. a ball (sort of) appeares.')
-        p_norm = cols[0].slider('p (for norm)', 0.,8.,2.)
-        cols[0].markdown(r"""
-        $$
-            ||x||_p = \left(\sum_i |x_i|^p\right)^{1/p}
-        $$
-        """)
-
-        # make vecs and check norms
-        X = np.random.uniform(-1,1,(n_points, n_dim))
-        fig, ax = plt.subplots(figsize=(5,5))
-        norm = np.sum(abs(X)**p_norm, axis=1)
-
-        # plotting
-        colors = [{0 : 'gold', 1 : 'green'}[n<=1] for n in norm]
-        ax.scatter(X[:,0], X[:,1], c=colors,  norm = np.sum(X**2, axis=1)**.5, cmap='winter', alpha=.4)
-        extent = 1.1 ; ax.set(xlim=(-extent,extent), ylim=(-extent,extent))
-        
-        # output
-        cols[1].pyplot(fig)
-        percentage = sum(abs(norm)<1)/n_points
-        cols[0].write('Percentage inside the unit hypersphere = {:0.2f} giving us $\pi = {:0.4f}$'.format(percentage, percentage*4))
-        
-        data.append((n_dim, percentage))
-        for d, perc in data:
-            ax_guess.scatter(d, perc, label="data")
-        ax_guess.legend()
-        c.pyplot(fig_guess)
-        
-        cols[1].caption("we just show the first two dimensions, and the color indicates whether we are within the unit (hyper)sphere")
-    sphereINcube_demo()
     
 
 # Navigator
 topic_dict = {
-    'Linear Tomography' : ass1,
-    'week 1': week1,
-    'Week 2': week2, 
-    'Non linearities': week4,
+    "Landing Page" : landingPage,
+    #'Tikonov': Least_squares, 
+    #'Monte Carlo': monteCarlo,
+
+    'Density variations (Tikonov)': DensityVar_LeastSquare,
+    'Linear Tomography (Tikonov)' : ass1,
+    'Vertical Fault (Monte Carlo)': ass2,
   }
 
 topic = st.sidebar.selectbox("topic" , list(topic_dict.keys()))
