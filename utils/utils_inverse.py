@@ -17,7 +17,6 @@ from matplotlib.gridspec import GridSpec
 import streamlit as st
 from numba import prange, jit
 import pandas as pd
-import cv2
 from time import time
 
 
@@ -277,7 +276,7 @@ def ass2():
 
     st.markdown('# Height and density of slabs')
     cols = st.columns(2)
-    img = cv2.imread('assets/inverse_problems/images/diagram_fault.png')
+    img = plt.imread('assets/inverse_problems/images/diagram_fault.png')
 
     cols[1].image(img)
 
