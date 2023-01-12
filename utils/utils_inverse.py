@@ -6,18 +6,10 @@ from time import time
 from time import sleep
 import matplotlib as mpl
 from scipy.constants import gravitational_constant
-
-
-import numpy as np
-import matplotlib.pyplot as plt
-from scipy.constants import gravitational_constant
 import matplotlib.cm as cm
-import matplotlib as mpl
 from matplotlib.gridspec import GridSpec
-import streamlit as st
 from numba import prange, jit
-import pandas as pd
-from time import time
+
 
 
 def set_rcParams():

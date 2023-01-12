@@ -212,10 +212,104 @@ def DensityVar_LeastSquare():
     st.caption('Precision becomes as resolution is increased.')
     
 def Least_squares():
-    text_dict = getText_prep(filename = text_path+'Tikonov.md', split_level = 1)
-    st.markdown(r'{}'.format(text_dict['1']))
+    def old():
+        text_dict = getText_prep(filename = text_path+'Tikonov.md', split_level = 1)
+        st.markdown(r'{}'.format(text_dict['1']))
+    
+    ''
+    '# Least Squares'
+    r"""
+    ### What is the idea and the assumptions behind the least-squares solution?  
+    The least-squares solution is a method for solving inverse problems that is based on the idea of minimizing the difference between the observed data and the model predictions. It is a deterministic method that finds a single, unique solution to the problem based on a set of predetermined equations.
+
+    The basic idea behind the least-squares solution is to minimize the sum of the squares of the residuals, which are the differences between the observed data and the model predictions. Mathematically, this is represented by the following cost function:
+
+    $$ \mathcal{L}(m) = \frac{1}{2}(d-g(m))^T(d-g(m)) $$
+
+    Where $d$ is the observed data, $m$ is the vector of parameters, and $g(m)$ is the model.
+
+    The least-squares solution is obtained by finding the values of m that minimize the cost function $\mathcal{L}(m)$. This can be done using optimization algorithms, such as gradient descent or Newton's method. The solution is the point estimate of the parameters that minimizes the sum of the squares of the residuals.
+
+    The least-squares solution assumes that the noise in the data is Gaussian and independent, and that the model is linear in the parameters. Additionally, it assumes that the model is a good representation of the underlying physical process, and that the parameters are uniquely determined by the data. These assumptions are crucial for the method to work, and they may not always be valid in practice.
+
+    The method is computationally efficient and easy to implement, and it provides a single point estimate of the parameters. However, it does not take into account the uncertainty in the data, the model or the parameters.
+
+    ### Explain the Tikhonov solution to a linear inverse problem 
+
+    The Tikhonov solution is a regularization method for solving linear inverse problems. It is a generalization of the least-squares solution that takes into account the uncertainty in the data and the model, and it is used to stabilize the solution and to prevent overfitting. The Tikhonov solution is based on the idea of adding a regularization term to the cost function, which penalizes large values of the parameters.
+
+    The Tikhonov solution is obtained by minimizing the following cost function:
+
+    $$ \mathcal{L}(m) = \frac{1}{2}(d-g(m))^T(d-g(m)) + \frac{\varepsilon}{2}m^Tm $$
+
+    Where $d$ is the observed data, $g(m)$ is the model, $m$ is the vector of parameters, and $\varepsilon$ is a regularization parameter that controls the trade-off between the fit to the data and the smoothness of the solution. The first term in the cost function is the least-squares term, and the second term is the regularization term.
+
+    The Tikhonov solution is obtained by finding the values of m that minimize the cost function $\mathcal{L}(m)$. This can be done using optimization algorithms such as gradient descent or Newton's method. The solution is a point estimate of the parameters that balances the fit to the data and the smoothness of the solution, depending on the value of the regularization parameter λ.
+
+    The Tikhonov solution is particularly useful for linear inverse problems where the solution is ill-posed, meaning that the solution is not unique or stable. It is also used when the data is noisy or incomplete and the model is uncertain. The regularization term in the Tikhonov solution helps to stabilize the solution by adding prior information about the smoothness of the solution, which can be expressed by different norms such as L1 or L2. By controlling the value of the regularization parameter λ, it is possible to find a balance between fitting the data and avoiding overfitting.
+
+    It is worth noting that the Tikhonov solution is also known as Ridge Regularization. It is a powerful tool for solving ill-posed linear inverse problems, but it requires the choice of the appropriate regularization term and the estimation of the regularization parameter. Additionally, it may not be suitable for non-linear or non-smooth problems.
+
+    ### Is there a connection between a least-squares solution and a probabilistic solution? 
+
+    Yes, there is a connection between a least-squares solution and a probabilistic solution. The least-squares solution is a deterministic method for solving inverse problems, which finds a single, unique solution by minimizing the sum of the squares of the residuals. On the other hand, a probabilistic solution is a statistical method that estimates the probability distribution of the parameters given the data and the model.
+
+    However, the least-squares solution can be seen as a special case of the probabilistic solution, when the noise in the data is assumed to be Gaussian and independent, and the model is linear in the parameters. Under these assumptions, the least-squares solution is equivalent to the maximum likelihood estimate of the parameters.
+
+    Additionally, the Tikhonov solution can be also seen as a special case of a probabilistic solution, when the regularization term is added to the likelihood function, this is known as a MAP (Maximum A posteriori) estimate, which is the mode of the posterior distribution.
+
+    In summary, the least-squares solution and the Tikhonov solution are deterministic methods that can be seen as special cases of the probabilistic solution when certain assumptions are made about the noise and the model. Probabilistic methods provide a more general and flexible framework for solving inverse problems and take into account the uncertainty in the data and the model.
 
 
+    
+    ### Explain the concept of resolution for a linear problem
+    The resolution of a linear inverse problem refers to the ability of the method to recover small and distinct features in the solution. In other words, it is a measure of how well the method can distinguish between different values of the parameters. The resolution of a linear inverse problem depends on the sensitivity of the data to the parameters, which is determined by the design of the measurement system and the properties of the model.
+
+    A high-resolution method is able to recover small and distinct features in the solution with high accuracy, while a low-resolution method is not able to recover these features with the same accuracy. The resolution of a method can be affected by various factors such as the noise level, the accuracy of the model, the dimensionality of the problem, and the regularization or stability of the method.
+
+    In general, linear inverse problems tend to have a trade-off between resolution and stability, which means that increasing the resolution of the solution can lead to a less stable and more uncertain solution. There are several ways to increase the resolution of a linear inverse problem, such as by increasing the number of measurements, by improving the accuracy of the model, or by using regularization techniques.
+
+    For example, the Tikhonov solution is a regularization method that can be used to increase the resolution of a linear inverse problem by balancing the fit to the data and the smoothness of the solution. By controlling the value of the regularization parameter, it is possible to increase the resolution of the solution without sacrificing stability.
+
+
+
+
+    """
+
+def Weakly_nonlinear():
+    ''
+    '# Weakly nonlinear problems and optimization'
+    """       
+    ### What is a weakly non-linear problem? 
+    A weakly non-linear problem is an inverse problem where the relationship between data and parameters is non-linear, but can be approximated by a linear model in a neighborhood of a given point. They can be solved by linearizing the problem around a reference point, this is known as a linearization method. This method typically involves iterating between linearizing the problem and solving the linearized problem.
+
+    ### Explain the use of steepest decent algorithms in the solution of weakly non-linear problems? 
+    
+    Steepest descent algorithms are optimization methods that can be used to solve weakly non-linear problems. These algorithms are based on the gradient of a cost function, which is a measure of the difference between the observed data and the model predictions (think Kullback-Leibler divergence). The algorithm minimizes the cost function by iteratively updating the parameters in the direction of the negative gradient.
+
+    In the context of weakly non-linear problems, the cost function is typically MSE. The gradient of the cost function is the vector of the partial derivatives of the cost function with respect to the parameters. 
+
+    The steepest descent algorithm can be seen as an extension of the linear least-squares solution to weakly non-linear problems. It is a simple and easy-to-implement method that can be used to find a local minimum of the cost function. However, it has some limitations, such as being sensitive to the choice of the initial parameters, being stuck in local minima, and being slow to converge for high-dimensional problems.
+    
+    ### What convergence difficulties are there when using the steepest decent algorithms? 
+
+    Steepest descent algorithms have several convergence difficulties, such as: 
+    * finding local minima instead of global minima, 
+    * slow convergence for high-dimensional problems,
+    * sensitivity to initial parameters,
+    * non-convexity in cost function,
+    * difficulty in choosing the right step size and getting stuck in a plateau of cost function.
+    
+    These difficulties can be overcome by using more advanced optimization techniques such as conjugate gradient or Newton-Raphson method, which have faster convergence rates and are less sensitive to the initial parameters.
+
+    ### What are the challenges to the efficiency (speed) of steepest decent algorithms when solving weakly non-linear problems? 
+
+    There are several challenges to the efficiency (speed) of steepest descent algorithms when solving weakly non-linear problems:
+
+    * High-dimensional problems: The steepest descent algorithm can be slow to converge for high-dimensional problems, as the cost function may have many local minima and the algorithm needs to explore the parameter space extensively to find the global minimum.
+    * Computational complexity: The steepest descent algorithm requires the calculation of the gradient of the cost function at each iteration, which can be computationally expensive for large or complex models.
+    * Line search: The steepest descent algorithm requires a line search to determine the step size at each iteration. This process can be computationally intensive and slow the algorithm down.
+    """
 def ass1():
     import numpy as np
     import matplotlib.font_manager
@@ -528,9 +622,8 @@ def monteCarlo():
         cols = st.columns(2)
         st.markdown(text_dict['Header 1'])
         st.markdown(text_dict['Header 2'])
-
+    '# Monte Carlo'
     """
-    # Monte Carlo
     ### For which type of inverse problems are Monte Carlo (MC) methods used? 
     Monte Carlo (MC) methods are often used for inverse problems that involve complex or high-dimensional systems, where the likelihood function and/or the prior distribution cannot be easily calculated or integrated analytically. These methods involve generating a large number of random samples from the prior distribution, and then evaluating the likelihood function for each sample. The samples that have a high likelihood are considered to be more probable, and they are used to estimate the posterior distribution.
 
@@ -539,6 +632,47 @@ def monteCarlo():
     MCMC methods are often used for inverse problems that involve high-dimensional or non-linear systems, where the posterior distribution is not trivial to calculate. These methods can be used to approximate the posterior distribution, and thus estimate the unknown parameters of the system. Additionally, these methods can also be used to calculate various quantities of interest, such as credible intervals or the expected value of a function of the parameters.
 
     MCMC methods are also used in a wide range of applications such as Bayesian statistics, physics, engineering, image processing, signal processing, and machine learning.
+
+    ### What is the difference between an MC solution and a "deterministic" solution? 
+    An "deterministic" solution of an inverse problem refers to a method that finds a single, unique solution to the problem based on a set of predetermined equations or algorithms. These methods typically involve optimization algorithms or analytical solutions that are designed to find the best fit of the model to the data. They provide a point estimate of the parameters of the system, which is a single set of parameter values that maximizes the likelihood or minimizes some cost function.
+
+    On the other hand, a Monte Carlo (MC) solution of an inverse problem refers to a method that generates a large number of possible solutions, called samples, and the solution is represented by a probability distribution over the parameter space, rather than a single point estimate. These methods involve generating a large number of random samples from the prior distribution, and then evaluating the likelihood function for each sample. The samples that have a high likelihood are considered to be more probable, and they are used to estimate the posterior distribution.
+
+    The main difference between these two solutions is that deterministic methods provide a single point estimate, which is a fixed set of parameter values, while MC methods provide a probability distribution that represents the uncertainty of the parameters. MC methods can take into account the uncertainty in the data and the model, and thus provide more robust and reliable solutions, especially when the data is noisy or incomplete. Additionally, MC methods can also be used to calculate various quantities of interest, such as credible intervals or the expected value of a function of the parameters, which can be very useful in many applications.
+
+    ### What kind of information about the solution of an inverse problem can be obtained by an MC method? 
+
+    A Monte Carlo (MC) method for solving an inverse problem generates a large number of possible solutions, called samples, and the solution is represented by a probability distribution over the parameter space, rather than a single point estimate. By analyzing the samples, it is possible to obtain various types of information about the solution of the inverse problem, such as:
+
+    * Point estimates: The most likely values of the parameters can be estimated by finding the peak of the posterior distribution, or by calculating the mean or median of the samples.
+
+    * Uncertainty: The uncertainty of the parameters can be quantified by analyzing the spread of the samples, such as by calculating the standard deviation, interquartile range, or credible intervals.
+
+    * Correlations: The correlation between different parameters can be analyzed by calculating the covariance or correlation matrix of the samples.
+
+    * Model validation: The model can be validated by comparing the predicted data with the observed data, and by analyzing the residuals or the prediction intervals.
+
+    * Model selection: The relative evidence for different models can be analyzed by comparing the posterior probabilities or the Bayesian Information Criterion (BIC) of the models.
+
+    * Sensitivity analysis: The sensitivity of the solution to different inputs can be analyzed by perturbing the data or the model and by analyzing the effect on the samples.
+
+    * Visualization: The samples can be visualized in different ways, such as by plotting the histograms, scatter plots, or density plots, which can help to understand the shape of the posterior distribution and the patterns in the data.
+
+    In summary, Monte Carlo methods can provide a lot of information about the solution of an inverse problem, including point estimates, uncertainty, correlations, model validation, model selection, sensitivity analysis, and visualization.
+
+
+    ### What are the weaknesses of MC methods when only a finite number of samples can be produced? 
+
+    When only a finite number of samples can be produced, Monte Carlo methods can have weaknesses such as:
+
+    * Convergence issues and inaccuracies in approximating the posterior,
+    * Poor mixing and slow convergence of the Markov Chain,
+    * High auto-correlation between samples leading to underestimation of uncertainty,
+    * Computational challenges for high-dimensional systems,
+    * Difficulty in distinguishing between different models,
+    * Sensitivity to the choice of the prior distribution.
+
+    In summary, MC methods can provide a lot of information about the solution of an inverse problem, but their accuracy and reliability may be limited when only a finite number of samples can be produced. It is important to carefully design the sampling strategy and to analyze the samples in order to understand the convergence and the uncertainty of the solution.
     """
     
 
@@ -547,9 +681,9 @@ topic_dict = {
     "Landing Page" : landingPage,
     'Information theory' : informationTheory,
     'Probabilistic inference' : Probabilistic,
-    #'Tikonov': Least_squares, 
-    #'Monte Carlo': monteCarlo,
-
+    'Least-squares / Tikonov': Least_squares, 
+    'Monte Carlo': monteCarlo,
+    'Weakly nonlinear problems and optimization' : Weakly_nonlinear, 
     'Density variations (Tikonov)': DensityVar_LeastSquare,
     'Linear Tomography (Tikonov)' : ass1,
     'Vertical Fault (Monte Carlo)': ass2,
