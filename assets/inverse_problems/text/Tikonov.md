@@ -162,18 +162,6 @@ To obtain the transformed problem just use the singular value decomposition (SVD
 Sorry I didn't listen very well... (but, fear not: I'll be back with the fine grit sandpaper)
 
 
-# assignment
-
-linear tomography
-
-tomohraphy is sending rays through an object to determine the structure of said object.... linear = straight rays.
-
-The medium dampens the the waves....
-
-in this case we have velocity tomography --> waves will change speed when going through a medium
-
-
-
 
 
 

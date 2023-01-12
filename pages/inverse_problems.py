@@ -30,7 +30,132 @@ def landingPage():
     Inverse problems lets us *see* what's inside.
     '''
 
+def informationTheory():
+    ''
+    r"""
+    ## Information theory
+    The suprise of an event is described by the information of that event, $I(E)$. The information of an event is given by the logarithm of the reciprocal probability;
+    $$
+    \begin{align*}
+        \log\left(\frac{1}{p(E)}\right)
+    \end{align*}
+    $$
+    So if we flip a coin, expecting heads, and getting tails, we are **1 bit** suprised. Entropgy describes the expected amount of surprisal:
+    $$
+    \begin{align*}
+        H(p) &= \sum_i p(E_i)I(E_i)\\
+        H    &= -\sum_i p_i\log_2(p_i)
+    \end{align*}
+    $$
+    This is the **Shannon entropy**.
     
+
+    By expanding to the continous domain, we obtain the definition of information in for probability densities:
+    $$
+        H(f) = -\int_{-\infty}^\infty f(x)\log_2(f(x))dx
+    $$
+    > We call it differential entropy. Differential entropy can take negative values and it is not necessarily a measure of the amount of information.
+
+    > Relative entropy is translation invaritant
+
+    ### Kullback Leibler divergence
+
+    The Kullback-Leibler divergence (KL-divergence) is a measure of the difference between two probability distributions. 
+    
+    It is defined as the expected value of the logarithm of the ratio of the probability density functions of the distributions, with respect to the probability measure of one of the distributions. 
+    $$
+        D_\text{KL}(p||q) = \sum_x p(x)\log\frac{p(x)}{q(x)}
+    $$
+    
+    It is a non-negative value and it is zero if and only if the two distributions are identical. It is used to measure the amount of information lost when approximating one distribution with another.
+
+
+    ### How do you choose a good model parameterization for inverse problems? 
+
+    * Use physical insight to ensure that the parameters have clear physical interpretation and are consistent with the known physics of the problem.
+    * Utilize sparsity and parsimony to improve computational efficiency and generalization ability by using models with a small number of parameters.
+    * Incorporate prior information about the problem to guide the choice of model parameterization.
+    * Use regularization to constrain the model parameterization and improve the stability of the solution.
+    * Empirically validate the performance of the model parameterization by testing it on experimental or observational data.
+
+    *It's worth noting that choosing a good model parameterization for inverse problems is often a trade-off between the accuracy and the computational complexity of the solution. It's essential to find a balance between the two.*
+    """
+    
+
+def Probabilistic():
+    ''
+    r"""
+    # Probabilistic formulation of inverse problems
+    
+    ### How are inverse problems formulated in a Bayesian setting? 
+
+    In a Bayesian setting, an inverse problem is formulated as a probabilistic inference problem. The goal remains the inferencce of parameters given some observed data and a prior probability distribution over the parameters. The prior distribution encodes prior information about the parameters, such as physical constraints or previous measurements. 
+    
+    The likelihood function, which is a function of the observed data and the parameters, quantifies the probability of the data given the parameters. *We can consider this to be inverse loss.*
+    
+
+    Together, the prior and likelihood functions define the posterior distribution over the parameters, which is the target of the inference. This distribution can be calculated using Bayes' theorem,
+    
+    $$ 
+        P(H|E) = \frac{P(E|H)P(H)}{P(E)}
+    $$
+    
+    The posterior can be approximated using numerical methods such as Markov chain Monte Carlo (**MCMC**).
+
+    ### Advantages
+    * The Bayesian formulation provides a natural way to incorporate prior information or knowledge about the parameters of the system into the inference process. This allows for a more robust and efficient estimation of the parameters, especially when the data is noisy or incomplete.
+    * It provides a probabilistic interpretation of the parameters, rather than point estimates. The posterior distribution represents our uncertainty about the parameters given the data, informing us of credible intervals.
+    * Additionally, the Bayesian formulation can be used to model more complex and realistic systems, including systems with multiple parameters and non-linear relationships between the parameters and the data. Furthermore, it can also be used to model systems with uncertain or missing data, missing model components or with model uncertainty.
+    * Finally, Bayesian methods allow to naturally incorporate uncertainty.
+
+    ### Disadvantages
+    * The Bayesian formulation can be computationally expensive, especially for high-dimensional or complex systems. The calculation of the posterior distribution typically requires solving high-dimensional integrals, which can be challenging or intractable for some problems. 
+    > Markov Chain Monte Carlo (MCMC) methods, which are often used to approximate the posterior, can also be computationally intensive and may require a large number of iterations to converge.
+
+    * Another weakness is that the choice of prior distribution is subjective, it may not always be clear how to choose a prior that accurately represents the uncertainty in the parameters, and different prior choices can lead to different posterior distributions and thus different conclusions.
+
+    * Additionally, Bayesian methods can also be sensitive to the choice of the likelihood function, which determines how the data is compared to the model predictions, and it is not always straightforward how to select the best likelihood function for a given problem.
+
+    * Finally, it may not always be clear how to decide between different models or hypotheses, as Bayesian methods can provide evidence for multiple models, even if one model is clearly better than the others.
+    
+    ### Tarantola-Valette Formalism
+    The Tarantola-Valette formalism is a Bayesian approach to inverse problems that uses a probabilistic formulation to estimate the unknown parameters of a system. The general form of an inverse problem using this formalism can be represented as follows:
+
+    Given a set of observed data, $d$, and a mathematical model, $g(m)$, that describes the relationship between the unknown parameters, m, and the data, the goal is to estimate the most likely values of $m$ given the data and some prior information about $m$.
+
+    The likelihood function, which represents the probability of the data given the parameters, is defined as:
+
+    $$
+        P(d|m) = \frac{1}{(2\pi)^{n/2} |V|^{1/2}} exp(-\frac{1}{2}(d-g(m))^TV^{-1}(d-g(m))
+    $$
+
+    Where $V$ is the covariance matrix of the measurement errors and n is the number of data points.
+
+    The prior information about the parameters is represented by a prior probability distribution, $P(m)$, which is assumed to be Gaussian with mean $\mu$ and covariance matrix $V$:
+
+    $$
+        P(m) = \frac{1}{(2\pi)^{n/2} |V|^{1/2}} exp(-\frac{1}{2}(m-\mu)^TV^{-1}(m-\mu))
+    $$
+
+    The posterior distribution, which represents the probability of the parameters given the data, is calculated using Bayes' theorem:
+
+    $$
+        P(m|d) \propto P(d|m)P(m)
+    $$
+
+    The most likely values of m can be estimated by finding the peak of the posterior distribution, which can be done using optimization algorithms or Markov Chain Monte Carlo (**MCMC**) methods.
+    
+
+    ### How does the Tarantola-Valette formalism differ from the Bayesian formulation? 
+
+    The Tarantola-Valette formalism is a specific implementation of the Bayesian formulation for inverse problems. Both approaches use a probabilistic formulation to estimate the unknown parameters of a system, and they both rely on Bayes' theorem to calculate the posterior distribution. However, the Tarantola-Valette formalism assumes that the noise in the data is Gaussian and that the prior and likelihood are both Gaussian distributions.
+
+    This assumption of Gaussian distributions may simplify the computations, but also it may not be always the case in practice. Additionally, the Tarantola-Valette formalism is a linearized Bayesian approach, it makes assumptions about the linearity of the model and the Gaussianity of the error, which might not hold in some situations.
+
+    The Bayesian formulation is more general and flexible, and it can handle non-Gaussian noise and priors, non-linear models, and multiple hypotheses. This generality can make it more computationally intensive or harder to implement, but it is also more suitable for complex and realistic systems.
+
+    In summary, the Tarantola-Valette formalism is a specific Bayesian approach that is based on Gaussian assumptions and linearization, while the Bayesian formulation is a more general approach that can handle a wider range of problems.
+    """
 
 def DensityVar_LeastSquare():
     text_dict = getText_prep(filename = text_path+'week1.md', split_level = 1)
@@ -395,20 +520,33 @@ def ass1():
     st.markdown(text_dict['A delta function'])
 
 def monteCarlo():
+    ''
+    def old():
+        text_dict = getText_prep(filename = text_path+'week4.md', split_level = 1)
 
-    text_dict = getText_prep(filename = text_path+'week4.md', split_level = 1)
+        st.title('Non linearities')
+        cols = st.columns(2)
+        st.markdown(text_dict['Header 1'])
+        st.markdown(text_dict['Header 2'])
 
-    st.title('Non linearities')
-    cols = st.columns(2)
-    st.markdown(text_dict['Header 1'])
-    st.markdown(text_dict['Header 2'])
+    """
+    # Monte Carlo
+    ### For which type of inverse problems are Monte Carlo (MC) methods used? 
+    Monte Carlo (MC) methods are often used for inverse problems that involve complex or high-dimensional systems, where the likelihood function and/or the prior distribution cannot be easily calculated or integrated analytically. These methods involve generating a large number of random samples from the prior distribution, and then evaluating the likelihood function for each sample. The samples that have a high likelihood are considered to be more probable, and they are used to estimate the posterior distribution.
 
-    
+    Markov Chain Monte Carlo (MCMC) methods are a class of MC methods that are particularly useful for inverse problems. These methods involve generating a sequence of samples that are correlated with each other, and they are designed to converge to the true posterior distribution.
+
+    MCMC methods are often used for inverse problems that involve high-dimensional or non-linear systems, where the posterior distribution is not trivial to calculate. These methods can be used to approximate the posterior distribution, and thus estimate the unknown parameters of the system. Additionally, these methods can also be used to calculate various quantities of interest, such as credible intervals or the expected value of a function of the parameters.
+
+    MCMC methods are also used in a wide range of applications such as Bayesian statistics, physics, engineering, image processing, signal processing, and machine learning.
+    """
     
 
 # Navigator
 topic_dict = {
     "Landing Page" : landingPage,
+    'Information theory' : informationTheory,
+    'Probabilistic inference' : Probabilistic,
     #'Tikonov': Least_squares, 
     #'Monte Carlo': monteCarlo,
 
