@@ -687,6 +687,7 @@ topic_dict = {
     'Density variations (Tikonov)': DensityVar_LeastSquare,
     'Linear Tomography (Tikonov)' : ass1,
     'Vertical Fault (Monte Carlo)': ass2,
+    'Glacier thickness (Monte Carlo)' : ass3_glacier_thickness,
   }
 
 topic = st.sidebar.selectbox("topic" , list(topic_dict.keys()))
