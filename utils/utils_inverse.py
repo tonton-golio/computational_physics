@@ -356,7 +356,7 @@ def ass2():
     cols[1].pyplot(fig)
 
 def ass3_glacier_thickness():
-    plt.style.use('bmh')
+    #plt.style.use('bmh')
 
     # functions
     def init_progress_bar():
@@ -486,7 +486,7 @@ def ass3_glacier_thickness():
         
         hs, likelihoods, n_accepted = [h.copy()], [likelihood_], 0
         for i in range(n_itr):
-            h_alt = abs(np.random.normal(h, (abs(likelihood_)**.5 * lr)))
+            h_alt = abs(np.random.normal(h, lr))
             d_alt = obtain_estimate(h_alt, eps)
             likelihood_alt = log_likelihood(h_alt, d_alt,  d_obs)
             
@@ -498,12 +498,12 @@ def ass3_glacier_thickness():
             else:
                 
                 p = np.exp(delta_likelihood*beta)
-                #p
+                #print(p)
                 r = np.random.uniform(0,1)
                 if r<p:
-                    #accept
+                    #print("accept")
                     n_accepted +=1
-                    d, h, lolikelihood_ss_ =d_alt.copy(), h_alt.copy(), likelihood_alt.copy()
+                    d, h, likelihood_ =d_alt.copy(), h_alt.copy(), likelihood_alt.copy()
             
             hs.append(h.copy())
             likelihoods.append(likelihood_)
@@ -541,9 +541,11 @@ def ass3_glacier_thickness():
 
         ax.set(xlabel='itr', ylabel='- log(likelihood)', 
                 yscale='log', #xscale='log'
+                #ylim=(min(L), 10**4)
                 )
-
+        
         ins = ax.inset_axes([0.55,0.55,0.35,0.35])
+        ins.set_xticks([np.mean(acc_ratios)], c='black')
         ins.boxplot(acc_ratios, vert=False)
         ins.grid()
         #ins.title('Boxplot of the acceptance ratio from initializations')
@@ -665,16 +667,18 @@ def ass3_glacier_thickness():
 
     plt.tight_layout()
     plt.close()
-    cols[0].pyplot(fig)
+    cols[1].pyplot(fig)
 
 
 
 
-
-    epsilon = cols[0].slider('epsilon', 0, int(dx), int(dxl))
-    mu = cols[0].slider(     'mu',      0, int(a),  1700)
-    scale = cols[0].slider(   'scale',  1, 1000,    600)
-    A = cols[0].slider('Amplitude',     1, 100,     69)
+    if space == 'linspace':
+        epsilon = cols[0].slider('epsilon', 0, int(dx), int(dxl))
+    else:
+        epsilon = 0
+    mu = cols[0].slider(     'mu',      0, int(a),  int(x[0]+x[-1])//2)
+    scale = cols[0].slider(   'scale',  1, 1000,    920)
+    A = cols[0].slider('Amplitude',     1, 100,     74)
 
     h0 = gauss_pdf(xl, mu, scale, 1)
     h0 /= max(h0) 
@@ -700,14 +704,14 @@ def ass3_glacier_thickness():
     '#### MCMC'
 
     cols = st.columns(6)
-    n_init = cols[0].slider('no. initialization', 1,100,2)
-    n_itr = cols[1].slider('no. iterations', 0,100000,2000, 1000, )
+    n_init = cols[0].slider('no. initialization', 1,10,2)
+    n_itr = cols[1].slider('no. iterations', 0,5000,2000, 100, )
     burn = cols[2].slider('burn-in', 0,n_itr,n_itr//2, 100)
-    lr = cols[3].select_slider('learning rate', np.round(np.logspace(-4, 0, 10), 5))
-    beta = cols[5].select_slider('beta', np.round(np.logspace(-5, 2, 10), 5))
+    lr = cols[3].select_slider('learning rate', np.round(np.logspace(-4, 3, 8), 5))
+    beta = cols[5].select_slider('beta', np.round(np.logspace(-10, -1, 10), 10))
 
 
-    start_jump = cols[4].select_slider('start jump', np.round(np.logspace(-2, 1, 10, dtype=float), 3))
+    start_jump = cols[4].slider('start jump', 0.,5.,0., 0.1)
 
     if st.button('run'):
 
@@ -748,7 +752,7 @@ def ass3_glacier_thickness():
             sum_sigs += np.log2(sig/sig2) * sig
         sum_sigs /= len(hs)
         sum_sigs
-        
+    if st.button('many'):
 
         fig, ax = plt.subplots(len(hs.T)//4+1,4, figsize=(16,2*len(hs.T)//4), sharey=True)
         fig.suptitle('Distributions of all parameters', fontsize=24)
