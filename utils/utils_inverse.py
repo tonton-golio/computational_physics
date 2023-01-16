@@ -14,6 +14,9 @@ from numba import prange, jit
 from time import time
 from scipy.optimize import curve_fit
 
+def gauss_pdf_N(x, mu, sigma):
+    """Gaussian"""
+    return 1 / np.sqrt(2 * np.pi) / sigma * np.exp(-(x - mu) ** 2 / 2. / sigma ** 2)
 
 def set_rcParams():
 	"""

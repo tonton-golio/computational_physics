@@ -48,7 +48,39 @@ def informationTheory():
     \end{align*}
     $$
     This is the **Shannon entropy**.
+    """
+    '**Lets take a look at the entropy of different distributions**'
     
+    
+
+    def entropy_discrete(x):
+
+        H  = 0
+        for i in set(x):
+            p = len(x[x==i])/len(x)
+            H += p*np.log2(p)
+
+        return -1*H
+
+    
+    st.markdown('#### Discrete entropy demo')
+    cols = st.columns(2)
+    loc = cols[0].slider('loc', -10,10,0)
+    scale = cols[0].slider('scale', 0.,10.,1.)
+    size = cols[0].slider('size', 1,1000,1)
+    
+    x = np.random.normal(loc, scale, size).astype(int)
+
+
+    fig, ax = plt.subplots()
+    ax.hist(x, bins=range(min(x), max(x)+1), color='orange', alpha=.527)
+    ax.set_xticks(np.arange(min(x), max(x)+1)+.5, range(min(x), max(x)+1))
+    ax.set(xlabel='value', ylabel='occurence freq.')
+    plt.close()
+    cols[1].pyplot(fig)
+    H = entropy_discrete(x)
+    cols[0].write(f'Entropy = {H}')
+    r"""
 
     By expanding to the continous domain, we obtain the definition of information in for probability densities:
     $$
@@ -57,6 +89,32 @@ def informationTheory():
     > We call it differential entropy. Differential entropy can take negative values and it is not necessarily a measure of the amount of information.
 
     > Relative entropy is translation invaritant
+    
+    """
+    
+    def entropy_continous(f, x):
+        
+        dx = x[1]-x[0]
+        H = sum(f(x)*np.log2(f(x))*dx)
+        return -1*H
+
+    
+    st.markdown('#### Continous entropy demo')
+    cols = st.columns(2)
+    loc = cols[0].slider('loc ', -10,10,0)
+    scale = cols[0].slider('scale ', 0.,10.,1.)
+    
+    f = lambda x: gauss_pdf_N(x, loc, scale)
+    x = np.linspace(-20, 20, 100)
+    H = entropy_continous(f, x)
+    
+    fig, ax = plt.subplots()
+    ax.fill_between(x, 0,f(x), color='pink')
+    ax.set(xlabel='value', ylabel='occurence freq.')
+    plt.close()
+    cols[1].pyplot(fig)
+    cols[0].write(f'Entropy = {H}')
+    r"""
 
     ### Kullback Leibler divergence
 
@@ -81,7 +139,6 @@ def informationTheory():
     *It's worth noting that choosing a good model parameterization for inverse problems is often a trade-off between the accuracy and the computational complexity of the solution. It's essential to find a balance between the two.*
     """
     
-
 def Probabilistic():
     ''
     r"""
@@ -224,13 +281,15 @@ def Least_squares():
 
     The basic idea behind the least-squares solution is to minimize the sum of the squares of the residuals, which are the differences between the observed data and the model predictions. Mathematically, this is represented by the following cost function:
 
-    $$ \mathcal{L}(m) = \frac{1}{2}(d-g(m))^T(d-g(m)) $$
+    $$
+        \mathcal{L}(m) = \frac{1}{2}(d-g(m))^T C_d^{-1}(d-g(m))
+    $$
 
     Where $d$ is the observed data, $m$ is the vector of parameters, and $g(m)$ is the model.
 
     The least-squares solution is obtained by finding the values of m that minimize the cost function $\mathcal{L}(m)$. This can be done using optimization algorithms, such as gradient descent or Newton's method. The solution is the point estimate of the parameters that minimizes the sum of the squares of the residuals.
 
-    The least-squares solution assumes that the noise in the data is Gaussian and independent, and that the model is linear in the parameters. Additionally, it assumes that the model is a good representation of the underlying physical process, and that the parameters are uniquely determined by the data. These assumptions are crucial for the method to work, and they may not always be valid in practice.
+    The least-squares solution assumes that the noise in the data is Gaussian (but not neccessarily independent), and that the model is linear in the parameters (else the exponential of the cost function is no a Gaussian). Additionally, it assumes that the model is a good representation of the underlying physical process, and that the parameters are uniquely determined by the data. These assumptions are crucial for the method to work, and they may not always be valid in practice.
 
     The method is computationally efficient and easy to implement, and it provides a single point estimate of the parameters. However, it does not take into account the uncertainty in the data, the model or the parameters.
 
@@ -310,6 +369,7 @@ def Weakly_nonlinear():
     * Computational complexity: The steepest descent algorithm requires the calculation of the gradient of the cost function at each iteration, which can be computationally expensive for large or complex models.
     * Line search: The steepest descent algorithm requires a line search to determine the step size at each iteration. This process can be computationally intensive and slow the algorithm down.
     """
+
 def ass1():
     import numpy as np
     import matplotlib.font_manager
