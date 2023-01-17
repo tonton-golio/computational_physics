@@ -1,5 +1,6 @@
 from utils.utils_inverse import *
 import streamlit_toggle as tog
+from scipy.special import rel_entr
 #st.title('Inverse Problems')
 
 #"Course taught by: Klaus Mosegaard."
@@ -127,7 +128,46 @@ def informationTheory():
     
     It is a non-negative value and it is zero if and only if the two distributions are identical. It is used to measure the amount of information lost when approximating one distribution with another.
 
+    """
+    cols = st.columns(2)
+    # left we control two distributions
+    size = 300
+    loc1 = cols[0].slider('loc 1', -10,10,0,1)
+    scale1 = cols[0].slider('scale 1', 0.,10.,0.,1.)
+    loc2 = cols[0].slider('loc 2', -10,10,0,1)
+    scale2 = cols[0].slider('scale 2', 0.,10.,0.,1.)
 
+    x1 = np.random.normal(loc1, scale1, size)
+    x2 = np.random.normal(loc2, scale2, size)
+
+    # right, we show histograms
+    bins = np.linspace(min([min(x1), min(x2)]),
+                        max([max(x1), max(x2)]),
+                        30)
+    counts1, _ = np.histogram(x1, bins)
+    counts2, _ = np.histogram(x2, bins)
+
+    fig = plt.figure()
+    plt.stairs(counts1, bins, color="pink", alpha=.95, fill=True)
+    plt.stairs(counts2, bins, color="orange", alpha=.75, fill=True)
+    plt.grid()
+    plt.close()
+    cols[1].pyplot(fig)
+
+    def KullbackLeibler_Discrete_binning(counts1, counts2):
+        n1, n2 = sum(counts1), sum(counts2)
+        D = 0
+        for c1,c2 in zip(counts1, counts2):
+            if c1 != 0:
+                p1, p2 = c1/n1, c2/n2
+                D += p1 * np.log2(p1/(p2+1e-1))
+        return D
+    D = KullbackLeibler_Discrete_binning(counts1, counts2)
+    cols[1].caption(f'Kullback Leibler divergence = {round(D,3)}')
+    cols[1].caption('(might not be right... will take a second look.)')
+    #D = rel_entr(counts1, counts2)
+    #cols[1].write(D)
+    r"""
     ### How do you choose a good model parameterization for inverse problems? 
 
     * Use physical insight to ensure that the parameters have clear physical interpretation and are consistent with the known physics of the problem.
