@@ -3,6 +3,48 @@ from utils.utils_appstat import *
 from scipy.optimize import curve_fit
 #st.markdown('<div align="center"> Hello</div>' , unsafe_allow_html=True)
 
+def sphereINcube_demo():
+    # accept, reject to get pi
+    cols = st.columns(2)
+
+
+    # inputs
+    n_points = cols[0].select_slider('Number of points', np.logspace(1,14,14,base=2, dtype=int))
+    
+    
+    n_dim = cols[0].select_slider('Number of dimensions', np.arange(2,10,1, dtype=int))
+    cols[0].markdown('We can kinda see how 3 dim. is showing a ball with air trapped in the corners.')
+    p_norm = cols[0].slider('p (for norm)',0.,10.,2.)
+    cols[0].markdown(r"""
+    $$
+        |x| = \left(\sum_i x_i^p\right)^{1/p}
+    $$
+    """)
+
+    # make vecs and check norms
+    X = np.random.uniform(-1,1,(n_points, n_dim))
+    fig, ax = plt.subplots(figsize=(5,5))
+    norm = np.sum(abs(X)**p_norm, axis=1)
+
+    # plotting
+    colors = [{0 : 'gold', 1 : 'green'}[n<=1] for n in norm]
+    ax.scatter(X[:,0], X[:,1], c=colors,  norm = np.sum(X**2, axis=1)**.5, cmap='winter', alpha=.8)
+    extent = 1.1 ; ax.set(xlim=(-extent,extent), ylim=(-extent,extent))
+    
+    # output
+    cols[1].pyplot(fig)
+    percentage = sum(abs(norm)<1)/n_points
+    cols[0].write('Percentage inside the unit hypersphere = {:0.2f} giving us $\pi = {:0.4f}$'.format(percentage, percentage*4))
+
+
+def getText_prep_new(filename = text_path+'week3.md'):
+    with open(filename) as f:
+        file = f.read().split('KEY: ')[1:]
+    d = {}
+    for i in file:
+        key = i.split('\n')[0]
+        d[key] = i[len(key)+1:]       
+    return d
 
 fig_counter[0] = 0
 
@@ -17,7 +59,7 @@ def home():
     from streamlit.components.v1 import html
     my_html = """<iframe width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1399648774&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"></iframe><div style="font-size: 10px; color: #cccccc;line-break: anywhere;word-break: normal;overflow: hidden;white-space: nowrap;text-overflow: ellipsis; font-family: Interstate,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Garuda,Verdana,Tahoma,sans-serif;font-weight: 100;"><a href="https://soundcloud.com/antartica_traffic_control" title="Goblin Mode" target="_blank" style="color: #cccccc; text-decoration: none;">Goblin Mode</a> · <a href="https://soundcloud.com/antartica_traffic_control/other-eyes" title="Other Eyes" target="_blank" style="color: #cccccc; text-decoration: none;">Other Eyes</a></div>"""
 
-    html(my_html)
+    #html(my_html)
 def week1():
     
     text_dict = getText_prep(filename = text_path+'week1.md', split_level = 1)
@@ -194,79 +236,127 @@ def week2():
     st.write('probability of worse:', prob_worse)
    
 def week3():
-    text_dict = getText_prep(filename = text_path+'week3.md', split_level = 1)
-    text_dict2 = getText_prep(filename = text_path+'week3.md', split_level = 2)
-     
+    
+
+    st.title('Simulation and More Fitting')
+    text_dict = getText_prep_new(filename = text_path+'week3.md')
     #st.header('Week 3')
     with st.expander('Week 3 description', expanded=False):
         st.markdown(text_dict['description'])
 
-    st.markdown(text_dict['Header 1'])
-    st.markdown(text_dict['Header 2'])
-    cols = st.columns(2)
-    cols[0].markdown(text_dict['Header 3'])
-    cols[1].markdown(text_dict['Header 4'])
+    st.markdown(text_dict['Intro'])
+    st.markdown(text_dict['Transformation method'])
+    with st.expander('Example', expanded=False):    
+        st.markdown(text_dict['Header 4'])
     
-    cols = st.columns(2)
-    cols[0].markdown(text_dict['Header 5'])
-    cols[1].markdown(text_dict2['Header 6'])
+    
+    st.markdown(text_dict['Accept-reject'])
+    with st.expander('Accept-reject code', expanded=False): 
+        st.code(text_dict['Accept-reject code'])
     
     st.markdown(text_dict['Header 7'])
 
-    def sphereINcube_demo():
-        # accept, reject to get pi
-        cols = st.columns(2)
 
-
-        # inputs
-        n_points = cols[0].select_slider('Number of points', np.logspace(1,14,14,base=2, dtype=int))
-        
-        
-        n_dim = cols[0].select_slider('Number of dimensions', np.arange(2,10,1, dtype=int))
-        cols[0].markdown('We can kinda see how 3 dim. is showing a ball with air trapped in the corners.')
-        p_norm = cols[0].slider('p (for norm)',0.,10.,2.)
-        cols[0].markdown(r"""
-        $$
-            |x| = \left(\sum_i x_i^p\right)^{1/p}
-        $$
-        """)
-
-        # make vecs and check norms
-        X = np.random.uniform(-1,1,(n_points, n_dim))
-        fig, ax = plt.subplots(figsize=(5,5))
-        norm = np.sum(abs(X)**p_norm, axis=1)
-
-        # plotting
-        colors = [{0 : 'gold', 1 : 'green'}[n<=1] for n in norm]
-        ax.scatter(X[:,0], X[:,1], c=colors,  norm = np.sum(X**2, axis=1)**.5, cmap='winter', alpha=.8)
-        extent = 1.1 ; ax.set(xlim=(-extent,extent), ylim=(-extent,extent))
-        
-        # output
-        cols[1].pyplot(fig)
-        percentage = sum(abs(norm)<1)/n_points
-        cols[0].write('Percentage inside the unit hypersphere = {:0.2f} giving us $\pi = {:0.4f}$'.format(percentage, percentage*4))
-
-    sphereINcube_demo()
+    #sphereINcube_demo()
 def week4():
     #st.header('Week 4')
-    text_dict = getText_prep(filename = text_path+'week4.md', split_level = 1)
+    text_dict = getText_prep_new(filename = text_path+'week4.md')
      
     with st.expander('Week 4 description', expanded=False):
         st.markdown(text_dict['description'])
     st.markdown(text_dict['Header 1'])
 
-    def random(size, dist = 'normal', mu=0, sigma=1):
-        return [i for i in range(size)]
+    def oneSampleZtest_DEMO():
+        cols = st.columns(2)
+        cols[0].markdown(text_dict['One Sample Z Test'])
+        def randoms(size=100, dist = 'normal', mu=0, sigma=1):
+            if dist=='normal':
+                x = np.random.normal(mu, sigma, size)
+            
+            
+            return x
+
+        mu0 = 100
+        sigma = 20
+        n = cols[1].slider('num samples', 1,100,14)
+        x = randoms(size=n, dist = 'normal', mu=110, sigma=sigma)
+        fig, ax = plt.subplots()
+        ax.hist(x)
+        plt.grid()
+        plt.close()
+        cols[1].pyplot(fig)
+        cols[1].image('https://www.z-table.com/uploads/2/1/7/9/21795380/8573955.png?759')
+
+        
+        Z = (np.mean(x)-mu0) / (sigma/n**.5) 
+        cols[0].write(f'$Z= {round(Z,4)}$')
+    with st.expander('One sample Z test', expanded=False):
+        oneSampleZtest_DEMO()
+
+    st.markdown(text_dict['Header 2'])
 
 def week5():
-    #st.header('Week 5')
+    st.title('Bayes and MVA')
      
-    text_dict = getText_prep(filename = text_path+'week5.md', split_level = 1)
+    text_dict = getText_prep_new(filename = text_path+'week5.md')
     with st.expander('Week 5 description', expanded=False):
         st.markdown(text_dict['description'])
 
-    st.markdown(text_dict['Header 1'])
+    st.markdown(text_dict['Bayes theorem and Baysian statistics'])
 
+    st.markdown(text_dict['Multi-Variate Analysis (MVA)'])
+
+    cols = st.columns(2)
+    cols[0].markdown(text_dict['The linear Fisher discriminant'])
+
+    from sklearn.decomposition import PCA
+    from sklearn.preprocessing import StandardScaler
+    df = sns.load_dataset('iris')
+    #df
+    X = df.values[:,:-1]
+    mapper = {
+        'versicolor' : 0,
+        'setosa' : 0,
+        'virginica' : 1
+    }
+    y = np.array([mapper[i] for i in df.values[:,-1]])
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
+
+    pca = PCA(n_components=2)
+    X = pca.fit_transform(X_scaled)
+
+    print(pca.explained_variance_ratio_)
+    fig = plt.figure()
+    plt.title('True grouping')
+    plt.scatter(X[:,0],X[:,1], c=y, alpha=.8, cmap='RdBu')
+    plt.close()
+    cols[1].pyplot(fig)
+    
+    mu0 = np.mean(X[y==0], axis=0)
+    mu1 = np.mean(X[y==1], axis=0)
+    #cols[1].markdown(f'mu0 = {mu0}, mu1 = {mu1}')
+    
+    S0 = np.cov(X[y==0].T)
+    S1 = np.cov(X[y==1].T)
+    #cols[1].write(f'S0 = {S0}, S1 = {S1}')
+
+    n=len(X)
+    S = 1/n * (S0+S1)
+    #cols[1].write(f'S = {S}')
+
+    w = mu0-mu1 * np.linalg.inv(S)
+    #cols[1].write(f'w = {w}')
+
+    new = w.T @ np.array([3,-1])
+    #cols[1].write(f'new observation = {new}')
+    y_pred = np.argmax(w.T@X.T, axis=0)
+    #y_pred
+    fig = plt.figure()
+    plt.title('Predicted grouping by Fisher discriminant')
+    plt.scatter(X[:,0],X[:,1], c=y_pred, alpha=.8, cmap='RdBu')
+    plt.close()
+    cols[1].pyplot(fig)
 def week6():
     #st.header('Week 6')
 
@@ -306,9 +396,9 @@ topic_dict = {
     'Welcome': home,
     'Intro & ChiSquare': week1,
     'Likelihood & Sys. Errors': week2,
-    'week 3': week3,
-    #'week 4': week4,
-    #'week 5': week5,
+    'Simulation and Fitting': week3,
+    'Hypothesis testing': week4,
+    'Bayes and MVA': week5,
     #'week 6': week6,
     #'week 7': week7,
     'Utils explorer' : utils_explorer,

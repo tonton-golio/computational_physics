@@ -33,26 +33,26 @@ def landingPage():
 
 def informationTheory():
     ''
+    st.title('Information theory')
+    cols = st.columns(3)
+    
+    cols[0].markdown(
     r"""
-    ## Information theory
-    The suprise of an event is described by the information of that event, $I(E)$. The information of an event is given by the logarithm of the reciprocal probability;
+    The suprise of an event is described by the information of that event,
     $$
     \begin{align*}
-        \log\left(\frac{1}{p(E)}\right)
+         I(E) = \log_2\left(\frac{1}{p(E)}\right)
     \end{align*}
     $$
-    So if we flip a coin, expecting heads, and getting tails, we are **1 bit** suprised. Entropgy describes the expected amount of surprisal:
+    *A single coinflip yield **1 bit** suprise.* **Shannon entropy** is the expected amount of surprise.
     $$
     \begin{align*}
-        H(p) &= \sum_i p(E_i)I(E_i)\\
-        H    &= -\sum_i p_i\log_2(p_i)
+        H &= \sum_i p(E_i)I(E_i)
     \end{align*}
     $$
-    This is the **Shannon entropy**.
-    """
-    '**Lets take a look at the entropy of different distributions**'
     
-    
+    """)
+
 
     def entropy_discrete(x):
 
@@ -64,11 +64,11 @@ def informationTheory():
         return -1*H
 
     
-    st.markdown('#### Discrete entropy demo')
-    cols = st.columns(2)
-    loc = cols[0].slider('loc', -10,10,0)
-    scale = cols[0].slider('scale', 0.,10.,1.)
-    size = cols[0].slider('size', 1,1000,1)
+    cols[1].markdown('#### Discrete entropy demo')
+    
+    loc = cols[2].slider('loc', -10,10,0)
+    scale = cols[2].slider('scale', 0.,10.,1.)
+    size = cols[2].slider('size', 1,1000,100)
     
     x = np.random.normal(loc, scale, size).astype(int)
 
@@ -80,10 +80,12 @@ def informationTheory():
     plt.close()
     cols[1].pyplot(fig)
     H = entropy_discrete(x)
-    cols[0].write(f'Entropy = {H}')
-    r"""
+    cols[1].caption(f'Entropy = {round(H,3)}')
+    st.markdown('---')
+    cols = st.columns(2)
+    cols[0].markdown(r"""
 
-    By expanding to the continous domain, we obtain the definition of information in for probability densities:
+    The continous domain, lets us define information for probability densities:
     $$
         H(f) = -\int_{-\infty}^\infty f(x)\log_2(f(x))dx
     $$
@@ -91,7 +93,7 @@ def informationTheory():
 
     > Relative entropy is translation invaritant
     
-    """
+    """)
     
     def entropy_continous(f, x):
         
@@ -100,26 +102,23 @@ def informationTheory():
         return -1*H
 
     
-    st.markdown('#### Continous entropy demo')
-    cols = st.columns(2)
-    loc = cols[0].slider('loc ', -10,10,0)
-    scale = cols[0].slider('scale ', 0.,10.,1.)
+    #st.markdown('#### Continous entropy demo')
+    
     
     f = lambda x: gauss_pdf_N(x, loc, scale)
-    x = np.linspace(-20, 20, 100)
+    x = np.linspace(-100, 100, 100)
     H = entropy_continous(f, x)
     
     fig, ax = plt.subplots()
     ax.fill_between(x, 0,f(x), color='pink')
     ax.set(xlabel='value', ylabel='occurence freq.')
+    plt.xlim(-40,40)
     plt.close()
     cols[1].pyplot(fig)
-    cols[0].write(f'Entropy = {H}')
+    cols[1].caption(f'Entropy = {round(H,3)}')
+    st.markdown('---')
     r"""
-
-    ### Kullback Leibler divergence
-
-    The Kullback-Leibler divergence (KL-divergence) is a measure of the difference between two probability distributions. 
+    **Kullback-Leibler divergence** (KL-divergence) is a measure of the difference between two probability distributions. 
     
     It is defined as the expected value of the logarithm of the ratio of the probability density functions of the distributions, with respect to the probability measure of one of the distributions. 
     $$
@@ -280,7 +279,7 @@ def DensityVar_LeastSquare():
     cols[1].pyplot(contour_of_G(G.T))
 
     ## calc and show ms
-    eps_space = np.logspace(-13, -9, 60)
+    eps_space = np.logspace(-13, -9, 20)
     ms = getParams(G, d_obs, eps_space)
 
     fig, ax = plt.subplots(figsize=(8,3))
@@ -306,7 +305,7 @@ def DensityVar_LeastSquare():
 
     st.markdown(text_dict['Ex 5'])
     st.pyplot(fig)
-    st.caption('Precision becomes as resolution is increased.')
+    st.caption('Precision becomes high as resolution is increased.')
     
 def Least_squares():
     def old():
