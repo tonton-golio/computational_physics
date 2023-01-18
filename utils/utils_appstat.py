@@ -20,9 +20,9 @@ def set_rcParams():
 		setting matplotlib style
 	"""
 	# extra function
-	mpl.rcParams['patch.facecolor'] = (0.04, 0.065, 0.03)
-	mpl.rcParams['axes.facecolor'] = 'black'
-	mpl.rcParams['figure.facecolor'] = (0.04, 0.065, 0.03)
+	mpl.rcParams['patch.facecolor'] = (0.4, 0.65, 0.3)
+	mpl.rcParams['axes.facecolor'] = (0.04, 0.065, 0.03)
+	mpl.rcParams['figure.facecolor'] = (0.4, .95, 0.03)
 	mpl.rcParams['xtick.color'] = 'white'
 	mpl.rcParams['ytick.color'] = 'white'
 	# mpl.rcParams['axes.grid'] = True  # should we?
@@ -747,13 +747,51 @@ def makeBlobs(size=100):
 	'''
     # extra function
 	X = np.random.rand(size, 2)
-
-	X[0][X[0]<0.5] -= .5
-	X[1][X[1]<0.5] -= .5
+	
+	X[:,0][X[:,0]<0.5] -= .4
+	X[:,1][X[:,1]<0.5] -= .4
 
 	noise = np.random.randn(size, 2)*.1
 	return X+noise
 
 
+def kMeans(X, nclusters=4, maxfev=100):
+    centroids = np.random.normal(np.mean(X, axis=0),np.std(X, axis=0), (nclusters,2))  # centroids
 
+    i=0
+    while i < maxfev:
+        aff = np.argmin([np.sum((X - c)**2, axis=1) for c in centroids], axis=0)  # affiliation
+        
+        upd_cs = np.array([np.mean(X[aff==a], axis=0) for a in set(aff)])  # updated centroids
+        try:
+            if abs((upd_cs - centroids)).sum()<0.01:
+                break;
+            else:
+                centroids=upd_cs.copy()
+        except:
+            centroids = np.random.normal(np.mean(X, axis=0),np.std(X, axis=0), (nclusters,2))  # centroids
+
+        i+=1
+    return aff, i
+
+def kNN(X_test, X_train, y_train, k = 4):
+
+    def most_common(x):
+        longest = 0
+        val = 999999
+        for i in set(x):
+            if len(x[x==i])> longest:
+                longest = len(x[x==i])
+                val = i
+        return val
+    knn_labels = []
+    for x in X_test[:]:
+        d = np.sum((X_train-x)**2, axis=1)
+        d_sort = np.argsort(d)
+        neighbour_classes = y_train[d_sort][:k]
+
+        pred = most_common(neighbour_classes)
+        knn_labels.append(pred)
+
+    return knn_labels
 

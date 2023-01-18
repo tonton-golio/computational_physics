@@ -2,7 +2,7 @@ from utils.utils_appstat import *
 
 from scipy.optimize import curve_fit
 #st.markdown('<div align="center"> Hello</div>' , unsafe_allow_html=True)
-
+from sklearn.model_selection import train_test_split
 def sphereINcube_demo():
     # accept, reject to get pi
     cols = st.columns(2)
@@ -358,19 +358,64 @@ def week5():
     plt.close()
     cols[1].pyplot(fig)
 def week6():
-    #st.header('Week 6')
+    st.title('Machine learning and time series')
 
-    text_dict = getText_prep(filename = text_path+'week6.md', split_level = 1)
+    text_dict = getText_prep_new(filename = text_path+'week6.md' )
     with st.expander('Week 6 description', expanded=False):
         st.markdown(text_dict['description'])
 
     st.markdown(text_dict['Header 1'])
 
-    X = makeBlobs(100)
-    st.pyplot(scatter(X[:,0], X[:,1]))
-     
+    def Kmeans_knn_DEMO():
+        X = makeBlobs(100)
+
+    
+        kMeans_labels, nitr = kMeans(X, nclusters=4)
+        
+        # classification
+        y = kMeans_labels
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
+        # test train split
+
+        
+        
+        knn_labels = kNN(X_test, X_train, y_train, k = 4)
+        fig, ax = plt.subplots(1,2, figsize=(7,3))
+        
+        ax[0].set(title=f'kMeans clustering, nitr={nitr}', xticks=[], yticks=[])
+        ax[0].scatter(X[:,0], X[:,1], marker='x' ,c=kMeans_labels)
+
+
+        ax[1].set(title='kNN classification', xticks=[], yticks=[])
+        ax[1].scatter(X_train[:,0], X_train[:,1], c=y_train)
+        ax[1].scatter(X_test[:,0], X_test[:,1],marker='x' , c=knn_labels)
+
+
+        st.pyplot(fig)
+        plt.close()
+        st.caption('Demonstrations of clustering and classification algos. Crosses indicate unknown labels, circles have known labels')
+
+    Kmeans_knn_DEMO()
+
+    '#### Neural netorks'
+    cols = st.columns(2)
+    cols[1].image('https://www.investopedia.com/thmb/PgHPmalVUUHIQrp616mTdlmyD0I=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/dotdash_Final_Neural_Network_Apr_2020-01-5f4088dfda4c49d99a4d927c9a3a5ba0.jpg')
+    cols[0].markdown('blank')
+
+    '#### Decision Trees'
+    cols = st.columns(2)
+    cols[1].image('https://s3.ap-south-1.amazonaws.com/techleer/252.jpg')
+    cols[0].markdown('Consecutive binary questions, allow us to carve out straight-walled sections of the phase space.')
+
+    '---'
+    '#### Timeseries'
+    cols = st.columns(2)
+    cols[1].image('https://miro.medium.com/max/1100/1*r6F3L0fG1VkH9zz5uZjT7w.webp')
+    cols[0].markdown('')
+
+
 def week7():
-    #st.header('Week 7')
+    st.title('Advanced fitting & Calibration')
     
     text_dict = getText_prep(filename = text_path+'week7.md', split_level = 1)
     
@@ -399,8 +444,8 @@ topic_dict = {
     'Simulation and Fitting': week3,
     'Hypothesis testing': week4,
     'Bayes and MVA': week5,
-    #'week 6': week6,
-    #'week 7': week7,
+    'Machine learning and time series': week6,
+    'week 7': week7,
     'Utils explorer' : utils_explorer,
     }
 
