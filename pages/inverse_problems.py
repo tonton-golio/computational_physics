@@ -4,6 +4,7 @@ from scipy.special import rel_entr
 #st.title('Inverse Problems')
 
 #"Course taught by: Klaus Mosegaard."
+set_rcParams()
 
 def strip_leading_spaces(x):
     x_stripped = x
