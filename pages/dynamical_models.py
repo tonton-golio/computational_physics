@@ -248,7 +248,7 @@ def week6():
     with st.expander(name, expanded=False):
         st.markdown(text_dict[name])
      
-    name = 'Signla transduction involves many step'
+    name = 'Signla transduction involves many steps'
     with st.expander(name, expanded=False):
         st.markdown(text_dict[name])
      
