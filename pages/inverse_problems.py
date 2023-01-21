@@ -5,6 +5,73 @@ from scipy.special import rel_entr
 
 #"Course taught by: Klaus Mosegaard."
 
+def strip_leading_spaces(x):
+    x_stripped = x
+    if len(x)<2: return x
+    for i in range(12):
+        try:
+            if x_stripped[0] == ' ':
+                x_stripped = x_stripped[1:]
+            else:
+                break
+        except:
+            break
+    return x_stripped
+
+def strip_lines(text):
+    return'\n'.join([strip_leading_spaces(x) for x in text.split('\n')])
+
+#st.write(strip_leading_spaces('    asdasd'))
+def wrapfig(width=200, text='aaa',src='', st=st):
+        
+    
+    HEAD = """<!DOCTYPE html>
+        <html>    
+        <head><style>
+            img {
+            float: right;
+            margin: 5px;
+            }
+        </style></head>
+        """
+    
+    BODY = """
+        <body>
+        <div class="square">
+            <div>
+            <img src="{}"
+                width = {}
+                alt="Longtail boat in Thailand">
+            </div>
+        <p>{}</p>
+        </div>
+        </body></html>
+        """.format(src, width, text)
+
+    str = HEAD+BODY
+    str = strip_lines(str)
+    st.markdown(str,  unsafe_allow_html=True
+    )
+    
+
+def entropy_discrete(x):
+
+    H  = 0
+    for i in set(x):
+        p = len(x[x==i])/len(x)
+        H += p*np.log2(p)
+
+    return -1*H
+
+def entropy_continous(f, x):
+    
+    dx = x[1]-x[0]
+    fx = f(x)
+    fx = fx[fx>0]
+    H = -1*sum(fx*np.log2(fx)*dx)
+    return H
+
+
 def landingPage():
     ''
     """# Inverse Problems"""
@@ -33,111 +100,123 @@ def landingPage():
 
 def informationTheory():
     ''
-    st.title('Information theory')
-    cols = st.columns(3)
-    
-    cols[0].markdown(
-    r"""
-    The suprise of an event is described by the information of that event,
-    $$
-    \begin{align*}
-         I(E) = \log_2\left(\frac{1}{p(E)}\right)
-    \end{align*}
-    $$
-    *A single coinflip yield **1 bit** suprise.* **Shannon entropy** is the expected amount of surprise.
-    $$
-    \begin{align*}
-        H &= \sum_i p(E_i)I(E_i)
-    \end{align*}
-    $$
-    
-    """)
-
-
-    def entropy_discrete(x):
-
-        H  = 0
-        for i in set(x):
-            p = len(x[x==i])/len(x)
-            H += p*np.log2(p)
-
-        return -1*H
-
-    
-    cols[1].markdown('#### Discrete entropy demo')
-    
-    loc = cols[2].slider('loc', -10,10,0)
-    scale = cols[2].slider('scale', 0.,10.,1.)
-    size = cols[2].slider('size', 1,1000,100)
-    
-    x = np.random.normal(loc, scale, size).astype(int)
-
-
-    fig, ax = plt.subplots()
-    ax.hist(x, bins=range(min(x), max(x)+1), color='orange', alpha=.527)
-    ax.set_xticks(np.arange(min(x), max(x)+1)+.5, range(min(x), max(x)+1))
-    ax.set(xlabel='value', ylabel='occurence freq.')
-    plt.close()
-    cols[1].pyplot(fig)
-    H = entropy_discrete(x)
-    cols[1].caption(f'Entropy = {round(H,3)}')
-    st.markdown('---')
     cols = st.columns(2)
-    cols[0].markdown(r"""
-
-    The continous domain, lets us define information for probability densities:
-    $$
-        H(f) = -\int_{-\infty}^\infty f(x)\log_2(f(x))dx
-    $$
-    > We call it differential entropy. Differential entropy can take negative values and it is not necessarily a measure of the amount of information.
-
-    > Relative entropy is translation invaritant
+    cols[0].title('Information theory')
     
+    # intro 
+    cols[0].write(r"""
+    Entropy and its relevance in data science: 
+    > answers the question: *how similar are two samples?*
     """)
-    
-    def entropy_continous(f, x):
-        
-        dx = x[1]-x[0]
-        H = sum(f(x)*np.log2(f(x))*dx)
-        return -1*H
+    cols[1].image('https://d2r55xnwy6nx47.cloudfront.net/uploads/2020/12/Claude-Shannon_2880_Lede.jpg', 
+            width=300, caption='Claude Shannon, the "father of information theory". Shannon demonstated in his thesis, that boolean algebra can construct any logical numerical relationship.')
 
+    '---'
+
+    st.write(r"""
+    The suprise of an event is described by the information of that event. *A single coinflip yield **1 bit** of suprise.*
+    $$
+         I(E) = \log_2\left(\frac{1}{p(E)}\right) = -\log_2(p(E)),
+    $$
+    in which $p(E)$ is the probability of an event $E$.
+    """)
+    st.caption('We typically use base-2 in CS. It tells us the number of yes/no questions we must answer to for full exploration.')
+
+    st.write(r"""
+    **Entropy** is the expected amount of surprise. **Shannon entropy** defines this quantoty in discrete-space;
+    $$
+        H_s = -\sum_i p(E_i)I(E_i).
+    $$
+    In the continous space, we define entropy for probability-densities,
+    $$
+        H_d(f) = -\int_{-\infty}^\infty f(x)\log_2(f(x))dx.
+    $$
+    > We call it differential entropy. Differential entropy can take negative values and it is not necessarily a measure of the amount of information. Note; relative entropy is translation invaritant.
+    ---
+    """)
+
+
+    def discrete_continous_entropy_DEMO():
+
+        cols = st.columns(2)
+        
+        cols[0].markdown(
+        r"""
+        ###### Comparing discrete and continous entropy
+        
+        """)
+
+
+       
+        
+        def sliders(st=st):
+            loc = st.slider('loc', -20,4,-8)
+            scale =st.slider('scale', 0.1,10.,1., 0.1)
+            size = st.select_slider('size', 2**np.arange(4,11))
+
+            return loc, scale, size
+
+        
+        loc, scale, size = sliders(cols[0])
+        
+        # Calculations
+        ## discrete
+        x_discrete = np.random.normal(loc, scale, size).astype(int)
+        H_discrete = entropy_discrete(x_discrete)
+
+        ## continous
+        f = lambda x: gauss_pdf_N(x, loc, scale)
+        x_cont = np.linspace(-100, 100, size)
+        H_cont = entropy_continous(f, x_cont)
+
+        # plotting
+        fig, ax = plt.subplots(2,1, sharex=True, figsize=(4,4))
+        fig.suptitle('Entropy of discrete and cont. distributions')
+        counts, bins, _ = ax[0].hist(x_discrete, bins=range(min(x_discrete), max(x_discrete)+1), color='red', alpha=.8)
+        #ax[0].set(xlabel='value', ylabel='occurence freq.')
+        ax[0].text(7, max(counts)*.8, f'$H_s$ = {round(H_discrete,3)}', color='black', fontsize=16)
+
+        ax[1].fill_between(x_cont, 0,f(x_cont), color='purple')
+        ax[1].set(xlabel='value',)# ylabel='occurence freq.')
+        ax[1].text(7, max(f(x_cont))*.8, f'$H_d$ = {round(H_cont,3)}', color='black', fontsize=16)
+        plt.xlim(-40,40)
+        plt.close()
+        cols[1].pyplot(fig)
     
-    #st.markdown('#### Continous entropy demo')
-    
-    
-    f = lambda x: gauss_pdf_N(x, loc, scale)
-    x = np.linspace(-100, 100, 100)
-    H = entropy_continous(f, x)
-    
-    fig, ax = plt.subplots()
-    ax.fill_between(x, 0,f(x), color='pink')
-    ax.set(xlabel='value', ylabel='occurence freq.')
-    plt.xlim(-40,40)
-    plt.close()
-    cols[1].pyplot(fig)
-    cols[1].caption(f'Entropy = {round(H,3)}')
+    discrete_continous_entropy_DEMO()
+
     st.markdown('---')
+    # intro KL
     r"""
-    **Kullback-Leibler divergence** (KL-divergence) is a measure of the difference between two probability distributions. 
+    ###### Kullback-Leibler divergence (**KL-divergence**)
+    A measure of the difference between two probability distributions. 
     
     It is defined as the expected value of the logarithm of the ratio of the probability density functions of the distributions, with respect to the probability measure of one of the distributions. 
     $$
-        D_\text{KL}(p||q) = \sum_x p(x)\log\frac{p(x)}{q(x)}
+        D_\text{KL}(p||q) = \sum_x p(x)\log\frac{p(x)}{q(x)} = -\sum_x p(x)\log\frac{q(x)}{p(x)}
     $$
     
-    It is a non-negative value and it is zero if and only if the two distributions are identical. It is used to measure the amount of information lost when approximating one distribution with another.
+    It is a non-negative value and it is zero iff the two distributions are identical. It is used to measure the amount of information lost when approximating one distribution with another.
 
     """
-    cols = st.columns(2)
+    '###### Aggression trait propensity'
+    cols = st.columns(3)
     # left we control two distributions
-    size = 300
-    loc1 = cols[0].slider('loc 1', -10,10,0,1)
-    scale1 = cols[0].slider('scale 1', 0.,10.,0.,1.)
-    loc2 = cols[0].slider('loc 2', -10,10,0,1)
-    scale2 = cols[0].slider('scale 2', 0.,10.,0.,1.)
+    
+    def sliders_and_data(st0=st, st1=st):
+        loc1 = st0.slider('Average (male)', 0,10,5,1)
+        scale1 = st0.slider('Devitation (male)', 0.1,10.,1.,.1)
+        loc2 = st1.slider('Average (female)', 0,10,3,1)
+        scale2 = st1.slider('Deviation (female)', 0.1,10.,1.0,.1)
 
-    x1 = np.random.normal(loc1, scale1, size)
-    x2 = np.random.normal(loc2, scale2, size)
+        size = 400
+
+        x1 = np.random.normal(loc1, scale1, size)
+        x2 = np.random.normal(loc2, scale2, size)
+
+        return x1, x2
+
+    x1, x2 = sliders_and_data(cols[0], cols[1])
 
     # right, we show histograms
     bins = np.linspace(min([min(x1), min(x2)]),
@@ -147,55 +226,71 @@ def informationTheory():
     counts2, _ = np.histogram(x2, bins)
 
     fig = plt.figure()
-    plt.stairs(counts1, bins, color="pink", alpha=.95, fill=True)
-    plt.stairs(counts2, bins, color="orange", alpha=.75, fill=True)
+    plt.stairs(counts1, bins, color="blue", alpha=.85, fill=True, label='male')
+    plt.stairs(counts2, bins, color="r", alpha=.65, fill=True, label='female')
     plt.grid()
     plt.close()
-    cols[1].pyplot(fig)
+    cols[2].pyplot(fig)
 
-    def KullbackLeibler_Discrete_binning(counts1, counts2):
-        n1, n2 = sum(counts1), sum(counts2)
+    def KullbackLeibler_Discrete_binning(P, Q, threshold=.05, st=st):
+        
+        P, Q = P/sum(P), Q/sum(Q)  # normalize
+        
+        #method 1
         D = 0
-        for c1,c2 in zip(counts1, counts2):
-            if c1 != 0:
-                p1, p2 = c1/n1, c2/n2
-                D += p1 * np.log2(p1/(p2+1e-1))
+        for p, q in zip(P, Q):
+            if p > threshold:
+                D -= p * np.log2(q/p)
+        if D==np.inf:#np.isnan(D):
+            st.caption('Method one yielded `inf` trying method 2...')
+            # method 2
+            D = 0
+            for p, q in zip(P, Q):
+                if q > threshold:
+                    val = p * np.log2(p/q)
+                    D += val
         return D
-    D = KullbackLeibler_Discrete_binning(counts1, counts2)
-    cols[1].caption(f'Kullback Leibler divergence = {round(D,3)}')
-    cols[1].caption('(might not be right... will take a second look.)')
-    #D = rel_entr(counts1, counts2)
-    #cols[1].write(D)
-    r"""
-    ### How do you choose a good model parameterization for inverse problems? 
+    D = KullbackLeibler_Discrete_binning(counts1, counts2, st=cols[2])
+    cols[2].caption(f'Kullback Leibler divergence = {round(D,3)}')
 
-    * Use physical insight to ensure that the parameters have clear physical interpretation and are consistent with the known physics of the problem.
-    * Utilize sparsity and parsimony to improve computational efficiency and generalization ability by using models with a small number of parameters.
-    * Incorporate prior information about the problem to guide the choice of model parameterization.
-    * Use regularization to constrain the model parameterization and improve the stability of the solution.
-    * Empirically validate the performance of the model parameterization by testing it on experimental or observational data.
+    '---'
+    '##### Model paramterization'
+    text = """
+    In choosing good model paramters, there are a couple things to consider;
+    we should make use of physical insight, i.e., the parameters should actually be significantly descriptive of the data.
+        
+        Incorporate prior information about the problem to guide the choice of model parameterization.
+        
+        **number of parameters**: we should take care, as not to overdetermine or underdetermine the data. Utilize sparsity and parsimony to improve computational efficiency and generalizability.
 
-    *It's worth noting that choosing a good model parameterization for inverse problems is often a trade-off between the accuracy and the computational complexity of the solution. It's essential to find a balance between the two.*
-    """
+    It's worth noting that choosing a good model parameterization is often a trade-off between the accuracy and the computational complexity of the solution. It's essential to find a balance between the two. 
+
+    Upon parameterization, empirically validate the performance of the model parameterization by testing it on experimental or observational data."""
+    
+    wrapfig(width=320,src='https://caltech-prod.s3.amazonaws.com/main/images/TSchneider-GClimateModel-grid-LES-NEWS-WEB.width-450.jpg', text=text)
+
     
 def Probabilistic():
     ''
+    '# Probabilistic inference'
+
+    '##### Inverse problems in a Bayesian setting'
+    text = r"""
+        In Bayesian inference, an inverse problem is solved by inferring parameters from observed data and a prior probability distribution, which encodes prior information about the parameters. 
+
+        The likelihood, $P(E|H)$, quantifies the probability of the data given the parameters.
+
+        Together, the prior, $P(H)$, and likelihood functions define the posterior, $P(H|E)$ distribution over the parameters, which is the target of the inference. This distribution can be calculated using Bayes' theorem,
+
+        $$ 
+            P(H|E) = \frac{P(E|H)P(H)}{P(E)}
+        $$
+    """
+
+    wrapfig(300, text, src='https://gowrishankar.info/blog/gaussian-process-and-related-ideas-to-kick-start-bayesian-inference/gp.png')
+
+
     r"""
-    # Probabilistic formulation of inverse problems
-    
-    ### How are inverse problems formulated in a Bayesian setting? 
-
-    In a Bayesian setting, an inverse problem is formulated as a probabilistic inference problem. The goal remains the inferencce of parameters given some observed data and a prior probability distribution over the parameters. The prior distribution encodes prior information about the parameters, such as physical constraints or previous measurements. 
-    
-    The likelihood function, which is a function of the observed data and the parameters, quantifies the probability of the data given the parameters. *We can consider this to be inverse loss.*
-    
-
-    Together, the prior and likelihood functions define the posterior distribution over the parameters, which is the target of the inference. This distribution can be calculated using Bayes' theorem,
-    
-    $$ 
-        P(H|E) = \frac{P(E|H)P(H)}{P(E)}
-    $$
-    
     The posterior can be approximated using numerical methods such as Markov chain Monte Carlo (**MCMC**).
 
     ### Advantages
