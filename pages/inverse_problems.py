@@ -256,9 +256,13 @@ def informationTheory():
 
     '---'
     '##### Model paramterization'
-    text = """
+    text = r"""
     In choosing good model paramters, there are a couple things to consider;
     we should make use of physical insight, i.e., the parameters should actually be significantly descriptive of the data.
+
+        $$
+            \rho_{d,m} \gg 0
+        $$
         
         Incorporate prior information about the problem to guide the choice of model parameterization.
         
@@ -266,7 +270,10 @@ def informationTheory():
 
     It's worth noting that choosing a good model parameterization is often a trade-off between the accuracy and the computational complexity of the solution. It's essential to find a balance between the two. 
 
-    Upon parameterization, empirically validate the performance of the model parameterization by testing it on experimental or observational data."""
+    Upon parameterization, empirically validate the performance of the model parameterization by testing it on experimental or observational data.
+
+
+    """
     
     wrapfig(width=320,src='https://caltech-prod.s3.amazonaws.com/main/images/TSchneider-GClimateModel-grid-LES-NEWS-WEB.width-450.jpg', text=text)
 
@@ -284,7 +291,7 @@ def Probabilistic():
         Together, the prior, $P(H)$, and likelihood functions define the posterior, $P(H|E)$ distribution over the parameters, which is the target of the inference. This distribution can be calculated using Bayes' theorem,
 
         $$ 
-            P(H|E) = \frac{P(E|H)P(H)}{P(E)}
+            P(H|E) = \frac{P(E|H)P(H)}{P(E)} \Rightarrow \sigma_\text{post} = \mathcal{L}\rho_\text{prior}
         $$
     """
 
@@ -474,16 +481,18 @@ def Weakly_nonlinear():
     ''
     '# Weakly nonlinear problems and optimization'
     """       
-    ### What is a weakly non-linear problem? 
-    A weakly non-linear problem is an inverse problem where the relationship between data and parameters is non-linear, but can be approximated by a linear model in a neighborhood of a given point. They can be solved by linearizing the problem around a reference point, this is known as a linearization method. This method typically involves iterating between linearizing the problem and solving the linearized problem.
-
-    ### Explain the use of steepest decent algorithms in the solution of weakly non-linear problems? 
     
-    Steepest descent algorithms are optimization methods that can be used to solve weakly non-linear problems. These algorithms are based on the gradient of a cost function, which is a measure of the difference between the observed data and the model predictions (think Kullback-Leibler divergence). The algorithm minimizes the cost function by iteratively updating the parameters in the direction of the negative gradient.
+    A nonlinearity is characterized: *a change of the output is not proportional to the change of the input.*
+    
+    Non-linear functions may appear chaotic, with troths and valleys scattered seemingly randomly. This makes non-linear phase-spaces tricky to optimize.
+    
+    ### weakly non-linear 🤷‍♂️
+    Weakly non-linear problem typically only contain 1 or a few non-linearities, and crucially they may be approximated by a linear model in a neighborhood of a given point. 
 
-    In the context of weakly non-linear problems, the cost function is typically MSE. The gradient of the cost function is the vector of the partial derivatives of the cost function with respect to the parameters. 
+    ### Steepest decent for weakly non-linear optimization
+    Steepest descent algorithms evaluate local gradient and step opposite with a step-length typically determined by a line search (for more info see scientific computing). 
 
-    The steepest descent algorithm can be seen as an extension of the linear least-squares solution to weakly non-linear problems. It is a simple and easy-to-implement method that can be used to find a local minimum of the cost function. However, it has some limitations, such as being sensitive to the choice of the initial parameters, being stuck in local minima, and being slow to converge for high-dimensional problems.
+    The steepest descent algorithm can be seen as an extension of the linear least-squares solution to weakly non-linear problems.
     
     ### What convergence difficulties are there when using the steepest decent algorithms? 
 
@@ -876,8 +885,8 @@ topic_dict = {
     "Landing Page" : landingPage,
     'Information theory' : informationTheory,
     'Probabilistic inference' : Probabilistic,
-    'Least-squares / Tikonov': Least_squares, 
     'Monte Carlo': monteCarlo,
+    'Least-squares / Tikonov': Least_squares, 
     'Weakly nonlinear problems and optimization' : Weakly_nonlinear, 
     'Density variations (Tikonov)': DensityVar_LeastSquare,
     'Linear Tomography (Tikonov)' : ass1,
