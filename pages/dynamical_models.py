@@ -3,17 +3,78 @@ from utils.utils_dynbio import *
 plt.rcdefaults()
 
 def home():
-    st.title('Dynamical Models in Molecular Biology')
-    #st.image('assets/images/Stable_diffusion__Mathematician_discovering_Neptune.png', width=420)
-    #st.caption('Stable diffusion response to prompt: *Mathematician discovering Neptune*.')
+    text_dict = getText_prep(filename = text_path+'home.md', split_level = 1)
+
+    name = 'Title'
+    with st.expander(name, expanded=True):
+        st.markdown(text_dict[name])
+
+    name = 'Welcome to DynBio!'
+    with st.expander(name, expanded=True):
+        st.markdown(text_dict[name])
+
+    name = 'Aim of the course: BRIDGE THE GAP'
+    with st.expander(name, expanded=True):
+        st.markdown(text_dict[name])
+
 
 def week1():
     text_dict = getText_prep(filename = text_path+'week1.md', split_level = 1)
 
-    with st.expander('Week 1 description', expanded=False):
-        st.markdown(text_dict['description'])
+    name = 'title'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
 
-    st.markdown(text_dict['Header 1'])
+    name = 'Week 1 description'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
+    name = 'Cellular identity'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
+    name = 'What is gene expression?'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
+    name = 'Transcriptional regulation'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
+    name = 'How to measure gene expression?'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
+    name = 'Two way of measuring gene expression - single cell and bulk'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
+    name = 'Why is the gene expression noisy?'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
+    name = 'Molecules in the cell move via diffusion'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
+    name = 'Definition of the total noise'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
+    name = 'Extrinsic noise'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
+    name = 'Intrinsic noise'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
+    name = 'Decomposing total noise into intrinsic noise and extrinsic noise'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
+
+
 
 def week2():
     text_dict = getText_prep(filename = text_path+'week2.md', split_level = 1)
@@ -290,8 +351,8 @@ def week7():
 
 # Navigator
 topic_dict = {
-    #'Welcome': home,
-    #'week 1': week1,
+    'Welcome': home,
+    'week 1': week1,
     'week 2': week2,
     'week 3': week3,
     'week 4': week4,
