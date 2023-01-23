@@ -412,6 +412,9 @@ def Least_squares():
     ''
     '# Least Squares'
     r"""
+    ### Consider the determinedness of an inverse problem.
+    *Most inverse problems that arise in practice are neither completely overdetermined nor completely underdetermined. For instance, in the X-ray tomography problem, there may be one box through which several rays pass (Fig. 3.10A). The X-ray opacity of this box is clearly overdetermined. On the other hand, there may be boxes that have been missed entirely (Fig. 3.10B). These boxes are completely undetermined. There may also be boxes that cannot be individually resolved because every ray that passes through one also passes through an equal distance of the other (Fig. 3.10C). These boxes are also underdetermined, since only their mean opacity is determined.*[sciencedirect.com]
+
     ### What is the idea and the assumptions behind the least-squares solution?  
     The least-squares solution is a method for solving inverse problems that is based on the idea of minimizing the difference between the observed data and the model predictions. It is a deterministic method that finds a single, unique solution to the problem based on a set of predetermined equations.
 
@@ -445,6 +448,7 @@ def Least_squares():
 
     It is worth noting that the Tikhonov solution is also known as Ridge Regularization. It is a powerful tool for solving ill-posed linear inverse problems, but it requires the choice of the appropriate regularization term and the estimation of the regularization parameter. Additionally, it may not be suitable for non-linear or non-smooth problems.
 
+
     ### Is there a connection between a least-squares solution and a probabilistic solution? 
 
     Yes, there is a connection between a least-squares solution and a probabilistic solution. The least-squares solution is a deterministic method for solving inverse problems, which finds a single, unique solution by minimizing the sum of the squares of the residuals. On the other hand, a probabilistic solution is a statistical method that estimates the probability distribution of the parameters given the data and the model.
@@ -455,20 +459,17 @@ def Least_squares():
 
     In summary, the least-squares solution and the Tikhonov solution are deterministic methods that can be seen as special cases of the probabilistic solution when certain assumptions are made about the noise and the model. Probabilistic methods provide a more general and flexible framework for solving inverse problems and take into account the uncertainty in the data and the model.
 
-
     
     ### Explain the concept of resolution for a linear problem
-    The resolution of a linear inverse problem refers to the ability of the method to recover small and distinct features in the solution. In other words, it is a measure of how well the method can distinguish between different values of the parameters. The resolution of a linear inverse problem depends on the sensitivity of the data to the parameters, which is determined by the design of the measurement system and the properties of the model.
+    
+    
+    The resolution of a linear inverse problem refers to the ability of the method to recover small and distinct features in the solution. In other words, it is a measure of how well the method can distinguish between different values of the parameters.
 
-    A high-resolution method is able to recover small and distinct features in the solution with high accuracy, while a low-resolution method is not able to recover these features with the same accuracy. The resolution of a method can be affected by various factors such as the noise level, the accuracy of the model, the dimensionality of the problem, and the regularization or stability of the method.
+    The resolution of a method can be affected by various factors such as the noise level, the accuracy of the model, the dimensionality of the problem, and the regularization or stability of the method.
 
     In general, linear inverse problems tend to have a trade-off between resolution and stability, which means that increasing the resolution of the solution can lead to a less stable and more uncertain solution. There are several ways to increase the resolution of a linear inverse problem, such as by increasing the number of measurements, by improving the accuracy of the model, or by using regularization techniques.
 
     For example, the Tikhonov solution is a regularization method that can be used to increase the resolution of a linear inverse problem by balancing the fit to the data and the smoothness of the solution. By controlling the value of the regularization parameter, it is possible to increase the resolution of the solution without sacrificing stability.
-
-
-
-
     """
 
 def Weakly_nonlinear():
@@ -849,7 +850,7 @@ def monteCarlo():
     An "deterministic" solution of an inverse problem refers to a method that finds a single, unique solution to the problem based on a set of predetermined equations or algorithms. These methods typically involve optimization algorithms or analytical solutions that are designed to find the best fit of the model to the data. They provide a point estimate of the parameters of the system, which is a single set of parameter values that maximizes the likelihood or minimizes some cost function.
 
     On the other hand, a Monte Carlo (MC) solution of an inverse problem refers to a method that generates a large number of possible solutions, called samples, and the solution is represented by a probability distribution over the parameter space, rather than a single point estimate. These methods involve generating a large number of random samples from the prior distribution, and then evaluating the likelihood function for each sample. The samples that have a high likelihood are considered to be more probable, and they are used to estimate the posterior distribution.
-    
+
     ### What kind of information about the solution of an inverse problem can be obtained by an MC method? 
 
     A Monte Carlo (MC) method for solving an inverse problem generates a large number of possible solutions, called samples, and the solution is represented by a probability distribution over the parameter space, rather than a single point estimate. By analyzing the samples, it is possible to obtain various types of information about the solution of the inverse problem, such as:
