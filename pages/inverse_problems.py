@@ -833,13 +833,23 @@ def monteCarlo():
 
     Additionally, these methods can also be used to calculate various quantities of interest, such as credible intervals or the expected value of a function of the parameters.
 
+
+    **Neighbourhood** in monte carlo, refers to a single iteration step: it is all the points in the parameters space we can reach from the current parameter configuration with the given step size.
+
+
+    Accept reject, describes which steps we choose to keep. A typical acceptance criterion is the Metropolis-hastings algorithm, but not assuming uniform prior distribution:
+    
+    $$
+    \begin{align*}
+        P_\text{accept} = 1 && or && \exp(\Delta S/\sigma^2 )
+    \end{align*}
+    $$
+
     ### What is the difference between an MC solution and a "deterministic" solution? 
     An "deterministic" solution of an inverse problem refers to a method that finds a single, unique solution to the problem based on a set of predetermined equations or algorithms. These methods typically involve optimization algorithms or analytical solutions that are designed to find the best fit of the model to the data. They provide a point estimate of the parameters of the system, which is a single set of parameter values that maximizes the likelihood or minimizes some cost function.
 
     On the other hand, a Monte Carlo (MC) solution of an inverse problem refers to a method that generates a large number of possible solutions, called samples, and the solution is represented by a probability distribution over the parameter space, rather than a single point estimate. These methods involve generating a large number of random samples from the prior distribution, and then evaluating the likelihood function for each sample. The samples that have a high likelihood are considered to be more probable, and they are used to estimate the posterior distribution.
-
-    The main difference between these two solutions is that deterministic methods provide a single point estimate, which is a fixed set of parameter values, while MC methods provide a probability distribution that represents the uncertainty of the parameters. MC methods can take into account the uncertainty in the data and the model, and thus provide more robust and reliable solutions, especially when the data is noisy or incomplete. Additionally, MC methods can also be used to calculate various quantities of interest, such as credible intervals or the expected value of a function of the parameters, which can be very useful in many applications.
-
+    
     ### What kind of information about the solution of an inverse problem can be obtained by an MC method? 
 
     A Monte Carlo (MC) method for solving an inverse problem generates a large number of possible solutions, called samples, and the solution is represented by a probability distribution over the parameter space, rather than a single point estimate. By analyzing the samples, it is possible to obtain various types of information about the solution of the inverse problem, such as:
