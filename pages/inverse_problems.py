@@ -1,6 +1,7 @@
 from utils.utils_inverse import *
 import streamlit_toggle as tog
 from scipy.special import rel_entr
+import string
 #st.title('Inverse Problems')
 
 #"Course taught by: Klaus Mosegaard."
@@ -478,19 +479,144 @@ def Least_squares():
 def Weakly_nonlinear():
     ''
     '# Weakly nonlinear problems and optimization'
-    """       
-    
-    A nonlinearity is characterized: *a change of the output is not proportional to the change of the input.*
+    cols = st.columns(2)
+    text_intro = """       
+    A nonlinearity is characterized by: *a change of the output not being proportional to the change of the input*.
     
     Non-linear functions may appear chaotic, with troths and valleys scattered seemingly randomly. This makes non-linear phase-spaces tricky to optimize.
-    
-    ### weakly non-linear 🤷‍♂️
+
+
     Weakly non-linear problem typically only contain 1 or a few non-linearities, and crucially they may be approximated by a linear model in a neighborhood of a given point. 
+    """
 
-    ### Steepest decent for weakly non-linear optimization
-    Steepest descent algorithms evaluate local gradient and step opposite with a step-length typically determined by a line search (for more info see scientific computing). 
+    cols[0].markdown(text_intro)
+    fig = plt.figure()
 
-    The steepest descent algorithm can be seen as an extension of the linear least-squares solution to weakly non-linear problems.
+    nsteps = 30#cols[0].slider('n', 1, 1000, 100)
+    nparams = 6
+    low, high = -4,4
+    x = np.linspace(low,high,nsteps) 
+    X, Y = np.meshgrid(x,x)
+
+    params = [1, 1, 0.77, 1.11, .31, .31] # [cols[0].slider(l, 0.,10.,1.) for l in string.ascii_lowercase[:nparams]]
+
+
+    
+    def f(x,y):
+
+        return abs((np.log(abs((x-a))**p) + np.log(abs((y-b))**p)))**(1/p)
+
+    def f(x,y):
+        return (x-a)**2 + (y-b)**2 + np.exp(d*(x-c)) + e*np.sin(y) 
+    def pymathfunc2latex(string="np.sin(a*x)+(x-c)**2 + np.sin(y*a)-x**4 - y**2"):
+        string = '$'+string+'$'
+        replacements = {
+            'np.s' : r"\s",
+            '**': r'^ ' ,
+            '*': r'\cdot ' 
+        }
+        for key, val in replacements.items():
+
+            string = string.replace(key,val)
+
+        return string
+
+    #cols[1].write(pymathfunc2latex())
+
+    def f(x,y, a=0, b=0, c=0, d=0, e=0, c1=0):
+        ''
+        val = a*np.sin(x*b) + c*np.cos(y*d)+e*x+c1*y +1/100*x**4+1/100*(y-1)**4
+        
+        #cols[0].write(pymathfunc2latex('a*np.sin(x*b) + c*np.cos(y*d)+e*np.tan(x*y*c1)'))
+        return val+2
+
+
+    z = f(X,Y, *params)
+
+    
+
+
+    def plot3dsurface():
+        fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
+        surf = ax.plot_surface(X, Y, z, color='white' ,
+                           linewidth=0, antialiased=True)
+        fig.colorbar(surf, shrink=0.5, aspect=5)
+        for axis in ax.w_xaxis, ax.w_yaxis, ax.w_zaxis:
+            for elt in axis.get_ticklines() + axis.get_ticklabels():
+                elt.set_visible(False)
+            axis.pane.set_visible(False)
+            axis.gridlines.set_visible(False)
+            #axis.line.set_visible(False, )
+
+        ax.set_facecolor('black')
+        plt.close()
+        fig.set_facecolor('black')
+        #cols[1].pyplot(fig)
+
+    import plotly.graph_objects as go
+    fig = go.Figure(data=[go.Scatter3d(
+                    x=X.flatten(), 
+                    y=Y.flatten(),
+                    z=z.flatten(),
+                    mode='markers',
+                    marker=dict(
+                        size=3,
+                        color=z.flatten()-2,                # set color to an array/list of desired values
+                        #colorscale='RdBu',   # choose a colorscale
+                        opacity=0.8
+                    )
+                )])
+
+    fig.update_layout(title='Mt Bruno Elevation', autosize=False,
+                  width=400, height=300,
+                  margin=dict(l=0, r=0, b=0, t=0))
+    cols[1].plotly_chart(fig, theme="streamlit", use_conatiner_width=True)
+    
+
+    '---'
+    cols = st.columns(2)
+    cols[0].markdown(
+    """
+
+    ##### Steepest decent for weakly non-linear optimization
+    Steepest descent algorithms evaluate local gradient and step opposite with a step-length typically determined by a line search (for more info see scientific computing).
+
+
+    """)
+    
+    x0 = np.random.uniform(-3,3,2)
+
+    xs = [x0]
+    h = 0.001
+    lr = cols[0].select_slider('lr',np.round(np.logspace(-3,0,7), 3))
+
+    nsteps = cols[0].slider('nsteps',1,100,10)
+    for i in range(nsteps):
+        x = xs[-1].copy()
+        # determine grad
+        
+        y_current = f(x[0], x[1], *params)
+        #y_current
+        
+        grad = np.array([ ( f(x[0]+h, x[1]+0, *params) - y_current ) / h,
+                          ( f(x[0]+0, x[1]+h, *params) - y_current ) / h])
+
+        #grad
+
+        # step oposite
+        x -= grad * lr
+        xs.append(x)
+    xs = np.array(xs)
+
+    fig = plt.figure()
+    
+    plt.contourf(X, Y, z, 30, cmap='inferno')
+    plt.plot(xs[:,0], xs[:,1])
+    plt.scatter(x0[0], x0[1])
+    plt.close()
+    cols[1].pyplot(fig)
+    """
+    
     
     ### What convergence difficulties are there when using the steepest decent algorithms? 
 
@@ -888,7 +1014,7 @@ def monteCarlo():
 
     In summary, MC methods can provide a lot of information about the solution of an inverse problem, but their accuracy and reliability may be limited when only a finite number of samples can be produced. It is important to carefully design the sampling strategy and to analyze the samples in order to understand the convergence and the uncertainty of the solution.
     """
-    
+    sphereINcube_demo()
 
 # Navigator
 topic_dict = {
