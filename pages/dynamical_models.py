@@ -5,9 +5,7 @@ plt.rcdefaults()
 def home():
     text_dict = getText_prep(filename = text_path+'home.md', split_level = 1)
 
-    name = 'Title'
-    with st.expander(name, expanded=True):
-        st.markdown(text_dict[name])
+    st.header('Dynamical Models in Molecular Biology')
 
     name = 'Welcome to DynBio!'
     with st.expander(name, expanded=True):
@@ -21,9 +19,7 @@ def home():
 def week1():
     text_dict = getText_prep(filename = text_path+'week1.md', split_level = 1)
 
-    name = 'title'
-    with st.expander(name, expanded=False):
-        st.markdown(text_dict[name])
+    st.header('Quantifying Noise in Gene Expression')
 
     name = 'Week 1 description'
     with st.expander(name, expanded=False):
