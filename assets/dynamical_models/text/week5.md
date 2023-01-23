@@ -8,7 +8,7 @@ Gene regulatory networks
 # Type of regulation
 There are two type of regulation. 
 - Positive regulation (gene A activates/increses gene B, symbolized by $A\rightarrow B$
-- Negative regulation (gene A represses/decreases gene B, symbolized by $A\dashv B
+- Negative regulation (gene A represses/decreases gene B, symbolized by $A\dashv B$
 By combining this simple type of regulation, gene are controlled.
 Often, gene regulatory networks are more complicated than what appears to be 
 necessary at first sight.
@@ -26,7 +26,7 @@ example but we never say something general.
 
 # Type of network motif
 Several type of motif are reported.
-- Positive feed back ($A \rightleftarrow B$)
+- Positive feed back ($A \leftrightarrow B$)
 - Negative feed back ($A \rightarrow B \dashv A$)
 - Feed-forward loops ($A \rightarrow B \rightarrow C, A \rightarrow C$)
 - Single input modules ($A \rightarrow B, A \rightarrow C, A \rightarrow D$)
@@ -47,7 +47,7 @@ is negative feedback loop.
 - Cell-to-cell communication
 
 # Biological example of feed-forward loops
-- AND logic. *ara genes* needs two activator, CRP and AraC. The network is $\mathrm{CRP} \rightarrow \mathrm{AraC} \rightarrow ara genes$, $CRP \rightleftarrow ara genes$.
+- AND logic. *ara genes* needs two activator, CRP and AraC. The network is $\mathrm{CRP} \rightarrow \mathrm{AraC} \rightarrow ara$, $CRP \leftrightarrow ara$.
 - OR logic. Flagella of bacteria.
 
 # Biological example of single input modules

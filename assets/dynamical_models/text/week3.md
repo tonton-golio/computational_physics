@@ -59,4 +59,4 @@ $$
 
 # Binomial vs Poisson
 If we use large $N$ in binomial distribution, it approaches the Poisson 
-distribution (with $Np=m=const.$).
+distribution (with $Np=m=\mathrm{const.}$).

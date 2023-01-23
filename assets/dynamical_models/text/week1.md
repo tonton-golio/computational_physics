@@ -82,7 +82,7 @@ From this the total noise is mathematically
 $$
 \eta(t) 
 =
-\fraccell move via diffusion'
+\frac
 {\sqrt{\left< (N(t) - \left<N(t)\right> )^2 \right>}}
 {\left< N(t) \right>}
 $$
