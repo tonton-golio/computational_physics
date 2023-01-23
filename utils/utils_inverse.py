@@ -791,11 +791,12 @@ def ass3_glacier_thickness():
     
 
 def sphereINcube_demo(data = []):
-    return None
+    #return None
     # guess
     fig_guess, ax_guess = plt.subplots(figsize=(4,2))
 
     n_dims = np.arange(2,10)
+    cols = st.columns(2)
     p = np.pi/2**n_dims
     cols[1].markdown('p = np.pi/2**n_dims')
     plt.title('guess', color='white')
@@ -805,15 +806,16 @@ def sphereINcube_demo(data = []):
     #
     plt.legend()
     
-    logscale = tog.st_toggle_switch(label="Log scale", 
-                key="Key1", 
-                default_value=False, 
-                label_after = False, 
-                inactive_color = '#D3D3D3', 
-                active_color="#11567f", 
-                track_color="#29B5E8"
-                )
-    cols = st.columns(2)
+    #logscale = tog.st_toggle_switch(label="Log scale", 
+    #            key="Key1", 
+    #            default_value=False, 
+    #            label_after = False, 
+    #            inactive_color = '#D3D3D3', 
+    #            active_color="#11567f", 
+    #            track_color="#29B5E8"
+    #            )
+    logscale = True
+    
     #logscale = cols[1].radio('log scale?', [True, False])
     if logscale:plt.yscale('log')
     c = cols[1].empty()
@@ -826,7 +828,7 @@ def sphereINcube_demo(data = []):
     n_points = cols[0].select_slider('Number of points', np.logspace(1,14,14,base=2, dtype=int))
     
     
-    n_dim = cols[0].select_slider('Number of dimensions', np.arange(2,10,1, dtype=int))
+    n_dim = cols[0].select_slider('Number of dimensions', np.arange(2,11,1, dtype=int))
     cols[0].markdown('My guess might be slightly high?... Also, notice how in 3 dim. a ball (sort of) appeares.')
     p_norm = cols[0].slider('p (for norm)', 0.,8.,2.)
     cols[0].markdown(r"""
@@ -848,7 +850,7 @@ def sphereINcube_demo(data = []):
     # output
     cols[1].pyplot(fig)
     percentage = sum(abs(norm)<1)/n_points
-    cols[0].write('Percentage inside the unit hypersphere = {:0.2f} giving us $\pi = {:0.4f}$'.format(percentage, percentage*4))
+    cols[0].write('Percentage inside the unit hypersphere = {:0.4f} giving us $\pi = {:0.4f}$'.format(percentage, percentage*4))
     
     data.append((n_dim, percentage))
     for d, perc in data:
