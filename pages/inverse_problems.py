@@ -348,12 +348,6 @@ def Probabilistic():
     ### How does the Tarantola-Valette formalism differ from the Bayesian formulation? 
 
     The Tarantola-Valette formalism is a specific implementation of the Bayesian formulation for inverse problems. Both approaches use a probabilistic formulation to estimate the unknown parameters of a system, and they both rely on Bayes' theorem to calculate the posterior distribution. However, the Tarantola-Valette formalism does not assume that the noise in the data is Gaussian nor that the prior and likelihood are Gaussian distributions.
-
-    This assumption of Gaussian distributions may simplify the computations, but also it may not be always the case in practice. Additionally, the Tarantola-Valette formalism is a linearized Bayesian approach, it makes assumptions about the linearity of the model and the Gaussianity of the error, which might not hold in some situations.
-
-    The Bayesian formulation is more general and flexible, and it can handle non-Gaussian noise and priors, non-linear models, and multiple hypotheses. This generality can make it more computationally intensive or harder to implement, but it is also more suitable for complex and realistic systems.
-
-    In summary, the Tarantola-Valette formalism is a specific Bayesian approach that is based on Gaussian assumptions and linearization, while the Bayesian formulation is a more general approach that can handle a wider range of problems.
     """
 
 def DensityVar_LeastSquare():
