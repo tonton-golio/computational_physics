@@ -821,15 +821,17 @@ def monteCarlo():
         st.markdown(text_dict['Header 1'])
         st.markdown(text_dict['Header 2'])
     '# Monte Carlo'
-    """
+    r"""
     ### For which type of inverse problems are Monte Carlo (MC) methods used? 
-    Monte Carlo (MC) methods are often used for inverse problems that involve complex or high-dimensional systems, where the likelihood function and/or the prior distribution cannot be easily calculated or integrated analytically. These methods involve generating a large number of random samples from the prior distribution, and then evaluating the likelihood function for each sample. The samples that have a high likelihood are considered to be more probable, and they are used to estimate the posterior distribution.
+    Monte Carlo (MC) methods are often used for inverse problems that involve complex or high-dimensional systems, where the likelihood function and/or the prior distribution cannot be easily calculated or integrated analytically. These methods involve generating a large number of random samples from the prior distribution, and then evaluating the likelihood function for each sample. The samples that have a high likelihood are considered to be more probable, and they are used to estimate the posterior distribution. A typical likelihood is the following:
+
+    $$
+        L(m) = k\exp\left[1/2 (g(m) - d_\text{obs})^T C^{-1} (g(m) - d_\text{obs})^T\right]
+    $$
 
     Markov Chain Monte Carlo (MCMC) methods are a class of MC methods that are particularly useful for inverse problems. These methods involve generating a sequence of samples that are correlated with each other, and they are designed to converge to the true posterior distribution.
 
-    MCMC methods are often used for inverse problems that involve high-dimensional or non-linear systems, where the posterior distribution is not trivial to calculate. These methods can be used to approximate the posterior distribution, and thus estimate the unknown parameters of the system. Additionally, these methods can also be used to calculate various quantities of interest, such as credible intervals or the expected value of a function of the parameters.
-
-    MCMC methods are also used in a wide range of applications such as Bayesian statistics, physics, engineering, image processing, signal processing, and machine learning.
+    Additionally, these methods can also be used to calculate various quantities of interest, such as credible intervals or the expected value of a function of the parameters.
 
     ### What is the difference between an MC solution and a "deterministic" solution? 
     An "deterministic" solution of an inverse problem refers to a method that finds a single, unique solution to the problem based on a set of predetermined equations or algorithms. These methods typically involve optimization algorithms or analytical solutions that are designed to find the best fit of the model to the data. They provide a point estimate of the parameters of the system, which is a single set of parameter values that maximizes the likelihood or minimizes some cost function.
