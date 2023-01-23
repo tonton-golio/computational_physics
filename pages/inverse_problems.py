@@ -277,6 +277,9 @@ def informationTheory():
     
     wrapfig(width=320,src='https://caltech-prod.s3.amazonaws.com/main/images/TSchneider-GClimateModel-grid-LES-NEWS-WEB.width-450.jpg', text=text)
 
+    '''
+    *Most inverse problems that arise in practice are neither completely overdetermined nor completely underdetermined. For instance, in the X-ray tomography problem, there may be one box through which several rays pass (Fig. 3.10A). The X-ray opacity of this box is clearly overdetermined. On the other hand, there may be boxes that have been missed entirely (Fig. 3.10B). These boxes are completely undetermined. There may also be boxes that cannot be individually resolved because every ray that passes through one also passes through an equal distance of the other (Fig. 3.10C). These boxes are also underdetermined, since only their mean opacity is determined.* [sciencedirect.com]
+    '''
     
 def Probabilistic():
     ''
@@ -413,7 +416,7 @@ def Least_squares():
     '# Least Squares'
     r"""
     ### Consider the determinedness of an inverse problem.
-    *Most inverse problems that arise in practice are neither completely overdetermined nor completely underdetermined. For instance, in the X-ray tomography problem, there may be one box through which several rays pass (Fig. 3.10A). The X-ray opacity of this box is clearly overdetermined. On the other hand, there may be boxes that have been missed entirely (Fig. 3.10B). These boxes are completely undetermined. There may also be boxes that cannot be individually resolved because every ray that passes through one also passes through an equal distance of the other (Fig. 3.10C). These boxes are also underdetermined, since only their mean opacity is determined.*[sciencedirect.com]
+    
 
     ### What is the idea and the assumptions behind the least-squares solution?  
     The least-squares solution is a method for solving inverse problems that is based on the idea of minimizing the difference between the observed data and the model predictions. It is a deterministic method that finds a single, unique solution to the problem based on a set of predetermined equations.
