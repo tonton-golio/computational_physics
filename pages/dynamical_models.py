@@ -73,7 +73,26 @@ def week1():
     with st.expander(name, expanded=False):
         st.markdown(text_dict[name])
 
+    cols = st.columns(4)
+    kmRNA = cols[0].number_input('kmRNA', min_value=0.0, max_value=None, value=10.0)
+    gmRNA = cols[0].number_input('gmRNA', min_value=0.0, max_value=None, value=1.0)
+    kpro  = cols[1].number_input('kpro',  min_value=0.0, max_value=None, value=1.0)
+    gpro  = cols[1].number_input('gpro',  min_value=0.0, max_value=None, value=0.1)
+    Ngene = cols[2].number_input('Ngene', min_value=1, max_value=2, value=1)
+    Ncell = cols[2].number_input('Ncell', min_value=1, max_value=2, value=1)
+    NRepressor = cols[3].number_input('NRepressor', min_value=0, max_value=None, value=0)
+    parameters = [kmRNA, gmRNA, kpro, gpro, Ngene, Ncell, NRepressor]
 
+    results, fig = plot_noise(*parameters)
+    st.write("mRNA average: ",               results[0])
+    st.write("protein average: ",            results[1])
+    st.write("protein variance: ",           results[2])
+    st.write("protein standard deviation: ", results[3])
+    st.write("protein total noise: ",        results[4])
+    if len(results) == 7:
+        st.write("Extrinsic noise: ", results[5])
+        st.write("Intrinsic noise: ", results[6])
+    st.pyplot(fig)
 
 
 def week2():

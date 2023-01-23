@@ -118,6 +118,288 @@ def add_text_to_ax(x_coord, y_coord, string, ax, fontsize=12, color='k'):
 
 ###########################################
 # week 1
+def plot_noise(kmrna, gmrna, kpro, gpro, Ngene, Ncell, NRepressor):
+    t_final = 1000 # end of the simulation time
+    ra=100 # association rate of a protein - fast enough
+    kdiss=1  #dissociation constant of a protein
+    rd=ra*kdiss #dissociation rate of a protein
+    grep=0.05 # repressor degradation rate 
+    krep=grep*NRepressor # repressor production rate
+
+
+################ making arrays to record the data
+    nrecord=1000 #number of data points recorded for plotting 
+    t = np.linspace(0,t_final,num=nrecord) #This is unoccupye step that I take the record
+    mRNA = [[[0 for j in range(nrecord)] for i in range(Ncell)] for ig in range (Ngene)]  # mRNA[0][0][0] is gene 1 mRNA in the cell 1 at time 0, mRNA[1][0][3] is gene 2 mRNA if Ngene=2 in the cell 1 at time 3
+    protein =  [[[0 for j in range(nrecord)] for i in range(Ncell)] for ig in range (Ngene)]
+    NR =  [[0 for j in range(nrecord)] for i in range(Ncell)] 
+
+    mRNAinit=int(kmrna/(1.+NRepressor/kdiss)/gmrna)
+    proinit=int(kpro*mRNAinit/gpro)
+    mRNAnow = [[mRNAinit for i in range(Ncell)] for ig in range (Ngene)] 
+    proteinnow =  [[proinit for i in range(Ncell)]  for ig in range (Ngene)]
+    NRnow = [NRepressor for i in range(Ncell)]   #Free repressors 
+    timenow = [0. for i in range(Ncell)]  
+    unoccupy = [[1. for i in range(Ncell)] for ig in range (Ngene)]  # unoccupy[1][0] is gene 2 occupation in the cell 1 
+    itime=[0 for i in range(Ncell)]  
+
+    bind = [0 for ig in range(Ngene)] 
+    unbind = [0 for ig in range(Ngene)] 
+    mprod = [0 for ig in range(Ngene)] 
+    mdeg = [0 for ig in range(Ngene)] 
+    pprod = [0 for ig in range(Ngene)] 
+    pdeg = [0 for ig in range(Ngene)] 
+            
+    while min(timenow) < t_final:
+        for i in range(Ncell):
+            rsum=krep
+            repdeg=grep*NRnow[i]
+            rsum+=repdeg
+            for ig in range(Ngene):
+                bind[ig]=unoccupy[ig][i]*NRnow[i]*ra
+                unbind[ig]=(1-unoccupy[ig][i])*rd
+                mprod[ig]=kmrna*unoccupy[ig][i]
+                mdeg[ig]=mRNAnow[ig][i]*gmrna
+                pprod[ig]=mRNAnow[ig][i]*kpro
+                pdeg[ig]=proteinnow[ig][i]*gpro
+                
+                rsum+=mprod[ig]+mdeg[ig]+pprod[ig]+pdeg[ig]+bind[ig]+unbind[ig]
+                
+                #print(krep,repdeg)
+                #print(mprod[ig],mdeg[ig],pprod[ig],pdeg[ig],bind[ig],unbind[ig])
+                
+            a = np.random.random(1)
+            tau=-np.log(a)/rsum
+            
+            while (itime[i]<nrecord and t[itime[i]]>=timenow[i] and t[itime[i]]<timenow[i]+tau):
+                NR[i][itime[i]]=NRnow[i]
+                for ig in range(Ngene):
+                    mRNA[ig][i][itime[i]]=mRNAnow[ig][i]
+                    protein[ig][i][itime[i]]=proteinnow[ig][i]
+                    #NR[i][itime[i]]+=1-unoccupy[ig][i]                
+                itime[i]=itime[i]+1                   
+            
+            timenow[i]=timenow[i]+tau
+          
+            a=np.random.random(1)
+            rsumnow=krep
+            if a<rsumnow/rsum:
+                NRnow[i]+=1
+            else:
+                rsumnow+=repdeg
+                if a<rsumnow/rsum:
+                    NRnow[i]-=1
+                else:
+                    ig=0
+                    rsumnow+=mprod[ig]
+                    if a<rsumnow/rsum:
+                        mRNAnow[ig][i]+=1
+                    else:
+                        rsumnow+=mdeg[ig]
+                        if a<rsumnow/rsum:
+                            mRNAnow[ig][i]-=1
+                        else:
+                            rsumnow+=pprod[ig]
+                            if a<rsumnow/rsum:
+                                proteinnow[ig][i]+=1
+                            else:
+                                rsumnow+=pdeg[ig]
+                                if a<rsumnow/rsum:
+                                    proteinnow[ig][i]-=1
+                                else:
+                                    rsumnow+=bind[ig]
+                                    if a<rsumnow/rsum:
+                                        unoccupy[ig][i]=0
+                                        NRnow[i]-=1
+                                    else:
+                                        rsumnow+=unbind[ig]
+                                        if a<rsumnow/rsum:
+                                            unoccupy[ig][i]=1
+                                            NRnow[i]+=1
+                                        else:
+                                            if Ngene==2:
+                                                ig=1
+                                                rsumnow+=mprod[ig]
+                                                if a<rsumnow/rsum:
+                                                    mRNAnow[ig][i]+=1
+                                                else:
+                                                    rsumnow+=mdeg[ig]
+                                                    if a<rsumnow/rsum:
+                                                        mRNAnow[ig][i]-=1
+                                                    else:
+                                                        rsumnow+=pprod[ig]
+                                                        if a<rsumnow/rsum:
+                                                            proteinnow[ig][i]+=1
+                                                        else:
+                                                            rsumnow+=pdeg[ig]
+                                                            if a<rsumnow/rsum:
+                                                                proteinnow[ig][i]-=1
+                                                            else:
+                                                                rsumnow+=bind[ig]
+                                                                if a<rsumnow/rsum:
+                                                                    unoccupy[ig][i]=0
+                                                                    NRnow[i]-=1
+                                                                else:
+                                                                    rsumnow+=unbind[ig]
+                                                                    if a<rsumnow/rsum:
+                                                                        unoccupy[ig][i]=1
+                                                                        NRnow[i]+=1
+
+
+
+    mRNAmean=np.mean(mRNA, axis=2)
+    mRNAvar=np.var(mRNA, axis=2)
+    promean=np.mean(protein, axis=2)
+    provar=np.var(protein, axis=2)
+
+    #print('mRNA average', np.mean(mRNAmean))
+    #print('protein average', np.mean(promean))
+    #print('protein variance', np.mean(provar))
+    #print('protein standard deviation', np.sqrt(np.mean(provar)))
+    #print('protein noise (Total noise)', np.sqrt(np.mean(provar))/np.mean(promean))
+            
+    mRNA_average = np.mean(mRNAmean)
+    pro_average = np.mean(promean)
+    pro_variacne = np.mean(provar)
+    pro_std = np.sqrt(np.mean(provar))
+    pro_noise = np.sqrt(np.mean(provar))/np.mean(promean)
+    results = [mRNA_average, pro_average, pro_variacne, pro_std, pro_noise]
+            
+
+    if Ngene==2:
+        noiseI2=0.
+        noiseE2=0.
+        for it in range (len(t)):
+            for i in range (Ncell):
+                noiseI2+=(protein[0][i][it]-protein[1][i][it])**2
+                noiseE2+=(protein[0][i][it]*protein[1][i][it])
+        
+        proallmean=np.mean(promean, axis=1)
+        noiseI2=noiseI2/(Ncell*len(t))
+        noiseE2=noiseE2/(Ncell*len(t))
+        noiseE2=noiseE2-proallmean[0]*proallmean[1]
+        
+        noiseI2=noiseI2/(2*proallmean[0]*proallmean[1])
+        noiseE2=noiseE2/(proallmean[0]*proallmean[1])
+
+        print('Extrinsic noise', np.sqrt(noiseE2))
+        print('Intrinsic noise', np.sqrt(noiseI2))
+        #print('Total noise', np.sqrt(noiseE2+noiseI2), np.sqrt(np.mean(provar))/np.mean(promean))
+        results.append(np.sqrt(noiseE2))
+        results.append(np.sqrt(noiseI2))
+        
+
+# plot results
+    if Ngene==1:
+        fig, axs = plt.subplots(3, 1, figsize=(15,15))
+        axs[0].plot(t,NR[0][:],'g-',label=r'repressor')
+        axs[0].set_title('cell 1, repressor')
+        axs[0].set_ylabel('repressor ')
+        axs[0].set_xlabel('time')
+
+
+        ig=0
+        axs[1].plot(t,mRNA[ig][0][:],'b-',label=r'mRNA')
+        axs[1].set_title('cell 1, gene 1')
+        axs[1].set_ylabel('mRNA')
+        axs[1].set_xlabel('time')
+
+
+        axs[2].plot(t,protein[ig][0][:],'r-',label=r'protein')
+        axs[2].set_ylabel('protein')
+        axs[2].set_xlabel('time')
+
+        plt.show()
+
+
+    if Ngene==2:
+        fig, axs = plt.subplots(3, 2, figsize=(15,15))
+        axs[0][0].plot(t,NR[0][:],'g-',label=r'repressor')
+        axs[0][0].set_title('cell 1, repressor')
+        axs[0][0].set_ylabel('repressor ')
+        axs[0][0].set_xlabel('time')
+
+
+        ig=0
+        axs[1][0].plot(t,mRNA[ig][0][:],'b-',label=r'mRNA')
+        axs[1][0].set_title('cell 1, gene 1')
+        axs[1][0].set_ylabel('mRNA')
+        axs[1][0].set_xlabel('time')
+
+
+        axs[2][0].plot(t,protein[ig][0][:],'r-',label=r'protein')
+        axs[2][0].set_ylabel('protein')
+        axs[2][0].set_xlabel('time')
+
+        ig=1
+        axs[1][1].plot(t,mRNA[ig][0][:],'b-',label=r'mRNA')
+        axs[1][1].set_title('cell 1, gene 2')
+        axs[1][1].set_ylabel('mRNA')
+        axs[1][1].set_xlabel('time')
+
+
+        axs[2][1].plot(t,protein[ig][0][:],'r-',label=r'protein')
+        axs[2][1].set_ylabel('protein')
+        axs[2][1].set_xlabel('time')
+
+        plt.show()    
+
+    if Ncell==2: 
+        if Ngene==1:
+            fig, axs = plt.subplots(3, 1, figsize=(15,15))
+            axs[0].plot(t,NR[1][:],'g-',label=r'repressor')
+            axs[0].set_title('cell 2, repressor')
+            axs[0].set_ylabel('repressor ')
+            axs[0].set_xlabel('time')
+
+
+            ig=0
+            axs[1].plot(t,mRNA[ig][1][:],'b-',label=r'mRNA')
+            axs[1].set_title('cell 2, gene 1')
+            axs[1].set_ylabel('mRNA')
+            axs[1].set_xlabel('time')
+
+
+            axs[2].plot(t,protein[ig][1][:],'r-',label=r'protein')
+            axs[2].set_ylabel('protein')
+            axs[2].set_xlabel('time')
+
+            plt.show()
+
+
+        if Ngene==2:
+            fig, axs = plt.subplots(3, 2, figsize=(15,15))
+            axs[0][0].plot(t,NR[1][:],'g-',label=r'repressor')
+            axs[0][0].set_title('cell 2, repressor')
+            axs[0][0].set_ylabel('repressor ')
+            axs[0][0].set_xlabel('time')
+
+
+            ig=0
+            axs[1][0].plot(t,mRNA[ig][1][:],'b-',label=r'mRNA')
+            axs[1][0].set_title('cell 2, gene 1')
+            axs[1][0].set_ylabel('mRNA')
+            axs[1][0].set_xlabel('time')
+
+
+            axs[2][0].plot(t,protein[ig][1][:],'r-',label=r'protein')
+            axs[2][0].set_ylabel('protein')
+            axs[2][0].set_xlabel('time')
+
+            ig=1
+            axs[1][1].plot(t,mRNA[ig][1][:],'b-',label=r'mRNA')
+            axs[1][1].set_title('cell 2, gene 2')
+            axs[1][1].set_ylabel('mRNA')
+            axs[1][1].set_xlabel('time')
+
+
+            axs[2][1].plot(t,protein[ig][1][:],'r-',label=r'protein')
+            axs[2][1].set_ylabel('protein')
+            axs[2][1].set_xlabel('time')
+
+
+    return results, fig
+
 
 # week 2
 ## plot function for Hill function
