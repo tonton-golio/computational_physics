@@ -588,9 +588,9 @@ def Weakly_nonlinear():
 
     xs = [x0]
     h = 0.001
-    lr = cols[0].select_slider('lr',np.round(np.logspace(-3,0,7), 3))
+    lr = cols[1].select_slider('lr',np.round(np.logspace(-3,0,7), 3))
 
-    nsteps = cols[0].slider('nsteps',1,100,10)
+    nsteps = cols[1].slider('nsteps',1,100,10)
     for i in range(nsteps):
         x = xs[-1].copy()
         # determine grad
@@ -615,21 +615,23 @@ def Weakly_nonlinear():
     plt.scatter(x0[0], x0[1])
     plt.close()
     cols[1].pyplot(fig)
-    """
+    cols[0].markdown("""
     
     
-    ### What convergence difficulties are there when using the steepest decent algorithms? 
+    ##### Convergence difficulties 
 
     Steepest descent algorithms have several convergence difficulties, such as: 
     * finding local minima instead of global minima, 
-    * slow convergence for high-dimensional problems,
     * sensitivity to initial parameters,
     * non-convexity in cost function,
     * difficulty in choosing the right step size and getting stuck in a plateau of cost function.
     
-    These difficulties can be overcome by using more advanced optimization techniques such as conjugate gradient or Newton-Raphson method, which have faster convergence rates and are less sensitive to the initial parameters.
+    More advanced optimization techniques such as conjugate gradient or Newton-Raphson method, mitigate some of these challenges. 
 
-    ### What are the challenges to the efficiency (speed) of steepest decent algorithms when solving weakly non-linear problems? 
+    """)
+    '---'
+    """
+    ##### Challenges to the efficiency (speed) of steepest decent algorithms when solving weakly non-linear problems? 
 
     There are several challenges to the efficiency (speed) of steepest descent algorithms when solving weakly non-linear problems:
 
