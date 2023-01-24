@@ -187,7 +187,7 @@ def percolation_and_fractals():
     The Mandelbrot set contains complex numbers remaining stable through the mandelbrot function after successive iterations. Note; we let $z_0$ be 0. The two main essential pieces of code are displayed below the plot.
     """)
     cols = st.columns(3)
-    size_fractal = int(10**cols[0].slider(r'Resolution (log)',1.5,4., 2.))
+    size_fractal = int(10**cols[0].slider(r'Resolution (log)',1.5,3., 2.))
     
     n = cols[1].slider('n',1,50,27)
     a = cols[2].slider('a',0.01,13.,2.3)
