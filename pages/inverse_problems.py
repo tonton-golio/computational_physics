@@ -525,7 +525,7 @@ def Weakly_nonlinear():
 
     def f(x,y, a=0, b=0, c=0, d=0, e=0, c1=0):
         ''
-        val = a*np.sin(x*b) + c*np.cos(y*d)+e*x+c1*y +1/100*x**4+1/100*(y-1)**4
+        val = a*np.sin(x*b) + c*np.cos(y*d)+e*x+c1*y +1/100*x**4+1/100*(y-1)**4+y/4
         
         #cols[0].write(pymathfunc2latex('a*np.sin(x*b) + c*np.cos(y*d)+e*np.tan(x*y*c1)'))
         return val+2
@@ -561,7 +561,7 @@ def Weakly_nonlinear():
                     mode='markers',
                     marker=dict(
                         size=3,
-                        color=z.flatten()-2,                # set color to an array/list of desired values
+                        color=z.flatten()-1,                # set color to an array/list of desired values
                         #colorscale='RdBu',   # choose a colorscale
                         opacity=0.8
                     )
