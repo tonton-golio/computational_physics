@@ -53,3 +53,10 @@ def landingPage():
     6. Pipe flow
     7. Navier Stokes Equations
     '''
+    
+# Navigator
+topic_dict = {"Landing Page" : landingPage}
+
+topic = st.sidebar.selectbox("topic" , list(topic_dict.keys()))
+
+run_topic = topic_dict[topic] ; run_topic()
