@@ -14,6 +14,74 @@ from numba import prange, jit
 from time import time
 from scipy.optimize import curve_fit
 
+
+def strip_leading_spaces(x):
+    x_stripped = x
+    if len(x)<2: return x
+    for i in range(12):
+        try:
+            if x_stripped[0] == ' ':
+                x_stripped = x_stripped[1:]
+            else:
+                break
+        except:
+            break
+    return x_stripped
+
+def strip_lines(text):
+    return'\n'.join([strip_leading_spaces(x) for x in text.split('\n')])
+
+#st.write(strip_leading_spaces('    asdasd'))
+def wrapfig(width=200, text='aaa',src='', st=st):
+        
+    
+    HEAD = """<!DOCTYPE html>
+        <html>    
+        <head><style>
+            img {
+            float: right;
+            margin: 5px;
+            }
+        </style></head>
+        """
+    
+    BODY = """
+        <body>
+        <div class="square">
+            <div>
+            <img src="{}"
+                width = {}
+                alt="Longtail boat in Thailand">
+            </div>
+        <p>{}</p>
+        </div>
+        </body></html>
+        """.format(src, width, text)
+
+    str = HEAD+BODY
+    str = strip_lines(str)
+    st.markdown(str,  unsafe_allow_html=True
+    )
+    
+
+def entropy_discrete(x):
+
+    H  = 0
+    for i in set(x):
+        p = len(x[x==i])/len(x)
+        H += p*np.log2(p)
+
+    return -1*H
+
+def entropy_continous(f, x):
+    
+    dx = x[1]-x[0]
+    fx = f(x)
+    fx = fx[fx>0]
+    H = -1*sum(fx*np.log2(fx)*dx)
+    return H
+
+
 def gauss_pdf_N(x, mu, sigma):
     """Gaussian"""
     return 1 / np.sqrt(2 * np.pi) / sigma * np.exp(-(x - mu) ** 2 / 2. / sigma ** 2)
