@@ -55,14 +55,20 @@ def function_profiler_on(f, *args, **kwargs):
         for key, val in end_ram._asdict().items():
             data['end_ram_' + key] = [val]
 
-
-        try:            
-            new_line = pd.DataFrame.from_dict(data)
+        try:
             df = pd.read_csv('profiling_data.csv', index_col=0)
+
+            new_line = pd.DataFrame.from_dict(data)
+            new_line.index = [df.index.max()+1]
+
             df = pd.concat([df, new_line], axis=0)
+
+            if len(df) > 10000:
+                df = df.tail(10000)
             df.to_csv('profiling_data.csv')
 
         except:
+            st.write('## profiling logger failed')
             print('profiling logger failed')
             df = pd.DataFrame.from_dict(data)
             df.to_csv('profiling_data.csv')
@@ -181,7 +187,6 @@ def getText_prep_new(filename = 'assets/applied_statistics/text/'+'week3.md'):
         key = i.split('\n')[0]
         d[key] = i[len(key)+1:]       
     return d
-
 
 
 

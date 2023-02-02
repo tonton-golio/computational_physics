@@ -2,22 +2,15 @@
 
 from utils.utils_global import *
 set_rcParams()
-def func_to_profile(x):
-    return np.sin(x)
 
+'# Performance info'
 
-# now we can profile any function
-@function_profiler
-def a(x):
-    return func_to_profile(x)
-
-
-
-
-df = pd.read_csv('profiling_data.csv', index_col=0)
-with st.expander('raw data', expanded=False):
-    df
-
+try:
+    df = pd.read_csv('profiling_data.csv', index_col=0)
+    with st.expander('raw data', expanded=False):
+        df
+except:
+    pass
 
 df['cpu_delta'] = df['end_cpu'] - df['start_cpu']
 df['ram_delta'] = df['end_ram_used'] - df['start_ram_used']
@@ -25,14 +18,21 @@ df['ram_percent_delta'] = df['end_ram_percent'] - df['start_ram_percent']
 df = df[["func_name", "cpu_delta", "ram_delta", "ram_percent_delta", "run_time"]]
 
 cols = st.columns((1,1))
-summean = cols[0].radio('When we have two runs of the same function how should we groupby', ['sum', 'mean', 'max'])
-deviations = cols[1].slider('Show those more than x sigmas from the mean', 0.,3.,2.)
-if summean == 'mean': 
-    df_grouped = df.groupby('func_name').mean()
-elif summean == 'sum': 
-    df_grouped = df.groupby('func_name').sum()
-elif summean == 'max': 
-    df_grouped = df.groupby('func_name').max()
+deviations = cols[1].slider('Show those more than x sigmas from the mean', 0.,1.2,.2)
+if devmod:
+    @function_profiler
+    def a(x):
+        return 3*(x)
+
+    if cols[1].button('test'):
+        a(4)
+
+df_grouped = {
+    'mean' : df.groupby('func_name').mean(),
+    'sum'  : df.groupby('func_name').sum(),
+    'max'  : df.groupby('func_name').max(),
+    'count'  : df.groupby('func_name').count(),
+}[cols[0].radio('How should mutiple calls of a func be grouped?', [ 'max', 'count','sum', 'mean',])]
 
 
 figs = {}
@@ -43,7 +43,7 @@ for i, col in enumerate(df_grouped.columns):
         sig = df_grouped[col].std()
         lim = mu +deviations*sig 
         
-        df_grouped[df_grouped[col] > lim][col].plot.barh(ax=ax)
+        df_grouped[df_grouped[col] >= lim][col].plot.barh(ax=ax)
     except IndexError:
         pass
     plt.title(col)
@@ -68,4 +68,8 @@ caption_figure(f"Only showing values greater than {deviations} " +  r"$\sigma$."
 
 To collect more date, run locally with devmod enabled. devmod can be toggled in utils_global.
 
+
+---
+
+It seems figure numbers keep going up. Are we keeping all these figs in ram?
 """

@@ -325,13 +325,13 @@ def DensityVar_LeastSquare():
     st.markdown(text_dict['Ex 2'])
 
     ## calc and show G
-    G = G_matrix(xs=xs, zs=np.arange(100))
+    G = G_matrix(xs=xs, zs=np.arange(40))
     cols = st.columns(2)
     cols[0].markdown(text_dict['Ex 3'])
     cols[1].pyplot(contour_of_G(G.T))
 
     ## calc and show ms
-    eps_space = np.logspace(-13, -9, 20)
+    eps_space = np.logspace(-13, -9, 24)
     ms = getParams(G, d_obs, eps_space)
 
     fig, ax = plt.subplots(figsize=(8,3))
