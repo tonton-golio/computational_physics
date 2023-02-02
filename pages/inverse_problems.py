@@ -1,81 +1,28 @@
-from streamlit_profiler import Profiler
-p = Profiler()
-p.start()
-
 from utils.utils_inverse import *
-import streamlit_toggle as tog
-from scipy.special import rel_entr
-import string
+
+
+st.set_page_config(page_title="Inverse Problems", 
+    page_icon="🧊", 
+    #layout="wide", 
+    initial_sidebar_state="collapsed", 
+    menu_items=None)
+
+
+
 #st.title('Inverse Problems')
-
 #"Course taught by: Klaus Mosegaard."
-set_rcParams()
 
-def strip_leading_spaces(x):
-    x_stripped = x
-    if len(x)<2: return x
-    for i in range(12):
-        try:
-            if x_stripped[0] == ' ':
-                x_stripped = x_stripped[1:]
-            else:
-                break
-        except:
-            break
-    return x_stripped
-
-def strip_lines(text):
-    return'\n'.join([strip_leading_spaces(x) for x in text.split('\n')])
-
-#st.write(strip_leading_spaces('    asdasd'))
-def wrapfig(width=200, text='aaa',src='', st=st):
-        
-    
-    HEAD = """<!DOCTYPE html>
-        <html>    
-        <head><style>
-            img {
-            float: right;
-            margin: 5px;
-            }
-        </style></head>
-        """
-    
-    BODY = """
-        <body>
-        <div class="square">
-            <div>
-            <img src="{}"
-                width = {}
-                alt="Longtail boat in Thailand">
-            </div>
-        <p>{}</p>
-        </div>
-        </body></html>
-        """.format(src, width, text)
-
-    str = HEAD+BODY
-    str = strip_lines(str)
-    st.markdown(str,  unsafe_allow_html=True
-    )
-    
-
-def entropy_discrete(x):
-
-    H  = 0
-    for i in set(x):
-        p = len(x[x==i])/len(x)
-        H += p*np.log2(p)
-
-    return -1*H
-
-def entropy_continous(f, x):
-    
-    dx = x[1]-x[0]
-    fx = f(x)
-    fx = fx[fx>0]
-    H = -1*sum(fx*np.log2(fx)*dx)
-    return H
+set_rcParams(style_dict = {
+        'patch.facecolor' : (0.04, 0.065, 0.03),
+        'axes.facecolor' : 'grey',
+        'figure.facecolor' : (0.04, 0.065, 0.03),
+        'xtick.color' : 'white',
+        'ytick.color' : 'white',
+        'text.color' : 'lightgreen',
+        # 'axes.grid' : True,  # should we?,
+        'figure.autolayout' : True,  # 'tight_layout',
+        'axes.labelcolor' : "lightgreen",
+    })
 
 
 def landingPage():
@@ -1039,7 +986,3 @@ topic_dict = {
 topic = st.sidebar.selectbox("topic" , list(topic_dict.keys()))
 
 run_topic = topic_dict[topic] ; run_topic()
-
-
-p.stop()
-p

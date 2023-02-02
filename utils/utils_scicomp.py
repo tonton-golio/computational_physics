@@ -1,43 +1,12 @@
-import numpy as np
-import streamlit as st
-import matplotlib.pyplot as plt
-import pandas as pd    
-from time import time
-from time import sleep
-
-
-# General
+from utils.utils_global import *
 
 text_path = 'assets/scientific_computing/text/'
 
-st.set_page_config(page_title="Scientific Computing", 
-    page_icon="🧊", 
-    layout="wide", 
-    initial_sidebar_state="collapsed", 
-    menu_items=None)
 
-def getText_prep(filename = 'pages/stat_mech.md', split_level = 2):
-    with open(filename,'r', encoding='utf8') as f:
-        file = f.read()
-    level_topics = file.split('\n'+"#"*split_level+' ')
-    text_dict = {i.split("\n")[0].replace('### ','') : 
-                "\n".join(i.split("\n")[1:]) for i in level_topics}
-    
-    return text_dict  
-
-def template():
-    st.title('')
-
-    # Main text
-    text_dict = getText_prep(filename = text_path+'bounding_errors.md', split_level = 2)
-
-    st.markdown(text_dict["Header 1"])
-    st.markdown(text_dict["Header 2"])
-    with st.expander('Go deeper', expanded=False):
-        st.markdown(text_dict["Example"])
 
 # Linear Equations
 # C
+@function_profiler
 def lu_factorize(M):
     """
     Factorize M such that M = LU
@@ -62,6 +31,7 @@ def lu_factorize(M):
             
     return L, U
 
+@function_profiler
 def forward_substitute(L,b):
     '''
     Takes a square lower triangular matrix L 
@@ -73,6 +43,7 @@ def forward_substitute(L,b):
         y[i] = ( b[i] - L[i] @ y) / L [i,i]
     return y
 
+@function_profiler
 def backward_substitute(U,y):
     '''which takes a square upper triangular 
     matrix U and a vector y as input, and returns 
@@ -85,7 +56,7 @@ def backward_substitute(U,y):
 
     return x
 
-
+@function_profiler
 def solve_lin_eq(M,z):
     L,U = lu_factorize(M)
     y = forward_substitute(L,z)
@@ -93,6 +64,7 @@ def solve_lin_eq(M,z):
 
 
 # Least Squares
+@function_profiler
 def toy_sim_leastSquares():
     c = st.empty()
     size = 50
@@ -135,6 +107,7 @@ def toy_sim_leastSquares():
 
 
 # Initial Value problems
+@function_profiler
 def run_reactionDiffusion():
 
     st.markdown('## Reaction diffusion')

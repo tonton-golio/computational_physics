@@ -1,17 +1,12 @@
-from streamlit_profiler import Profiler
-p = Profiler()
-p.start()
-from utils.utils_inverse import *
-import streamlit_toggle as tog
-from scipy.special import rel_entr
-import string
+from utils.utils_global import *
+
 
 def landingPage():
     ''
     """# Continuum Mechanics"""
-    text_dict = getText_prep(filename = text_path+'landingPage.md', split_level = 1)
-    for key in text_dict:
-        text_dict[key]
+    #text_dict = getText_prep(filename = text_path+'landingPage.md', split_level = 1)
+    #for key in text_dict:
+    #    text_dict[key]
 
     """
     In the macroscopic world, most materials that surround us e.g. solids and 
@@ -63,7 +58,3 @@ topic_dict = {"Landing Page" : landingPage}
 topic = st.sidebar.selectbox("topic" , list(topic_dict.keys()))
 
 run_topic = topic_dict[topic] ; run_topic()
-
-
-p.stop()
-p

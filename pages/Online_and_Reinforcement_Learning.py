@@ -2,10 +2,7 @@ from streamlit_profiler import Profiler
 p = Profiler()
 p.start()
 
-import streamlit as st
-import numpy as np
-import matplotlib.pyplot as plt
-
+from utils.utils_global import *
 
 '# Online and Reinforcement Learning'
 
@@ -106,6 +103,7 @@ with tabs[3]:
 
     Questions are from [here](https://drive.google.com/file/d/1mEh5ZdJ3H3DIrG5GfpHrrA3jLByw0oYZ/view)
     """
+    
     def q1(p_heads=.5, n_exp = 1000, n_draws = 20):
         
         

@@ -1,11 +1,16 @@
-from streamlit_profiler import Profiler
-p = Profiler()
-p.start()
-
 from utils.utils_dynbio import *
 
-plt.rcdefaults()
+st.set_page_config(page_title="Dynamical Models", 
+    page_icon="🧊", 
+    layout="wide", 
+    initial_sidebar_state="collapsed", 
+    menu_items=None)
 
+
+plt.rcdefaults()
+#set_rcParams()
+
+# pages
 def home():
     text_dict = getText_prep(filename = text_path+'home.md', split_level = 1)
 
@@ -18,7 +23,6 @@ def home():
     name = 'Aim of the course: BRIDGE THE GAP'
     with st.expander(name, expanded=True):
         st.markdown(text_dict[name])
-
 
 def week1():
     text_dict = getText_prep(filename = text_path+'week1.md', split_level = 1)
@@ -93,7 +97,6 @@ def week1():
         st.write("Extrinsic noise: ", results[5])
         st.write("Intrinsic noise: ", results[6])
     st.pyplot(fig)
-
 
 def week2():
     text_dict = getText_prep(filename = text_path+'week2.md', split_level = 1)
@@ -215,7 +218,6 @@ def week3():
     fig = plot_binomial_poisson(N, m)
     st.pyplot(fig)
 
-
 def week4():
     text_dict = getText_prep(filename = text_path+'week4.md', split_level = 1)
     
@@ -250,7 +252,6 @@ def week4():
     name = 'Bacterial biomass is mainly protein'
     with st.expander(name, expanded=False):
         st.markdown(text_dict[name])
-
 
 def week5():
     text_dict = getText_prep(filename = text_path+'week5.md', split_level = 1)
@@ -313,8 +314,6 @@ def week5():
     fig, ax = plot_solve_regulation(H, gamma_P, positive=False)
     st.pyplot(fig)
 
-
-
 def week6():
     text_dict = getText_prep(filename = text_path+'week6.md', split_level = 1)
     
@@ -355,9 +354,7 @@ def week6():
     name = 'Cell-to-cell communication'
     with st.expander(name, expanded=False):
         st.markdown(text_dict[name])
-     
-     
-     
+              
 def week7():
     text_dict = getText_prep(filename = text_path+'week5.md', split_level = 1)
     
@@ -383,8 +380,3 @@ topic_dict = {
 topic = st.sidebar.selectbox("topic" , list(topic_dict.keys()))
 
 run_topic = topic_dict[topic] ; run_topic()
-
-
-
-p.stop()
-p
