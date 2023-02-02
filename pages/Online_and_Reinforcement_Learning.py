@@ -6,6 +6,7 @@ import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 '# Online and Reinforcement Learning'
 
 text_intro = """
@@ -169,17 +170,6 @@ with tabs[3]:
     cols[1].pyplot(q1(p_heads, n_exp = 1000, n_draws = 20))
 
 
-'---'
-'#### The Role of Independence'
-
-
-
-'---'
-"#### The effect of scale (range) and normalization of random variables in Hoeffding’s inequality"
-
-
-'---'
-'## Union Bound'
 
 
 '---'
@@ -189,11 +179,7 @@ with tabs[3]:
 pyTorch is ML package for python, developed by facebook/meta. 
 
 """
-import torch
-from torch import nn
-from torch.utils.data import DataLoader
-from torchvision import datasets
-from torchvision.transforms import ToTensor
+
 def pytorch_toturial1():
 
 
@@ -324,8 +310,7 @@ def pytorch_toturial1():
         st.write(f'Predicted: "{predicted}", Actual: "{actual}"')
 
 
-import torch.optim as optim
-import torchvision.transforms as transforms
+
 def pytorch_example_fromCHATGPT():
     # Load the MNIST dataset and apply transformations
     train_dataset = datasets.MNIST(root='data/', train=True, transform=transforms.ToTensor(), download=True)
@@ -384,7 +369,3 @@ def pytorch_example_fromCHATGPT():
 
     # Save the model for future use
     #torch.save(model.state_dict(), 'mnist_cnn.pth')
-
-
-p.stop()
-p
