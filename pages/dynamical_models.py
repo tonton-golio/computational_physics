@@ -1,3 +1,7 @@
+from streamlit_profiler import Profiler
+p = Profiler()
+p.start()
+
 from utils.utils_dynbio import *
 
 plt.rcdefaults()
@@ -379,3 +383,8 @@ topic_dict = {
 topic = st.sidebar.selectbox("topic" , list(topic_dict.keys()))
 
 run_topic = topic_dict[topic] ; run_topic()
+
+
+
+p.stop()
+p

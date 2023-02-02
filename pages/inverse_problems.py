@@ -1,3 +1,7 @@
+from streamlit_profiler import Profiler
+p = Profiler()
+p.start()
+
 from utils.utils_inverse import *
 import streamlit_toggle as tog
 from scipy.special import rel_entr
@@ -1036,3 +1040,6 @@ topic = st.sidebar.selectbox("topic" , list(topic_dict.keys()))
 
 run_topic = topic_dict[topic] ; run_topic()
 
+
+p.stop()
+p

@@ -1,3 +1,7 @@
+from streamlit_profiler import Profiler
+p = Profiler()
+p.start()
+
 from utils.utils_appstat import *
 
 from scipy.optimize import curve_fit
@@ -452,3 +456,7 @@ topic_dict = {
 topic = st.sidebar.selectbox("topic" , list(topic_dict.keys()))
 
 run_topic = topic_dict[topic] ; run_topic()
+
+
+p.stop()
+p

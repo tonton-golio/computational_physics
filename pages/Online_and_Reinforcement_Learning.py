@@ -1,7 +1,10 @@
+from streamlit_profiler import Profiler
+p = Profiler()
+p.start()
+
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
-
 
 '# Online and Reinforcement Learning'
 
@@ -102,7 +105,7 @@ with tabs[3]:
 
     Questions are from [here](https://drive.google.com/file/d/1mEh5ZdJ3H3DIrG5GfpHrrA3jLByw0oYZ/view)
     """
-    def q1(p_heads=.5, n_exp = 1000000, n_draws = 20):
+    def q1(p_heads=.5, n_exp = 1000, n_draws = 20):
         
         
         X = np.random.choice(np.arange(2),(n_exp, n_draws), p=np.array([p_heads,1-p_heads]))
@@ -163,7 +166,7 @@ with tabs[3]:
     """)
 
     p_heads = cols[1].slider('probability of heads', 0., 1.,0.5, 0.05)
-    cols[1].pyplot(q1(p_heads, n_exp = 1000000, n_draws = 20))
+    cols[1].pyplot(q1(p_heads, n_exp = 1000, n_draws = 20))
 
 
 '---'
@@ -381,3 +384,7 @@ def pytorch_example_fromCHATGPT():
 
     # Save the model for future use
     #torch.save(model.state_dict(), 'mnist_cnn.pth')
+
+
+p.stop()
+p

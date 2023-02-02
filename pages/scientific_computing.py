@@ -1,5 +1,23 @@
-from utils.utils_scicomp import *
 
+import psutil
+from streamlit_profiler import Profiler
+from utils.utils_scicomp import *
+dev_mod = True
+if dev_mod :
+	def start_profiler():
+		
+		p = Profiler()
+		p.start()
+
+		
+		return p
+	p = start_profiler()
+
+def endshowProfiler(p, st=st):
+	p.stop()
+	p
+	st.write('RAM memory % used:', psutil.virtual_memory()[2])
+	st.write('RAM Used (GB):', psutil.virtual_memory()[3]/1000000000)
 # Pages
 def home():
 	st.markdown("""
@@ -169,3 +187,14 @@ func_dict = {
 
 topic = st.sidebar.selectbox("topic" , list(func_dict.keys()))
 func = func_dict[topic] ; func()
+
+
+if dev_mod : endshowProfiler(p)
+
+
+from guppy import hpy
+h = hpy()
+st.write(h.heap())
+
+#for f in func_dict.values():
+#	st.write(f.heap())
