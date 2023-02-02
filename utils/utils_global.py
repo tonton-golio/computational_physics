@@ -19,7 +19,7 @@ import string
 
 
 ##### DEVMOD ##########     this determines whether
-devmod = True #########     or not we profile, i.e 
+devmod = False #########     or not we profile, i.e 
 ############# DEVMOD ##    measure func performance 
 
 def function_profiler_on(f, *args, **kwargs):
