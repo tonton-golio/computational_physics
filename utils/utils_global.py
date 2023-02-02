@@ -19,7 +19,7 @@ import string
 
 
 ##### DEVMOD ##########     this determines whether
-devmod = False #########     or not we profile, i.e 
+devmod = True #########     or not we profile, i.e 
 ############# DEVMOD ##    measure func performance 
 
 def function_profiler_on(f, *args, **kwargs):
@@ -33,10 +33,9 @@ def function_profiler_on(f, *args, **kwargs):
         end_time = time()
         end_cpu = psutil.cpu_percent()
         end_ram = psutil.virtual_memory()
-        print('CPU usage: ' + str(end_cpu - start_cpu) + '%')
-        print('RAM usage: ' + str(end_ram.percent - start_ram.percent) + '%')
-        #print('GPU usage: ' + str(end_gpu - start_gpu) + ' bytes')
-        print('Time: ' + str(end_time - start_time) + ' seconds')
+        #print('CPU usage: ' + str(end_cpu - start_cpu) + '%')
+        #print('RAM usage: ' + str(end_ram.percent - start_ram.percent) + '%')
+        #print('Time: ' + str(end_time - start_time) + ' seconds')
 
         # I wanna save or add this data to a csv file
         

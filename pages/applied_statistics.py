@@ -24,7 +24,6 @@ set_rcParams(style_dict = {
     })
 
 
-
 def home():
     st.title('Applied statistics')
     st.image('assets/images/Stable_diffusion__Mathematician_discovering_Neptune.png', width=420)
@@ -39,8 +38,8 @@ def home():
 
 def week1():
     
-    text_dict = getText_prep(filename = text_path+'week1.md', split_level = 1)
-     
+    text_dict = getText_prep(filename = text_path+'week1.txt', split_level = 1)
+    #text_dict
     st.header(text_dict['title'])
     with st.expander('Week 1 description', expanded=False):
         st.markdown(text_dict['description'])
@@ -170,8 +169,8 @@ def week1():
 
 def week2():
     # Import text dicts
-    text_dict = getText_prep(filename = text_path+'week2.md', split_level = 1)
-    text_dict3 = getText_prep(filename = text_path+'week2.md', split_level = 3)
+    text_dict = getText_prep(filename = text_path+'week2.txt', split_level = 1)
+    text_dict3 = getText_prep(filename = text_path+'week2.txt', split_level = 3)
 
     # Header and description
     st.header('PDFs, Likelihood, Systematic Errors')
@@ -218,7 +217,7 @@ def week3():
     
 
     st.title('Simulation and More Fitting')
-    text_dict = getText_prep_new(filename = text_path+'week3.md')
+    text_dict = getText_prep_new(filename = text_path+'week3.txt')
     #st.header('Week 3')
     with st.expander('Week 3 description', expanded=False):
         st.markdown(text_dict['description'])
@@ -238,7 +237,7 @@ def week3():
 
 def week4():
     #st.header('Week 4')
-    text_dict = getText_prep_new(filename = text_path+'week4.md')
+    text_dict = getText_prep_new(filename = text_path+'week4.txt')
      
     with st.expander('Week 4 description', expanded=False):
         st.markdown(text_dict['description'])
@@ -277,7 +276,7 @@ def week4():
 def week5():
     st.title('Bayes and MVA')
      
-    text_dict = getText_prep_new(filename = text_path+'week5.md')
+    text_dict = getText_prep_new(filename = text_path+'week5.txt')
     with st.expander('Week 5 description', expanded=False):
         st.markdown(text_dict['description'])
 
@@ -341,7 +340,7 @@ def week5():
 def week6():
     st.title('Machine learning and time series')
 
-    text_dict = getText_prep_new(filename = text_path+'week6.md' )
+    text_dict = getText_prep_new(filename = text_path+'week6.txt' )
     with st.expander('Week 6 description', expanded=False):
         st.markdown(text_dict['description'])
 
@@ -398,7 +397,7 @@ def week6():
 def week7():
     st.title('Advanced fitting & Calibration')
     
-    text_dict = getText_prep(filename = text_path+'week7.md', split_level = 1)
+    text_dict = getText_prep(filename = text_path+'week7.txt', split_level = 1)
     
     with st.expander('Week 7 description', expanded=False):
         st.markdown(text_dict['description'])
