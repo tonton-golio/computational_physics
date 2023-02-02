@@ -14,6 +14,23 @@ from numba import prange, jit
 from time import time
 from scipy.optimize import curve_fit
 
+
+def strip_leading_spaces(x):
+    x_stripped = x
+    if len(x)<2: return x
+    for i in range(12):
+        try:
+            if x_stripped[0] == ' ':
+                x_stripped = x_stripped[1:]
+            else:
+                break
+        except:
+            break
+    return x_stripped
+
+def strip_lines(text):
+    return'\n'.join([strip_leading_spaces(x) for x in text.split('\n')])
+
 #st.write(strip_leading_spaces('    asdasd'))
 def wrapfig(width=200, text='aaa',src='', st=st):
         
