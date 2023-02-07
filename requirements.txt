@@ -20,3 +20,9 @@ streamlit-profiler
 celluloid
 gymnasium
 gym
+torchvision
+pathlib
+random
+datetime
+os
+copy
