@@ -3,7 +3,9 @@ import streamlit_toggle as tog
 from scipy.special import rel_entr
 import string
 
-def landingPage():
+set_rcParams()
+
+def frontpage():
     ''
     """# Continuum Mechanics"""
     text_dict = getText_prep(filename = text_path+'landingPage.md', split_level = 1)
@@ -51,11 +53,38 @@ def landingPage():
     4. Continuum Dynamics and Ideal flows
     5. Viscosity and Gravity waves
     6. Pipe flow
-    7. Navier Stokes Equations
+    7. Navier Stokes Equation
     '''
+
+def testpage():
+    ''
+    cols = st.columns(2)
+    cols[0].title('Test title')
     
+    # intro 
+    cols[0].write(r"""
+    Sample text 1
+    """)
+    cols[1].image('https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Amadeo_Avogadro.png/248px-Amadeo_Avogadro.png', 
+            width=300, caption='Avada Avogadro')
+
+    '---'
+
+    st.write(r"""
+    Sample text 2
+    $$
+         L(a)T^e_x = \int_0^{\infty},
+    $$
+    Sample text 3
+    """)
+    st.caption('Sample caption')
+
+
 # Navigator
-topic_dict = {"Landing Page" : landingPage}
+topic_dict = {
+    "Frontpage" : frontpage,
+    'Testpage'  : testpage,
+              }
 
 topic = st.sidebar.selectbox("topic" , list(topic_dict.keys()))
 
