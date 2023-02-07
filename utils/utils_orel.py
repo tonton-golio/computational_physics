@@ -90,7 +90,7 @@ def bandit(restaurants, n=300, epsilon=10, method='standard'):
 def many_bandit_runs(restaurants, n=300, n_epsilons=10, n_exp=2,  method='standard'):
     scores = []
     epls = np.logspace(0,2,n_epsilons, dtype=int)
-    for epl in tqdm(epls):
+    for epl in epls:
         scores_tmp = []
         for i in range(n_exp):
             scores_tmp.append(bandit(restaurants, n, epl, method))

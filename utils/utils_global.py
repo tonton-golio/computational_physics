@@ -14,7 +14,6 @@ import matplotlib.cm as cm
 from matplotlib.gridspec import GridSpec
 from scipy.constants import gravitational_constant
 from scipy.optimize import curve_fit
-from tqdm import tqdm
 
 
 ##### DEVMOD ##########     this determines whether
