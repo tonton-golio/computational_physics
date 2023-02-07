@@ -307,8 +307,6 @@ def pytorch_toturial1():
         predicted, actual = classes[pred[0].argmax(0)], classes[y]
         st.write(f'Predicted: "{predicted}", Actual: "{actual}"')
 
-
-
 def pytorch_example_fromCHATGPT():
     # Load the MNIST dataset and apply transformations
     train_dataset = datasets.MNIST(root='data/', train=True, transform=transforms.ToTensor(), download=True)
@@ -367,3 +365,299 @@ def pytorch_example_fromCHATGPT():
 
     # Save the model for future use
     #torch.save(model.state_dict(), 'mnist_cnn.pth')
+
+
+
+'---'
+
+
+"""
+# Multi armed bandit
+
+[link to youtube vid](https://www.youtube.com/watch?v=e3L4VocZnnQ)
+
+We are a professor staying in a small town for 300 days. In the town there are 3 restaurants. They bring different amounts of happiness per meal, but at the beginning we dont know.
+
+
+We have to balance two concepts; exploration and exploitation.
+
+
+The most naive strategies are the two extremes;
+* we could explore all the time, so go to a random restaurant every day
+* we could exploit maimally, so the first 3 days we explore. And after having eaten at each once, we just stick with the best one for the remaining 297 days.
+
+
+
+
+
+We measure the goodness of a strategy by the regret, $\rho$. Regret is the difference from the maximum amount of happiness
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+import streamlit as st
+from tqdm import tqdm
+
+'### Greedy'
+
+restaurants = { # (mu, sigma)
+    "City wok"      : (8, 1),
+    "McDonald's"  : (5,3),
+    "Da Cavalino" : (10,3)}
+
+def explore():
+    #print('explore')
+    r = np.random.choice(list(restaurants.keys()))
+    
+    (mu, sig) = restaurants[r]
+    score = np.random.normal(mu, sig, None)
+    return r, score
+
+def exp2df(experiences):
+    df = pd.DataFrame.from_dict(experiences).T
+    df.rename(columns={0:'Restaurant', 1:'Score'}, inplace=True)
+    return df
+
+def exploit_old(experiences):
+    df = exp2df(experiences)
+    best = df.groupby('Restaurant').mean()
+    r = best.sort_values(by='Score').index[-1]
+    
+    (mu, sig) = restaurants[r]
+    score = np.random.normal(mu, sig, None)
+    return r, score
+
+def exploit(score_table, method='standard'):
+    #print('exploit')
+    if len(score_table) == 0: return explore()
+    elif len(score_table) == 1: r = list(score_table.keys())[0]
+    else: r = where2go(score_table, method)
+        
+    (mu, sig) = restaurants[r]
+    score = np.random.normal(mu, sig, None)
+    return r, score
+
+def where2go(score_table, method='standard'):
+    if method == 'standard':
+        mean_score = np.array([(key , score_table[key]['sum']/score_table[key]['count']) for key in score_table])
+
+        r = mean_score[np.argmax(mean_score[:, 1].astype(float)),0]
+
+    elif method == 'UCB':
+        t = sum(score_table[key]['count'] for key in score_table.keys())
+        #print('t=',t)
+        mean_score = np.array([(key , 
+            score_table[key]['sum']/score_table[key]['count'] + np.sqrt(t/score_table[key]['count'])) for key in score_table])
+        
+        r = mean_score[np.argmax(mean_score[:, 1].astype(float)),0]
+    return r
+
+
+
+def gogogo(n=300, epsilon=10, method='standard'):
+    score_table = {}
+    experiences = {}
+    for i in range(n):
+        rand_num = np.random.uniform(0,1)
+        if rand_num < epsilon/100:
+
+            r, score = explore()
+            experiences[i] = (r, score)
+            if r in score_table:
+                score_table[r]['count'] += 1
+                score_table[r]['sum']   += score
+            else:
+                score_table[r] = {'count' : 1, 'sum': score}
+
+        else:
+            r, score = exploit(score_table, method)
+            experiences[i] = (r, score)
+
+            if r in score_table:
+                score_table[r]['count'] += 1
+                score_table[r]['sum']   += score
+            else:
+                score_table[r] = {'count' : 1, 'sum': score}
+
+
+    df = exp2df(experiences)
+    total_score = df.Score.sum()
+    #print(f'Total score = {total_score}')
+    return total_score
+
+
+scores = []
+epls = np.logspace(0,2,15, dtype=int)
+print(epls)
+for epl in tqdm(epls):
+    scores_tmp = []
+    for i in range(10):
+        s = gogogo(300, epl)
+        scores_tmp.append(s)
+    scores.append(scores_tmp)
+
+
+scores = np.array(scores)
+
+fig = plt.figure(1)
+plt.errorbar(epls, np.mean(scores, axis=1), np.std(scores, axis=1), lw=0, elinewidth=1)
+plt.xscale('log')
+plt.xlabel('epsilon')
+plt.ylabel('total score')
+plt.title(r'$\epsilon$-greedy; striking a balance between exploration and exploitation')
+plt.show()
+plt.close()
+st.pyplot(fig)
+
+
+
+"A natural extension of this algorithm, lets the chance of exploration fall with iteration-count."
+
+
+
+'---'
+
+r"""
+### Upper confidence bound (UCB)
+We may obtain a better algortihm by adressing a central flaw
+> When comparing means, these may have very different numbers of samples.
+
+The new mean is defined as;
+$$
+\mu_r = \hat{\mu_r} + \sqrt{\frac{2\ln(t)}{N_t(r)}},
+$$
+maximize this, i.e., maximize Hoffding's inequality.
+
+where $t$ is the iteration step, and $N_t(r)$ is the number of times restaurant $r$ has been visited so far.
+
+"""
+
+
+
+
+
+"---"
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+import streamlit as st
+
+
+"""
+# ORel
+## Notes Lecture 1
+"""
+cols = st.columns((2,1))
+cols[0].markdown(r"""
+
+Batch versus Online. Batch is great if we dont need to update dynamically...
+
+> A key assumption we make is that the new data is from the same distribution as the data on which we trained. And samples are i.i.d.
+
+Example of online learning: Stock market investing... and others 
+
+""") # intro
+cols[1].image('one_armed_bandit.jpeg')
+
+st.markdown(r"""
+    ---
+    **Kinds of feedback**
+
+    We see diffent cases in terms of what kinda feedback we get. We may have full feedback as in the case of the stock market (you dont have to buy as stock to know the price), however for a medical treatment, we have to execute the strategy to assess the succes. The limited (bandit) feedback scenario exists in the middle. This difference affects the exploration-exploitation trade-off. (think $\epsilon$-greedy)
+""") # kinds of feedback
+st.markdown(r"""
+    ---
+    **Environmental resistance**
+
+    Another axis differenciating online learning problems, is how the environment react to the algorithm. This spam-fitering; the spammers will adapt, overcome, prosper. We label this kinda set-up: *adversarial*. If we have adversarial environment reaction, we cannot do batch learning.
+
+    We introduce *regret* as a metric for evaluation. We use hindsight to calculate this.
+""") # Environmental resistance
+st.markdown(r"""
+    ----
+    **Structural complexity**
+
+    We may have a stateless system; think single medical treatemnt of patients. They have no affect on each other.
+    
+    However if we do multiple treatments on a single patient, they influnce each other. This is a centextual problem, a class of problem where batch ML performs well.
+
+    In cases where we have high depence, we can use Markov Decision Processes (MDP).
+
+
+""") # structural complexity
+
+
+### Assignment 1
+
+
+#### question 3: rain jacket
+def rain_jacket():
+
+    # see page 3 for discount factor https://web.engr.oregonstate.edu/~afern/classes/cs533/notes/infinite-horizon-MDP.pdf
+    C = 2 # cost of being rained on
+    U = 1 # cost of taking jacket when not needed
+    y = gamma = 0.5 # discount factor, bounded (0,1)
+    p = .8 # probability of rain
+    s = jacket_state = 0 # 0 is home, 1 is work
+
+    def rain(p):
+        if np.random.uniform(0,1,None) < p:
+            return True
+        else: return False
+
+    def bring_just_in_case(q):
+        if np.random.uniform(0,1,None) < q:
+            return True
+        else: return False
+
+    def move(s):
+        if s == 1: return 0
+        else: return 1
+
+
+    qs = np.linspace(0,1,10)
+    costs = []
+    for q in qs:
+        total_cost = 0 
+        for i in range(100):
+            # make trip to DIKU
+            if rain(p):
+                if s == 0:  # bring jacket ... 
+                    s = move(s)
+                    total_cost += 0
+                else: total_cost += C
+            else: # no rain... so should i bring jacket??!?!?!
+
+                if bring_just_in_case(q):
+                    s = move(s)
+                    total_cost += U
+
+            # make trip home
+            if rain(p):
+                if s ==1:
+                    # bring jacket ... 
+                    s = move(s)
+                    total_cost += 0
+                else:
+                    total_cost += C # if we dont have jacket, we shall be rained upon
+
+            else:
+                if bring_just_in_case(q):
+                    s = move(s)
+                    total_cost += U
+
+        costs.append(total_cost)
+
+
+    plt.figure()
+    plt.plot(qs,costs)
+    plt.ylabel('Total costs')
+    plt.xlabel('Prob bring just in case')
+    plt.show()
+
+
+def question_4():
+    pass
+
