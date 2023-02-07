@@ -1,5 +1,25 @@
 from utils.utils_complex import *
-devmod = False
+
+st.set_page_config(page_title="Complex Physics", 
+    page_icon="🧊", 
+	layout="centered", 
+	initial_sidebar_state="collapsed", 
+	menu_items=None)
+
+set_rcParams(style_dict = {
+        'patch.facecolor' : (0.04, 0.065, 0.03),
+        'axes.facecolor' : (0.04, 0.065, 0.03),
+        'figure.facecolor' : (0.04, 0.065, 0.03),
+        'xtick.color' : 'white',
+        'ytick.color' : 'white',
+        'text.color' : 'lightgreen',
+        # 'axes.grid' : True,  # should we?,
+        'figure.autolayout' : True,  # 'tight_layout',
+        'axes.labelcolor' : "lightgreen",
+
+
+    })
+
 
 # Pages
 def homeComplex():
@@ -320,9 +340,7 @@ def selfOrganizedCriticality():
     st.markdown(r"""
     After a while, the model reaches steady state. Analyzing the distribution of avalanche sizes in steady state, reveals the ...
     """)
-    st.image('assets/complex/images/sandpile_2d_aval_dist.png')
-    
-    #st.markdown('## Evolution Model')
+    st.image('assets/complex/images/sandpile_2d_aval_dist.png') ; #st.markdown('## Evolution Model')
 
 def networks():
     st.title('Networks')

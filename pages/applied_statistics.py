@@ -1,52 +1,28 @@
+from utils.utils_global import *
 from utils.utils_appstat import *
 
-from scipy.optimize import curve_fit
-#st.markdown('<div align="center"> Hello</div>' , unsafe_allow_html=True)
-from sklearn.model_selection import train_test_split
-def sphereINcube_demo():
-    # accept, reject to get pi
-    cols = st.columns(2)
+
+st.set_page_config(page_title="Applied statistics", 
+    page_icon="🧊", 
+    layout="wide", 
+    initial_sidebar_state="collapsed", 
+    menu_items=None)
 
 
-    # inputs
-    n_points = cols[0].select_slider('Number of points', np.logspace(1,14,14,base=2, dtype=int))
-    
-    
-    n_dim = cols[0].select_slider('Number of dimensions', np.arange(2,10,1, dtype=int))
-    cols[0].markdown('We can kinda see how 3 dim. is showing a ball with air trapped in the corners.')
-    p_norm = cols[0].slider('p (for norm)',0.,10.,2.)
-    cols[0].markdown(r"""
-    $$
-        |x| = \left(\sum_i x_i^p\right)^{1/p}
-    $$
-    """)
-
-    # make vecs and check norms
-    X = np.random.uniform(-1,1,(n_points, n_dim))
-    fig, ax = plt.subplots(figsize=(5,5))
-    norm = np.sum(abs(X)**p_norm, axis=1)
-
-    # plotting
-    colors = [{0 : 'gold', 1 : 'green'}[n<=1] for n in norm]
-    ax.scatter(X[:,0], X[:,1], c=colors,  norm = np.sum(X**2, axis=1)**.5, cmap='winter', alpha=.8)
-    extent = 1.1 ; ax.set(xlim=(-extent,extent), ylim=(-extent,extent))
-    
-    # output
-    cols[1].pyplot(fig)
-    percentage = sum(abs(norm)<1)/n_points
-    cols[0].write('Percentage inside the unit hypersphere = {:0.2f} giving us $\pi = {:0.4f}$'.format(percentage, percentage*4))
+set_rcParams(style_dict = {
+        'patch.facecolor' : (0.4, 0.065, 0.03),
+        'axes.facecolor' : (0.04, 0.065, 0.03),
+        'figure.facecolor' : (0.04, 0.065, 0.03),
+        'xtick.color' : 'white',
+        'ytick.color' : 'white',
+        'text.color' : 'lightgreen',
+        # 'axes.grid' : True,  # should we?,
+        'figure.autolayout' : True,  # 'tight_layout',
+        'axes.labelcolor' : "lightgreen",
 
 
-def getText_prep_new(filename = text_path+'week3.md'):
-    with open(filename) as f:
-        file = f.read().split('KEY: ')[1:]
-    d = {}
-    for i in file:
-        key = i.split('\n')[0]
-        d[key] = i[len(key)+1:]       
-    return d
+    })
 
-fig_counter[0] = 0
 
 def home():
     st.title('Applied statistics')
@@ -59,11 +35,11 @@ def home():
     from streamlit.components.v1 import html
     my_html = """<iframe width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1399648774&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"></iframe><div style="font-size: 10px; color: #cccccc;line-break: anywhere;word-break: normal;overflow: hidden;white-space: nowrap;text-overflow: ellipsis; font-family: Interstate,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Garuda,Verdana,Tahoma,sans-serif;font-weight: 100;"><a href="https://soundcloud.com/antartica_traffic_control" title="Goblin Mode" target="_blank" style="color: #cccccc; text-decoration: none;">Goblin Mode</a> · <a href="https://soundcloud.com/antartica_traffic_control/other-eyes" title="Other Eyes" target="_blank" style="color: #cccccc; text-decoration: none;">Other Eyes</a></div>"""
 
-    #html(my_html)
+
 def week1():
     
-    text_dict = getText_prep(filename = text_path+'week1.md', split_level = 1)
-     
+    text_dict = getText_prep(filename = text_path+'week1.txt', split_level = 1)
+    #text_dict
     st.header(text_dict['title'])
     with st.expander('Week 1 description', expanded=False):
         st.markdown(text_dict['description'])
@@ -190,10 +166,11 @@ def week1():
     with st.expander('Links', expanded=True):
         st.markdown(text_dict['Links'])
     
+
 def week2():
     # Import text dicts
-    text_dict = getText_prep(filename = text_path+'week2.md', split_level = 1)
-    text_dict3 = getText_prep(filename = text_path+'week2.md', split_level = 3)
+    text_dict = getText_prep(filename = text_path+'week2.txt', split_level = 1)
+    text_dict3 = getText_prep(filename = text_path+'week2.txt', split_level = 3)
 
     # Header and description
     st.header('PDFs, Likelihood, Systematic Errors')
@@ -234,12 +211,13 @@ def week2():
     fig, prob_worse = evalv_likelihood_fit(mu, sig, L, sample_size, N_random_sample_runs)
     st.pyplot(fig)
     st.write('probability of worse:', prob_worse)
-   
+
+
 def week3():
     
 
     st.title('Simulation and More Fitting')
-    text_dict = getText_prep_new(filename = text_path+'week3.md')
+    text_dict = getText_prep_new(filename = text_path+'week3.txt')
     #st.header('Week 3')
     with st.expander('Week 3 description', expanded=False):
         st.markdown(text_dict['description'])
@@ -257,10 +235,9 @@ def week3():
     st.markdown(text_dict['Header 7'])
 
 
-    #sphereINcube_demo()
 def week4():
     #st.header('Week 4')
-    text_dict = getText_prep_new(filename = text_path+'week4.md')
+    text_dict = getText_prep_new(filename = text_path+'week4.txt')
      
     with st.expander('Week 4 description', expanded=False):
         st.markdown(text_dict['description'])
@@ -295,10 +272,11 @@ def week4():
 
     st.markdown(text_dict['Header 2'])
 
+
 def week5():
     st.title('Bayes and MVA')
      
-    text_dict = getText_prep_new(filename = text_path+'week5.md')
+    text_dict = getText_prep_new(filename = text_path+'week5.txt')
     with st.expander('Week 5 description', expanded=False):
         st.markdown(text_dict['description'])
 
@@ -357,10 +335,12 @@ def week5():
     plt.scatter(X[:,0],X[:,1], c=y_pred, alpha=.8, cmap='RdBu')
     plt.close()
     cols[1].pyplot(fig)
+
+
 def week6():
     st.title('Machine learning and time series')
 
-    text_dict = getText_prep_new(filename = text_path+'week6.md' )
+    text_dict = getText_prep_new(filename = text_path+'week6.txt' )
     with st.expander('Week 6 description', expanded=False):
         st.markdown(text_dict['description'])
 
@@ -417,7 +397,7 @@ def week6():
 def week7():
     st.title('Advanced fitting & Calibration')
     
-    text_dict = getText_prep(filename = text_path+'week7.md', split_level = 1)
+    text_dict = getText_prep(filename = text_path+'week7.txt', split_level = 1)
     
     with st.expander('Week 7 description', expanded=False):
         st.markdown(text_dict['description'])

@@ -1,181 +1,17 @@
-import numpy as np
-import streamlit as st
-import matplotlib.pyplot as plt
-import pandas as pd    
-from time import time
-import seaborn as sns
-from time import sleep
-from scipy.optimize import curve_fit
-import matplotlib as mpl
+from utils.utils_global import *
 from scipy.stats import expon, norm
 import pylab as pl
+from sklearn.model_selection import train_test_split
 
-# physics with python live stream @ https://www.twitch.tv/iamtontonton
-
-
-# General
-
-def set_rcParams():
-	"""
-		setting matplotlib style
-	"""
-	# extra function
-	mpl.rcParams['patch.facecolor'] = (0.4, 0.65, 0.3)
-	mpl.rcParams['axes.facecolor'] = (0.04, 0.065, 0.03)
-	mpl.rcParams['figure.facecolor'] = (0.4, .95, 0.03)
-	mpl.rcParams['xtick.color'] = 'white'
-	mpl.rcParams['ytick.color'] = 'white'
-	# mpl.rcParams['axes.grid'] = True  # should we?
-	mpl.rcParams['figure.autolayout'] = True  # 'tight_layout'
-
-fig_counter = np.array([0])
 text_path = 'assets/applied_statistics/text/'
-set_rcParams()
-
-st.set_page_config(page_title="Applied statistics", 
-    page_icon="🧊", 
-    layout="wide", 
-    initial_sidebar_state="collapsed", 
-    menu_items=None)
-
-def getText_prep(filename = text_path+'week1.md', split_level = 2):
-	"""
-		get text from markdown and puts in dict
-	"""
-	# extra function
-	with open(filename,'r', encoding='utf8') as f:
-		file = f.read()
-	level_topics = file.split('\n'+"#"*split_level+' ')
-	text_dict = {i.split("\n")[0].replace('### ','') : 
-                "\n".join(i.split("\n")[1:]) for i in level_topics}
-    
-	return text_dict  
-
-def makeFunc_dict(filename='utils/utils_appstat.py'):
-    with open(filename) as f:
-        lines = f.read().split('\n')
-    # start marked by def
-    # end marked by no indent
-    func_now = False
-    key = None
-    func_dict = {}
-    for line in lines:#[150:220]:
-        #st.write(func_now, line)
-        
-        if ("def" == line[:3]):# and (func_now == False):
-            #st.write(line)
-            # look for def to start function
-            func_now = True
-            if key != None:
-                # stitch
-                func_dict[key] = '\n'.join(func_dict[key])
-            key = line.split('def')[1].split("(")[0]
-            func_dict[key] = [line]
-
-        elif (func_now == True) and (key != None ):
-            if len(line.strip())==0:
-                # if line is empty, append it
-                func_dict[key].append(line)
-
-            elif (line[:1] == '\t' or line[:4] == ' '*len(line[:4])) :
-                func_dict[key].append(line)
-            
-            else:
-                
-                # end func
-                func_now = False
-
-        else: pass
-            #print(line[:2])
-    func_dict[key] = '\n'.join(func_dict[key])
-    func_dict_core = {}
-    func_dict_extras = {}
-    for func in func_dict:
-        #st.code(func_dict[func])
-        if '# extra function' in func_dict[func]: func_dict_extras[func] = func_dict[func]
-        else: func_dict_core[func] = func_dict[func]
-
-    # omg, this was a hassel
-    return func_dict_core, func_dict_extras
-
-def figNum():
-    # extra function
-    fig_counter[0] += 1
-    return f"Figure {fig_counter[0]}: "
-
-def caption_figure(text, st=st):
-    # extra function
-    st.caption('<div align="center">' +figNum()+ text+'</div>' , unsafe_allow_html=True)
-
-
-## from teachers
-def format_value(value, decimals):
-    """ 
-    Checks the type of a variable and formats it accordingly.
-    Floats has 'decimals' number of decimals.
-    """
-    # extra function
-    if isinstance(value, (float, np.float)):
-        return f'{value:.{decimals}f}'
-    elif isinstance(value, (int, np.integer)):
-        return f'{value:d}'
-    else:
-        return f'{value}'
-
-def values_to_string(values, decimals):
-    """ 
-    Loops over all elements of 'values' and returns list of strings
-    with proper formating according to the function 'format_value'. 
-    """
-    # extra function
-    res = []
-    for value in values:
-        if isinstance(value, list):
-            tmp = [format_value(val, decimals) for val in value]
-            res.append(f'{tmp[0]} +/- {tmp[1]}')
-        else:
-            res.append(format_value(value, decimals))
-    return res
-
-def len_of_longest_string(s):
-    """ Returns the length of the longest string in a list of strings """
-    # extra function
-    return len(max(s, key=len))
-
-def nice_string_output(d, extra_spacing=5, decimals=3):
-    """ 
-    Takes a dictionary d consisting of names and values to be properly formatted.
-    Makes sure that the distance between the names and the values in the printed
-    output has a minimum distance of 'extra_spacing'. One can change the number
-    of decimals using the 'decimals' keyword.  
-    """
-    # extra function
-    names = d.keys()
-    max_names = len_of_longest_string(names)
-    
-    values = values_to_string(d.values(), decimals=decimals)
-    max_values = len_of_longest_string(values)
-    
-    string = ""
-    for name, value in zip(names, values):
-        spacing = extra_spacing + max_values + max_names - len(name) - 1 
-        string += "{name:s} {value:>{spacing}} \n".format(name=name, value=value, spacing=spacing)
-    return string[:-2]
-
-def add_text_to_ax(x_coord, y_coord, string, ax, fontsize=12, color='k'):
-    """ Shortcut to add text to an ax with proper font. Relative coords."""
-    # extra function
-    ax.text(x_coord, y_coord, string, family='monospace', fontsize=fontsize,
-            transform=ax.transAxes, verticalalignment='top', color=color)
-    return None
-
 
 
 ###########################################
 # week 1
 
-#
-def means(arr, truncate=1):
+
+@function_profiler 
+def  means(arr, truncate=1):
 	"""Determines mean as obtained by different methods.
 
             The different means are:
@@ -203,7 +39,8 @@ def means(arr, truncate=1):
 			'Truncated' : truncated(arr)
 			}
 
-def showMeans(arr, truncate=1):
+@function_profiler 
+def  showMeans(arr, truncate=1):
 	"""
 		on a hist, shows means
 	"""
@@ -226,7 +63,8 @@ def showMeans(arr, truncate=1):
 
 	return fig
 
-def demo_comparing_means():
+@function_profiler 
+def  demo_comparing_means():
     # extra function
     cols = st.columns(5)
     n_normal = cols[0].slider("n_normal", 1, 1000, 100)
@@ -245,7 +83,8 @@ def demo_comparing_means():
     st.pyplot(fig)
     caption_figure('Different mean-metrics shown for a distribution.')
 
-def std_calculations(n=400):
+@function_profiler 
+def  std_calculations(n=400):
     # extra function
 	fig, ax = plt.subplots(3,1, figsize=(4,4), sharex=True, sharey=True)
 	for idx, N in enumerate([5,10,20]):
@@ -281,13 +120,15 @@ def std_calculations(n=400):
 	plt.close()
 	return fig
 
-def weightedMean(measurements, uncertainties):
+@function_profiler 
+def  weightedMean(measurements, uncertainties):
     x = measurements
     sigs = uncertainties 
     return sum([x_i/s_i**2 for x_i, s_i in zip(x, sigs)]) / sum([s_i**(-2) for s_i in sigs])
 
 
-def roll_a_die(num=100):
+@function_profiler 
+def  roll_a_die(num=100):
     # extra function
     x = np.random.randint(1,7,num)
     means = [np.mean(x[:n]) for n in range(2, num)]
@@ -307,7 +148,8 @@ def roll_a_die(num=100):
     plt.close()
     return fig
 
-def roll_dice(rolls=200):
+@function_profiler 
+def  roll_dice(rolls=200):
     # extra function
     data = {}
     nums = np.arange(2,40, dtype=int)
@@ -327,7 +169,8 @@ def roll_dice(rolls=200):
     plt.close()
     return fig
 
-def makeDistibutions(n_experi = 1000, N_uni= 1000,  N_exp= 1000,  N_cauchy = 1000):
+@function_profiler 
+def  makeDistibutions(n_experi = 1000, N_uni= 1000,  N_exp= 1000,  N_cauchy = 1000):
     # extra function
 	# input distributions
 	uni = np.random.uniform(-1,1, size=(n_experi, N_uni))*12**.5
@@ -349,7 +192,8 @@ def makeDistibutions(n_experi = 1000, N_uni= 1000,  N_exp= 1000,  N_cauchy = 100
 	return sums
 
 
-def plotdists(sums, N_bins = 100):
+@function_profiler 
+def  plotdists(sums, N_bins = 100):
     # extra function
 	fig, ax = plt.subplots(1,4,figsize = (8,4))
 	for i, (s, name) in enumerate(zip(sums, ['uni', 'exp', 'chauchy','combined'])):
@@ -374,7 +218,8 @@ def plotdists(sums, N_bins = 100):
 
 
 
-def demoArea():
+@function_profiler 
+def  demoArea():
     # extra function
     "Demo"
     cols = st.columns(4)
@@ -411,11 +256,13 @@ def demoArea():
 
 
 # Define your PDF / model 
-def gauss_pdf(x, mu, sigma):
+@function_profiler 
+def  gauss_pdf(x, mu, sigma):
 	"""Normalized Gaussian"""
 	return 1 / np.sqrt(2 * np.pi) / sigma * np.exp(-(x - mu) ** 2 / 2. / sigma ** 2)
 
-def gauss_pdf_scaled(x, mu, sigma, a):
+@function_profiler 
+def  gauss_pdf_scaled(x, mu, sigma, a):
 	"""Normalized Gaussian"""
     # extra function
 	return a * gauss_pdf(x, mu, sigma)
@@ -425,7 +272,8 @@ def gauss_extended(x, N, mu, sigma):
     # extra function
 	return N * gauss_pdf(x, mu, sigma)
 
-def chi2_demo(resolution=128, n_samples=10):
+@function_profiler 
+def  chi2_demo(resolution=128, n_samples=10):
     # extra function
     def chi2_own(f, y_gt, x,
                 a_lst= np.linspace(-2,5,resolution), 
@@ -496,7 +344,8 @@ def chi2_demo(resolution=128, n_samples=10):
     return fig
 
 # new chi2
-def chi2_minimizer(f, x, y_gt, p0,h=0.01, 
+@function_profiler 
+def  chi2_minimizer(f, x, y_gt, p0,h=0.01, 
                     lr = .1, tol=.05, max_fev=400):
     def chi2(y_pred, y_gt):
         #print(y_pred.shape, y_gt.shape)
@@ -544,7 +393,8 @@ def chi2_minimizer(f, x, y_gt, p0,h=0.01,
     chi2_val, y_pred = chi2_of_f(x, y_gt,f, popt)
     return chi2_val, popt
 
-def chi2_demo_2(f, p_true, p0,n_samples, noise_scale=0.2,
+@function_profiler 
+def  chi2_demo_2(f, p_true, p0,n_samples, noise_scale=0.2,
             h=0.01, lr = .1, tol=.02, max_fev=400):
 
     # extra function
@@ -573,7 +423,8 @@ def chi2_demo_2(f, p_true, p0,n_samples, noise_scale=0.2,
 
 
 # Week 2
-def PDFs(size = 1000, n_binomial=100, p_binomial=0.2):
+@function_profiler 
+def  PDFs(size = 1000, n_binomial=100, p_binomial=0.2):
     # extra function
 	x_uniform = np.random.rand(size)
 	
@@ -599,7 +450,8 @@ def PDFs(size = 1000, n_binomial=100, p_binomial=0.2):
 	return fig
 
 
-def golden_section_min(f,a,b,tolerance=1e-3, maxitr=1e3):
+
+def  golden_section_min(f,a,b,tolerance=1e-3, maxitr=1e3):
     factor = (np.sqrt(5)+1)/2
     
     # define c and d, which are points between a and b
@@ -616,7 +468,8 @@ def golden_section_min(f,a,b,tolerance=1e-3, maxitr=1e3):
         n_calls += 1
     return (c+d)/2, n_calls
 
-def maximum_likelihood_finder(mu, sample, 
+@function_profiler 
+def  maximum_likelihood_finder(mu, sample, 
 								return_plot=False, verbose=False):
 	
 	xs = np.linspace(min(sample), max(sample), 100)
@@ -699,7 +552,8 @@ def maximum_likelihood_finder(mu, sample,
 	if return_plot: return mu_best, sig_best, log_likelihood(mu_best, sig_best), plot()
 	else: return mu_best, sig_best, log_likelihood(mu_best, sig_best)
 
-def evalv_likelihood_fit(mu, sig, L,  sample_size, N_random_sample_runs=10,nbins = 20, plot=True):
+@function_profiler 
+def  evalv_likelihood_fit(mu, sig, L,  sample_size, N_random_sample_runs=10,nbins = 20, plot=True):
         
     # evaluate likelihood of different samplings
     Ls = []
@@ -741,7 +595,8 @@ def evalv_likelihood_fit(mu, sig, L,  sample_size, N_random_sample_runs=10,nbins
 
 
 # Week 6
-def makeBlobs(size=100):
+@function_profiler 
+def  makeBlobs(size=100):
 	'''
 	Makes 2d random blobs
 	'''
@@ -754,8 +609,8 @@ def makeBlobs(size=100):
 	noise = np.random.randn(size, 2)*.1
 	return X+noise
 
-
-def kMeans(X, nclusters=4, maxfev=100):
+@function_profiler
+def  kMeans(X, nclusters=4, maxfev=100):
     centroids = np.random.normal(np.mean(X, axis=0),np.std(X, axis=0), (nclusters,2))  # centroids
 
     i=0
@@ -774,7 +629,8 @@ def kMeans(X, nclusters=4, maxfev=100):
         i+=1
     return aff, i
 
-def kNN(X_test, X_train, y_train, k = 4):
+@function_profiler
+def  kNN(X_test, X_train, y_train, k = 4):
 
     def most_common(x):
         longest = 0

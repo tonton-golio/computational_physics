@@ -1,5 +1,12 @@
 from utils.utils_scicomp import *
 
+st.set_page_config(page_title="Scientific Computing", 
+    page_icon="🧊", 
+    layout="wide", 
+    initial_sidebar_state="collapsed", 
+    menu_items=None)
+
+
 # Pages
 def home():
 	st.markdown("""
@@ -87,7 +94,7 @@ def linearEquations():
 	"For QR-factorization, see least squares page"
 	with st.expander(r'Errors', expanded=False):
 		st.markdown(text_dict["Header 3"])
-	
+
 def linearLeastSquares():
 	st.title('Linear Least Squares')
 
@@ -169,3 +176,4 @@ func_dict = {
 
 topic = st.sidebar.selectbox("topic" , list(func_dict.keys()))
 func = func_dict[topic] ; func()
+

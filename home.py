@@ -12,3 +12,7 @@ st.markdown(r"""
 	Please contribute on [github](https://www.github.com/tonton-golio/computational_physics)
 	""")
 st.image('assets/images/mandel_front.png', width=420)
+
+import cProfile
+import re
+cProfile.run('re.compile("foo|bar")')

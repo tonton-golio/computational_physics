@@ -1,81 +1,43 @@
-import numpy as np
-import streamlit as st
-import matplotlib.pyplot as plt
-import pandas as pd    
-from time import time
-from time import sleep
-import matplotlib as mpl
-from scipy.constants import gravitational_constant
-import matplotlib.cm as cm
-from matplotlib.gridspec import GridSpec
+from utils.utils_global import *
 from numba import prange, jit
-
-#import cv2
-from time import time
-from scipy.optimize import curve_fit
-
-def gauss_pdf_N(x, mu, sigma):
-    """Gaussian"""
-    return 1 / np.sqrt(2 * np.pi) / sigma * np.exp(-(x - mu) ** 2 / 2. / sigma ** 2)
-
-def set_rcParams():
-	"""
-		setting matplotlib style
-	"""
-	# extra function
-	mpl.rcParams['patch.facecolor'] = (0.04, 0.065, 0.03)
-	mpl.rcParams['axes.facecolor'] = 'grey'
-	mpl.rcParams['figure.facecolor'] = (0.04, 0.065, 0.03)
-	mpl.rcParams['xtick.color'] = 'white'
-	mpl.rcParams['ytick.color'] = 'white'
-	mpl.rcParams['text.color'] =  "lightgreen" 
-	mpl.rcParams['axes.labelcolor'] =  "lightgreen"
-	# mpl.rcParams['axes.grid'] = True  # should we?
-	mpl.rcParams['figure.autolayout'] = True  # 'tight_layout'
-
-set_rcParams()
-
-# General
+from scipy.special import rel_entr
 
 text_path = 'assets/inverse_problems/text/'
 
-st.set_page_config(page_title="Inverse Problems", 
-    page_icon="🧊", 
-    #layout="wide", 
-    initial_sidebar_state="collapsed", 
-    menu_items=None)
 
-def getText_prep(filename = text_path+'week1.md', split_level = 2):
-    with open(filename,'r', encoding='utf8') as f:
-        file = f.read()
-    level_topics = file.split('\n'+"#"*split_level+' ')
-    text_dict = {i.split("\n")[0].replace('### ','') : 
-                "\n".join(i.split("\n")[1:]) for i in level_topics}
+
+
+@function_profiler
+def entropy_discrete(x):
+
+    H  = 0
+    for i in set(x):
+        p = len(x[x==i])/len(x)
+        H += p*np.log2(p)
+
+    return -1*H
+
+@function_profiler
+def entropy_continous(f, x):
     
-    return text_dict  
-
-def template():
-    st.title('')
-
-    # Main text
-    text_dict = getText_prep(filename = text_path+'bounding_errors.md', split_level = 2)
-
-    st.markdown(text_dict["Header 1"])
-    st.markdown(text_dict["Header 2"])
-    with st.expander('Go deeper', expanded=False):
-        st.markdown(text_dict["Example"])
+    dx = x[1]-x[0]
+    fx = f(x)
+    fx = fx[fx>0]
+    H = -1*sum(fx*np.log2(fx)*dx)
+    return H
 
 
 # Week 1
-
+@function_profiler
 def G_ij(zi, xj): 
     return gravitational_constant * np.log( ((zi+1)**2 + xj**2) / ( zi**2 + xj**2 ) )
 
+@function_profiler
 def G_matrix(xs, zs):
     G = np.array([[G_ij(z, x) for z in zs] for x in xs])
     return G
 
-
+@function_profiler
 def contour_of_G(G, xlabel='$x$-position', ylabel='depth'):
     fig, ax = plt.subplots( figsize=(5,3))
     CS = ax.contourf(G, 10, cmap=plt.cm.bone)
@@ -95,6 +57,7 @@ def contour_of_G(G, xlabel='$x$-position', ylabel='depth'):
     plt.close()
     return fig 
 
+@function_profiler
 def getParams(G, d_obs, eps_space = np.logspace(-12, -10, 200)):
     ms = []
     
@@ -105,7 +68,7 @@ def getParams(G, d_obs, eps_space = np.logspace(-12, -10, 200)):
 
     return np.array(ms)
 
-
+@function_profiler
 def find_minimum(G, ms, d_obs, 
 
     eps_space,
@@ -144,7 +107,7 @@ def find_minimum(G, ms, d_obs,
     plt.close()
     return fig
 
-
+@function_profiler
 def ass2():
     
     plt.style.use('dark_background')
@@ -358,6 +321,8 @@ def ass2():
     plt.close()
     cols[1].pyplot(fig)
 
+
+@function_profiler
 def ass3_glacier_thickness():
     #plt.style.use('bmh')
 
@@ -787,9 +752,8 @@ def ass3_glacier_thickness():
         plt.grid()
         plt.close()
         st.pyplot(fig)
-
     
-
+@function_profiler
 def sphereINcube_demo(data = []):
     #return None
     # guess
@@ -803,17 +767,7 @@ def sphereINcube_demo(data = []):
     plt.plot(n_dims, p, c='black', lw=2, ls='--', label="guess")
     plt.xlabel('number of dimensions', color='white')
     plt.ylabel(r'% inside unit hypersphere', color='white')
-    #
-    plt.legend()
-    
-    #logscale = tog.st_toggle_switch(label="Log scale", 
-    #            key="Key1", 
-    #            default_value=False, 
-    #            label_after = False, 
-    #            inactive_color = '#D3D3D3', 
-    #            active_color="#11567f", 
-    #            track_color="#29B5E8"
-    #            )
+
     logscale = True
     
     #logscale = cols[1].radio('log scale?', [True, False])
@@ -855,7 +809,10 @@ def sphereINcube_demo(data = []):
     data.append((n_dim, percentage))
     for d, perc in data:
         ax_guess.scatter(d, perc, label="data")
-    ax_guess.legend()
+    #rax_guess.legend()
     c.pyplot(fig_guess)
     
     cols[1].caption("we just show the first two dimensions, and the color indicates whether we are within the unit (hyper)sphere")
+
+
+

@@ -1,16 +1,14 @@
-from utils.utils_inverse import *
-import streamlit_toggle as tog
-from scipy.special import rel_entr
-import string
+from utils.utils_global import *
+
 
 set_rcParams()
 
 def frontpage():
     ''
     """# Continuum Mechanics"""
-    text_dict = getText_prep(filename = text_path+'landingPage.md', split_level = 1)
-    for key in text_dict:
-        text_dict[key]
+    #text_dict = getText_prep(filename = text_path+'landingPage.md', split_level = 1)
+    #for key in text_dict:
+    #    text_dict[key]
 
     """
     In the macroscopic world, most materials that surround us e.g. solids and 

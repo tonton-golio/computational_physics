@@ -1,123 +1,14 @@
-from time import time
-from time import sleep
-
-import streamlit as st
-
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib as mpl
-import seaborn as sns
-import pandas as pd    
+from utils.utils_global import *
 from scipy.integrate import odeint
 from scipy.special import factorial
 from scipy.stats import binom, poisson
 
-# General
-
 text_path = 'assets/dynamical_models/text/'
 
-# setting matplotlib style:
-#mpl.rcParams['patch.facecolor'] = (0.04, 0.065, 0.03)
-#mpl.rcParams['axes.facecolor'] = (0.04, 0.065, 0.03)
-#mpl.rcParams['figure.facecolor'] = 'gray'#(0.04, 0.065, 0.03)
-#mpl.rcParams['xtick.color'] = 'white'
-#mpl.rcParams['ytick.color'] = 'white'
-#mpl.rcParams['figure.autolayout'] = True  # 'tight_layout'
-#mpl.rcParams['axes.grid'] = True  # should we?
-plt.rcdefaults()
-
-
-st.set_page_config(page_title="Dynamical Models", 
-    page_icon="🧊", 
-    layout="wide", 
-    initial_sidebar_state="collapsed", 
-    menu_items=None)
-
-def getText_prep(filename = text_path+'week1.md', split_level = 2):
-    with open(filename,'r', encoding='utf8') as f:
-        file = f.read()
-    level_topics = file.split('\n'+"#"*split_level+' ')
-    text_dict = {i.split("\n")[0].replace('### ','') : 
-                "\n".join(i.split("\n")[1:]) for i in level_topics}
-    
-    return text_dict  
-
-def template():
-    st.title('')
-
-    # Main text
-    text_dict = getText_prep(filename = text_path+'bounding_errors.md', split_level = 2)
-
-    st.markdown(text_dict["Header 1"])
-    st.markdown(text_dict["Header 2"])
-    with st.expander('Go deeper', expanded=False):
-        st.markdown(text_dict["Example"])
-
-
-def format_value(value, decimals):
-    """ 
-    Checks the type of a variable and formats it accordingly.
-    Floats has 'decimals' number of decimals.
-    """
-    
-    if isinstance(value, (float, np.float)):
-        return f'{value:.{decimals}f}'
-    elif isinstance(value, (int, np.integer)):
-        return f'{value:d}'
-    else:
-        return f'{value}'
-
-
-def values_to_string(values, decimals):
-    """ 
-    Loops over all elements of 'values' and returns list of strings
-    with proper formating according to the function 'format_value'. 
-    """
-    
-    res = []
-    for value in values:
-        if isinstance(value, list):
-            tmp = [format_value(val, decimals) for val in value]
-            res.append(f'{tmp[0]} +/- {tmp[1]}')
-        else:
-            res.append(format_value(value, decimals))
-    return res
-
-
-def len_of_longest_string(s):
-    """ Returns the length of the longest string in a list of strings """
-    return len(max(s, key=len))
-
-
-def nice_string_output(d, extra_spacing=5, decimals=3):
-    """ 
-    Takes a dictionary d consisting of names and values to be properly formatted.
-    Makes sure that the distance between the names and the values in the printed
-    output has a minimum distance of 'extra_spacing'. One can change the number
-    of decimals using the 'decimals' keyword.  
-    """
-    
-    names = d.keys()
-    max_names = len_of_longest_string(names)
-    
-    values = values_to_string(d.values(), decimals=decimals)
-    max_values = len_of_longest_string(values)
-    
-    string = ""
-    for name, value in zip(names, values):
-        spacing = extra_spacing + max_values + max_names - len(name) - 1 
-        string += "{name:s} {value:>{spacing}} \n".format(name=name, value=value, spacing=spacing)
-    return string[:-2]
-
-
-def add_text_to_ax(x_coord, y_coord, string, ax, fontsize=12, color='k'):
-    """ Shortcut to add text to an ax with proper font. Relative coords."""
-    ax.text(x_coord, y_coord, string, family='monospace', fontsize=fontsize,
-            transform=ax.transAxes, verticalalignment='top', color=color)
-    return None
 
 ###########################################
 # week 1
+@function_profiler
 def plot_noise(kmrna, gmrna, kpro, gpro, Ngene, Ncell, NRepressor):
     t_final = 1000 # end of the simulation time
     ra=100 # association rate of a protein - fast enough
@@ -403,6 +294,7 @@ def plot_noise(kmrna, gmrna, kpro, gpro, Ngene, Ncell, NRepressor):
 
 # week 2
 ## plot function for Hill function
+@function_profiler
 def plot_hill_function(threshold, coeff, activation=True):
     x = np.linspace(0, 2, 1000)
 
@@ -489,9 +381,11 @@ n
 '''
 ##################
 # week3
+@function_profiler
 def binomial(N, p, k):
     return factorial(N) * p**k * (1.0-p)**(N-k) / (factorial(N-k)*factorial(k)) 
 
+@function_profiler
 def plot_binomial(N1, p1, N2, p2):
     k_max = 50
     k = np.arange(np.max([N1, N2])+1)
@@ -513,6 +407,7 @@ def plot_binomial(N1, p1, N2, p2):
     ax.legend(frameon=False)
     return fig, ax
 
+@function_profiler
 def plot_poisson(m1, m2):
     k_max = 50
     k = np.arange(k_max+1)
@@ -531,6 +426,7 @@ def plot_poisson(m1, m2):
     ax.legend(frameon=False)
     return fig
 
+@function_profiler
 def plot_binomial_poisson(N, m):
     p = m/N
     k_max = 100
@@ -554,6 +450,7 @@ def plot_binomial_poisson(N, m):
 
 ################
 # Week 4
+@function_profiler
 def plot_michaelis_menten1(lambda_max, K_S):
     x = np.linspace(0, 10.0, 100)
     y = lambda_max * x / (K_S + x)
@@ -574,6 +471,7 @@ def plot_michaelis_menten1(lambda_max, K_S):
 
 ################
 # Week 5
+@function_profiler
 def plot_solve_regulation(H, gamma_P, positive=True):
     x = np.linspace(0, 4, 100)
     y1 = gamma_P*x
