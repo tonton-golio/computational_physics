@@ -14,6 +14,7 @@ import matplotlib.cm as cm
 from matplotlib.gridspec import GridSpec
 from scipy.constants import gravitational_constant
 from scipy.optimize import curve_fit
+from tqdm import tqdm
 
 
 ##### DEVMOD ##########     this determines whether
@@ -93,6 +94,17 @@ else:
 fig_counter = np.array([0])
 fig_counter[0] = 0
 
+def navigator(functions):
+    """
+    :param functions: a list of functions to put in sidebar for navigation
+    :return: None
+    """
+    topic_dict = {func.__name__.replace('_', ' ').title(): func for func in functions}
+
+
+    topic_name = st.sidebar.selectbox("topic", list(topic_dict.keys()))
+    topic_2_run = topic_dict[topic_name]
+    topic_2_run()
 
 def set_rcParams(style_dict = {
         'patch.facecolor' : (0.40, 0.65, .1),
