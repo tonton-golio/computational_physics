@@ -111,13 +111,46 @@ def contapprox():
     
     Density fluctuations
     
-    Macroscopic smoothness
+    The density of a pure gas is given as
+    $$
+    \rho = \frac{N m}{V}
+    $$
+    Where $N$ is the number of molecules, $V$ is the volume and $m$ is the mass of the molecules
     
-    Velocity fluctuations
+    From general statistics, it can be shown that the fluctuations in $N$ follows 
+    the RMS of the number of molecules and since the density is linear depended 
+    on $N$ this gives;
     
-    Mean free path
+    $$
+    \frac{\Delta \rho}{\rho} = \frac{\Delta N}{N} = \frac{1}{\sqrt{N}}
+    $$
     
+    So if we require a relative precision of $\epsilon = 10^{-3} > \frac{\Delta \rho}{\rho} $ in the density fluctuations 
+    there must be $N > \epsilon^^{-2}$ molecules. They occupy a volume of $\epsilon^{-2}L_{mol}^3$, 
+    where $L_{mol}$ is the molecular seperation length. 
+    At the scale of $L_{mol}$ the continuum approximation completely breaks down, 
+    and to ensure correct approximation within a certain precision the minimum cell size 
+    that we consider is given as;
+    
+    $$
+    L_{micro} = $\epsilon^{-2}L_{mol}^3$
+    $$
+    $$
+    L_{mol} =\left( \frac{V}{N} \right)^{1/3} = \left( \frac{M_{mol}}{\rho N_A} \right)^{1/3} 
+    $$
+    Where $L_{micro}$ is the sidelength of the cubic cell that satisfies the 
+    precision condition, $M_{mol}$ is the molar mass of the substance.
     """)
+    st.image('computational_physics\assets\continuum_mechanics\images\densityfluctuations.png', 
+            width=300, caption='From Physics of Continuous Matter 2nd edition by Benny Lautrup')
+    
+
+#    Macroscopic smoothness
+#    
+#    Velocity fluctuations
+#    
+#    Mean free path
+    
     '---'
 
     st.write(r"""
@@ -128,7 +161,6 @@ def contapprox():
     Sample text 3
     """)
     st.caption('Sample caption')
-
 
 # Navigator
 topic_dict = {
