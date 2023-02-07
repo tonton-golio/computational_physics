@@ -19,3 +19,4 @@ torch
 streamlit-profiler
 celluloid
 gymnasium
+gym
