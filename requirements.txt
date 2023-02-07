@@ -17,3 +17,4 @@ scikit-learn==1.0.2
 psutil
 torch
 streamlit-profiler
+celluloid
