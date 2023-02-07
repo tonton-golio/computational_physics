@@ -18,3 +18,4 @@ psutil
 torch
 streamlit-profiler
 celluloid
+gymnasium
