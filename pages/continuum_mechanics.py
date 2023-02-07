@@ -126,32 +126,48 @@ def contapprox():
     $$
     
     So if we require a relative precision of $\epsilon = 10^{-3} > \frac{\Delta \rho}{\rho} $ in the density fluctuations 
-    there must be $N > \epsilon^^{-2}$ molecules. They occupy a volume of $\epsilon^{-2}L_{mol}^3$, 
-    where $L_{mol}$ is the molecular seperation length. 
+    there must be $N > \epsilon^^{-2}$ molecules. They occupy a volume of $\epsilon^{-2}L_{molecule}^3$, 
+    where $L_{molecule}$ is the molecular seperation length. 
     At the scale of $L_{mol}$ the continuum approximation completely breaks down, 
     and to ensure correct approximation within a certain precision the minimum cell size 
     that we consider is given as;
     
     $$
-    L_{micro} = $\epsilon^{-2}L_{mol}^3$
+    L_{micro} = $\epsilon^{-2}L_{molecule}^3$
     $$
     $$
-    L_{mol} =\left( \frac{V}{N} \right)^{1/3} = \left( \frac{M_{mol}}{\rho N_A} \right)^{1/3} 
+    L_{mol} =\left( \frac{V}{N} \right)^{1/3} = \left( \frac{M_{molecule}}{\rho N_A} \right)^{1/3} 
     $$
     Where $L_{micro}$ is the sidelength of the cubic cell that satisfies the 
-    precision condition, $M_{mol}$ is the molar mass of the substance.
+    precision condition, $M_{molecule}$ is the molar mass of the substance.
     """)
     st.image('computational_physics\assets\continuum_mechanics\images\densityfluctuations.png', 
             width=300, caption='From Physics of Continuous Matter 2nd edition by Benny Lautrup')
     
-
+    st.write(r"""
+    Macroscopic Smoothness
+    Another criteria for the continuum approximation is the Macroscopic Smoothness. 
+    We require the relative change in density between cells to be less than the 
+    precision $\epsilon$ along any direction.
+    
+    $$
+    \left( \frac{\partial \rho}{\partial x} \right) < \frac{\rho}{L_{macro}}
+    $$
+    where $L_{macro} = \epsilon^{-1} L_{micro}$
+    
+    if the above is fulfilled, the change in density can be assumed to vary smooth, 
+    and the continuum approximation holds. However, the thickness of interfaces between 
+    macroscopic bodies are typically on the order of $L_{molecule}} and not $L_{macro}, 
+    we instead represent these as surface discontinuities.
+             
+         
+             """)
+    
 #    Macroscopic smoothness
 #    
 #    Velocity fluctuations
 #    
 #    Mean free path
-    
-    '---'
 
     st.write(r"""
     Sample text 2
