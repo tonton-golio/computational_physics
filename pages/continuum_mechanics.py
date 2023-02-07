@@ -79,26 +79,30 @@ def testpage():
     """)
     st.caption('Sample caption')
 
-def assumptions():
+def contapprox():
     ''
     cols = st.columns(2)
-    cols[0].title('Criteria for Continua')
+    cols[0].title('The Continuum Approximation')
     
     # intro 
     cols[0].write(r"""
     The physics of continuum mechanics, requires that a mass of particles can be 
     modelled as continuous matter where the particles are infinitesimal. 
     
-    From Physics of Continuous Matter 2nd edition by Benny Lautrup
+    \textit{
     "Whether a given number of molecules is large enough to warrant the use of 
     a smooth continuum description of matter depends on the desired precision. 
-    Since matter is never  continuous at sufficiently high precision, continuum 
+    Since matter is never continuous at sufficiently high precision, continuum 
     phyiscs is always an approximation. But as long as the fluctuations in 
     physical quantities caused by the discreteness of matter are smaller than 
-    the desired precision, matter may be taken to be continuous.To observe the 
+    the desired precision, matter may be taken to be continuous. To observe the 
     continuity, one must so to speak avoid looking too sharply at material bodies. 
     Fontenelle stated in a similar context that 
     "Science originates from curiosity and bad eyesight"."
+    }
+    
+    From Physics of Continuous Matter 2nd edition by Benny Lautrup
+    
     """)
     cols[1].image('https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Amadeo_Avogadro.png/248px-Amadeo_Avogadro.png', 
             width=300, caption='Avada Avogadro')
@@ -130,7 +134,7 @@ def assumptions():
 topic_dict = {
     "Frontpage" : frontpage,
     'Testpage'  : testpage,
-    'Criteria for Continua' : assumptions,
+    'The Continuum Approximation' : contapprox,
               }
 
 topic = st.sidebar.selectbox("topic" , list(topic_dict.keys()))
