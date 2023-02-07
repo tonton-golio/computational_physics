@@ -163,12 +163,15 @@ def contapprox():
          
              """)
     
-#    Macroscopic smoothness
-#    
-#    Velocity fluctuations
-#    
-#    Mean free path
-
+    st.write(r"""
+    Velocity fluctuations
+    
+    
+             """)
+    st.write(r"""
+    Mean-free-path
+    
+             """)
     st.write(r"""
     Sample text 2
     $$
