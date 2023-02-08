@@ -32,15 +32,12 @@ def frontpage():
     From: https://kurser.ku.dk/course/nfyk10005u
     """)
 
-    cols = st.columns(3)
-    cols[0].image('https://www.google.com/url?sa=i&url=https%3A%2F%2Fen.wikipedia.org%2Fwiki%2FVortex&psig=AOvVaw1nOAFgaJ6XOZyXfZkmfmac&ust=1675880067257000&source=images&cd=vfe&ved=0CBAQjRxqFwoTCOiA4_KBhP0CFQAAAAAdAAAAABAR')
+    cols = st.columns(2)
+    cols[0].image('https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Airplane_vortex_edit.jpg/330px-Airplane_vortex_edit.jpg')
     cols[0].caption('Vortex around an airplane')
 
-    cols[1].image('https://i.pinimg.com/originals/49/f3/94/49f3946a610b9a3665c9e2c9bd4c571c.jpg')
-    cols[1].caption('')
-
-    cols[2].image('https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Amadeo_Avogadro.png/248px-Amadeo_Avogadro.png')
-    cols[2].caption('Amedeo Avogadro')
+    cols[1].image('https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Amadeo_Avogadro.png/248px-Amadeo_Avogadro.png')
+    cols[1].caption('Amedeo Avogadro')
 
     st.title("""Table of contents""")
     st.write("""
@@ -83,7 +80,7 @@ def contapprox():
     The physics of continuum mechanics, requires that a mass of particles can be 
     modelled as continuous matter where the particles are infinitesimal. 
     
-    $\textit{
+    $$\textit{
     "Whether a given number of molecules is large enough to warrant the use of 
     a smooth continuum description of matter depends on the desired precision. 
     Since matter is never continuous at sufficiently high precision, continuum 
@@ -91,9 +88,9 @@ def contapprox():
     physical quantities caused by the discreteness of matter are smaller than 
     the desired precision, matter may be taken to be continuous. To observe the 
     continuity, one must so to speak avoid looking too sharply at material bodies. 
-    Fontenelle stated in a similar context that 
+    Fontenelle stated in a similar context that; 
     "Science originates from curiosity and bad eyesight"."
-    }$
+    }$$
     
     From Physics of Continuous Matter 2nd edition by Benny Lautrup
     
