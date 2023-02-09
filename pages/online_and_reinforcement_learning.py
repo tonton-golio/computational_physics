@@ -785,7 +785,205 @@ def week1_notes():
 
     """) # structural complexity
 
+def lecture2_notes():
+    """"""
+    r"""
+    ## Lecture 2 notes (9 feb 2023)
+    In the stateless seeting: we have a loss matrix which looks like the following:
+    $$
+    \begin{bmatrix}
+        l_{1,1} & l_{2,1} & \ldots & l_{t,1}\\
+        l_{1,2} & l_{2,2} & \ldots & l_{t,2}\\
+        \vdots & \vdots & \vdots & \vdots \\
+        l_{1,k} & l_{2,k} & \ldots & l_{t,k}\\
+    \end{bmatrix}
+    $$
+    Notice, we have $k$ actions in our action space.
+    ### Performance meaure:
+    Regret:
+    $$
+        R_T = \sum_{t=1}^T l_{t, A_t} - \min_a \sum_{t=1}^T l_{t,a}
+    $$
+    The above equation describes the regret as the loss of the algorithm minus the best action applied contiously, i.e., the best row of the loss matrix in hindsight.
 
+    It the regret is order $T$ $\Rightarrow$ no learning. We want sublinear regret, which means we are learning something.
+
+    #### Expected regret
+    $$
+        \mathbb{E}[R_T] = \mathbb{E}[\sum_{t=1}^T l_{t, A_t}] - \mathbb{E}[\min_a \sum_{t=1}^T l_{t,a}]
+    $$
+
+
+    ##### Oblivious adversary
+    $l_{t,a}$ are independent of actions. Meaning the adversary is not able to know our actions.
+    
+    We will only consider oblivious adversary, in which case the last term in the equation above becomes deterministic.
+
+    ##### Adaptive adversary
+    $l_{t,a}$ may depend on actions.
+
+    
+    #### Pseudo regret
+    only defined in i.i.d. setting
+
+    $$
+        \bar{R}_T = \mathbb{E}[\sum l_{t, A_t}] - min_a \mathbb{E}[\sum l_{t,a}]
+    $$
+    notice, here we have the minimum of the expectation rather than the expectation of the minimum.
+    $$
+    \begin{align*}
+        \bar{R}_T &= \mathbb{E}[\sum l_{t, A_t}] - min_a \mu(a)T\\
+         &= \mathbb{E}[\sum l_{t, A_t} - \mu^*]\\
+         &= \mathbb{E}[\sum_t^T \Delta(A_t)]\\
+         &= \sum_a \Delta(a) \mathbb{E}[N_T(a)]
+    \end{align*}
+    $$
+    where $\mu^* = \min_a \mu(a)$.
+
+    We also define $\Delta(a) = \mu(a)- \min \mu(a) = \mu(a) - \mu^*$
+    
+
+
+    Notice, the pseudo regret is always less than or equal to the expected regret. We always use pseudo-regret for i.i.d. :shrug.
+
+    The reason for this is that the comparator is more reasonable. The comparator we are using is $T\mu^*$...
+
+
+    """
+
+
+    r"""
+    ---
+    Now we shall consider the iid bandit case (remember the bandit case is one where feedback is limited).
+
+    #### Exploration-exploitation trade-off
+    * action space width = 2
+    * T = known total time
+    * Delta is known
+
+    The actions yield $1/2 \pm \Delta$ respectively. If $\Delta$ is small, we should explore for a while, before determining which action is best. And then after that just repeat that action. 
+
+
+    We may bound the pseudo regret by:
+    $$
+        \bar{R}_T \leq \frac{1}{2}\epsilon T\Delta + \delta(\epsilon) \Delta (1-\epsilon)T \leq (\frac{1}{2}\epsilon + \delta(\epsilon))\Delta T
+    $$
+    In which $\delta(\epsilon)$ is the probability that we selected the suboptimal action. We can bound this by:
+    $$ 
+        \leq \mathbb{P} (\hat{\mu_{\epsilon T}} (a) \leq \hat{\mu_{\epsilon T}} (a^*))
+    $$ 
+    We can bound this chance of having chosen a bad arm by:
+    $$
+        \leq \mathbb{P} (\hat{\mu_{\epsilon T}} (a^*) \geq 
+        \hat{\mu_{\epsilon T}} (a^*) + \frac{1}{2}\Delta)
+        + \mathbb{P}(\hat{\mu_{\epsilon T}} (a) \leq \mu(a) - \frac{1}{2}\Delta)
+    $$
+    We may employ Hoeffding's inequality to bound the first term:
+    $$
+        \leq 2 e^{- \epsilon T \Delta^2 / 4}
+    $$
+    So now we can choose an epsilon to minimize the probability of choosing the bad arm.
+    $$
+        \epsilon^* = \frac{4\ln (T\Delta^2)}{T\Delta^2}
+    $$
+    yielding a pseudo regret of:
+    $$
+        \bar{R}_T \leq \frac{2(\ln(T\Delta^2)+1)}{\Delta}
+    $$
+
+    To summarize the above, it takes a longer time to dicern which action is better if the actions are closer together. It goes with $\Delta^2$. Each time we choose the wrong action, we lose $\Delta$, so pseudo regret goes with $\Delta$.
+    """
+
+    
+
+    T = 100
+    action_space = [0,1]
+    Delta = .1
+    reward_func = lambda a : 1/2 + [-1,1][a] * np.random.normal(0,Delta,None)
+
+    def explore(action_space, reward_func):
+        action = np.random.choice(action_space)
+        return action, reward_func(action)
+
+    def exploit(experiences, reward_func):
+        action = max(experiences, key=lambda a: np.mean(experiences[a]))
+        return action, reward_func(action)
+
+    experiences = {}
+
+
+
+    r"""
+    #### Lower confidence bound (LCB)
+    $$
+        L_t^{CR} = \hat{\mu_{t-1}}(a) - \sqrt{\frac{3\ln t}{2 N_{t-1}(a)}}
+    $$
+    This has the following algorithm:
+    ```
+    play each arm once (i.e., K plays)
+    for t = K to T:
+        A_t = argmin_a L_t^{CR}(a)
+    ```
+    """
+
+
+def lecture3_notes():
+    """"""
+
+    r"""
+    # Markov Decision Process (MDP)
+    #### FROM YT VIDS
+    [Intro to MDP video by Computerphile](https://www.youtube.com/watch?v=2iF9PRriA7w)
+    [David silver from Deepmind om MDP](https://www.youtube.com/watch?v=lfHX2hHRMVQ)
+
+    A simple case is where we have a fully observable environment.
+
+    #### Markov Property
+    The future is independent of the past given the present.
+    $$
+        \mathbb{P}\left[
+            S_{t+1} | S_t \right] = 
+            \mathbb{P} \left[
+                S_{t+1} | S_1, \ldots, S_t \right]
+    $$
+
+    #### State transition matrix
+    The probability of transitioning from state $s$ to state $s'$ is given by:
+    $$
+        P_{ss'} = \mathbb{P} \left[ S_{t+1} = s' | S_t = s \right]
+    $$
+    This is a matrix where the rows are the starting states and the columns are the ending states.
+
+    #### Reward function
+    The reward function is a function that maps states to rewards. It is denoted by $R$.
+
+    #### Discount factor
+    The discount factor is a number between 0 and 1. It is denoted by $\gamma$. It is used to discount future rewards. This is useful because we may want to prioritize immediate rewards over future rewards.
+
+    The return $G_t$ is the total discounted reward from time $t$ to the end of the episode. It is given by:
+    $$
+        G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \ldots = \sum_{k=0}^{\infty} \gamma^k R_{t+k+1}
+    $$ 
+
+
+    
+    
+    """
+
+    '---'
+
+    r"""
+    ## Theory of discounted markov decision processes (MDP)
+    MDPs are described by a tuple $(S, A, P, R, \gamma)$ where:
+    - $S$ is the set of states
+    - $A$ is the set of actions
+    - $P$ is the state transition function
+    - $R$ is the reward function
+    - $\gamma$ is the discount factor
+
+
+
+    """
  
 
 def cart_pole():
@@ -1158,6 +1356,6 @@ def lunar_lander():
 
 
 if __name__ == '__main__':
-    functions = [pre_start, multi_armed_bandit, week1_notes, #cart_pole, #lunar_lander
+    functions = [pre_start, multi_armed_bandit, week1_notes, lecture2_notes, lecture3_notes, #cart_pole, #lunar_lander
                 ]
     navigator(functions)
