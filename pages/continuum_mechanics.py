@@ -157,8 +157,7 @@ def testpage():
 #    'Testpage'  : testpage,
 #              }
 if __name__ == '__main__':
-    functions = [pre_start, multi_armed_bandit, 
-week1_notes]
+    functions = [pre_start, multi_armed_bandit, week1_notes]
     navigator(functions)
 #topic = st.sidebar.selectbox("topic" , list(topic_dict.keys()))
 
