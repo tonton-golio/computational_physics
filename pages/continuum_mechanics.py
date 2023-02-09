@@ -1,11 +1,11 @@
-from utils.utils_global import *
+from utils.utils_continuum import *
 
 
 set_rcParams()
 
 def frontpage():
     text = getText_prep(textfile_path+'frontpagetext.md',3)
-
+    st.markdown(text)
     cols = st.columns(2)
     cols[0].image('https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Airplane_vortex_edit.jpg/330px-Airplane_vortex_edit.jpg')
     cols[0].caption('Vortex around an airplane')
@@ -23,33 +23,13 @@ def frontpage():
     6. Pipe flow
     7. Navier Stokes Equation
     """)
-
-def testpage():
-    ''
-    cols = st.columns(2)
-    cols[0].title('Test title')
     
-    # intro 
-    cols[0].write(r"""
-    Sample text 1
-    """)
-    cols[1].image('https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Amadeo_Avogadro.png/248px-Amadeo_Avogadro.png', 
-            width=300, caption='Avada Avogadro')
-
-    '---'
-
-    st.write(r"""
-    Sample text 2
-    $$
-         L(a)T^e_x = \int_0^{\infty},
-    $$
-    Sample text 3
-    """)
-    st.caption('Sample caption')
-
+    #Attach course quote MD file.
+    
 def contapprox():
-    text = getText_prep(textfile_path+'contapprox_intro.md',3)
-    ''
+    text2 = getText_prep(textfile_path+'contapprox_intro.md',3)
+    st.markdown(text2)
+
     st.title('The Continuum Approximation')
     st.write(r"""
     The physics of continuum mechanics, requires that a mass of particles can be 
@@ -145,6 +125,30 @@ def contapprox():
     Sample text 3
     """)
     st.caption('Sample caption')
+
+def testpage():
+    ''
+    cols = st.columns(2)
+    cols[0].title('Test title')
+    
+    # intro 
+    cols[0].write(r"""
+    Sample text 1
+    """)
+    cols[1].image('https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Amadeo_Avogadro.png/248px-Amadeo_Avogadro.png', 
+            width=300, caption='Avada Avogadro')
+
+    '---'
+
+    st.write(r"""
+    Sample text 2
+    $$
+         L(a)T^e_x = \int_0^{\infty},
+    $$
+    Sample text 3
+    """)
+    st.caption('Sample caption')
+
 
 # Navigator
 topic_dict = {
