@@ -1,5 +1,4 @@
 # Continuum Mechanics
-
 In the macroscopic world, most materials that surround us e.g. solids and 
 liquids can safely be assumed to exist as continua, that is, the materials 
 completely fill the space they occupy and the underlying atomic structures 

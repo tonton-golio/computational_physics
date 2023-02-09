@@ -11,4 +11,6 @@ the desired precision, matter may be taken to be continuous. To observe the
 continuity, one must so to speak avoid looking too sharply at material bodies. 
 Fontenelle stated in a similar context that; 
 "Science originates from curiosity and bad eyesight"."*
+
 From Physics of Continuous Matter 2nd edition by Benny Lautrup
+
