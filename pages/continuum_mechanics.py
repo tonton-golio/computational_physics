@@ -151,12 +151,15 @@ def testpage():
 
 
 # Navigator
-topic_dict = {
-    "Frontpage" : frontpage,
-    'The Continuum Approximation' : contapprox,
-    'Testpage'  : testpage,
-              }
+#topic_dict = {
+#    "Frontpage" : frontpage,
+#    'The Continuum Approximation' : contapprox,
+#    'Testpage'  : testpage,
+#              }
+if __name__ == '__main__':
+    functions = [pre_start, multi_armed_bandit, 
+week1_notes]
+    navigator(functions)
+#topic = st.sidebar.selectbox("topic" , list(topic_dict.keys()))
 
-topic = st.sidebar.selectbox("topic" , list(topic_dict.keys()))
-
-run_topic = topic_dict[topic] ; run_topic()
+#run_topic = topic_dict[topic] ; run_topic()
