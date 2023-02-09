@@ -971,20 +971,232 @@ def lecture3_notes():
     """
 
     '---'
-
+    
     r"""
-    ## Theory of discounted markov decision processes (MDP)
-    MDPs are described by a tuple $(S, A, P, R, \gamma)$ where:
-    - $S$ is the set of states
-    - $A$ is the set of actions
+    ## Theory of discounted MDP
+    Discounted MDPs are described by a tuple $(S, A, P, R, \gamma)$ where:
+    - $\mathcal{S}$ is the set of states
+    - $\mathcal{A}$ is the set of actions; $\mathcal{A} = \cup_{s\in S} \mathcal{A}_s$
     - $P$ is the state transition function
     - $R$ is the reward function
     - $\gamma$ is the discount factor
 
-
-
+    #### The algorithm
+    The algorithm is given by:
+    * agent observes state $s_t$ and takes an action $a_t \in \mathcal{A}_{s_t}$.
+    * agent receives reward $r_t := r(s_t, a_t \sim R(s_t, a_t)$ and observes new state $s_{t+1}\sim P(\cdot|s_t, a_t)$.
+    * repeat until $s_{t+1} = \text{terminal}$
+    Notice the dot in $P(\cdot|s_t, a_t)$, this denotes an arbitrary state.
     """
- 
+    st.image("https://www.researchgate.net/publication/350130760/figure/fig2/AS:1002586224209929@1616046591580/The-agent-environment-interaction-in-MDP.png")
+    r"""
+    This above process produces a trajectory (AKA history) 
+    $$
+    H_t = (s_0, a_0, s_1, a_1, \ldots, s_t, a_t)
+    $$
+    Although a decision process may in theory depend on the entire history. In MDPS we adhere to the Markov property, which states that the future is independent of the past given the present. This means that the state transition function only depends on the current state and action. This is given by:
+    $$
+        P(s_{t+1} =s' | s_0, a_0, s_1, a_1, \ldots, s_t, a_t) = P(s_{t+1} =s' | s_t, a_t)\\
+        \Rightarrow\\
+        R(s_1, a_1, s_2, a_2, \ldots, s_t, a_t) = R(s_t, a_t)
+    $$
+    """
+
+    r"""
+    ### Classification of MDPs
+    * Finite-horizon MDPs; with objective function: 
+    $$
+    \max \mathbb{E} \left[ \sum_{t=1}^{N-1} r(s_t, a_t) + r(s_N) \right]
+    $$
+    * Infinite-horizon discounted MDPs; with objective function: 
+    $$
+    \max \mathbb{E} \left[ \sum_{t=1}^{\infty} \gamma^{t-1} r(s_t, a_t) \right]
+    $$
+    * Infinite-horizon undiscounted MDPs; with objective function:
+    $$
+    \max \lim_{N\rightarrow\infty}\frac{1}{N} \mathbb{E} \left[ \sum_{t=1}^{N} r(s_t, a_t) \right]
+    $$
+    """
+    "---"
+    r"""
+    > For todays lecuter we will focus our attention on infinite-horizon discounted MDPs.
+    
+    #### The L-state RiverSwim MDP
+    The L-state RiverSwim MDP is given by:
+    * $\mathcal{S} = \{1, 2, \ldots, L\}$
+    * $\mathcal{A} = \{ \text{left}, \text{right} \}$
+    * $P(s_{t+1} = s' | s_t, a_t) = \begin{cases} 
+        0.6 & \text{if } s' = s_t = s_1 \text{ and } a_t = \text{right} \\
+        .4 & \text{if } s' = s_t + 1 \text{ and } a_t = \text{right} \\
+        .55 & \text{if } s' = s_t + 0 \text{ and } a_t = \text{right} \\
+        .05 & \text{if } s' = s_t-1 \text{ and } a_t = \text{right} \\
+         1 & \text{if } s' = s_t - 1 \text{ and } a_t = \text{left} \\
+        0.6 & \text{if } s' = s_t = s_L \text{ and } a_t = \text{right} \\
+         0 & \text{otherwise} \end{cases}$
+    * $R(s_t, a_t) = \begin{cases}
+        0.05 & \text{if } s_t = 1 \text{ and } a_t = \text{left} \\
+        1 & \text{if } s_t = L \text{ and } a_t = \text{right} \\
+        0 & \text{otherwise} \end{cases}$
+
+    Now lets calculate the objective function
+    $$
+    \max \mathbb{E} \left[ \sum_{t=1}^{\infty} \gamma^{t-1} r(s_t, a_t) \right]
+    $$
+    
+    ### Policy
+    A policy is a mapping from states to actions. We denote a policy by $\pi$. We denote the action taken by $\pi$ in state $s$ by $\pi(s)$. A policy my be;
+    * deterministic or stochastic
+    * history dependent or stationary
+
+    table:
+    | | deterministic | stochastic |
+    | --- | --- | --- |
+    | history dependent | $\pi : \mathcal{H}\rightarrow \mathcal{A}$ | $\pi : \mathcal{H}\rightarrow \Delta\mathcal{A}$|
+    | stationary | $\pi : \mathcal{A}$ | $\pi : \Delta\mathcal{A}$|
+
+    $$
+    \begin{align*}
+        r^\pi &\in \mathbb{R}^{\mathcal{S}}\\
+        r^pi(s) &= \sum_{a\in\mathcal{A}} R(s,a) \pi(a|s)
+    \end{align*}
+    $$
+
+    $$
+        P_{s,s'}^\pi = \sum_{a\in\mathcal{A}} P(s'|s,a) \pi(a|s)
+    $$
+
+    ### Value function
+    The value function is a mapping from states to real numbers. We denote the value function by $V$. We denote the value of state $s$ by $V(s)$. The value function is defined as:
+    $$
+    V(s) = \mathbb{E}^\pi \left[ \sum_{t=1}^{\infty} \gamma^{t-1} r(s_t, a_t) | s_0 = s \right]
+    $$
+    Where $\mathbb{E}^\pi$ denotes the expectation with respect to the policy $\pi$. 
+
+    The Value function lets us get the potential for reward. Kinda like giving us potential of reward when we are close to a rewarding state.
+
+    ### Policy evaluation
+    Policy evaluation is the process of computing the value function for a given policy. We need this to go from our complex objective to an interpretable value function.
+    
+    We have three methods:
+    * Direct computation
+    * Iterative policy evaluation
+    * Monte Carlo policy evaluation
+
+    #### Direct computation
+    We can do this by using the Bellman equation:
+    $$
+    V^\pi(s) = \mathbb{E}_{a\sim \pi(s)}[
+        r(s,a)] + \gamma \mathbb{E}_{a\sim \pi(s)}\left[
+            \sum_{x\in\mathcal{S}} P(x|s,a) V^\pi(x)
+        \right]
+    \\
+    V^\pi = r^\pi + \gamma P^\pi V^\pi
+    $$
+    This is invertible:
+    $$
+        V^\pi = (I - \gamma P^\pi)^{-1}r^\pi
+    $$
+    The Bellman operator is:
+    $$
+        T^\pi f:= r^\pi + \gamma P^\pi f
+    $$
+    inserting the value function into the Bellman operator gives us:
+    $$
+        V^\pi = T^\pi V^\pi
+    $$
+    In other words; $V^\pi$ is the unique fixed point of the Bellman operator $T^\pi$.
+
+    #### Iterative policy evaluation
+    We can also use iterative policy evaluation. We can do this by applying the bellman operator to the value function iteratively. We do this until we reach a fixed point.
+
+    ### Optimal value function
+    The optimal value function is the value function for the optimal policy. We denote the optimal value function by $V^*(s)$. Notice $V^{\pi^*(s)} = V^*(s)$.
+
+    another important theorem says:
+    suppose the state space $\mathcal{S}$ is finite. Then there exists a policy $\pi^* \in \prod^{SD}$.
+    So we can restrict our attention to $\prod^{SD}$.
+    (SD = stationary deterministic)
+
+    ### Major solution methods
+    * Value iteration
+    * Policy iteration
+    * linear programming
+
+    ### Value iteration
+    * input $\epsilon > 0$
+    * initialize $V_0(s) = 0$ for all $s\in\mathcal{S}$
+    * $V_1 = r_\text{max} / (1-\gamma)$
+    * set n=0
+    * while $||V_{n+1} - V_n|| > \epsilon \frac{1-\gamma}{2\gamma}$
+        * update for $ s\in\mathcal{S}$
+            * $V_{n+1}(s) = \max_{a\in\mathcal{A}} \left[ r(s,a) + \gamma \sum_{x\in\mathcal{S}} P(x|s,a) V_n(x) \right]$
+        * $n = n+1$
+    * return $V_n$
+
+    ### Policy iteration
+    * select an initial policy $\pi_0$ and $\pi_1$ arbitrarily ($ \pi_0\neq \pi_1 $). and set n=0
+    * while $\pi_n \neq \pi_{n+1}$
+        * $V_n = \text{policy evaluation}(\pi_n)$. $(I - \gamma P^\pi_n)V_n = r^{\pi_n}$
+        * $\pi_{n+1} = \text{policy improvement}(V_n)$. $\pi_{n+1}(s) = \arg\max_{a\in\mathcal{A}} \left[ r(s,a) + \gamma \sum_{x\in\mathcal{S}} P(x|s,a) V_n(x) \right]$ for all $s\in\mathcal{S}$
+        * $n = n+1$
+    * return $V_n, \pi_n$
+    """
+    # python code for L-state RiverSwim MDP
+    
+    def river_swim(L, gamma):
+        pass
+
+    def example___():
+        """
+        # example
+        We reciveve orders with probability $\alpha$. We can either process all orders or process none.
+        * the cost per unfilled order per period i $c>0$ and the setup cost to process unfilled orders is $K>0$.
+        * Assume the total number of orders that can remain unfilled is $n$
+        * assume a discount factor $\gamma < 1$
+        """
+        cols = st.columns(2)
+        c = cols[0].slider("cost per unfilled order, c", 0.0, 1.0, 0.1, 0.1)
+        K = cols[0].slider("setup cost to process unfilled orders, K", 0.0, 1.0, 0.1, 0.1)
+        n = cols[0].slider("total number of orders that can remain unfilled, n", 0, 100, 10, 10)
+        alpha = cols[0].slider("probability of receiving an order, alpha", 0.0, 1.0, 0.5, 0.1)
+        gamma = cols[0].slider("discount factor, gamma", 0.0, 1.0, 0.9, 0.1)
+        
+
+        T = 300
+        prob_fill = np.linspace(0.01,.31,20)
+        costs = []
+        for p in prob_fill:
+            total_cost = 0
+            number_of_unfilled_orders = 0
+            for t in range(T):
+                # get order?
+                if np.random.rand() < alpha:
+                    number_of_unfilled_orders += 1
+                    if number_of_unfilled_orders > n:
+                        number_of_unfilled_orders = n
+                # process orders?
+                if number_of_unfilled_orders>0 and np.random.rand() < p:
+                    number_of_unfilled_orders = 0
+                    total_cost += K
+                else:
+                    total_cost += number_of_unfilled_orders*c
+            costs.append(total_cost)
+        fig = plt.figure()
+        plt.plot(prob_fill, costs)
+        plt.xlabel("probability of filling order")
+        plt.ylabel("cost")
+        plt.title("cost as a function of probability of filling order")
+        cols[1].pyplot(fig)
+        plt.close()
+
+        r"""
+        but here we didnt include the discount factor
+        
+
+
+        """
+
+    
 
 def cart_pole():
     #RL.py
