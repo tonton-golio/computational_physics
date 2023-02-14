@@ -2,8 +2,8 @@ from utils.utils_continuum import *
 
 set_rcParams()
 
-def frontpage():
-    text = getText_prep_new(textfile_path+'frontpagetext.md',3)
+def frontpage():    
+    text = getText_prep_new(textfile_path+'frontpagetext.md')
     st.markdown(text)
     cols = st.columns(2)
     cols[0].image('https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Airplane_vortex_edit.jpg/330px-Airplane_vortex_edit.jpg')
@@ -17,10 +17,13 @@ def frontpage():
     1. Frontpage
     2. The Continuum Approximation
     
-    To do:
-    3. Iceberger widget
-    4. Stress and Strain page
-    5. Useful integrals    
+    To be completed
+    3. Fluids
+    4. Stress and Strain
+    
+    To be started
+    Iceberger widget
+    Useful integrals    
     """)
 
 def contapprox():
