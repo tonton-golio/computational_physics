@@ -29,7 +29,7 @@ def contapprox():
     
     text_expander(key="Introduction", 
             text_dict=text_dict, expanded=True)
-    text_expander(key="Introduction", text_dict=text_dict)
+    #text_expander(key="Introduction", text_dict=text_dict)
 
     key="Macroscopic Smoothness"
     with st.expander(key, expanded=False):
