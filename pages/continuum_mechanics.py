@@ -27,8 +27,7 @@ def contapprox():
     st.markdown(r"""# The Continuum Approximation""")
     text_dict = getText_prep(filename = textfile_path+'contapprox.md', split_level = 2)
     
-    text_expander(key="Introduction", 
-            text_dict=text_dict, expanded=True)
+    text_expander(key="Introduction", text_dict=text_dict, expanded=True)
     #text_expander(key="Introduction", text_dict=text_dict)
 
     key="Macroscopic Smoothness"
