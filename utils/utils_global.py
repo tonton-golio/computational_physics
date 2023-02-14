@@ -17,7 +17,7 @@ from scipy.optimize import curve_fit
 
 
 ##### DEVMOD ##########     this determines whether
-devmod = True #########     or not we profile, i.e 
+devmod = False #########     or not we profile, i.e 
 ############# DEVMOD ##    measure func performance 
 
 def function_profiler_on(f, *args, **kwargs):
@@ -93,12 +93,15 @@ else:
 fig_counter = np.array([0])
 fig_counter[0] = 0
 
-def navigator(functions):
+def navigator(functions, names=None):
     """
     :param functions: a list of functions to put in sidebar for navigation
     :return: None
     """
-    topic_dict = {func.__name__.replace('_', ' ').title(): func for func in functions}
+    if names is None:
+        topic_dict = {func.__name__.replace('_', ' ').title(): func for func in functions}
+    else:
+        topic_dict = {name: func for name, func in zip(names, functions)}
 
 
     topic_name = st.sidebar.selectbox("topic", list(topic_dict.keys()))

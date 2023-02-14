@@ -785,8 +785,418 @@ def week1_notes():
 
     """) # structural complexity
 
+def lecture2_notes():
+    """"""
+    r"""
+    ## Lecture 2 notes (9 feb 2023)
+    In the stateless seeting: we have a loss matrix which looks like the following:
+    $$
+    \begin{bmatrix}
+        l_{1,1} & l_{2,1} & \ldots & l_{t,1}\\
+        l_{1,2} & l_{2,2} & \ldots & l_{t,2}\\
+        \vdots & \vdots & \vdots & \vdots \\
+        l_{1,k} & l_{2,k} & \ldots & l_{t,k}\\
+    \end{bmatrix}
+    $$
+    Notice, we have $k$ actions in our action space.
+    ### Performance meaure:
+    Regret:
+    $$
+        R_T = \sum_{t=1}^T l_{t, A_t} - \min_a \sum_{t=1}^T l_{t,a}
+    $$
+    The above equation describes the regret as the loss of the algorithm minus the best action applied contiously, i.e., the best row of the loss matrix in hindsight.
 
- 
+    It the regret is order $T$ $\Rightarrow$ no learning. We want sublinear regret, which means we are learning something.
+
+    #### Expected regret
+    $$
+        \mathbb{E}[R_T] = \mathbb{E}[\sum_{t=1}^T l_{t, A_t}] - \mathbb{E}[\min_a \sum_{t=1}^T l_{t,a}]
+    $$
+
+
+    ##### Oblivious adversary
+    $l_{t,a}$ are independent of actions. Meaning the adversary is not able to know our actions.
+    
+    We will only consider oblivious adversary, in which case the last term in the equation above becomes deterministic.
+
+    ##### Adaptive adversary
+    $l_{t,a}$ may depend on actions.
+
+    
+    #### Pseudo regret
+    only defined in i.i.d. setting
+
+    $$
+        \bar{R}_T = \mathbb{E}[\sum l_{t, A_t}] - min_a \mathbb{E}[\sum l_{t,a}]
+    $$
+    notice, here we have the minimum of the expectation rather than the expectation of the minimum.
+    $$
+    \begin{align*}
+        \bar{R}_T &= \mathbb{E}[\sum l_{t, A_t}] - min_a \mu(a)T\\
+         &= \mathbb{E}[\sum l_{t, A_t} - \mu^*]\\
+         &= \mathbb{E}[\sum_t^T \Delta(A_t)]\\
+         &= \sum_a \Delta(a) \mathbb{E}[N_T(a)]
+    \end{align*}
+    $$
+    where $\mu^* = \min_a \mu(a)$.
+
+    We also define $\Delta(a) = \mu(a)- \min \mu(a) = \mu(a) - \mu^*$
+    
+
+
+    Notice, the pseudo regret is always less than or equal to the expected regret. We always use pseudo-regret for i.i.d. :shrug.
+
+    The reason for this is that the comparator is more reasonable. The comparator we are using is $T\mu^*$...
+
+
+    """
+
+
+    r"""
+    ---
+    Now we shall consider the iid bandit case (remember the bandit case is one where feedback is limited).
+
+    #### Exploration-exploitation trade-off
+    * action space width = 2
+    * T = known total time
+    * Delta is known
+
+    The actions yield $1/2 \pm \Delta$ respectively. If $\Delta$ is small, we should explore for a while, before determining which action is best. And then after that just repeat that action. 
+
+
+    We may bound the pseudo regret by:
+    $$
+        \bar{R}_T \leq \frac{1}{2}\epsilon T\Delta + \delta(\epsilon) \Delta (1-\epsilon)T \leq (\frac{1}{2}\epsilon + \delta(\epsilon))\Delta T
+    $$
+    In which $\delta(\epsilon)$ is the probability that we selected the suboptimal action. We can bound this by:
+    $$ 
+        \leq \mathbb{P} (\hat{\mu_{\epsilon T}} (a) \leq \hat{\mu_{\epsilon T}} (a^*))
+    $$ 
+    We can bound this chance of having chosen a bad arm by:
+    $$
+        \leq \mathbb{P} (\hat{\mu_{\epsilon T}} (a^*) \geq 
+        \hat{\mu_{\epsilon T}} (a^*) + \frac{1}{2}\Delta)
+        + \mathbb{P}(\hat{\mu_{\epsilon T}} (a) \leq \mu(a) - \frac{1}{2}\Delta)
+    $$
+    We may employ Hoeffding's inequality to bound the first term:
+    $$
+        \leq 2 e^{- \epsilon T \Delta^2 / 4}
+    $$
+    So now we can choose an epsilon to minimize the probability of choosing the bad arm.
+    $$
+        \epsilon^* = \frac{4\ln (T\Delta^2)}{T\Delta^2}
+    $$
+    yielding a pseudo regret of:
+    $$
+        \bar{R}_T \leq \frac{2(\ln(T\Delta^2)+1)}{\Delta}
+    $$
+
+    To summarize the above, it takes a longer time to dicern which action is better if the actions are closer together. It goes with $\Delta^2$. Each time we choose the wrong action, we lose $\Delta$, so pseudo regret goes with $\Delta$.
+    """
+
+    
+
+    T = 100
+    action_space = [0,1]
+    Delta = .1
+    reward_func = lambda a : 1/2 + [-1,1][a] * np.random.normal(0,Delta,None)
+
+    def explore(action_space, reward_func):
+        action = np.random.choice(action_space)
+        return action, reward_func(action)
+
+    def exploit(experiences, reward_func):
+        action = max(experiences, key=lambda a: np.mean(experiences[a]))
+        return action, reward_func(action)
+
+    experiences = {}
+
+
+
+    r"""
+    #### Lower confidence bound (LCB)
+    $$
+        L_t^{CR} = \hat{\mu_{t-1}}(a) - \sqrt{\frac{3\ln t}{2 N_{t-1}(a)}}
+    $$
+    This has the following algorithm:
+    ```
+    play each arm once (i.e., K plays)
+    for t = K to T:
+        A_t = argmin_a L_t^{CR}(a)
+    ```
+    """
+
+
+def lecture3_notes():
+    """"""
+
+    r"""
+    # Markov Decision Process (MDP)
+    #### FROM YT VIDS
+    [Intro to MDP video by Computerphile](https://www.youtube.com/watch?v=2iF9PRriA7w)
+    [David silver from Deepmind om MDP](https://www.youtube.com/watch?v=lfHX2hHRMVQ)
+
+    A simple case is where we have a fully observable environment.
+
+    #### Markov Property
+    The future is independent of the past given the present.
+    $$
+        \mathbb{P}\left[
+            S_{t+1} | S_t \right] = 
+            \mathbb{P} \left[
+                S_{t+1} | S_1, \ldots, S_t \right]
+    $$
+
+    #### State transition matrix
+    The probability of transitioning from state $s$ to state $s'$ is given by:
+    $$
+        P_{ss'} = \mathbb{P} \left[ S_{t+1} = s' | S_t = s \right]
+    $$
+    This is a matrix where the rows are the starting states and the columns are the ending states.
+
+    #### Reward function
+    The reward function is a function that maps states to rewards. It is denoted by $R$.
+
+    #### Discount factor
+    The discount factor is a number between 0 and 1. It is denoted by $\gamma$. It is used to discount future rewards. This is useful because we may want to prioritize immediate rewards over future rewards.
+
+    The return $G_t$ is the total discounted reward from time $t$ to the end of the episode. It is given by:
+    $$
+        G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \ldots = \sum_{k=0}^{\infty} \gamma^k R_{t+k+1}
+    $$ 
+
+
+    
+    
+    """
+
+    '---'
+    
+    r"""
+    ## Theory of discounted MDP
+    Discounted MDPs are described by a tuple $(S, A, P, R, \gamma)$ where:
+    - $\mathcal{S}$ is the set of states
+    - $\mathcal{A}$ is the set of actions; $\mathcal{A} = \cup_{s\in S} \mathcal{A}_s$
+    - $P$ is the state transition function
+    - $R$ is the reward function
+    - $\gamma$ is the discount factor
+
+    #### The algorithm
+    The algorithm is given by:
+    * agent observes state $s_t$ and takes an action $a_t \in \mathcal{A}_{s_t}$.
+    * agent receives reward $r_t := r(s_t, a_t \sim R(s_t, a_t)$ and observes new state $s_{t+1}\sim P(\cdot|s_t, a_t)$.
+    * repeat until $s_{t+1} = \text{terminal}$
+    Notice the dot in $P(\cdot|s_t, a_t)$, this denotes an arbitrary state.
+    """
+    st.image("https://www.researchgate.net/publication/350130760/figure/fig2/AS:1002586224209929@1616046591580/The-agent-environment-interaction-in-MDP.png")
+    r"""
+    This above process produces a trajectory (AKA history) 
+    $$
+    H_t = (s_0, a_0, s_1, a_1, \ldots, s_t, a_t)
+    $$
+    Although a decision process may in theory depend on the entire history. In MDPS we adhere to the Markov property, which states that the future is independent of the past given the present. This means that the state transition function only depends on the current state and action. This is given by:
+    $$
+        P(s_{t+1} =s' | s_0, a_0, s_1, a_1, \ldots, s_t, a_t) = P(s_{t+1} =s' | s_t, a_t)\\
+        \Rightarrow\\
+        R(s_1, a_1, s_2, a_2, \ldots, s_t, a_t) = R(s_t, a_t)
+    $$
+    """
+
+    r"""
+    ### Classification of MDPs
+    * Finite-horizon MDPs; with objective function: 
+    $$
+    \max \mathbb{E} \left[ \sum_{t=1}^{N-1} r(s_t, a_t) + r(s_N) \right]
+    $$
+    * Infinite-horizon discounted MDPs; with objective function: 
+    $$
+    \max \mathbb{E} \left[ \sum_{t=1}^{\infty} \gamma^{t-1} r(s_t, a_t) \right]
+    $$
+    * Infinite-horizon undiscounted MDPs; with objective function:
+    $$
+    \max \lim_{N\rightarrow\infty}\frac{1}{N} \mathbb{E} \left[ \sum_{t=1}^{N} r(s_t, a_t) \right]
+    $$
+    """
+    "---"
+    r"""
+    > For todays lecuter we will focus our attention on infinite-horizon discounted MDPs.
+    
+    #### The L-state RiverSwim MDP
+    The L-state RiverSwim MDP is given by:
+    * $\mathcal{S} = \{1, 2, \ldots, L\}$
+    * $\mathcal{A} = \{ \text{left}, \text{right} \}$
+    * $P(s_{t+1} = s' | s_t, a_t) = \begin{cases} 
+        0.6 & \text{if } s' = s_t = s_1 \text{ and } a_t = \text{right} \\
+        .4 & \text{if } s' = s_t + 1 \text{ and } a_t = \text{right} \\
+        .55 & \text{if } s' = s_t + 0 \text{ and } a_t = \text{right} \\
+        .05 & \text{if } s' = s_t-1 \text{ and } a_t = \text{right} \\
+         1 & \text{if } s' = s_t - 1 \text{ and } a_t = \text{left} \\
+        0.6 & \text{if } s' = s_t = s_L \text{ and } a_t = \text{right} \\
+         0 & \text{otherwise} \end{cases}$
+    * $R(s_t, a_t) = \begin{cases}
+        0.05 & \text{if } s_t = 1 \text{ and } a_t = \text{left} \\
+        1 & \text{if } s_t = L \text{ and } a_t = \text{right} \\
+        0 & \text{otherwise} \end{cases}$
+
+    Now lets calculate the objective function
+    $$
+    \max \mathbb{E} \left[ \sum_{t=1}^{\infty} \gamma^{t-1} r(s_t, a_t) \right]
+    $$
+    
+    ### Policy
+    A policy is a mapping from states to actions. We denote a policy by $\pi$. We denote the action taken by $\pi$ in state $s$ by $\pi(s)$. A policy my be;
+    * deterministic or stochastic
+    * history dependent or stationary
+
+    table:
+    | | deterministic | stochastic |
+    | --- | --- | --- |
+    | history dependent | $\pi : \mathcal{H}\rightarrow \mathcal{A}$ | $\pi : \mathcal{H}\rightarrow \Delta\mathcal{A}$|
+    | stationary | $\pi : \mathcal{A}$ | $\pi : \Delta\mathcal{A}$|
+
+    $$
+    \begin{align*}
+        r^\pi &\in \mathbb{R}^{\mathcal{S}}\\
+        r^pi(s) &= \sum_{a\in\mathcal{A}} R(s,a) \pi(a|s)
+    \end{align*}
+    $$
+
+    $$
+        P_{s,s'}^\pi = \sum_{a\in\mathcal{A}} P(s'|s,a) \pi(a|s)
+    $$
+
+    ### Value function
+    The value function is a mapping from states to real numbers. We denote the value function by $V$. We denote the value of state $s$ by $V(s)$. The value function is defined as:
+    $$
+    V(s) = \mathbb{E}^\pi \left[ \sum_{t=1}^{\infty} \gamma^{t-1} r(s_t, a_t) | s_0 = s \right]
+    $$
+    Where $\mathbb{E}^\pi$ denotes the expectation with respect to the policy $\pi$. 
+
+    The Value function lets us get the potential for reward. Kinda like giving us potential of reward when we are close to a rewarding state.
+
+    ### Policy evaluation
+    Policy evaluation is the process of computing the value function for a given policy. We need this to go from our complex objective to an interpretable value function.
+    
+    We have three methods:
+    * Direct computation
+    * Iterative policy evaluation
+    * Monte Carlo policy evaluation
+
+    #### Direct computation
+    We can do this by using the Bellman equation:
+    $$
+    V^\pi(s) = \mathbb{E}_{a\sim \pi(s)}[
+        r(s,a)] + \gamma \mathbb{E}_{a\sim \pi(s)}\left[
+            \sum_{x\in\mathcal{S}} P(x|s,a) V^\pi(x)
+        \right]
+    \\
+    V^\pi = r^\pi + \gamma P^\pi V^\pi
+    $$
+    This is invertible:
+    $$
+        V^\pi = (I - \gamma P^\pi)^{-1}r^\pi
+    $$
+    The Bellman operator is:
+    $$
+        T^\pi f:= r^\pi + \gamma P^\pi f
+    $$
+    inserting the value function into the Bellman operator gives us:
+    $$
+        V^\pi = T^\pi V^\pi
+    $$
+    In other words; $V^\pi$ is the unique fixed point of the Bellman operator $T^\pi$.
+
+    #### Iterative policy evaluation
+    We can also use iterative policy evaluation. We can do this by applying the bellman operator to the value function iteratively. We do this until we reach a fixed point.
+
+    ### Optimal value function
+    The optimal value function is the value function for the optimal policy. We denote the optimal value function by $V^*(s)$. Notice $V^{\pi^*(s)} = V^*(s)$.
+
+    another important theorem says:
+    suppose the state space $\mathcal{S}$ is finite. Then there exists a policy $\pi^* \in \prod^{SD}$.
+    So we can restrict our attention to $\prod^{SD}$.
+    (SD = stationary deterministic)
+
+    ### Major solution methods
+    * Value iteration
+    * Policy iteration
+    * linear programming
+
+    ### Value iteration
+    * input $\epsilon > 0$
+    * initialize $V_0(s) = 0$ for all $s\in\mathcal{S}$
+    * $V_1 = r_\text{max} / (1-\gamma)$
+    * set n=0
+    * while $||V_{n+1} - V_n|| > \epsilon \frac{1-\gamma}{2\gamma}$
+        * update for $ s\in\mathcal{S}$
+            * $V_{n+1}(s) = \max_{a\in\mathcal{A}} \left[ r(s,a) + \gamma \sum_{x\in\mathcal{S}} P(x|s,a) V_n(x) \right]$
+        * $n = n+1$
+    * return $V_n$
+
+    ### Policy iteration
+    * select an initial policy $\pi_0$ and $\pi_1$ arbitrarily ($ \pi_0\neq \pi_1 $). and set n=0
+    * while $\pi_n \neq \pi_{n+1}$
+        * $V_n = \text{policy evaluation}(\pi_n)$. $(I - \gamma P^\pi_n)V_n = r^{\pi_n}$
+        * $\pi_{n+1} = \text{policy improvement}(V_n)$. $\pi_{n+1}(s) = \arg\max_{a\in\mathcal{A}} \left[ r(s,a) + \gamma \sum_{x\in\mathcal{S}} P(x|s,a) V_n(x) \right]$ for all $s\in\mathcal{S}$
+        * $n = n+1$
+    * return $V_n, \pi_n$
+    """
+    # python code for L-state RiverSwim MDP
+    
+    def river_swim(L, gamma):
+        pass
+
+    def example___():
+        """
+        # example
+        We reciveve orders with probability $\alpha$. We can either process all orders or process none.
+        * the cost per unfilled order per period i $c>0$ and the setup cost to process unfilled orders is $K>0$.
+        * Assume the total number of orders that can remain unfilled is $n$
+        * assume a discount factor $\gamma < 1$
+        """
+        cols = st.columns(2)
+        c = cols[0].slider("cost per unfilled order, c", 0.0, 1.0, 0.1, 0.1)
+        K = cols[0].slider("setup cost to process unfilled orders, K", 0.0, 1.0, 0.1, 0.1)
+        n = cols[0].slider("total number of orders that can remain unfilled, n", 0, 100, 10, 10)
+        alpha = cols[0].slider("probability of receiving an order, alpha", 0.0, 1.0, 0.5, 0.1)
+        gamma = cols[0].slider("discount factor, gamma", 0.0, 1.0, 0.9, 0.1)
+        
+
+        T = 300
+        prob_fill = np.linspace(0.01,.31,20)
+        costs = []
+        for p in prob_fill:
+            total_cost = 0
+            number_of_unfilled_orders = 0
+            for t in range(T):
+                # get order?
+                if np.random.rand() < alpha:
+                    number_of_unfilled_orders += 1
+                    if number_of_unfilled_orders > n:
+                        number_of_unfilled_orders = n
+                # process orders?
+                if number_of_unfilled_orders>0 and np.random.rand() < p:
+                    number_of_unfilled_orders = 0
+                    total_cost += K
+                else:
+                    total_cost += number_of_unfilled_orders*c
+            costs.append(total_cost)
+        fig = plt.figure()
+        plt.plot(prob_fill, costs)
+        plt.xlabel("probability of filling order")
+        plt.ylabel("cost")
+        plt.title("cost as a function of probability of filling order")
+        cols[1].pyplot(fig)
+        plt.close()
+
+        r"""
+        but here we didnt include the discount factor
+        
+
+
+        """
+
+    
 
 def cart_pole():
     #RL.py
@@ -1158,6 +1568,6 @@ def lunar_lander():
 
 
 if __name__ == '__main__':
-    functions = [pre_start, multi_armed_bandit, week1_notes, #cart_pole, #lunar_lander
+    functions = [pre_start, multi_armed_bandit, week1_notes, lecture2_notes, lecture3_notes, #cart_pole, #lunar_lander
                 ]
     navigator(functions)
