@@ -1,7 +1,8 @@
-# Continuum Mechanics
-In the macroscopic world, most materials that surround us e.g. solids and 
-liquids can safely be assumed to exist as continua, that is, the materials 
-completely fill the space they occupy and the underlying atomic structures 
+
+## Introduction
+In the macroscopic world, most materials that surround us e.g. solids and liquids 
+can safely be assumed to exist as continua, that is, the materials completely 
+fill the space they occupy and the underlying atomic structures 
 can be neglected. This course offers a modern introduction to the physics of
 continuous matter with an emphasis on examples from natural occurring 
 systems (e.g. in the physics of complex systems and the Earth sciences). 
