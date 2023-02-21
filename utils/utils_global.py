@@ -1,12 +1,12 @@
 from time import time, sleep
-import psutil
+
 import streamlit as st
 import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 from datetime import datetime
-import psutil
+
 import matplotlib as mpl
 import streamlit_toggle as tog
 import string
@@ -14,7 +14,7 @@ import matplotlib.cm as cm
 from matplotlib.gridspec import GridSpec
 from scipy.constants import gravitational_constant
 from scipy.optimize import curve_fit
-
+import streamlit_analytics
 
 ##### DEVMOD ##########     this determines whether
 devmod = False #########     or not we profile, i.e 
