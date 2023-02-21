@@ -1,6 +1,7 @@
 
 ## __Introduction__
-The Cauchy stress tensor, Cauchy strain tensor, and stress deviator are essential concepts in the field of continuum mechanics. The Cauchy stress tensor is a mathematical construct used to describe stress in a material. The Cauchy strain tensor describes the deformation of the material due to stress. The stress deviator characterizes the state of stress in a material when the hydrostatic stress is zero. Understanding these concepts is crucial for predicting the behavior of materials under different conditions. In this introduction, we will provide an overview of these concepts and their significance in the study of continuum mechnaics.
+The Cauchy stress tensor, Cauchy strain tensor, the stress deviator, gradient tensor and spin tensor are essential concepts in the field of continuum mechanics. The Cauchy stress tensor is a mathematical construct used to describe stress in a material. The Cauchy strain tensor describes the deformation of the material due to stress. The Cauchy strain tensor together with the spin tensor gives the combined gradient tensor. 
+The stress deviator characterizes the state of stress in a material with respect to a reference pressure. Understanding these concepts is crucial for predicting the behavior of materials under different conditions. In this introduction, we will provide an overview of these concepts and their significance in the study of continuum mechnaics.
 
 ## __Cauchy Stress Tensor__
 The Cauchy stress tensor is an mathematical object used to describe how forces propagate through a continuum. For 3 dimensions it is a rank 2 tensor, for 2 dimensions a rank 1 tensor and for 1 dimension a rank 0 tensor, these are usually denoted as
@@ -17,11 +18,15 @@ $$
 \sigma_{1D} = \sigma_{11}
 $$
 
-The diagonal elements represent *normal stresses* along the corresponding basis vectors. The off-diagonal elements represent the *shear stresses* that propagate through the continuum. The columns of $\sigma$ are the *traction vectors* of the Cauchy stress tensor. Each element of $\sigma$ has units of Pascal $Nm^{-2}$ and in order for it to be physical, symmetry is enforced as $\sigma=\sigma^T$.
+The diagonal elements represent *normal stresses* along the corresponding basis vectors. The off-diagonal elements represent the *shear stresses* that propagate through the continuum. 
+The columns of $\sigma$ are the *traction vectors* of the Cauchy stress tensor. 
+Each element of $\sigma$ has units of Pascal $Nm^{-2}$ and in order for it to be physical, symmetry is enforced as $\sigma=\sigma^T$.
 
-For any solids that have forces propagation through them, there exist a basis for the Cauchy stress tensor such that only the diagonal element remain and no shear stresses are experienced. Normal and shear stresses are therefore a matter of perspective since they depend on the choosen basis, which is arbitrary. This "normal" basis is the eigenbasis of the Cauchy stress tensor.
+For any solids that have forces propagation through them, there exist a basis for the Cauchy stress tensor such that only the diagonal element remain and no shear stresses are experienced. 
+Normal and shear stresses are therefore a matter of perspective since they depend on the choosen basis, which is arbitrary. 
+This "normal" basis is the eigenbasis of the Cauchy stress tensor.
 
-## __Stress Deviator__
+## __Stress Deviator and Invariants__
 It is convenient to introduce the *stress deviator* which is defined as the Cauchy stress tensor but removing the normal stresses or equivalently the pressure
 $$
 s=\sigma-p\mathbf{I}\hspace{0.3cm} \text{where}\hspace{0.3cm} p=\frac{1}{3}tr(\sigma)
@@ -39,11 +44,23 @@ s_{31} & s_{32} & s_{33}\\
 \sigma_{31} & \sigma_{32} & \sigma_{33}- p\\
 \end{pmatrix}
 $$
-By removing the pressure, the stress deviator allows us to define a new reference pressure. Imagine building a house, modeling how the forces propagate through the building and now having to find suitable materials to carry those forces. Those materials will come with a detailed stress test, but that test has most likely been performed in normal atmosphere and the material was most likely forged in normal atmosphere conditions. It is also the information that is relevant for the building, as you are not interested in its structural strength in vacuum but at the pressure where it will be build.
+By removing the pressure, the stress deviator allows us to define a new reference pressure. Imagine building a house, modeling how the forces propagate through the building and now having to find suitable materials to carry those forces. Those materials will come with a detailed stress test, but that test has most likely been performed in normal atmospheric conditions and the material was most likely forged in the same. It is also the information that is relevant for the building, as you are not interested in its structural strength in vacuum but at the pressure where it will be build.
 
-Stresses relating to a similar system is therefore usually communicated in terms of the Stress Deviator with some reference pressure. The Cauchy stress tensor and the stress deviator have 3 invariants that are constant under rotation to any other basis.
+Stresses relating to a similar system is therefore usually communicated in terms of the Stress Deviator with some reference pressure. 
+The Cauchy stress tensor ($I$) and the stress deviator ($J$) have 3 invariants that are constant under rotation to any other basis.
 
-TABLE HOLDER
+
+$I_1=\sigma_1 +\sigma_2+\sigma_3$
+
+$I_2=\sigma_1\sigma_2+\sigma_2\sigma_3+\sigma_3\sigma_1$
+
+$I_3=\sigma_1\sigma_2\sigma_3$
+
+$J_1=s_{kk}=0 $
+
+$J_2=\frac{1}{2}tr(s^2)= \frac{1}{2}\left( tr(\sigma^2)-\frac{1}{3}tr(\sigma)^2\right)$
+
+$J_3=\det(s_{ij}) = \frac{1}{3}\left( tr(\sigma^3)-tr(\sigma^2)tr(\sigma)+\frac{2}{9}tr(\sigma)^3\right)$
 
 Especially the $J_2$ invariant is relevant, as is it linked to the *von Mises yield criterion*. For materials where the ratio of 
 $$
@@ -80,3 +97,6 @@ $$
 \frac{\partial v_x }{\partial x}
 $$
 The Cauchy strain tensor describes deformation in a continua. The eigenbasis of the Cauchy strain tensor has eigenvectors pointing in the direction of displacement and eigenvalues corresponding to the rate of displacement.
+It is unitless, and describes relative deformation. To achieve length in meters, multiply by the corresponding length of the object it represents.
+## __Gradient and Spin Tensor__
+To be written. Combination of Cauchy strain tensor and spin tensor. 
