@@ -44,7 +44,7 @@ def contapprox():
         cols = st.columns([1,1])
         cols[0].markdown(text_dict2[key])
         cols[1].image('https://www.campoly.com/files/8214/6721/8144/2014-08-variable-pressure-scanning-electron.jpg')
-        cols[1].caption('Scanning electron microscopy micrograph of hydrogel pore structure taken in a hydrated state')
+        cols[1].caption('Scanning electron microscopy micrograph of hydrogel pore structure taken in a hydrated state\\ https://www.campoly.com/blog/2014-08-variable-pressure-scanning-electron/')
 
     key="Density Fluctuations"
     with st.expander(key, expanded=False):
