@@ -28,7 +28,7 @@ def frontpage():
     
     __Simulators__
     1. Iceberg Simulator (*TBS*)
-    2. 
+    2. Strain and Stress Visualizer (*TBS*)
     3. Finite Element Modelling (*TBS*)
     4. Useful Python Packages (*TBS*)
     """)
