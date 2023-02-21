@@ -14,7 +14,7 @@ def frontpage():
     __Table of contents__
     1. Frontpage
     2. The Continuum Approximation
-    3. Stress and Strain
+    3. Tensor Foundation
     4. Elasticity
     5. Fluids
     
@@ -27,44 +27,43 @@ def frontpage():
     
     cols = st.columns([2,1])
     
-    key='Introduction'
+    key='__Introduction__'
     with st.expander(key, expanded=True):
         cols[0].markdown(text_dict1[key])
 
     cols[1].image('https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Amadeo_Avogadro.png/248px-Amadeo_Avogadro.png')
     cols[1].caption('Amedeo Avogadro')
 
-
 def contapprox():
     st.markdown(r"""# The Continuum Approximation""")
     text_dict2 = getText_prep(filename = textfile_path+'contapprox.md', split_level = 2)
     
-    key='Introduction'
+    key='__Introduction__'
     with st.expander(key, expanded=True):
         cols = st.columns([1,1])
         cols[0].markdown(text_dict2[key])
         cols[1].image('https://www.campoly.com/files/8214/6721/8144/2014-08-variable-pressure-scanning-electron.jpg')
-        cols[1].caption('Scanning electron microscopy micrograph of hydrogel pore structure taken in a hydrated state\\ https://www.campoly.com/blog/2014-08-variable-pressure-scanning-electron/')
+        cols[1].caption('Scanning electron microscopy micrograph of hydrogel pore structure taken in a hydrated state\ https://www.campoly.com/blog/2014-08-variable-pressure-scanning-electron/')
 
-    key="Density Fluctuations"
+    key="__Density Fluctuations__"
     with st.expander(key, expanded=False):
         st.markdown(text_dict2[key])
         
-    key="Macroscopic Smoothness"
+    key="__Macroscopic Smoothness__"
     with st.expander(key, expanded=False):
         st.markdown(text_dict2[key])
 
-    key ="Velocity Fluctuations"
+    key ="__Velocity Fluctuations__"
     with st.expander(key, expanded=False):
         st.markdown(text_dict2[key])
             
-    key ="Mean-Free-Path"
+    key ="__Mean-Free-Path__"
     with st.expander(key, expanded=False):
         st.markdown(text_dict2[key])
 
-def stressandstrain():
-    st.markdown(r"""# __Stress and Strain__""")
-    text_dict2 = getText_prep(filename = textfile_path+'stressandstrain.md', split_level = 2)
+def tensorfundamentals():
+    st.markdown(r"""# __Tensor Fundamentals__""")
+    text_dict2 = getText_prep(filename = textfile_path+'tensorfundamentals.md', split_level = 2)
     
     key='__Introduction__'
     with st.expander(key, expanded=True):
@@ -85,7 +84,6 @@ def stressandstrain():
     with st.expander(key, expanded=False):
         st.markdown(text_dict2[key])
 
-def fluids():
     st.markdown(r"""# __Fluids__""")
     text_dict2 = getText_prep(filename = textfile_path+'fluids.md', split_level = 2)
     
@@ -113,6 +111,8 @@ def fluids():
         st.markdown(text_dict2[key])
       
 def elasticity():
+    
+
     st.markdown(r"""# __Elasticity__""")
     text_dict = getText_prep(filename = textfile_path+'elasticity.md', split_level = 2)
     
@@ -123,12 +123,15 @@ def elasticity():
         cols[1].image('https://www.campoly.com/files/8214/6721/8144/2014-08-variable-pressure-scanning-electron.jpg')
         cols[1].caption('Scanning electron microscopy micrograph of hydrogel pore structure taken in a hydrated state')
     
+
+def fluids():
     key='__Hookes Law__'
     with st.expander(key, expanded=False):
         st.markdown(text_dict[key])
         
+
 #Navigator
 if __name__ == '__main__':
-    functions = [frontpage, contapprox, stressandstrain, elasticity, fluids]
-    names = ['1. Frontpage', '2. The Continuum Approximation', '3. Stress and Strain', '4. Elasticity', '5. Fluids']
+    functions = [frontpage, contapprox, tensorfundamentals, elasticity, fluids]
+    names = ['1. Frontpage', '2. The Continuum Approximation', '3. Tensor Fundamentals', '4. Elasticity', '5. Fluids']
     navigator(functions, names)
