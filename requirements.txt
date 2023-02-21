@@ -20,3 +20,4 @@ celluloid
 gymnasium
 gym
 torchvision
+streamlit_analytics

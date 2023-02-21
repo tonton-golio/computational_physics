@@ -1570,4 +1570,6 @@ def lunar_lander():
 if __name__ == '__main__':
     functions = [pre_start, multi_armed_bandit, week1_notes, lecture2_notes, lecture3_notes, #cart_pole, #lunar_lander
                 ]
-    navigator(functions)
+    with streamlit_analytics.track():
+        
+        navigator(functions)

@@ -969,20 +969,11 @@ def monteCarlo():
     """
     sphereINcube_demo()
 
+
 # Navigator
-topic_dict = {
-    "Landing Page" : landingPage,
-    'Information theory' : informationTheory,
-    'Probabilistic inference' : Probabilistic,
-    'Monte Carlo': monteCarlo,
-    'Least-squares / Tikonov': Least_squares, 
-    'Weakly nonlinear problems and optimization' : Weakly_nonlinear, 
-    'Density variations (Tikonov)': DensityVar_LeastSquare,
-    'Linear Tomography (Tikonov)' : ass1,
-    'Vertical Fault (Monte Carlo)': ass2,
-    'Glacier thickness (Monte Carlo)' : ass3_glacier_thickness,
-  }
-
-topic = st.sidebar.selectbox("topic" , list(topic_dict.keys()))
-
-run_topic = topic_dict[topic] ; run_topic()
+if __name__ == '__main__':
+    functions = [landingPage, informationTheory, Probabilistic, monteCarlo, Least_squares, Weakly_nonlinear, DensityVar_LeastSquare, ass1, ass2, ass3_glacier_thickness]
+    function_names = ['Landing Page', 'Information theory', 'Probabilistic inference', 'Monte Carlo', 'Least-squares / Tikonov', 'Weakly nonlinear problems and optimization', 'Density variations (Tikonov)', 'Linear Tomography (Tikonov)', 'Vertical Fault (Monte Carlo)', 'Glacier thickness (Monte Carlo)']
+    with streamlit_analytics.track(verbose=True):
+        
+        navigator(functions, function_names)
