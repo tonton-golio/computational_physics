@@ -9,8 +9,11 @@ try:
     df = pd.read_csv('profiling_data.csv', index_col=0)
     with st.expander('raw data', expanded=False):
         df
+        pass
 except:
+    df = pd.DataFrame()
     pass
+
 
 df['cpu_delta'] = df['end_cpu'] - df['start_cpu']
 df['ram_delta'] = df['end_ram_used'] - df['start_ram_used']
