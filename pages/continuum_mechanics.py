@@ -129,6 +129,6 @@ def elasticity():
         
 #Navigator
 if __name__ == '__main__':
-    functions = [frontpage, contapprox, stressandstrain, fluids, elasticity]
+    functions = [frontpage, contapprox, stressandstrain, elasticity, fluids]
     names = ['1. Frontpage', '2. The Continuum Approximation', '3. Stress and Strain', '4. Elasticity', '5. Fluids']
     navigator(functions, names)
