@@ -41,13 +41,14 @@ def frontpage():
     with st.expander(key, expanded=True):
         cols[0].markdown(text_dict[key])
 
-    cols[1].image('https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Airplane_vortex_edit.jpg/330px-Airplane_vortex_edit.jpg',width=300)
+    cols[1].image('https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Airplane_vortex_edit.jpg/330px-Airplane_vortex_edit.jpg',width=200)
     cols[1].caption('Vortex displayed by dye caught in the turbulence of an landing airplane.')
-    cols[1].image('https://blogs.egu.eu/divisions/gd/files/2021/10/tectonic_modeling-1400x800.png',width=300)
+    cols[1].image('https://blogs.egu.eu/divisions/gd/files/2021/10/tectonic_modeling-1400x800.png',width=200)
     cols[1].caption('Finite Element Modelling of Plate Tectonics. Coloration displays stress.')
-    cols[1].image('https://images.fineartamerica.com/images/artworkimages/mediumlarge/2/tensor-calculus-doug-morgan.jpg',width=300)
+    cols[1].image('https://images.fineartamerica.com/images/artworkimages/mediumlarge/2/tensor-calculus-doug-morgan.jpg',width=200)
     cols[1].caption('Tensor Calculus is a piece of digital artwork by Doug Morgan')
-    
+    cols[1].image('https://legacy.altinget.dk/images/article/257037/84969.jpg',width=200)
+    cols[1].caption('Danish Fregatte HDMS TRITON on a patrol, clearing a path in the ice shelves into Kangerlussuaq for civian shipping.')
     st.write(signatur)
 
 def contapprox():
