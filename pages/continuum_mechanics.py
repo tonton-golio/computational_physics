@@ -43,9 +43,9 @@ def frontpage():
 
     cols[1].image('https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Airplane_vortex_edit.jpg/330px-Airplane_vortex_edit.jpg')
     cols[1].caption('Vortex displayed by dye caught in the turbulence of an landing airplane.')
-    cols[1].image(imagefile_path+'oceanfem.png')
+    cols[1].image('https://blogs.egu.eu/divisions/gd/files/2021/10/tectonic_modeling-1400x800.png')
     cols[1].caption('Finite Element Modelling of Plate Tectonics. Coloration displays stress.')
-    cols[1].image(imagefile_path+'tensorcalculus.jpg')
+    cols[1].image('https://images.fineartamerica.com/images/artworkimages/mediumlarge/2/tensor-calculus-doug-morgan.jpg')
     cols[1].caption('Tensor Calculus is a piece of digital artwork by Doug Morgan')
     
     st.write(signatur)
@@ -94,7 +94,7 @@ def tensorfundamentals():
 
     key="__Cauchy Stress Tensor__"
     with st.expander(key, expanded=False):
-        st.image(imagefile_path+'stress tensor.png',width=500)
+        st.image('https://upload.wikimedia.org/wikipedia/commons/b/b3/Components_stress_tensor_cartesian.svg',width=500)
         st.caption('Illustration of the pressures and directions that the elements of $\sigma_{ij}$ represents.')
         st.markdown(text_dict[key])
 
