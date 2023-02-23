@@ -3,9 +3,16 @@ from utils.utils_continuum import *
 set_rcParams()
 
 def frontpage():    
+    #Comments are given on the first topic page. Structural comments are omitted after.
+    #Import text from assets directory defined in utils/utils_continuum.py with
+    #getText_prep from utils/utils_globals.py
     text_dict = getText_prep(textfile_path+'frontpagetext.md', split_level = 2)
+    #Write headline
     st.markdown(r"""# __Continuum Mechanics__""")
     
+    
+    
+    #Define columns to structure text, make their relative size 2:1
     cols = st.columns([2,1])
     cols[0].write("""
     GitHub: https://github.com/tonton-golio/computational_physics.git
@@ -23,32 +30,34 @@ def frontpage():
     2. The Continuum Approximation
     3. Tensor Fundamentals
     4. Elasticity (*TBC*)
-    5. Fluid Fundamentals
+    5. Fluids at Rest
     6. Fluids in Motion (*TBC*)
     
-    __Simulators__
-    1. Iceberg Simulator (*TBS*)
-    2. Strain and Stress Visualizer (*TBS*)
-    3. Finite Element Modelling (*TBS*)
-    4. Useful Python Packages (*TBS*)
+    __Appendix__
+    * Iceberg Simulator (*TBS*)
+    * Stress and Strain Visualizer (*TBC*)
+    * Finite Element Modelling (*TBS*)
+    * Useful Python Packages
     """)
-#   To be started
-#   Iceberger widget
-#   Useful integrals and fundamental field theory   
-#   Useful python packages
-
+    
+    #From Getfile_prep, keys mark the division between chapters in the 
     key='__Introduction__'
+    #Input text in expandable tab on screen
     with st.expander(key, expanded=True):
+        #Write text loaded from md file and imported with getfile_prep
         cols[0].markdown(text_dict[key])
-
+    
+    #Show images on Streamlit site
     cols[1].image('https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Airplane_vortex_edit.jpg/330px-Airplane_vortex_edit.jpg',width=300)
     cols[1].caption('Vortex displayed by dye caught in the turbulence of an landing airplane.')
     cols[1].image('https://blogs.egu.eu/divisions/gd/files/2021/10/tectonic_modeling-1400x800.png',width=300)
     cols[1].caption('Finite Element Modelling of Plate Tectonics. Coloration displays stress.')
-    cols[1].image('https://images.fineartamerica.com/images/artworkimages/mediumlarge/2/tensor-calculus-doug-morgan.jpg',width=300)
-    cols[1].caption('Tensor Calculus is a piece of digital artwork by Doug Morgan')
     cols[1].image('https://legacy.altinget.dk/images/article/257037/84969.jpg',width=300)
-    cols[1].caption('Danish Fregatte HDMS TRITON on a patrol, clearing a path in the ice shelves into Kangerlussuaq for civian shipping.')
+    cols[1].caption('Danish Fregatte HDMS TRITON on a patrol, clearing a path in the ice shelves outside Kangerlussuaq for civilian shipping.')
+    cols[1].image('https://images.fineartamerica.com/images/artworkimages/mediumlarge/2/tensor-calculus-doug-morgan.jpg',width=300)
+    cols[1].caption('Tensor Calculus is a piece of digital artwork by Doug Morgan.')
+    
+    #Contact info signature, editable in utils/utils_continuum.py
     st.write(signatur)
 
 def contapprox():
@@ -102,12 +111,14 @@ def tensorfundamentals():
     key="__Stress Deviator and Invariants__"
     with st.expander(key, expanded=False):
         st.markdown(text_dict[key])
+        st.image('https://images.squarespace-cdn.com/content/v1/5a33517f268b961f10de794c/1630622947614-L1I8T9MRPM7TOGUR3PMM/Cheese+Pull.jpg')
+        st.caption('Cheese deformed into strings by applying a pulling pressure at a $45\deg$ angle. The eigenbasis of the stress tensor aligns with the pulling force along with a negative pressure perpendicular to the force. Strings form along the positive eigenvector and crevasses form perpendicular to the negative eigenvector, and depending on the cheese rheology enormous deformation is achievable.')
     
     key="__Cauchy Strain Tensor__"
     with st.expander(key, expanded=False):
         st.markdown(text_dict[key])
 
-    key="__Gradient and Spin Tensor__"
+    key="__Velocity Gradient and Spin Tensor__"
     with st.expander(key, expanded=False):
         st.markdown(text_dict[key])
         
@@ -119,11 +130,9 @@ def elasticity():
     
     key='__Introduction__'
     with st.expander(key, expanded=True):
-        cols = st.columns([1,1])
-        cols[0].markdown(text_dict[key])
-        cols[1].image('https://www.campoly.com/files/8214/6721/8144/2014-08-variable-pressure-scanning-electron.jpg')
-        cols[1].caption('Scanning electron microscopy micrograph of hydrogel pore structure taken in a hydrated state')
-        
+        st.markdown(text_dict[key])
+        st.image('https://nuclear-power.com/wp-content/uploads/2019/11/Hookes-law-stress-strain-curve.png',width=500)
+
     key='__Work__'
     with st.expander(key, expanded=False):
         st.markdown(text_dict[key])
@@ -135,7 +144,7 @@ def elasticity():
     st.write(signatur)
 
 def fluidfundamental():
-    st.markdown(r"""# __Fluid Fundamentals__""")
+    st.markdown(r"""# __Fluids at Rest__""")
     text_dict = getText_prep(filename = textfile_path+'fluids.md', split_level = 2)
     
     key='__Introduction__'
@@ -173,8 +182,38 @@ def fluidsinmotion():
         
     st.write(signatur)
 
+def stressandstrainvisualizer():
+    st.markdown(r"""# __Stress and Strain Visualizer__""")
+    visualizer()
+    
+def pythonpackages():
+    st.markdown(r"""# __Useful Python Packages__""")
+    text_dict = getText_prep(filename = textfile_path+'pythonpackages.md', split_level = 2)
+    
+    key='__Introduction__'
+    with st.expander(key, expanded=True):
+        st.markdown(text_dict[key])   
+
+    key='__Shapely__'
+    with st.expander(key, expanded=False):
+        st.markdown(text_dict[key])  
+        
+    key='__SymPy__'
+    with st.expander(key, expanded=False):
+        st.markdown(text_dict[key])  
+
+    key='__Plotly__'
+    with st.expander(key, expanded=False):
+        st.markdown(text_dict[key])  
+
+    key='__Rasterio__'
+    with st.expander(key, expanded=False):
+        st.markdown(text_dict[key])  
+        
+    st.write(signatur)
+    
 #Navigator
 if __name__ == '__main__':
-    functions = [frontpage, contapprox, tensorfundamentals, elasticity, fluidfundamental, fluidsinmotion]
-    names = ['1. Frontpage', '2. The Continuum Approximation', '3. Tensor Fundamentals', '4. Elasticity', '5. Fluid Fundamentals','6. Fluids in Motion']
+    functions = [frontpage, contapprox, tensorfundamentals, elasticity, fluidfundamental, fluidsinmotion, stressandstrainvisualizer, pythonpackages]
+    names = ['1. Frontpage', '2. The Continuum Approximation', '3. Tensor Fundamentals', '4. Elasticity', '5. Fluids at Rest','6. Fluids in Motion', 'Stress and Strain Visualizer','Useful Python Packages']
     navigator(functions, names)
