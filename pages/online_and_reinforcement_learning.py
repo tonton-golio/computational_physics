@@ -17,7 +17,7 @@ set_rcParams(style_dict = {
 
 def pre_start():
     text_intro = """
-    ## Pre-start preperations
+    ## Pre course start
     """
 
     st.markdown(text_intro)
@@ -176,17 +176,6 @@ def pre_start():
 
         p_heads = cols[1].slider('probability of heads', 0., 1.,0.5, 0.05)
         cols[1].pyplot(q1(p_heads, n_exp = 1000, n_draws = 20))
-
-
-
-
-    '---'
-    '## PyTorch'
-
-    """
-    pyTorch is ML package for python, developed by facebook/meta. 
-
-    """
 
 
 
@@ -691,7 +680,6 @@ def pre_start():
             #torch.save(model.state_dict(), 'mnist_cnn.pth')
         print('page loaded')
 
-
 def multi_armed_bandit():
     ''
     
@@ -926,7 +914,6 @@ def lecture2_notes():
     ```
     """
 
-
 def lecture3_notes():
     """"""
 
@@ -1051,8 +1038,8 @@ def lecture3_notes():
     table:
     | | deterministic | stochastic |
     | --- | --- | --- |
-    | history dependent | $\pi : \mathcal{H}\rightarrow \mathcal{A}$ | $\pi : \mathcal{H}\rightarrow \Delta\mathcal{A}$|
-    | stationary | $\pi : \mathcal{A}$ | $\pi : \Delta\mathcal{A}$|
+    | history dependent | $\pi : \mathcal{H}_t\rightarrow \mathcal{A}$ | $\pi : \mathcal{H}_t\rightarrow \Delta(\mathcal{A})$|
+    | stationary | $\pi :\mathcal{S}\rightarrow \mathcal{A}$ | $\pi : \mathcal{S}\rightarrow \Delta(\mathcal{A})$|
 
     $$
     \begin{align*}
@@ -1123,15 +1110,17 @@ def lecture3_notes():
     * linear programming
 
     ### Value iteration
-    * input $\epsilon > 0$
-    * initialize $V_0(s) = 0$ for all $s\in\mathcal{S}$
-    * $V_1 = r_\text{max} / (1-\gamma)$
-    * set n=0
-    * while $||V_{n+1} - V_n|| > \epsilon \frac{1-\gamma}{2\gamma}$
-        * update for $ s\in\mathcal{S}$
-            * $V_{n+1}(s) = \max_{a\in\mathcal{A}} \left[ r(s,a) + \gamma \sum_{x\in\mathcal{S}} P(x|s,a) V_n(x) \right]$
-        * $n = n+1$
-    * return $V_n$
+    ```python
+    input epsilon > 0$
+    initialize V_0(s) = 0# for all states ($s\in\mathcal{S}$)
+    $V_1 = r_max / (1-gamma)$
+    n=0
+    while $||V_{n+1} - V_n|| > \epsilon \frac{1-\gamma}{2\gamma}$
+        update for $ s\in\mathcal{S}$
+            $V_{n+1}(s) = \max_{a\in\mathcal{A}} \left[ r(s,a) + \gamma \sum_{x\in\mathcal{S}} P(x|s,a) V_n(x) \right]$
+        $n = n+1$
+    return $V_n$
+    ```
 
     ### Policy iteration
     * select an initial policy $\pi_0$ and $\pi_1$ arbitrarily ($ \pi_0\neq \pi_1 $). and set n=0
@@ -1196,7 +1185,179 @@ def lecture3_notes():
 
         """
 
+def lecture_feb_23_notes():
+    ''
+    r"""
+    It seems I missed a lecture this morning...
+    > topic was: Stochastic bandits + Adversarial full info
+
+    ---
+    # Policy Evaluation from data
+
+    A Markov decision procces becomes a markov reward process if we choose a policy.
+
+    Let's remember the valuefunction associated with a policy $\pi$:
+    $$
+        V(a) = \mathbb{E} \left[ \sum_{t=0}^\infty \gamma^t r_t | s_0 = a \right]
+    $$
+
+
+    ### Policy evaluation
+    * we may asses this with the Bellman equation, which as we recall is invertible.
+    $$
+    V^\pi = r^\pi +  \gamma P^\pi V^\pi 
+    \Rightarrow 
+    V^\pi = (I - \gamma P^\pi)^{-1} r^\pi
+    $$
+
+
+    """
+    #Let's have a look at the riverSwim vizualization:
+    L = st.slider("number of states", 2, 20, 5, 1)
+    states = np.arange(L)
+    transitions = riverSwim_transtions(L)
+    actions = np.arange(2)
+    reward = np.zeros(L); reward[-1] = 1
+    mdp = MDP(states, actions, transitions, reward, gamma=None, state_names=None, action_names=None, policy=None)
+    mdp
     
+
+    r"""
+    # Policy Evaluation from data
+    The data here indicates that we donty have full information regarding the MDP. We only have access to the state and the reward. We can use this to estimate the value function.
+
+    Online versus offline; we can either update the value function after each step, or after each episode.
+
+    ## Specifics
+    * Given a dataset $\mathbb{D}$ collected from an unknown MDP with policy $\pi$.
+    $$
+        \mathbb{D} = \left\{
+            (s_t, a_t, r_t), \quad t=0,1,\dots,T
+            \right\}
+    $$
+
+    ### Off-policy evaluation (OPE)
+    apply a policy $\pi_b$ called the loggig policy to collect the data. This allows us to estimate the target policy, $\pi$.
+
+    ###### Should we switch
+    if $V^{\pi_B} > V^{\pi_A}$ then we should switch policies to $\pi_B$. (we need some margin here.)
+
+    Note; one can find the unknown $V^{\pi_B}$ using the data collected with $\pi_A$.
+
+    
+    ### On-policy optimization (OPO)
+    ...
+
+    ## Methods
+    #### Model-based
+    If we know the MDP, we can use Bellmans equation to estimate the value function.
+    If the policy is stationary deterministic, an MRP is induced and we can use the Bellman equation to estimate the value function.
+    $$
+        V^\pi = r^\pi +  \gamma P^\pi V^\pi \Rightarrow V^\pi = (I - \gamma P^\pi)^{-1} r^\pi
+    $$
+
+    But we dont know $P^\pi$, so we need to estimate it.
+    $$
+        \hat{P}^\pi_{s,s'} = \frac{N(s,s') + \alpha}{N(s)+ \alpha S}
+    $$
+    in which $N(s,s')$ is the number of times we have been in state $s$ and ended up in state $s'$. $N(s)$ is the number of times we have been in state $s$. $\alpha$ is a smoothing parameter, and $S$ is the number of states.
+
+    $\alpha$ i.e. the smoothing can be picked as:
+    * $\alpha \geq 1$; arbitrary smoothing
+    * $\alpha = 0$; no smoothing - corresponds to maximum likelihood estimation.
+    * $\alpha = 1/S$; Laplace smoothing - corresponds to Bayesian estimation. (biased, but bias vanishes as $N(s) \rightarrow \infty$)
+
+    We also need to estimate the reward function:
+    $$
+        \hat{r}^\pi (s) = \frac{\alpha + \sum_{t=1}^T r_t \mathbb{I}\{s_t=s\}}{\alpha + N(s)}
+    $$
+    Again, this should converge, meaning the approximated value function should converge;
+    $$  
+        \mathbb{P}\left(
+                    \lim_{N \rightarrow \infty} \hat{V}^\pi = V^\pi
+            \right) = 1,
+    $$
+    given that the policy is sufficiently exploratory.
+
+
+    We have yet to consider confidence intervals for different time-steps. 
+
+
+    Computationa complexity: $O(S^3)$
+    #### Model-free
+
+    ###### Temporal Difference Learning (TD)
+    Again, we keep the policy constant; and we have a dataset which looks like:
+    $$
+        \mathbb{D} = \left\{
+            (s_t, a_t, r_t), \quad t=0,1,\dots,n
+            \right\}
+    $$
+    We want ot obtain;
+    $$
+        \mathbb{E}\left[r_t + \gamma V(s_{t+1})\right]
+    $$
+    But this is all random. So we insert the givens;
+    $$
+        \mathbb{E}\left[r_t + \gamma V(s_{t+1}) | s_t, \hat{V} \right] = 
+        \mathbb{E}_{a\sim \pi(s_t)} \left[R(s_t, a) + \gamma \sum_{s'} P(s'| s_T, a)  \hat{V}(s')|s_t, \hat{V}\right]
+    $$
+    If $\hat{V}(s_t) = \hat{V}(s_{t+1})$ we are golden. But this is often not the case.
+    So we update the value function after each step;
+    $$
+        \hat{V}(s_t) \leftarrow \hat{V}(s_t) + \alpha_t \left[r_t + \gamma \hat{V}(s_{t+1}) - \hat{V}(s_t)\right]
+    $$
+    in which $\alpha_t$ is the learning rate. This is called the TD(0) algorithm.
+
+    This is an instance of **bootstrapping**, because we use the value function to estimate itself.
+
+    algorithm:
+    ```Python
+    input: D, alpha, gamma
+    output: V
+    ---
+    select V arbitrarily
+    for each (s_t, a_t, r_t) in D:
+        V(s_t) <- V(s_t) + alpha * (r_t + gamma * V(s_{t+1}) - V(s_t))
+    return V
+    ```
+    Notice, alpha my be time dependent. How to choose it? It should be square summable but not summable. (i.e. 
+    $$
+    \sum_{t=1}^T \alpha_t^2 < \infty
+    $$ 
+    but 
+    $$
+    \sum_{t=1}^T \alpha_t = \infty
+    $$
+
+    > (Something something Robbins-Monro conditions)...
+
+    Examples of typicals alphas include:
+    * $\alpha_t = \frac{1}{t+1}$
+    * $\alpha_t = \frac{2}{\sqrt{\log(t) \ldots}}$
+    * $\ldots$
+
+    ###### Convergence:
+
+
+    The computational complexity of the algorithm is $O(1)$, and the space complexity is $1$.
+
+    TD is also great, cus we can just build on it if we are given more data (we call this kinda method **incremental**).
+
+
+    ###### TD($\lambda$)
+    TD(0) is a special case of TD($\lambda$) in which $\lambda = 0$.
+    TD($\lambda$) is a generalization of TD(0) in which we use the value function to estimate itself, but we also use the value function to estimate itself in the future. This is called **eligibility traces**.
+
+    $$
+        \hat{V}(s_t) \leftarrow \hat{V}(s_t) + \alpha_t \sum_l^\infty (1-\lambda) \lambda^{l-1} \delta_t^l\\
+         = \hat{V}(s_t) + \alpha_t \sum_{n=0}^\infty \lambda^n \delta_{n} (
+            r_{t+n+1} + \gamma \hat{V}(s_{t+n+1}) - \hat{V}(s_{t+n})
+        )
+    $$
+
+    if lambda is 0, we recover TD(0). If lambda i one, we get monte carlo sampling.
+    """
 
 def cart_pole():
     #RL.py
@@ -1568,7 +1729,7 @@ def lunar_lander():
 
 
 if __name__ == '__main__':
-    functions = [pre_start, multi_armed_bandit, week1_notes, lecture2_notes, lecture3_notes, #cart_pole, #lunar_lander
+    functions = [pre_start, multi_armed_bandit, week1_notes, lecture2_notes, lecture3_notes, lecture_feb_23_notes, #cart_pole, #lunar_lander
                 ]
     with streamlit_analytics.track():
         
