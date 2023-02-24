@@ -10,8 +10,6 @@ def frontpage():
     #Write headline
     st.markdown(r"""# __Continuum Mechanics__""")
     
-    
-    
     #Define columns to structure text, make their relative size 2:1
     cols = st.columns([2,1])
     cols[0].write("""

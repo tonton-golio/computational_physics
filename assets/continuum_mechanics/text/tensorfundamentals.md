@@ -97,6 +97,29 @@ $$
 \frac{\partial v_x }{\partial x}
 $$
 The Cauchy strain tensor describes deformation in a continua. The eigenbasis of the Cauchy strain tensor has eigenvectors pointing in the direction of displacement and eigenvalues corresponding to the rate of displacement.
-It is unitless, and describes relative deformation. To achieve length in meters, multiply by the corresponding length of the object it represents.
-## __Gradient and Spin Tensor__
-To be written. Combination of Cauchy strain tensor and spin tensor. 
+It is unitless, and describes relative deformation. To achieve length in units, multiply by or integrate along the corresponding dimension of the object it represents.
+
+## __Velocity Gradient and Spin Tensor__
+The velocity gradient tensor is given as
+$$
+\nabla\mathbf{v}_{3D}=
+\begin{pmatrix}
+\frac{\partial v_x }{\partial x} & \frac{\partial v_x }{\partial y} & \frac{\partial v_x }{\partial z} \\
+\frac{\partial v_y }{\partial x} & \frac{\partial v_y }{\partial y} & \frac{\partial v_y }{\partial z} \\
+\frac{\partial v_z }{\partial x} & \frac{\partial v_z }{\partial y} & \frac{\partial v_z }{\partial z} \\
+\end{pmatrix}
+$$
+and for 2 and 1 dimensions
+$$
+\nabla\mathbf{v}_{2D}=
+\begin{pmatrix}
+\frac{\partial v_x }{\partial x} & \frac{\partial v_x }{\partial y}\\
+\frac{\partial v_y }{\partial x} & \frac{\partial v_y }{\partial y}\\
+\end{pmatrix},\hspace{3mm}
+\nabla\mathbf{v}_{1D}=
+\frac{\partial v_x }{\partial x}
+$$
+it gives the full description of the changes in deplacement of a continua and is equilevant to the *Jacobian* with respect to velocity and time. It can be decomposed into the Cauchy strain tensor and a *spin tensor*, corresponding to the symmetric and anti-symmetric component.
+$$
+\nabla\mathbf{v}=\frac{1}{2}\left(  \nabla\mathbf{v} + \nabla\mathbf{v}^T \ \right) + \frac{1}{2}\left(  \nabla\mathbf{v} - \nabla\mathbf{v}^T \ \right) = \epsilon + \mathbf{\omega}
+$$
