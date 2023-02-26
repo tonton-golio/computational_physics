@@ -582,12 +582,12 @@ Important staff of quatrature operators is their uncertainty.
 $$
     \left<
         \left(
-            \Delta X_1
+            \Delta \hat{X}_1
         \right)^2
     \right>
     \left<
         \left(
-            \Delta X_2
+            \Delta \hat{X}_2
         \right)^2
     \right>
     \ge
@@ -595,7 +595,7 @@ $$
     \left|
         \left<
             \left[
-                X_1, X_2
+                \hat{X}_1, \hat{X}_2
             \right]
         \right>
     \right|^2
