@@ -184,6 +184,8 @@ def stressandstrainvisualizer():
     st.markdown(r"""# __Stress and Strain Visualizer__""")
     visualizer()
     
+    st.write(signatur)
+    
 def pythonpackages():
     st.markdown(r"""# __Useful Python Packages__""")
     text_dict = getText_prep(filename = textfile_path+'pythonpackages.md', split_level = 2)
