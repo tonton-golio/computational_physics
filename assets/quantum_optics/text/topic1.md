@@ -25,17 +25,17 @@ mechanical fluctuation.
 We need to use quantum mechanics.
 
 # __2.1 Quantization of Single Mode Field__
-##### Motivation
+#### Motivation
 Let's start our quantization of electromagnetic waves.
 What are we gonna quantize? Of cousrse, as you know, it is **energy**.
-##### Situation
+#### Situation
 Imagine a three-dimensional box and there are perfectly conducting walls at 
 $z=0$ and $z=L$. 
 We consider **single mode field** i.e. we only take care one mode.
 Boundary conditions are
 - $\vec{E}(z=0)=0$
 - $\vec{E}(z=L)=0$
-##### Energy
+#### Energy
 Electromagnetic energy is
 $$
     H 
@@ -48,7 +48,7 @@ $$
         \frac{1}{\mu_0} \left| \vec{B}(z, t) \right|^2
     \right]^2
 $$
-##### Electric field
+#### Electric field
 From boundary condition, we can determine the spatial part of electric field.
 $$
     \vec{E}(z, t)
@@ -67,7 +67,7 @@ $$
     \sqrt{\frac{2\omega^2}{\epsilon_0 V}}
 $$
 Here, $\omega=kc$ is frequency.
-##### Magnetic field
+#### Magnetic field
 So, we got electric field. How can we get magnetic field? Yea, we use **Maxwell equations**.
 $$
     \vec{\nabla} \times \vec{B}
@@ -116,7 +116,7 @@ $$
     A \cdot p(t) \cdot \cos(kz) \cdot \vec{e_y}
 $$
 Here, we introduced $p(t)=\dot{q}(t)$. Again we gonna see why we use symbol $p$.
-##### Finally, let's calculate energy!
+#### Finally, let's calculate energy!
 We have electric field and magnetic field so we can calculate energy.
 However, as you can see the difficulty is $\int \mathrm{d} V$. 
 How do we process this?
@@ -158,10 +158,10 @@ $$
 As you notice this energy function is same as that of unit mass classical 
 harmonic oscillator.
 And our way of symbolizing make sence.
-##### Warning
+#### Warning
 Can we say $q$ as position of photon and $p$ as momentum of photon? No, we can't.
 This is just mathematical formulation and analogy to classical harmonic oscillator.
-##### Quantization
+#### Quantization
 Phew. It was a long journey to get energy function. 
 Let's go back to quantum world.
 To quantize the energy function, we need to use operators.
@@ -182,7 +182,7 @@ $$
     i\hbar
 $$
 Notice that $\hat{q}$ and $\hat{p}$ are Hermitian i.e. observable.
-##### New operators
+#### New operators
 In addition to these operators, we introduce other two non-Hermitian operators.
 Namely, **anihilation operator** $\hat{a}$ 
 and **creation operator** $\hat{a}^\dag$ .
@@ -215,7 +215,7 @@ $$
     1
 $$
 Wow it is 1. It makes our life easier.
-##### Quantized electric field, magnetic fields and Hamiltonian using $\hat{a}$ and $\hat{a}^\dag$
+#### Quantized electric field, magnetic fields and Hamiltonian using $\hat{a}$ and $\hat{a}^\dag$
 Using new operators, electric and magnetic field are quantized.
 $$
     \hat{\vec{E}}(z, t)
@@ -249,7 +249,7 @@ $$
         \frac{1}{2}
     \right)
 $$
-##### Time evolution of EM field
+#### Time evolution of EM field
 As we see above, the time evolution of EM filed is 
 time evolution of $\hat{a}(t)$ and $\hat{a}^\dag(t)$.
 To see the time evolutions of these operators, we consider them in Heisenberg
@@ -278,7 +278,7 @@ By taking complex conjugate, we can obtain the $\hat{a}^\dag(t)$.
 $$
     \hat{a}^\dag(t) = \hat{a}^\dag(0)e^{i\omega t}
 $$
-##### Photon number operator and its eigenstate
+#### Photon number operator and its eigenstate
 We can say 
 $$
     \hat{n} 
@@ -379,7 +379,7 @@ $$
     =
     0
 $$
-##### Vaccum energy 
+#### Vaccum energy 
 $$
     \hat{H} 
     \ket{0} 
@@ -389,7 +389,7 @@ $$
     \ket{0} 
 $$
 So $\frac{1}{2} \hbar \omega$ is vaccum energy.
-##### Number of photon
+#### Number of photon
 When vaccum, there is no light. Thus we can interpret $n$ as number of photon.
 $$
     E_n
@@ -401,7 +401,7 @@ $$
     \frac{1}{2} 
     \right)
 $$
-##### Eigenvalue of anihilation and creation operators
+#### Eigenvalue of anihilation and creation operators
 We know 
 $$
     \hat{n}
@@ -456,7 +456,7 @@ $$
     \sqrt{n+1}
     \ket{n}
 $$
-##### Properties of eigenstate of number state
+#### Properties of eigenstate of number state
 - Orthogonal $\braket{n|n^\prime} = \delta_{nn^\prime}$
 - Complete $\sum_{n=0}^\infty\ket{n}\bra{n} = 1$
 
