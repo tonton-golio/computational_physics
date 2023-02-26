@@ -409,7 +409,6 @@ $$
     =
     n
     \ket{n}
-    =
 $$
 By using this, we can know the eigenvalue of $\hat{a}$ and $\hat{a}^\dag$
 $$
