@@ -10,8 +10,8 @@
 Ch. 2.1-3
 
 # __Why do we need to quantize?__
-- So far, we learned that electron in high-energy state decays back to ground statewith the emission of light.
-- However, according to the Schrödinger euqation $$\hat{H} \ket{\psi_m} = E_m \ket{\psi_m}$$, electron is stable in excited state i.e. *electron stays in high energy state*.
+- So far, we learned that electron in high-energy state decays back to ground state with the emission of light.
+- However, according to the Schrödinger equation $$\hat{H} \ket{\psi_m} = E_m \ket{\psi_m}$$, electron is stable in excited state i.e. *electron stays in high energy state*.
 - How do the decay? Something goes wrong. Why does spontanesouos emission happen?
 - The answer is **fluctuations**. 
 - The the new question is *what kind of fluctuations do they have*?
