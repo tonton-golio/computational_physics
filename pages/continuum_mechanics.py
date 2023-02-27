@@ -28,8 +28,9 @@ def frontpage():
     2. The Continuum Approximation
     3. Tensor Fundamentals
     4. Elasticity (*TBC*)
-    5. Fluids at Rest
-    6. Fluids in Motion (*TBC*)
+    5. Finite Element Modelling
+    6. Fluids at Rest
+    7. Fluids in Motion (*TBC*)
     
     __Appendix__
     * Iceberg Simulator (*TBS*)
@@ -140,6 +141,33 @@ def elasticity():
         st.markdown(text_dict[key])
 
     st.write(signatur)
+    
+def finiteelementmodelling():
+    st.markdown(r"""# __Finite Element Modelling__ """)
+    text_dict = getText_prep(filename = textfile_path+'fem.md', split_level = 2)
+    
+    key='__Introduction__'
+    with st.expander(key, expanded=True):
+        st.markdown(text_dict[key])
+        
+    key='__Weighted Residuals__'
+    with st.expander(key, expanded=False):
+        st.markdown(text_dict[key])
+    
+    key='__Least Squares Method__'
+    with st.expander(key, expanded=False):
+        st.markdown(text_dict[key])
+        
+    key='__Collocation Method__'
+    with st.expander(key, expanded=False):
+        st.markdown(text_dict[key])
+
+    key='__Galerkin\'s Method__'
+    with st.expander(key, expanded=False):
+        st.image('https://www.researchgate.net/profile/T-Zohdi/publication/266967028/figure/fig1/AS:668988438765580@1536510681302/Orthogonality-of-the-approximation-error.png',width=300)
+        st.markdown(text_dict[key])    
+    
+    st.write(signatur)
 
 def fluidfundamental():
     st.markdown(r"""# __Fluids at Rest__""")
@@ -184,7 +212,7 @@ def stressandstrainvisualizer():
     st.markdown(r"""# __Stress and Strain Visualizer__""")
     visualizer()
     
-    st.write(signatur)
+    
     
 def pythonpackages():
     st.markdown(r"""# __Useful Python Packages__""")
@@ -209,11 +237,15 @@ def pythonpackages():
     key='__Rasterio__'
     with st.expander(key, expanded=False):
         st.markdown(text_dict[key])  
+
+    key='__Fenics__'
+    with st.expander(key, expanded=False):
+        st.markdown(text_dict[key])  
         
     st.write(signatur)
     
 #Navigator
 if __name__ == '__main__':
-    functions = [frontpage, contapprox, tensorfundamentals, elasticity, fluidfundamental, fluidsinmotion, stressandstrainvisualizer, pythonpackages]
-    names = ['1. Frontpage', '2. The Continuum Approximation', '3. Tensor Fundamentals', '4. Elasticity', '5. Fluids at Rest','6. Fluids in Motion', 'Stress and Strain Visualizer','Useful Python Packages']
+    functions = [frontpage, contapprox, tensorfundamentals, elasticity, finiteelementmodelling, fluidfundamental, fluidsinmotion, stressandstrainvisualizer, pythonpackages]
+    names = ['1. Frontpage', '2. The Continuum Approximation', '3. Tensor Fundamentals', '4. Elasticity', '5. Finite Element Modelling', '6. Fluids at Rest','7. Fluids in Motion', 'Stress and Strain Visualizer', 'Useful Python Packages']
     navigator(functions, names)
