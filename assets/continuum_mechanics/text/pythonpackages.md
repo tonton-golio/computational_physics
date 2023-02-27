@@ -32,3 +32,23 @@ Geographic information systems use GeoTIFF and other formats to organize and sto
 [Rasterio Documentation](https://rasterio.readthedocs.io/en/latest/)
 
 Highlighted functions: 
+
+## __Fenics__
+For solving FEM systems. Brace yourself and memorize all the preculiarities of this package.
+
+Highlighted functions:
+UnitIntervalMesh: Defines the range and discretization used.
+IntervalMesh: Defines the range and discretization used.
+FunctionSpace: Defines the function space, *lagrange* means polynomial and deg is the order (1=linear).
+Expression: Defines the basisfunction.
+project: Projects the polynomial onto the functionspace. 
+TrialFunction: The unknown function we wish to approximate. $u_z(z)$
+TestFunction: The weight function space. $w_i$
+solve: find the approximated constants.
+
+
+Implementing boundary conditions:
+def bottom_boundary(x, on_boundary): return on_boundary and near(x\[0\], 0) 
+bc1 = DirichletBC(V, Constant(0), bottom_boundary) # u_z = 0 (no displacement) at z=0 (bottom boundary)
+bcs = \[bc1\]
+*From Nicholas Notebook*
