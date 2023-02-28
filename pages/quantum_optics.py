@@ -97,6 +97,10 @@ def topic2():
     with st.expander(name, expanded=False):
         st.markdown(text_dict[name])
 
+    name = '__2.6 Vacuum fluctuations and the zero-point energy__'
+    with st.expander(name, expanded=False):
+        st.markdown(text_dict[name])
+
 
 # Navigator
 topic_dict = {
