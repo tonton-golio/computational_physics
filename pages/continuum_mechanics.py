@@ -35,7 +35,7 @@ def frontpage():
     __Appendix__
     * Iceberg Simulator (*TBS*)
     * Stress and Strain Visualizer (*TBC*)
-    * Finite Element Modelling (*TBS*)
+    * Finite Element Modelling Illustrator (*TBS*)
     * Useful Python Packages
     """)
     
@@ -60,7 +60,7 @@ def frontpage():
     st.write(signatur)
 
 def contapprox():
-    st.markdown(r"""# The Continuum Approximation""")
+    st.markdown(r"""# __The Continuum Approximation__""")
     text_dict = getText_prep(filename = textfile_path+'contapprox.md', split_level = 2)
     
     key='__Introduction__'
@@ -122,7 +122,7 @@ def tensorfundamentals():
         st.markdown(text_dict[key])
         
     st.write(signatur)
-        
+    
 def elasticity():
     st.markdown(r"""# __Elasticity__""")
     text_dict = getText_prep(filename = textfile_path+'elasticity.md', split_level = 2)
@@ -131,12 +131,17 @@ def elasticity():
     with st.expander(key, expanded=True):
         st.markdown(text_dict[key])
         st.image('https://nuclear-power.com/wp-content/uploads/2019/11/Hookes-law-stress-strain-curve.png',width=500)
-
-    key='__Work__'
+        st.caption('The relationship between stress and strain for a steel material. In this topic we deal with the linear strain/stress regime, described by Hooke\'s Law.')
+            
+    key='__Young\'s Modulus, Poisson\'s Ratio and Lamé Coefficients__'
     with st.expander(key, expanded=False):
         st.markdown(text_dict[key])
 
-    key='__Hookes Law__'
+    key='__Generalized Hooke\'s Law__'
+    with st.expander(key, expanded=False):
+        st.markdown(text_dict[key])
+    
+    key='__Work and Energy__'
     with st.expander(key, expanded=False):
         st.markdown(text_dict[key])
 
@@ -233,15 +238,15 @@ def pythonpackages():
     key='__Plotly__'
     with st.expander(key, expanded=False):
         st.markdown(text_dict[key])  
-
+    
     key='__Rasterio__'
     with st.expander(key, expanded=False):
         st.markdown(text_dict[key])  
-
+    
     key='__Fenics__'
     with st.expander(key, expanded=False):
         st.markdown(text_dict[key])  
-        
+    
     st.write(signatur)
     
 #Navigator

@@ -1,5 +1,7 @@
 
 ## __Introduction__
+MISSING: Weakform description, strongform description, 
+
 The finite element modelling is a way to solve partial differential equations by approximating the *solution* to the differential equation rather than approximating the differential equation as done in the usual finite difference methods.
 Its a method that is utilized in many engineering fields, such as structural analysis, heat transfer and fluid flow.
 
@@ -69,8 +71,7 @@ The basic “recipe” for the Galerkin process is as follows:
 
 Step 1: Compute the residual: $A(u^N)-f=r^N(x)$
 
-Step 2: Force the residual to be orthogonal to each of the approximation functions:$ \int_0^L r^N (x) \sum_{i=1}^N a_i \phi_i dx = 0
-$
+Step 2: Force the residual to be orthogonal to each of the approximation functions: $ \int_0^L r^N (x) \sum_{i=1}^N a_i \phi_i dx = 0$
 
 Step 3: Solve the set of coupled equations. The equations will be linear if the
 differential equation is linear, and nonlinear if the differential equation is nonlinear.

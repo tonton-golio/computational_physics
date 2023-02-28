@@ -36,6 +36,7 @@ Highlighted functions:
 ## __Fenics__
 For solving FEM systems. Brace yourself and memorize all the preculiarities of this package.
 
+1D:
 Highlighted functions:
 UnitIntervalMesh: Defines the range and discretization used.
 IntervalMesh: Defines the range and discretization used.
@@ -46,6 +47,18 @@ TrialFunction: The unknown function we wish to approximate. $u_z(z)$
 TestFunction: The weight function space. $w_i$
 solve: find the approximated constants.
 
+2D: 
+RectangleMesh(Point(,0,0), Point(width,height), width resolution, height resolution): Meshes a rectange, ideal for 2D modelling.
+VectorFunctionSpace: 2D equivalent of the FunctionSpace function.
+TrialFunction: The unknown function we wish to approximate. $u_z(z)$
+TestFunction: The weight function space. $w_i$
+inner(): The dobbelt dot product (:)
+
+on_boundary and near(): on_boundary outputs 0 or 1 depending on whether the program iterates over all the points. near defines the tolerance, such that machine precision doesnt mess it up.
+DirechletBC(on space V, set value Constant((0,0)), boundary): The actual boundary condition.
+plot: plotting function from the Fenics package.
+
+extracting to matplotlib looping over usol.
 
 Implementing boundary conditions:
 def bottom_boundary(x, on_boundary): return on_boundary and near(x\[0\], 0) 
