@@ -434,3 +434,51 @@ $$
     \longrightarrow
     \infty
 $$
+
+#### Casimir effect
+From the vacuum electric field, we can show that two conducting plane attract 
+each other.
+Consider the box of dimension $L\times L \times d$. 
+The total vacuum energy is 
+$$
+    E_0(d)
+    =
+    \sum_{lmn}
+    2
+    \frac{1}{2}
+    \hbar \omega_{lmn}
+$$
+Due to two independent polarizations, we multiply two.
+Here $\omega$ can be calculated from periodic boundary conditions.
+$$
+    \omega_{lmn}
+    =
+    \pi c
+    \sqrt{
+        \frac{l^2}{L^2}
+        +
+        \frac{m^2}{L^2}
+        +
+        \frac{n^2}{d^2}
+    }
+$$
+We will conduct several approximations listed below:
+- Calculate $E_0(d)$. We are interested in $L \gg d$, so we can replace the sums of $l$ and $m$ by integrals.
+- Calculate $E(\infty)$. We assume that $d$ is arbitrarily large, so we can replace the sum by integral.
+- Calculate $U(d)=E_0(d)-E_0(\infty)$, which is energy reuquired to brin gthe plates from infinity to a distance $d$.
+- To transform $U(d)$ further, we need to introduce polar coordinates in the $x$-$y$ plane.
+- To estimate the sum and integral, we use Euler-Maclaurin formulae. We keep the terms until third order.
+
+From these intensive calculations, we can show 
+$$
+    U(d)
+    =
+    -
+    \frac
+    {\pi^2 \hbar c}
+    {720}
+    \frac
+    {L^2}
+    {d^3}
+$$
+which means there is an attractive force (Casimir force) between two plates.
