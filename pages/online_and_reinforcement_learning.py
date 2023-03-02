@@ -1361,7 +1361,229 @@ def lecture_feb_23_notes():
 
 
 def lectureNotes_march_02():
-    pass
+    ''
+    """
+
+    # Lecture Notes - March 2nd
+    We have introduced a whole lot of different frameworks...
+    """
+    st.image('https://miro.medium.com/max/1400/1*ywOrdJAHgSL5RP-AuxsfJQ.png')
+    
+    # Cold-open...
+    st.markdown("""
+    
+    We have a couple different types of MDPs:
+    * Episodic
+    * Discounted
+    * Average reward
+
+    If the MDP is known, then we can just do policy iteration or value iteration. But if the MDP is unknown, then we need to do model-free RL. We can for example use policy evaluation from data, or we can do off-policy evaluation (not covered in this course), or we can do off-policy optimization (which we do do). Notice, that all the methods mentioned for solving unknown MDPs are off-policy.
+    """)
+
+    '---'
+
+
+    # What is off-policy optimization, and what is Q-learning?
+    st.markdown(r"""
+    ## Off-policy optimization and Tabular Q-learning
+    The focus of today is is off-policy optimization, which is Q-learning. 
+    > Notice, this method does not desal with online learning, which is a different topic.
+    
+    > Also notice, we are still in the kingdom of discounted MDPs.
+
+    > Off-policy referes to the fact that we are trying a policy $\pi_b$ that is different from the optimal policy $\pi^*$. 
+
+    Given some data $\mathbb{D}$ collected under some policy $\pi_b$, we want to find the optimal policy $\pi^*$.
+    
+    The action-value function ($Q$-function) is defined as:
+    $$
+        Q^\pi(s, a) = \mathbb{E}^\pi\left[
+            \sum_{t=1}^\infty \gamma^{t-1} r(s_t, a_t) | s_0 = s, a_0 = a
+            \right]
+    $$
+    meaningl $Q^\pi(s, a)$ is the expected (future) return of starting in state $s$ and taking action $a$ under policy $\pi$.
+
+    Notice the optimal Q-functiuon is related to the optimal value function by:
+    $$
+        V^*(s,) = \max_{a\in\mathcal{A}} Q^*(s, a)
+    $$
+    So we may use the Q-function to write the Bellman optimality equation:
+    $$
+        Q^*(s, a) = R(s, a) + \gamma \sum_{x\in\mathcal{S}} P(x|s,a) \max_{a'\in\mathcal{A}} Q^*(x, a')
+    $$
+
+    We also have the Optimal Bellman Operator:
+    $$
+        \mathcal{T} f(s,a) := R(s, a) + \gamma \sum_{x\in\mathcal{S}} P(x|s,a) \max_{a'\in\mathcal{A}} f(x, a')
+    $$
+
+    The optimal Q-function is the unique fixed point of the Optimal Bellman Operator:
+    $$
+        Q^*(s, a) = \mathcal{T} Q^*(s, a)
+    $$
+
+    So we can use fixed point iteration to find the optimal Q-function: *see scientific computing*.
+
+    Our prof. suggestes the method: Robbins-Monro Algorithm:
+    $$
+        x_{n+1} = x_n - \alpha_n \nabla f(x_n) = x_n - \alpha_n (h(x_n) + \epsilon_n)
+    $$
+    Satisfaction of Robbins-Monro conditions:
+    $$
+    \begin{align}
+        \sum_{n=1}^\infty \alpha_n = \infty,
+    &&
+        \sum_{n=1}^\infty \alpha_n^2 < \infty
+    \end{align}
+    $$
+    
+    Below is a demo of the Robbins-Monro algorithm:
+    """)  
+
+    # lets implement this
+    def stochastic_approximation_demo(n=69, alpha=0.1, x0=0.5):
+        def f(x):
+            return x**2 -1
+
+        def noisy_f(x):
+            return f(x) + np.random.normal(0, 0.1)
+        xs = [x0]
+        for _ in range(n):
+            xs.append(xs[-1] - alpha * noisy_f(xs[-1]))
+        
+        fig = plt.figure(figsize=(8,3))
+        ax = fig.add_subplot(111)
+        ax.set_title('Stochastic approximation of $f(x) = x^2 - 1$')
+        ax.plot(xs)
+        ax.set_xlabel('iteration')
+        ax.set_ylabel('x')
+        st.pyplot(fig)
+
+    
+    stochastic_approximation_demo()
+    r"""
+    How do we apply this to Q-learning? I.e., SA for $F(Q) = \mathcal{T}Q-Q$?
+
+    $$
+        \mathbb{E}[Y_t|Q, s_t, a_t] = \mathcal{T}Q(s_t, a_t) - Q(s_t, a_t) = F(Q)(s_t, a_t)
+    $$
+    > (I skipped a couple steps... sorry)
+
+    Specifically to update the Q-function, we use the following update rule:
+
+    $$
+        Q(s_t, a_t) \leftarrow Q(s_t, a_t) + \alpha_t \left( r_{t} + \gamma \max_{a'\in \mathcal{A}_{s_t}} Q(s_{t+1}, a') - Q(s_t, a_t) \right)
+    $$
+
+    """
+    # Model-based method for OPO
+    st.markdown(r"""
+    ---
+    ### Model-based method for OPO
+    The model is unknown, but we have Data $\mathbb{D}$, which is a sequence of tuples $(s_t, a_t, r_{t+1}, s_{t+1})$.
+    
+    The idea is is to estimate the MDP using data and apply the centainty equivalence principle.
+    - step 1: Compute estimate $\hat{P}$ of the transition probabilities and $\hat{R}$ of the reward function.
+    - step 2: Compute the optimal value function $V^*$ using the Bellman optimality equation.
+
+
+    > **pro tip**: replace $N(s,a) = \max\{ 1, \sum_{s' \in \mathcal{S}} N(s,a,s') \}$. So we avoid division by zero.
+
+    Smootherd estimator for $P$:
+    $$
+        \hat{P}(s' | s, a) = \frac{N(s,a,s')+\alpha} {N(s,a)+\alpha S}
+    $$
+
+    Smootherd estimator for $R$:
+    $$
+        \hat{R}(s, a) = \frac{\ldots}{\ldots}
+    $$
+    > different value of $\alpha$: we did this last lecture, see notes from feb. 23.
+
+    When we have estimated $P$ and $R$ by $\hat{P}$ and $\hat{R}$, we just compute the bellman optimality equation as usual. OFC we obtain $\hat{Q}^*$ instead of $Q^*$. This in turn lets us outout the optimal policy $\widehat{\pi}^*$.
+
+    This gets asymptotic convergence to the optimal policy $\pi^*$ (almost surely). Its is obviously required that $\pi_b$ is sufficiently exploratory.
+
+    > Since we progress asymptotically, and there is some cost associated with data collection, we should set a reasonable stopping criterion.
+
+
+    We can bound the error in the estimates of $P$ and $R$ by Hoeffding's inequality:
+    $$
+        \left| \hat{P}(s' | s, a) - P(s' | s, a) \right| 
+        \leq \sqrt{\frac{N(s,a)^2}{2(N(s,a) +\alpha S)} \log \frac{2S^2 A}{\delta}} + \frac{\alpha^2 S}{N(s,a), +\alpha S}
+    $$
+    and similarly for $\hat{R}$.
+
+    This lets us bound the error in the optimal value function:
+    $$
+        \text{dist}\left( M, \widehat{M}\right) \leq O(1/\sqrt{n})
+    $$
+    This informs us of how many samples we need to get to say 95% or 99% confidence in the estimate of the optimal value function.
+
+    **Pros and Cons**
+    - Cons:
+        - If we do it many times, we get high variance in $Q^*$.
+        - Computational complexity of computing $Q^*$ is $O(S^3)$.
+        - if we get a new sample, we need to recompute $Q^*$.
+    * Pros:
+    """)
+
+    # Behaviour policy
+    st.markdown(r"""
+    Use epsilon greedy in conjunction with Q-learning
+
+    $$
+        \pi_{\epsilon - \text{greedy}}(s) = 
+        \begin{cases}
+            \text{argmax}_a Q_t(s,a) & \text{with probability } 1 - \epsilon \\
+            \text{uniform random from }\mathcal{A} & \text{with probability } \epsilon
+        \end{cases}
+    $$
+    Note; this is non-stationary. Choosing $\text{argmax}_a Q_t(s,a)$ is the exploitation part, and choosing uniformly at random is the exploration part.
+    """)
+
+    # Promotion function
+    st.markdown(r"""
+    Promote actions which have not been tried bery often from state $a$. This is done by adding a bonus to the Q-value of the action. This bonus is called the promotion function.
+    $$
+        B_{t+1}(s,a) = \begin{cases}
+            0 && \text{if} (s,a) = (s_t, a_t) \\
+            B_t(s,a) + \psi(n(s,\neq a)) && \text{if} s=s_t \text{but} a \neq a_t \\
+            B_t(s,a) && \text{otherwise}
+        \end{cases}
+    $$
+    """)
+    # A couple term to read up on
+    st.markdown(r"""
+    ### A couple terms to read up on
+    - **direct method versus indirect methdod**: The above described method is direct because we dont calculate the model.
+    - **synchronous method versus asynchronous method**: the method just described is an asynchronous method. 
+    - Ergoticity: an MDP is ergodic if every state is reachable from every other state under any policy.
+    - In Deep Q-learning, a deep neural network is used to approximate the Q-values instead of using a lookup table
+    """)
+    # quote: all models are wrong, but some are useful. -- George Box
+
+    # CHAT GPT DESCRIPTION OF Q-LEARNING
+    r"""
+    ---
+    ---
+    ---
+    ## ChatGPTs description of Q-learning 
+    To implement $Q$-learning for the riverswim MDP using a history of actions and rewards, you would need to first initialize a $Q$-table, which is a table that stores the $Q$-values for each state-action pair. You can use the following steps to update the $Q$-table:
+    1. Initialize the $Q$-table with random values.
+    1. For each episode, initialize the agent's position to a random starting location.
+    1. While the agent has not reached the goal location or exceeded the maximum number of time steps:
+        1. Use an exploration policy, such as epsilon-greedy or softmax, to select an action based on the current Q-values.
+        1. Apply the selected action and observe the resulting reward and next state.
+        1. Update the Q-value for the current state-action pair using the Q-learning update rule:
+        $$
+            Q(s, a) = Q(s, a) + \alpha * (r + \gamma * \max(Q(s', a')) - Q(s, a))
+        $$
+        where $s$ is the current state, a is the selected action, r is the observed reward, s' is the next state, alpha is the learning rate, and gamma is the discount factor.
+    1. Repeat steps 2-3 for a specified number of episodes or until the Q-values converge.
+
+    Once the Q-table has been updated, you can use it to select the optimal action for any given state by selecting the action with the highest Q-value.
+    """
 
 def cart_pole():
     #RL.py
