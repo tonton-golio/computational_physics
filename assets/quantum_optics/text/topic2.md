@@ -1,5 +1,4 @@
-
-# __Topic 2 keywords__
+__Topic 2 keywords__
 - Multi-mode fields
 - thermal states-density of states
 - Planck formula

@@ -1,5 +1,4 @@
-
-# __Topic 1 keywords__
+ __Topic 1 keywords__
 - Maxwell equations
 - Single mode fields
 - Creation/anihilation operators
