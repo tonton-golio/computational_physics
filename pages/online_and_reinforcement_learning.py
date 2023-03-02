@@ -1359,6 +1359,10 @@ def lecture_feb_23_notes():
     if lambda is 0, we recover TD(0). If lambda i one, we get monte carlo sampling.
     """
 
+
+def lectureNotes_march_02():
+    pass
+
 def cart_pole():
     #RL.py
 
@@ -1729,7 +1733,7 @@ def lunar_lander():
 
 
 if __name__ == '__main__':
-    functions = [pre_start, multi_armed_bandit, week1_notes, lecture2_notes, lecture3_notes, lecture_feb_23_notes, #cart_pole, #lunar_lander
+    functions = [pre_start, multi_armed_bandit, week1_notes, lecture2_notes, lecture3_notes, lecture_feb_23_notes, lectureNotes_march_02, #cart_pole, #lunar_lander
                 ]
     with streamlit_analytics.track():
         
