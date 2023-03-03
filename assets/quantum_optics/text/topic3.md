@@ -378,7 +378,7 @@ The displacement operator is difined as
 $$
     \hat{D}(\alpha) 
     =
-    e^{\alpha \hat{a}^\dag - \alpha^* \hat{a}
+    e^{\alpha \hat{a}^\dag - \alpha^* \hat{a}}
 $$
 And coherent state given as 
 $$
@@ -397,9 +397,9 @@ $$
     \ket{q}
 $$
 $$
-    \left| \psi_\alpha (q) \right)
+    \left| \psi_\alpha (q) \right|
     =
-    \left| braket{q|\alpha} \right|^2
+    \left| \braket{q|\alpha} \right|^2
 $$
 This is Gaussian. 
 Quantum fluctuation is constant with time.
