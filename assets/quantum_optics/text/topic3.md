@@ -434,7 +434,7 @@ $$
     \\&=
     e^{\frac{1}{2}(\beta^*\alpha - \beta\alpha^*)}
     e^{\frac{1}{2}|\beta^*\alpha - \beta\alpha^*|}
-    \\&=
+    \\& \neq
     0
 \end{align*}
 $$
