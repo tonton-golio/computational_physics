@@ -16,7 +16,7 @@ Ch. 2.1-3
 - The new question is *what kind of fluctuations do they have*?
 
 # __Can classical electromagnetic describe this fluctuations?__
-In classical electromagnetics, energy of electron in electric field $E(t)$ is 
+In classical electromagnetic, energy of electron in electric field $E(t)$ is 
 $$ e \cdot E(t) $$
 Thus, when there is no light, there is no fluctuation.
 However, it is known that even without light, there is a fluctuation i.e. quantum
@@ -106,13 +106,15 @@ $$
 $$
 Thus, 
 $$
+\begin{aligned}
     \vec{B}(z, t)
-    =
+    &=
     \frac{mu_0 \epsilon_0}{k} \cdot 
     A \cdot \dot{q}(t) \cdot \cos(kz) \cdot \vec{e_y}
-    =
+    \\&=
     \frac{mu_0 \epsilon_0}{k} \cdot 
     A \cdot p(t) \cdot \cos(kz) \cdot \vec{e_y}
+\end{aligned}
 $$
 Here, we introduced $p(t)=\dot{q}(t)$. Again we gonna see why we use symbol $p$.
 #### Finally, let's calculate energy!
@@ -140,11 +142,13 @@ $$
 $$
 By using the math trick
 $$
+\begin{aligned}
     \int_0^L \mathrm{d}z \sin^2(kz) 
-    =
+    &=
     \int_0^L \mathrm{d}z \sin^2\left(\frac{\pi}{L}mz\right) 
-    =
+    \\&=
     \frac{L}{2}
+\end{aligned}
 $$
 we see the simple form of energy function.
 $$
@@ -213,7 +217,7 @@ $$
     =
     1
 $$
-Wow it is 1. It makes our life easier.
+Wow it is $1$. It makes our life easier.
 #### Quantized electric field, magnetic fields and Hamiltonian using $\hat{a}$ and $\hat{a}^\dag$
 Using new operators, electric and magnetic field are quantized.
 $$
@@ -254,20 +258,22 @@ time evolution of $\hat{a}(t)$ and $\hat{a}^\dag(t)$.
 To see the time evolutions of these operators, we consider them in Heisenberg
 picture i.e. Heisenberg equation.
 $$
+\begin{aligned}
     \frac{\mathrm{d}\hat{a}(t)}{\mathrm{d}t}
-    =
+    &=
     \frac{i}{\hbar} 
     \left[
         \hat{H}, \hat{a}
     \right]
-    =
+    \\&=
     \frac{i}{\hbar} 
     \hbar \omega
     \left[
         \hat{a}^\dag \hat{a}, \hat{a}
     \right]
-    =
+    \\&=
     -i\omega\hat{a}
+\end{aligned}
 $$
 It depends on time exponential manner.
 $$
@@ -288,9 +294,10 @@ as number operator.
 By defining $\Ket{n}$ as energy eigenstate of the single model field 
 with energy eigenvalue $E_n$ like
 $$
+\begin{aligned}
     \hat{H} 
     \Ket{n}
-    =
+    &=
     \hbar \omega
     \left( 
         \hat{a}^\dag \hat{a}
@@ -298,9 +305,10 @@ $$
         \frac{1}{2}
     \right)
     \Ket{n}
-    =
+    \\&=
     E_n
     \Ket{n}
+\end{aligned}
 $$
 By multiplying $\hat{a}^\dag$, we see
 $$
@@ -352,9 +360,11 @@ $$
     \Ket{n}
 $$
 We used the commutation relation 
-$\left[ \hat{a}^\dag \hat{a}, \hat{a}^\dag \right]=\hat{a}^\dag$
+$\left[ \hat{a}, \hat{a}^\dag \right]=\hat{a}\hat{a}^\dag-\hat{a}^\dag\hat{a}=1$
 
-We can notice that $\hat{a}^\dag \Ket{n} = \Ket{n+1}$. Aha. That's why it is called
+We can notice that $\hat{a}^\dag \Ket{n}$ is eigenstate of 
+eigenvalue $E_n + \hbar\omega$. 
+Aha. That's why it is called
 creation operator.
 
 Similarly we can show why annihilation operator is so called.
@@ -415,22 +425,32 @@ $$
     \Ket{n}
     =
     c_n
-    \Ket{n}
+    \Ket{n-1}
 $$
 $$
-    n 
+    \Bra{n}
+    \hat{a}^\dag
     =
+    c_n^*
+    \Bra{n-1}
+$$
+$$
+\begin{aligned}
+    n 
+    &=
     \Braket{n|
     \hat{a}^\dag
     \hat{a}
     |n}
-    =
+    \\&=
     c_n^* 
-    \Bra{n}
+    \Bra{n-1}
+    \cdot
     c_n
-    \Ket{n}
-    =
+    \Ket{n-1}
+    \\&=
     \left| c_n \right|^2
+\end{aligned}
 $$
 Thus 
 $$
@@ -444,9 +464,54 @@ $$
     \Ket{n}
     =
     \sqrt{n}
-    \Ket{n}
+    \Ket{n-1}
 $$
 Similarly, we can show
+$$
+    \hat{a}^\dag
+    \Ket{n}
+    =
+    c_n
+    \Ket{n+1}
+$$
+$$
+    \Bra{n}
+    \hat{a}
+    =
+    c_n^*
+    \Bra{n+1}
+$$
+$$
+\begin{aligned}
+    n 
+    &=
+    \Braket{n|
+    \hat{a}^\dag
+    \hat{a}
+    |n}
+    \\&=
+    \Braket{n|
+    \hat{a}
+    \hat{a}^\dag
+    -1
+    |n}
+    \\&=
+    c_n^* 
+    \Bra{n+1}
+    \cdot
+    c_n
+    \Ket{n+1}
+    -1
+    \\&=
+    \left| c_n \right|^2
+    -1
+\end{aligned}
+$$
+$$
+    c_n 
+    =
+    \sqrt{n+1}
+$$
 $$
     \hat{a}^\dag
     \Ket{n}
@@ -461,19 +526,21 @@ $$
 # __2.2 Quantum fluctuations__
 Time average of electric field is 
 $$
+\begin{aligned}
     \left<
         \hat{\vec{E}}
     \right>
-    =
+    &=
     \Braket{n|\hat{\vec{E}}|n}
-    =
+    \\&=
     \sqrt{
         \frac{\hbar \omega}{\epsilon_0 V}
     }
     \sin (kz) 
     \Braket{n|\left(\hat{a}+\hat{a}^\dag\right)|n}
-    =
+    \\&=
     0
+\end{aligned}
 $$
 I see. How about variance?
 $$

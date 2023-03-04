@@ -1,8 +1,8 @@
 __Topic 2 keywords__
 - Multi-mode fields
-- thermal states-density of states
+- Thermal states-density of states
 - Planck formula
-- density operators
+- Density operators
 - Lamb shift
 - Casimir forces
 
@@ -14,8 +14,9 @@ In the textbook, they use the vector potential.
 We can do same things in different way.
 Consider the Hamiltonian of multi-mode wave.
 $$
+\begin{aligned}
     \hat{H}
-    =
+    &=
     \sum_{\vec{k}, s}
     \hbar \omega_k
     \left(
@@ -24,7 +25,7 @@ $$
         +
         \frac{1}{2}
     \right)
-    =
+    \\&=
     \sum_j
     \hbar \omega_j
     \left(
@@ -32,6 +33,7 @@ $$
         +
         \frac{1}{2}
     \right)
+\end{aligned}
 $$
 Here, paramters are follows.
 - $\omega_k=kc$ is frequency
@@ -45,9 +47,9 @@ $$
     =
     \Ket{n_1, n_2, \cdots, n_j, \cdots}
 $$
-This state means how many photo in each mode.
+This state means how many photon in each mode.
 
-We can also think the anihilation operator of multi-mode state.
+We can also think the annihilation operator of multi-mode state.
 $$
     \hat{a}_i
     \Ket{\left\{n_j\right\}}
@@ -62,13 +64,13 @@ So far we consider the zero-temperature box.
 We can think interaction between photon and thermal wall.
 In thermal equilibrium, the density matrix is
 $$
-    \hat{\rho_\mathrm{th}}
+    \hat{\rho}_\mathrm{th}
     =
     \frac
     {e^{ -\hat{H} / k_\mathrm{B}T}}
-    {\mathrm{Tr}~e^{- \hat{H} / k_\mathrm{B}T}}
+    {\operatorname{Tr}~e^{- \hat{H} / k_\mathrm{B}T}}
 $$
-Remember that operator on napier number is symbolic representation of Mclaurin 
+Remember that operator on Napier number is symbolic representation of Maclaurin 
 series.
 $$
     e^{ -\hat{H} / k_\mathrm{B}T}
@@ -89,7 +91,7 @@ $$
     =
     \Braket{
         n|
-        \hat{\rho_\mathrm{th}}
+        \hat{\rho}_\mathrm{th}
         |n
     }
 $$
@@ -132,19 +134,21 @@ So photon does not care temperature. This is different from quantum computer.
 
 Thermal fluctuation is
 $$
+\begin{aligned}
     \left< \left( \Delta n \right)^2 \right>
-    =
+    &=
     \left< \hat{n}^2 \right>
     -
     \left< \hat{n} \right>^2
-    =
+    \\&=
     \bar{n}
     +
     \bar{n}^2
+\end{aligned}
 $$
 This is super-Poisonian distribution. Variance is larger than that of Poisonian.
 #### Planck's radiation law
-Consider the light in the box with each length $L$ in termal equilibrium.
+Consider the light in the box with each length $L$ in thermal equilibrium.
 From boundary condition,
 $$
     e^{i k_i x_i}
@@ -159,36 +163,40 @@ $$
 $$
 The number of state is 
 $$
+\begin{aligned}
     \Delta m
-    =
+    &=
     \Delta m_x
     \Delta m_y
     \Delta m_z
-    =
+    \\&=
     2
     \frac{V}{2\pi}
     \Delta k_x
     \Delta k_y
     \Delta k_z
+\end{aligned}
 $$
 Here multiplication of 2 is number of polarization.
 
 We can think this in spherical coordinate.
 $$
+\begin{aligned}
     \mathrm{d}m
-    =
+    &=
     \frac{V}{4\pi^3}
     \mathrm{d}^3 k
-    =
+    \\&=
     \frac{V}{4\pi^3}
     k^2
     \mathrm{d} k
     \mathrm{d} \Omega
-    =
+    \\&=
     \frac{V}{4\pi^3}
     \frac{\omega^2}{c^3}
     \mathrm{d} \omega
     \mathrm{d} \Omega
+\end{aligned}
 $$
 Density of state is 
 $$
@@ -201,21 +209,23 @@ $\frac{\text{\# of state}}{\text{frequency} \cdot \text{volume}}$
 
 Energy density become
 $$
+\begin{aligned}
     \bar{U}
-    =
+    &=
     \hbar \omega \bar{n} \rho (\omega)
-    =
+    \\&=
     \frac
     {\hbar\omega}
     {e^{\hbar\omega/k_\mathrm{B}T} - 1}
     \frac
     {\omega^2}
     {\pi^2 c^3}
+\end{aligned}
 $$
 
 # __2.6 Vacuum fluctuations and the zero-point energy__
 Vacuum energy and fluctuations actually give rise to observable effects such as:
-- spontaneous emission
+- Spontaneous emission
 - Lamb shift 
 - Casimir effect
 #### Lamb shift
@@ -464,7 +474,7 @@ $$
 We will conduct several approximations listed below:
 - Calculate $E_0(d)$. We are interested in $L \gg d$, so we can replace the sums of $l$ and $m$ by integrals.
 - Calculate $E(\infty)$. We assume that $d$ is arbitrarily large, so we can replace the sum by integral.
-- Calculate $U(d)=E_0(d)-E_0(\infty)$, which is energy reuquired to brin gthe plates from infinity to a distance $d$.
+- Calculate $U(d)=E_0(d)-E_0(\infty)$, which is energy required to bring the plates from infinity to a distance $d$.
 - To transform $U(d)$ further, we need to introduce polar coordinates in the $x$-$y$ plane.
 - To estimate the sum and integral, we use Euler-Maclaurin formulae. We keep the terms until third order.
 

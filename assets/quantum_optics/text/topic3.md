@@ -468,6 +468,8 @@ $$
 \begin{aligned}
     \Braket{\alpha|\hat{n}|\alpha}
     &=
+    \bar{n}
+    \\&=
     \Braket{\alpha|\hat{a}^\dag \hat{a}|\alpha}
     \\&=
     \alpha^* \alpha
@@ -496,14 +498,21 @@ $$
 $$
 Thus, variance is 
 $$
+\begin{aligned}
     \left<
         \left(
             \Delta n
         \right)^2
     \right>_\alpha
-    =
+    &=
+    \Braket{\alpha|\hat{n}^2|\alpha}
+    -
+    \Braket{\alpha|\hat{n}|\alpha}^2
+    \\&=
     |\alpha|^2
-    =\bar{n}
+    \\&=
+    \bar{n}
+\end{aligned}
 $$
 This is characteristic of Poisson process (average=variance).
 
@@ -529,13 +538,13 @@ Again this is Poisson distribution with a mean of $\bar{n}$.
 # __3.2 Displaced vacuum states__
 Actually, there are three ways to define the coherent state.
 - Right eigenstates of the annihilation operator
-- States that mize the undcertainty relation for the two orthogonal field quadratures (which we didn't do :P)
-- Displaced vaccum state
+- States that minimize the uncertainty relation for the two orthogonal field quadratures (which we didn't do)
+- Displaced vacuum state
 
 This displacing method is closely related to a mechanism for 
 generating the coherent state from classical currents.
 
-The displacement operator is difined as 
+The displacement operator is defined as 
 $$
     \hat{D}(\alpha) 
     =
@@ -601,7 +610,7 @@ $$
 $$
 So coherent states are not orthogonal.
 If $\left| \beta - \alpha \right|$ is large, they are nearly orthogonal.
-##### Compelteness 
+##### Completeness 
 $$
 \begin{aligned}
     \int \Ket{\alpha} \Bra{\alpha} \mathrm{d}^2 \alpha
@@ -640,7 +649,7 @@ $$
 \end{aligned}
 $$
 We changed the variable $\alpha=re^{i\theta}$, 
-so integradation became $\mathrm{d}^2\alpha = r\mathrm{d}r\mathrm{d}\theta$.
+so integration became $\mathrm{d}^2\alpha = r\mathrm{d}r\mathrm{d}\theta$.
 Also, we used the Dirac delta function
 $$
     \int_0^{2\pi}

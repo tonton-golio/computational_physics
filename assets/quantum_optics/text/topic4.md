@@ -1,7 +1,7 @@
 __Topic 4 keywords__
 - Quasi-probability distributions
 - Characteristic functions
-- phase-space picture
+- Phase-space picture
 
 # __Readings__
 Ch. 3.6-8
@@ -337,10 +337,10 @@ $$
 \begin{aligned}
     1
     &=
-    \mathrm{Tr} 
+    \operatorname{Tr} 
     \hat{\rho}
     \\&=
-    \mathrm{Tr} 
+    \operatorname{Tr} 
     \left(
     \int \mathrm{d}^2 \alpha
     P(\alpha^\prime)
@@ -655,7 +655,8 @@ Let's have a look of coherent state average of this normally ordered operator.
 $$
 \begin{aligned}
     \left\langle 
-        G^{(N)}\left(\hat{a}, \hat{a}^{\dagger}\right)
+        \hat{G}^{(N)}
+        \left(\hat{a}, \hat{a}^{\dagger}\right)
     \right\rangle 
     &=
     \operatorname{Tr}
@@ -701,5 +702,97 @@ This is, interestingly, we can calculate average of
 normally ordered operator by just replacement 
 $\hat{a} \rightarrow \alpha$ and $\hat{a}^\dag \rightarrow \alpha^*$
 
+#### Wigner function
+Actually there are three type of quasi-probability distributions.
+- Glauber-Sudarshan $P$ function
+- Husimi $Q$ function
+- Wigner $W$ function
+
+
+Let's see the Wigner function.
+$$
+    W \left( q, p \right)
+    =
+    \frac{1}{2 \pi \hbar}
+    \int_{-\infty}^\infty
+    \mathrm{d} x
+    \cdot
+    \Braket{
+        q + \frac{1}{2}x|
+        \hat{\rho}
+        |q - \frac{1}{2}x
+    }
+    e^{-i \frac{p}{\hbar} x}
+$$
+Here, $\Ket{q \pm \frac{1}{2}x}$ are the eigenkets of the position operator.
+
+In the case of the state in question is a pure state 
+$\hat{\rho} = \Ket{\psi} \Bra{\psi}$, 
+$$
+\begin{aligned}
+    W \left( q, p \right)
+    &=
+    \frac{1}{2 \pi \hbar}
+    \int_{-\infty}^\infty
+    \mathrm{d} x
+    \cdot
+    \Braket{q + \frac{1}{2}x | \psi} 
+    \Braket{\psi | q - \frac{1}{2}x}
+    e^{-i \frac{p}{\hbar} x}
+    \\&=
+    \frac{1}{2 \pi \hbar}
+    \int_{-\infty}^\infty
+    \mathrm{d} x
+    \cdot
+    \psi^* \left(q - \frac{1}{2}x \right)
+    \psi \left(q + \frac{1}{2}x \right)
+    e^{-i \frac{p}{\hbar} x}
+\end{aligned}
+$$
+where $\psi \left(q + \frac{1}{2}x \right) = \Braket{q + \frac{1}{2}x | \psi} $.
+
+Integrating Wigner function over momentum, we see
+$$
+\begin{aligned}
+    \int_{-\infty}^\infty
+    \mathrm{d} p
+    \cdot
+    W \left( q, p \right)
+    &=
+    \frac{1}{2 \pi \hbar}
+    \int_{-\infty}^\infty
+    \int_{-\infty}^\infty
+    \mathrm{d} x
+    \mathrm{d} p
+    \cdot
+    \psi^* \left(q - \frac{1}{2}x \right)
+    \psi \left(q + \frac{1}{2}x \right)
+    e^{-i \frac{p}{\hbar} x}
+    \\&=
+    \int_{-\infty}^\infty
+    \mathrm{d} x
+    \cdot
+    \psi^* \left(q - \frac{1}{2}x \right)
+    \psi \left(q + \frac{1}{2}x \right)
+    \cdot
+    \int_{-\infty}^\infty
+    \mathrm{d} p
+    \cdot
+    \frac{1}{2 \pi \hbar}
+    e^{-i \frac{p}{\hbar} x}
+    \cdot
+    \\&=
+    \int_{-\infty}^\infty
+    \mathrm{d} x
+    \cdot
+    \psi^* \left(q - \frac{1}{2}x \right)
+    \psi \left(q + \frac{1}{2}x \right)
+    \cdot
+    \delta (x)
+    \cdot
+    \\&=
+    \left| \psi (q) \right|^2
+\end{aligned}
+$$
 
 # __3.8 Characteristic functions__
