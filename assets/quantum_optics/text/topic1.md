@@ -1,7 +1,7 @@
  __Topic 1 keywords__
 - Maxwell equations
 - Single mode fields
-- Creation/anihilation operators
+- Creation/annihilation operators
 - Number state
 - Field fluctuations
 
@@ -10,12 +10,12 @@ Ch. 2.1-3
 
 # __Why do we need to quantize?__
 - So far, we learned that electron in high-energy state decays back to ground state with the emission of light.
-- However, according to the Schrödinger equation $$\hat{H} \ket{\psi_m} = E_m \ket{\psi_m}$$, electron is stable in excited state i.e. *electron stays in high energy state*.
-- How do the decay? Something goes wrong. Why does spontanesouos emission happen?
+- However, according to the Schrödinger equation $$\hat{H} \Ket{\psi_m} = E_m \Ket{\psi_m}$$, electron is stable in excited state i.e. *electron stays in high energy state*.
+- How do the decay? Something goes wrong. Why does spontaneous emission happen?
 - The answer is **fluctuations**. 
-- The the new question is *what kind of fluctuations do they have*?
+- The new question is *what kind of fluctuations do they have*?
 
-# __Can classical electromagnetics discribe this fluctuations?__
+# __Can classical electromagnetic describe this fluctuations?__
 In classical electromagnetics, energy of electron in electric field $E(t)$ is 
 $$ e \cdot E(t) $$
 Thus, when there is no light, there is no fluctuation.
@@ -26,7 +26,7 @@ We need to use quantum mechanics.
 # __2.1 Quantization of Single Mode Field__
 #### Motivation
 Let's start our quantization of electromagnetic waves.
-What are we gonna quantize? Of cousrse, as you know, it is **energy**.
+What are we gonna quantize? Of course, as you know, it is **energy**.
 #### Situation
 Imagine a three-dimensional box and there are perfectly conducting walls at 
 $z=0$ and $z=L$. 
@@ -54,11 +54,11 @@ $$
     =
     A \cdot q(t) \cdot \sin(kz) \cdot \vec{e_x}
 $$
-Here, paramters are described as follows.
+Here, parameters are described as follows.
 - $A$ is a constant and we can decide. 
 - $q(t)$ is the time dependent part and we will see why we use $q$ as symbol.
 - $k=\frac{2\pi}{\lambda}=\frac{\pi}{L}m$ is a wave vector and $m$ is integer ($m=0, \pm1, \pm2, \cdots$).
-- $\vec{e_x}$ is an unit vector of $x$-direction (we dicide the electric field has component on $x$ direction).
+- $\vec{e_x}$ is an unit vector of $x$-direction (we decide the electric field has component on $x$ direction).
 We decide $A$ as follows.
 $$
     A
@@ -73,7 +73,7 @@ $$
     =
     \mu_0 \epsilon_0 \frac{\partial \vec{E}}{\partial t}
 $$
-To calcualte left-hand side term, we can use the table.
+To calculate left-hand side term, we can use the table.
 $$
     \vec{\nabla} \times \vec{B}
     =
@@ -98,7 +98,7 @@ $$
     =
     A \cdot \dot{q}(t) \cdot \sin(kz) \cdot \vec{e_x}
 $$
-Then, maxwell equation become
+Then, Maxwell equation become
 $$
     -\frac{\partial B_y}{\partial z} \vec{e_x}
     =
@@ -156,7 +156,7 @@ $$
 $$
 As you notice this energy function is same as that of unit mass classical 
 harmonic oscillator.
-And our way of symbolizing make sence.
+And our way of symbolizing make sense.
 #### Warning
 Can we say $q$ as position of photon and $p$ as momentum of photon? No, we can't.
 This is just mathematical formulation and analogy to classical harmonic oscillator.
@@ -183,7 +183,7 @@ $$
 Notice that $\hat{q}$ and $\hat{p}$ are Hermitian i.e. observable.
 #### New operators
 In addition to these operators, we introduce other two non-Hermitian operators.
-Namely, **anihilation operator** $\hat{a}$ 
+Namely, **annihilation operator** $\hat{a}$ 
 and **creation operator** $\hat{a}^\dag$ .
 $$
     \hat{a} 
@@ -285,11 +285,11 @@ $$
     \hat{a}^\dag \hat{a}
 $$ 
 as number operator.
-By definig $\ket{n}$ as energy eigenstate of the single model field 
+By defining $\Ket{n}$ as energy eigenstate of the single model field 
 with energy eigenvalue $E_n$ like
 $$
     \hat{H} 
-    \ket{n}
+    \Ket{n}
     =
     \hbar \omega
     \left( 
@@ -297,12 +297,12 @@ $$
         + 
         \frac{1}{2}
     \right)
-    \ket{n}
+    \Ket{n}
     =
     E_n
-    \ket{n}
+    \Ket{n}
 $$
-By multipying $\hat{a}^\dag$, we see
+By multiplying $\hat{a}^\dag$, we see
 $$
     \hbar \omega
     \left[ 
@@ -312,11 +312,11 @@ $$
         \frac{1}{2}
         \hat{a}^\dag
     \right]
-    \ket{n}
+    \Ket{n}
     =
     E_n
     \hat{a}^\dag
-    \ket{n}
+    \Ket{n}
 $$
 $$
     \hbar \omega
@@ -327,11 +327,11 @@ $$
         \frac{1}{2}
         \hat{a}^\dag
     \right]
-    \ket{n}
+    \Ket{n}
     =
     E_n
     \hat{a}^\dag
-    \ket{n}
+    \Ket{n}
 $$
 $$
     \hbar \omega
@@ -341,7 +341,7 @@ $$
         \frac{1}{2}
         \right)
         \hat{a}^\dag
-    \ket{n}
+    \Ket{n}
     =
     \left(
     E_n
@@ -349,19 +349,19 @@ $$
     \hbar \omega
     \right)
     \hat{a}^\dag
-    \ket{n}
+    \Ket{n}
 $$
 We used the commutation relation 
 $\left[ \hat{a}^\dag \hat{a}, \hat{a}^\dag \right]=\hat{a}^\dag$
 
-We can notice that $\hat{a}^\dag \ket{n} = \ket{n+1}$. Aha. That's why it is called
+We can notice that $\hat{a}^\dag \Ket{n} = \Ket{n+1}$. Aha. That's why it is called
 creation operator.
 
-Similary we can show why anihilation operator is so called.
+Similarly we can show why annihilation operator is so called.
 $$
     \hat{H} 
     \hat{a} 
-    \ket{n}
+    \Ket{n}
     =
     \left( 
         E_n 
@@ -369,27 +369,27 @@ $$
         \hbar \omega 
     \right)
     \hat{a} 
-    \ket{n}
+    \Ket{n}
 $$
-Unlike to creation operator, anihilation operator has Important feature.
+Unlike to creation operator, annihilation operator has Important feature.
 $$
     \hat{a} 
-    \ket{0}
+    \Ket{0}
     =
     0
 $$
-#### Vaccum energy 
+#### Vacuum energy 
 $$
     \hat{H} 
-    \ket{0} 
+    \Ket{0} 
     =
     \frac{1}{2} 
     \hbar \omega
-    \ket{0} 
+    \Ket{0} 
 $$
-So $\frac{1}{2} \hbar \omega$ is vaccum energy.
+So $\frac{1}{2} \hbar \omega$ is vacuum energy.
 #### Number of photon
-When vaccum, there is no light. Thus we can interpret $n$ as number of photon.
+When vacuum, there is no light. Thus we can interpret $n$ as number of photon.
 $$
     E_n
     =
@@ -400,35 +400,35 @@ $$
     \frac{1}{2} 
     \right)
 $$
-#### Eigenvalue of anihilation and creation operators
+#### Eigenvalue of annihilation and creation operators
 We know 
 $$
     \hat{n}
-    \ket{n}
+    \Ket{n}
     =
     n
-    \ket{n}
+    \Ket{n}
 $$
 By using this, we can know the eigenvalue of $\hat{a}$ and $\hat{a}^\dag$
 $$
     \hat{a}
-    \ket{n}
+    \Ket{n}
     =
     c_n
-    \ket{n}
+    \Ket{n}
 $$
 $$
     n 
     =
-    \bra{n}
+    \Braket{n|
     \hat{a}^\dag
     \hat{a}
-    \ket{n}
+    |n}
     =
     c_n^* 
-    \bra{n}
+    \Bra{n}
     c_n
-    \ket{n}
+    \Ket{n}
     =
     \left| c_n \right|^2
 $$
@@ -441,22 +441,22 @@ $$
 Gotcha.
 $$
     \hat{a}
-    \ket{n}
+    \Ket{n}
     =
     \sqrt{n}
-    \ket{n}
+    \Ket{n}
 $$
-Similary, we can show
+Similarly, we can show
 $$
     \hat{a}^\dag
-    \ket{n}
+    \Ket{n}
     =
     \sqrt{n+1}
-    \ket{n}
+    \Ket{n}
 $$
 #### Properties of eigenstate of number state
-- Orthogonal $\braket{n|n^\prime} = \delta_{nn^\prime}$
-- Complete $\sum_{n=0}^\infty\ket{n}\bra{n} = 1$
+- Orthogonal $\Braket{n|n^\prime} = \delta_{nn^\prime}$
+- Complete $\sum_{n=0}^\infty\Ket{n}\Bra{n} = 1$
 
 # __2.2 Quantum fluctuations__
 Time average of electric field is 
@@ -465,28 +465,28 @@ $$
         \hat{\vec{E}}
     \right>
     =
-    \braket{n|\hat{\vec{E}}|n}
+    \Braket{n|\hat{\vec{E}}|n}
     =
     \sqrt{
         \frac{\hbar \omega}{\epsilon_0 V}
     }
     \sin (kz) 
-    \braket{n|\left(\hat{a}+\hat{a}^\dag\right)|n}
+    \Braket{n|\left(\hat{a}+\hat{a}^\dag\right)|n}
     =
     0
 $$
 I see. How about variance?
 $$
-\begin{align*}
+\begin{aligned}
     \left<
         \hat{\vec{E}}^2
     \right>
     &=
-    \braket{n|\hat{\vec{E}}^2|n}
+    \Braket{n|\hat{\vec{E}}^2|n}
     \\&=
     \frac{\hbar \omega}{\epsilon_0 V}
     \sin^2 (kz) 
-    \braket{
+    \Braket{
         n|
         \left(
         \hat{a}^2 + {\hat{a}^\dag}^2 + \hat{a}\hat{a}^\dag + \hat{a}^\dag\hat{a}
@@ -499,12 +499,12 @@ $$
     \left(
         n+\frac{1}{2}
     \right)
-\end{align*}
+\end{aligned}
 $$
 Wow! Even in the vacuum state ($n=0$), electric field fluctuates!!
 
 # __2.3 Quadrature Operators__
-Similar to $\hat{q}$ and $\hat{p}$ operators, we introduce quatrature operators
+Similar to $\hat{q}$ and $\hat{p}$ operators, we introduce quadrature operators
 $\hat{X_1}$ and $\hat{X_2}$..
 $$
     \hat{X_1}
@@ -528,13 +528,13 @@ $$
     =
     \frac{1}{2}
 $$
-Notice that quatrature operators are observable and homodyne technique is used for
+Notice that quadrature operators are observable and homodyne technique is used for
 that.
 And these operators does not commute. This is because Heisenberg's uncertainty.
 
-We can rewrite electric field with quatrature operators.
+We can rewrite electric field with quadrature operators.
 $$
-\begin{align*}
+\begin{aligned}
     \hat{E_x}
     &=
     \mathcal{E}_0
@@ -574,9 +574,9 @@ $$
         \hat{X_2}
         \sin \omega t
     \right]
-\end{align*}
+\end{aligned}
 $$
-Important staff of quatrature operators is their uncertainty.
+Important staff of quadrature operators is their uncertainty.
 $$
     \left<
         \left(

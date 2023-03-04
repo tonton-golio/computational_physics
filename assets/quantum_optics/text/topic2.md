@@ -41,19 +41,19 @@ Here, paramters are follows.
 By using index $j$ we can simply write the eigenstate of this Hamiltonian.
 The eigenstate would be product of number states.
 $$
-    \ket{\left\{n_j\right\}}
+    \Ket{\left\{n_j\right\}}
     =
-    \ket{n_1, n_2, \cdots, n_j, \cdots}
+    \Ket{n_1, n_2, \cdots, n_j, \cdots}
 $$
 This state means how many photo in each mode.
 
 We can also think the anihilation operator of multi-mode state.
 $$
     \hat{a}_i
-    \ket{\left\{n_j\right\}}
+    \Ket{\left\{n_j\right\}}
     =
     \sqrt{n_i}
-    \ket{n_1, n_2, \cdots, n_i-1, \cdots}
+    \Ket{n_1, n_2, \cdots, n_i-1, \cdots}
 $$
 
 # __2.5 Thermal fields__
@@ -83,11 +83,11 @@ $$
     \right)^2
     \cdots
 $$
-Probability of occupying $\ket{n}$ is
+Probability of occupying $\Ket{n}$ is
 $$
     P_n 
     =
-    \braket{
+    \Braket{
         n|
         \hat{\rho_\mathrm{th}}
         |n
@@ -276,7 +276,7 @@ $$
 $$
 So the time-average potential energy displacement is 
 $$
-\begin{align*}
+\begin{aligned}
     \left<
         \Delta V
     \right>
@@ -330,16 +330,16 @@ $$
         \right)^2 
     \right>
     4 \pi e^2 \delta(\vec{r})
-\end{align*}
+\end{aligned}
 $$
 Here, $\delta(\vec{r})$ is Dirac delta function.
 
 We can calculate quantum mechanical energy shift.
 $$
-\begin{align*}
+\begin{aligned}
     \Delta E
     &=
-    \braket{nl|\Delta V|nl}
+    \Braket{nl|\Delta V|nl}
     \\&=
     \frac{4\pi e^2}{6}
     \left<
@@ -362,7 +362,7 @@ $$
     \left|
         \psi_{nl}(\vec{r}=0)
     \right|^2
-\end{align*}
+\end{aligned}
 $$
 
 We need to calculate 
@@ -387,7 +387,7 @@ $$
 $$
 Total vacuum energy is 
 $$
-\begin{align*}
+\begin{aligned}
     \text{Total vacuum energy}
     &=
     \underbrace{
@@ -417,7 +417,7 @@ $$
         }^{E_\nu \gg B_\nu}
     \right)
     \mathrm{d}V
-\end{align*}
+\end{aligned}
 $$
 Thus energy difference become
 $$

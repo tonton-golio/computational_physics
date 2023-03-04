@@ -12,19 +12,19 @@ Coherent states are defined as eigenstate of annihilation operator.
 $$
     \boxed{
         \hat{a}
-        \ket{\alpha}
+        \Ket{\alpha}
         =
         \alpha
-        \ket{\alpha}
+        \Ket{\alpha}
     }
 $$
 $$
     \boxed{
         \hat{a}^\dag
-        \bra{\alpha}
+        \Bra{\alpha}
         =
         \alpha^*
-        \bra{\alpha}
+        \Bra{\alpha}
     }
 $$
 As you know that $\hat{a}$ is non-Hermitian so the eigenvalue **$\alpha$ is complex 
@@ -33,57 +33,57 @@ By the way $\hat{n}=\hat{a}^\dag\hat{a}$ is Hermitian.
 
 #### Expanding coherent state with number state
 Let's expand coherent state with number state.
-First, we multiply identity $\sum_{n=0}^\infty \ket{n}\bra{n}$ to alpha.
+First, we multiply identity $\sum_{n=0}^\infty \Ket{n}\Bra{n}$ to alpha.
 By this operation, we can project coherent state to number state.
 $$
-\begin{align*}
-    \ket{\alpha}
+\begin{aligned}
+    \Ket{\alpha}
     &=
     \sum_{n=0}^\infty 
-    \ket{n}
-    \braket{n|\alpha}
+    \Ket{n}
+    \Braket{n|\alpha}
     \\&=
     \sum_{n=0}^\infty 
     c_n
-    \ket{n}
-\end{align*}
+    \Ket{n}
+\end{aligned}
 $$
-We replaced the $\braket{n|\alpha}=c_n$.
+We replaced the $\Braket{n|\alpha}=c_n$.
 
-Apply operator to $\ket{\alpha}$ resuts to
+Apply operator to $\Ket{\alpha}$ resuts to
 $$
-\begin{align*}
+\begin{aligned}
     \hat{a}
-    \ket{\alpha}
+    \Ket{\alpha}
     &=
     \alpha
-    \ket{\alpha}
+    \Ket{\alpha}
     \\&=
     \sum_{n=0}^\infty 
     \alpha
     c_n
-    \ket{n}
-\end{align*}
+    \Ket{n}
+\end{aligned}
 $$
 You know, this is just a definition.
 Multiplying $\hat{a}$ from left results
 $$
-\begin{align*}
+\begin{aligned}
     \hat{a}
     \sum_{n=0}^\infty 
     c_n
-    \ket{n}
+    \Ket{n}
     &=
     \sum_{n=1}^\infty 
     \sqrt{n}
     c_n
-    \ket{n-1}
+    \Ket{n-1}
     \\&=
     \sum_{n=0}^\infty 
     \sqrt{n+1}
     c_{n+1}
-    \ket{n}
-\end{align*}
+    \Ket{n}
+\end{aligned}
 $$
 Coefficient of number state is equal.
 $$
@@ -95,7 +95,7 @@ $$
 $$
 Thus, we can decide the $c_n$ recursively.
 $$
-\begin{align*}
+\begin{aligned}
     c_n
     &=
     \frac
@@ -114,32 +114,32 @@ $$
     {\alpha^n}
     {\sqrt{n!}}
     c_{0}
-\end{align*}
+\end{aligned}
 $$
 We almost complete expanding coherent state with number state.
 $$
-    \ket{\alpha}
+    \Ket{\alpha}
     =
     c_0
     \sum_{n=0}^\infty 
     \frac
     {\alpha^n}
     {\sqrt{n!}}
-    \ket{n}
+    \Ket{n}
 $$
 We still need to decide $c_0$. We can do this from normalization condition.
 $$
-\begin{align*}
+\begin{aligned}
     1
     &=
-    \braket{\alpha|\alpha}
+    \Braket{\alpha|\alpha}
     \\&=
     \left| c_0 \right|^2
     \sum_{n, n^\prime}
     \frac
     {\left| \alpha \right|^{2n}}
     {n!}
-    \braket{n|n^\prime}
+    \Braket{n|n^\prime}
     \left| c_0 \right|^2
     \\&=
     \sum_{n=0}^\infty 
@@ -150,7 +150,7 @@ $$
     \left| c_0 \right|^2
     e^
     {\left| \alpha \right|^{2}}
-\end{align*}
+\end{aligned}
 $$
 Thus,
 $$
@@ -168,7 +168,7 @@ $$
 Finally coherent coherent state of number state basis is
 $$
 \boxed{
-    \ket{\alpha}
+    \Ket{\alpha}
     =
     e^
     {- \left| \alpha \right|^{2}/2}
@@ -176,7 +176,7 @@ $$
     \frac
     {\alpha^n}
     {\sqrt{n!}}
-    \ket{n}
+    \Ket{n}
 }
 $$
 
@@ -197,7 +197,7 @@ $$
 $$
 Coherent state average of electric field is 
 $$
-    \braket{\alpha | \hat{E}_x | \alpha}
+    \Braket{\alpha | \hat{E}_x | \alpha}
     =
     i \mathcal{E}_0 \alpha 
     e^{i 
@@ -208,11 +208,11 @@ $$
 $$
 Coherent state average of square of electric field is 
 $$
-\begin{align*}
-    \braket{\alpha | \hat{E}_x^2 | \alpha}
+\begin{aligned}
+    \Braket{\alpha | \hat{E}_x^2 | \alpha}
     &=
     - \mathcal{E}_0^2
-    \braket{\alpha | 
+    \Braket{\alpha | 
     \left(
         \hat{a} 
         e^{i 
@@ -227,7 +227,7 @@ $$
     | \alpha}
     \\&=
     - \mathcal{E}_0^2
-    \braket{\alpha | 
+    \Braket{\alpha | 
     \left(
         \hat{a}^2
         e^{2i 
@@ -243,7 +243,7 @@ $$
     | \alpha}
     \\&=
     - \mathcal{E}_0^2
-    \braket{\alpha | 
+    \Braket{\alpha | 
     \left(
         \hat{a}^2
         e^{2i 
@@ -258,7 +258,7 @@ $$
         - \hat{a}^\dag\hat{a}
     \right)
     | \alpha}
-\end{align*}
+\end{aligned}
 $$
 Detail of calculation is left for readers ;). 
 By writing $\alpha = |\alpha|e^{i\theta}$, we can have sine wave which is **very classical**.
@@ -277,7 +277,8 @@ which **does not depend on $\alpha$!**
 And notice this is **identical to those for a vacuum state!!** (See section 2.2)
 
 #### Quadrature operators from coherent state viewpoint
-We can show that fluctuation of quadrature operator are non-zero.
+We can show that fluctuation of quadrature operator also does not 
+depend on $\alpha$.
 $$
     \hat{X}_1
     =
@@ -289,49 +290,209 @@ $$
     \frac{\hat{a} - \hat{a}^\dag}{2i}
 $$
 $$
+\begin{aligned}
     \left<
         \left(
-            \Delta X_i
-        \right)
+            \Delta \hat{X}_1
+        \right)^2
     \right>_\alpha
-    =
-    \frac{1}{4},
-    ~~~~ 
-    i=1, 2
+    &=
+    \Braket{\alpha|
+            \hat{X}_1^2
+    |\alpha}
+    -
+    \Braket{\alpha|
+            \hat{X}_1
+            |\alpha}^2
+    \\&=
+    \Braket{\alpha|
+    \left(
+        \frac{\hat{a} + \hat{a}^\dag}{2}
+    \right)^2
+    |\alpha}
+    -
+    \Braket{\alpha|
+        \frac{\hat{a} + \hat{a}^\dag}{2}
+    |\alpha}^2
+    \\&=
+    \frac{1}{4}
+    \Braket{\alpha|
+    \left(
+        \hat{a}^2 
+        + {\hat{a}^\dag}^2
+        + \hat{a} \hat{a}^\dag
+        + \hat{a}^\dag \hat{a}
+    \right)
+    |\alpha}
+    -
+    \frac{1}{4}
+    \left(
+        \alpha + \alpha^*
+    \right)^2
+    \\&=
+    \frac{1}{4}
+    \Braket{\alpha|
+    \left(
+        \hat{a}^2 
+        + {\hat{a}^\dag}^2
+        + 1
+        + \hat{a}^\dag \hat{a}
+        + \hat{a}^\dag \hat{a}
+    \right)
+    |\alpha}
+    -
+    \frac{1}{4}
+    \left(
+        2\mathrm{Re}(\alpha)
+    \right)^2
+    \\&=
+    \frac{1}{4}
+    \left(
+        \alpha^2 
+        + {\alpha^*}^2
+        + 1
+        + 2\alpha^* \alpha
+    \right)
+    -
+    \left(
+        \mathrm{Re}(\alpha)
+    \right)^2
+    \\&=
+    \frac{1}{4}
+    +
+    \frac{1}{4}
+    \left(
+        \alpha + \alpha^*
+    \right)^2
+    -
+    \left(
+        \mathrm{Re}(\alpha)
+    \right)^2
+    \\&=
+    \frac{1}{4}
+\end{aligned}
 $$
+$$
+\begin{aligned}
+    \left<
+        \left(
+            \Delta \hat{X}_2
+        \right)^2
+    \right>_\alpha
+    &=
+    \Braket{\alpha|
+            \hat{X}_2^2
+    |\alpha}
+    -
+    \Braket{\alpha|
+            \hat{X}_2
+            |\alpha}^2
+    \\&=
+    \Braket{\alpha|
+    \left(
+        \frac{\hat{a} - \hat{a}^\dag}{2i}
+    \right)^2
+    |\alpha}
+    -
+    \Braket{\alpha|
+        \frac{\hat{a} - \hat{a}^\dag}{2i}
+    |\alpha}^2
+    \\&=
+    -
+    \frac{1}{4}
+    \Braket{\alpha|
+    \left(
+        \hat{a}^2 
+        + {\hat{a}^\dag}^2
+        - \hat{a} \hat{a}^\dag
+        - \hat{a}^\dag \hat{a}
+    \right)
+    |\alpha}
+    +
+    \frac{1}{4}
+    \left(
+        \alpha - \alpha^*
+    \right)^2
+    \\&=
+    -
+    \frac{1}{4}
+    \Braket{\alpha|
+    \left(
+        \hat{a}^2 
+        + {\hat{a}^\dag}^2
+        - 1
+        - \hat{a}^\dag \hat{a}
+        - \hat{a}^\dag \hat{a}
+    \right)
+    |\alpha}
+    +
+    \frac{1}{4}
+    \left(
+        2\mathrm{Im}(\alpha)
+    \right)^2
+    \\&=
+    -
+    \frac{1}{4}
+    \left(
+        \alpha^2 
+        + {\alpha^*}^2
+        - 1
+        - 2\alpha^* \alpha
+    \right)
+    +
+    \left(
+        \mathrm{Im}(\alpha)
+    \right)^2
+    \\&=
+    \frac{1}{4}
+    -
+    \frac{1}{4}
+    \left(
+        \alpha - \alpha^*
+    \right)^2
+    +
+    \left(
+        \mathrm{Im}(\alpha)
+    \right)^2
+    \\&=
+    \frac{1}{4}
+\end{aligned}
+$$
+We need to use the commutation relation 
+$\left[ \hat{a}, \hat{a}^\dag \right] = \hat{a}\hat{a}^\dag - \hat{a}^\dag\hat{a}=1$
 
 #### Physical meaning of $\alpha$
 From above the $|\alpha|$ is related to the amplitude of the field. 
 Thus we can show the relation of photon number and $\alpha$.
 $$
-\begin{align*}
-    \braket{\alpha|\hat{n}|\alpha}
+\begin{aligned}
+    \Braket{\alpha|\hat{n}|\alpha}
     &=
-    \braket{\alpha|\hat{a}^\dag \hat{a}|\alpha}
+    \Braket{\alpha|\hat{a}^\dag \hat{a}|\alpha}
     \\&=
     \alpha^* \alpha
     \\&=
     |\alpha|^2
-\end{align*}
+\end{aligned}
 $$
 $|\alpha|$ is average photon number of the field.
 
 Let's calculate coherent state average of square of number operator.
 $$
-\begin{align*}
-    \braket{\alpha|\hat{n}^2|\alpha}
+\begin{aligned}
+    \Braket{\alpha|\hat{n}^2|\alpha}
     &=
-    \braket{\alpha| \hat{a}^\dag \hat{a} \hat{a}^\dag \hat{a} |\alpha}
+    \Braket{\alpha| \hat{a}^\dag \hat{a} \hat{a}^\dag \hat{a} |\alpha}
     \\&=
-    \braket{\alpha| \hat{a}^\dag \left(1+\hat{a}^\dag\hat{a}\right) \hat{a} |\alpha}
+    \Braket{\alpha| \hat{a}^\dag \left(1+\hat{a}^\dag\hat{a}\right) \hat{a} |\alpha}
     \\&=
-    \braket{\alpha| \hat{a}^\dag \hat{a} |\alpha}
+    \Braket{\alpha| \hat{a}^\dag \hat{a} |\alpha}
     +
-    \braket{\alpha| {\hat{a}^\dag}^2 \hat{a}^2 |\alpha}
+    \Braket{\alpha| {\hat{a}^\dag}^2 \hat{a}^2 |\alpha}
     \\&=
     |\alpha|^2
     +|\alpha|^4
-\end{align*}
+\end{aligned}
 $$
 Thus, variance is 
 $$
@@ -348,11 +509,11 @@ This is characteristic of Poisson process (average=variance).
 
 This can be confirmed by Probability of detecting $n$ photons.
 $$
-\begin{align*}
+\begin{aligned}
     P_n
     &=
     \left|
-        \braket{n|\alpha}
+        \Braket{n|\alpha}
     \right|
     \\&=
     e^{-|\alpha|^2}
@@ -360,7 +521,7 @@ $$
     \\&=
     e^{-\bar{n}}
     \frac{\bar{n}^{n}}{n!}
-\end{align*}
+\end{aligned}
 $$
 Again this is Poisson distribution with a mean of $\bar{n}$.
 
@@ -382,24 +543,24 @@ $$
 $$
 And coherent state given as 
 $$
-    \ket{\alpha}
+    \Ket{\alpha}
     =
     \hat{D}
-    \ket{0}
+    \Ket{0}
 $$
 
 # __3.3 Wave packets and time evolution__
 $$
     \hat{q}
-    \ket{q}
+    \Ket{q}
     =
     q
-    \ket{q}
+    \Ket{q}
 $$
 $$
     \left| \psi_\alpha (q) \right|
     =
-    \left| \braket{q|\alpha} \right|^2
+    \left| \Braket{q|\alpha} \right|^2
 $$
 This is Gaussian. 
 Quantum fluctuation is constant with time.
@@ -410,14 +571,14 @@ Coherent state can be generated by classically oscillating thing.
 
 # __3.5 More on the properties of coherent states__
 #### Review of number state
-- Orthogonal $\braket{n|n^\prime} = \delta_{nn^\prime}$
-- Complete $\sum_{n=0}^\infty\ket{n}\bra{n} = 1$
+- Orthogonal $\Braket{n|n^\prime} = \delta_{nn^\prime}$
+- Complete $\sum_{n=0}^\infty\Ket{n}\Bra{n} = 1$
 #### Properties of coherent state
 ##### Orthogonality
 Let's check the orthogonality.
 $$
-\begin{align*}
-    \braket{\beta|\alpha} 
+\begin{aligned}
+    \Braket{\beta|\alpha} 
     &=
     e^{-\frac{|\alpha|^2}{2}}
     e^{-\frac{|\beta|^2}{2}}
@@ -433,32 +594,32 @@ $$
     }
     \\&=
     e^{\frac{1}{2}(\beta^*\alpha - \beta\alpha^*)}
-    e^{\frac{1}{2}|\beta^*\alpha - \beta\alpha^*|}
+    e^{-\frac{1}{2}|\beta^2 - \alpha^2|}
     \\& \neq
     0
-\end{align*}
+\end{aligned}
 $$
 So coherent states are not orthogonal.
 If $\left| \beta - \alpha \right|$ is large, they are nearly orthogonal.
 ##### Compelteness 
 $$
-\begin{align*}
-    \int \ket{\alpha} \bra{\alpha} \mathrm{d}^2 \alpha
+\begin{aligned}
+    \int \Ket{\alpha} \Bra{\alpha} \mathrm{d}^2 \alpha
     &=
     \int \mathrm{d}^2 \alpha 
-    e^{-|alpha|^2} 
+    e^{-|\alpha|^2} 
     \sum_{n, m}
     \frac{\alpha^n {\alpha^*}^n}{\sqrt{n!m!}}
-    \ket{n} \bra{m} 
+    \Ket{n} \Bra{m} 
     \\&=
     \sum_{n, m}
-    \frac{\ket{n} \bra{m}}{\sqrt{n!m!}}
+    \frac{\Ket{n} \Bra{m}}{\sqrt{n!m!}}
     \int \mathrm{d}^2 \alpha 
-    e^{-|alpha|^2} 
+    e^{-|\alpha|^2} 
     \alpha^n {\alpha^*}^n
     \\&=
     \sum_{n, m}
-    \frac{\ket{n} \bra{m}}{\sqrt{n!m!}}
+    \frac{\Ket{n} \Bra{m}}{\sqrt{n!m!}}
     \int \int \mathrm{d}r \mathrm{d}\theta
     r
     e^{-r^2}
@@ -466,17 +627,17 @@ $$
     e^{i\theta(n-m)}
     \\&=
     \sum_{n}
-    \frac{\ket{n} \bra{n}}{n!}
+    \frac{\Ket{n} \Bra{n}}{n!}
     \int \mathrm{d}r 
     r^{2n+1}
     e^{-r^2}
     2\pi
     \\&=
     \sum_{n}
-    \ket{n} \bra{n}
+    \Ket{n} \Bra{n}
     \\&=
     \pi
-\end{align*}
+\end{aligned}
 $$
 We changed the variable $\alpha=re^{i\theta}$, 
 so integradation became $\mathrm{d}^2\alpha = r\mathrm{d}r\mathrm{d}\theta$.

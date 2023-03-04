@@ -77,13 +77,24 @@ def topic3():
         with st.expander(name, expanded=False):
             st.markdown(text_dict[name])
 
+def topic4():
+    text_dict = getText_prep(filename = text_path+'topic4.md', split_level = 1)
+
+    st.header('Density operator and phase-space distributions')
+    st.write('20 Feb 2023')
+
+    for key in text_dict.keys():
+        name = key
+        with st.expander(name, expanded=False):
+            st.markdown(text_dict[name])
+
 # Navigator
 topic_dict = {
     'Welcome!': home,
     'Topic 1': topic1,
     'Topic 2': topic2,
     'Topic 3': topic3,
-    #'Topic 4': topic4,
+    'Topic 4': topic4,
     #'Topic 5': topic5,
     #'Topic 6': topic6,
     #'Topic 7': topic7,
