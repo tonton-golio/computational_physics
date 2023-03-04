@@ -1449,7 +1449,7 @@ def lectureNotes_march_02():
             return f(x) + np.random.normal(0, 0.1)
         xs = [x0]
         for _ in range(n):
-            xs.append(xs[-1] - alpha * noisy_f(xs[-1]))
+            xs.append(xs[-1] + alpha * noisy_f(xs[-1]))
         
         fig = plt.figure(figsize=(8,3))
         ax = fig.add_subplot(111)
