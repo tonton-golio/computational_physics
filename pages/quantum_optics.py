@@ -1,4 +1,6 @@
 from utils.utils_qopt import *
+import sys
+
 
 st.set_page_config(page_title="Quantum Optics", 
     page_icon="☯️ ", 
@@ -11,7 +13,9 @@ st.set_page_config(page_title="Quantum Optics",
         })
 
 
+
 plt.rcdefaults()
+#plt.style.use('dark_background')
 #set_rcParams()
 
 # pages
@@ -38,11 +42,6 @@ def home():
     with st.expander(name, expanded=True):
         st.markdown(text_dict[name])
 
-    #st.write(\"\"\"
-    #    -[] Lecture Notes 
-    #    -[] Exercises notes 
-    #    -[]Computational world 
-    #\"\"\")
 
 def topic1():
     text_dict = getText_prep(filename = text_path+'topic1.md', split_level = 1)
@@ -88,6 +87,38 @@ def topic4():
         with st.expander(name, expanded=False):
             st.markdown(text_dict[name])
 
+    st.header('Coherent state on phase space')
+    plot_coherent_on_phase_space()
+
+    st.header('Number state on phase space')
+    plot_number_on_phase_space()
+
+
+def wigner_function_gallery():
+    st.header('The Wigner function gallery')
+
+    st.subheader('Coherent state')
+    plot_wigner_coherent()
+
+    st.subheader('Number state (Fock state)')
+    plot_wigner_number()
+
+    st.subheader('Schrödinger cat state')
+    plot_wigner_cat()
+
+def wigner_function_gallery_3d():
+    st.header('The Wigner function gallery 3D')
+
+    st.subheader('Coherent state')
+    plot_wigner_coherent(three_dimensional=True)
+
+    st.subheader('Number state (Fock state)')
+    plot_wigner_number(three_dimensional=True)
+
+    st.subheader('Schrödinger cat state')
+    plot_wigner_cat(three_dimensional=True)
+
+
 # Navigator
 topic_dict = {
     'Welcome!': home,
@@ -105,7 +136,8 @@ topic_dict = {
     #'Topic 12': topic12,
     #'Topic 13': topic13,
     #'Topic 14': topic14,
-    #'Computational World': computational,
+    'The Wigner function gallery': wigner_function_gallery,
+    'The Wigner function gallery 3D': wigner_function_gallery_3d,
     }
 
 topic = st.sidebar.selectbox("topic" , list(topic_dict.keys()))
