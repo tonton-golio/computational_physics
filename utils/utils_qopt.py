@@ -9,6 +9,11 @@ text_path = 'assets/quantum_optics/text/'
 
 
 ###########################################
+"""
+TODO
+
+marginal distribution of wigner 2d
+"""
 # topic 4
 @function_profiler
 def plot_coherent_on_phase_space(plotly=False):
@@ -143,6 +148,16 @@ def plot_wigner_coherent(Ndimension=100, three_dimensional=False):
                 scaleanchor="x",
                 scaleratio=1,
                 )
+        #fig.update_traces(contours_z=
+        #                  dict(show=True, usecolormap=True,
+        #                       highlightcolor="limegreen", project_z=True
+        #                       )
+        #                  )
+        fig.update_layout(
+                xaxis_title="q",
+                yaxis_title="p",
+                #zaxis_title="$W(q, p)$",
+                )
         st.plotly_chart(fig)
 
 
@@ -172,6 +187,11 @@ def plot_wigner_number(Ndimension=100, three_dimensional=False):
 
     else:
         fig = go.Figure(data=[go.Surface(z=W, x=xvec, y=pvec, cmid=0)])
+        #fig.update_traces(contours_z=
+        #                  dict(show=True, usecolormap=True,
+        #                       highlightcolor="limegreen", project_z=True
+        #                       )
+        #                  )
         st.plotly_chart(fig)
 
 
@@ -207,4 +227,9 @@ def plot_wigner_cat(Ndimension=100, three_dimensional=False):
 
     else:
         fig = go.Figure(data=[go.Surface(z=W, x=xvec, y=pvec, cmid=0)])
+        #fig.update_traces(contours_z=
+        #                  dict(show=True, usecolormap=True,
+        #                       highlightcolor="limegreen", project_z=True
+        #                       )
+        #                  )
         st.plotly_chart(fig)
