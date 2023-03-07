@@ -1,5 +1,7 @@
 from utils.utils_global import *
+
 import matplotlib.patches as patches
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.colors as colors
 import plotly.graph_objects as go
 from scipy.stats import multivariate_normal
@@ -112,6 +114,67 @@ def plot_number_on_phase_space():
     st.pyplot(fig)
 
 
+####################
+## Wigner
+####################
+
+@function_profiler
+def _plot_wigner(W, xvec, pvec, three_dimensional, cmap='RdBu_r'):
+    W_original = W.copy()
+    bin_width_x = xvec[1]-xvec[0]
+    bin_width_p = pvec[1]-pvec[0]
+    W = W*bin_width_x*bin_width_p
+
+    if not three_dimensional:
+        fig, ax = plt.subplots()
+        fig.patch.set_facecolor('none')
+
+        if cmap=='wigner':
+            cmap = qt.wigner_cmap(W)
+    
+        cbar = ax.contourf(xvec, pvec, W, 
+                           levels=100, cmap=cmap, norm=colors.CenteredNorm())
+        fig.colorbar(cbar, label='Quasi probability')
+
+        ax.set_aspect('equal')
+        ax.set_xlabel('$x$')
+        ax.set_ylabel('$p$')
+
+        divider = make_axes_locatable(ax)
+        ax_marginalx = divider.append_axes("top", 0.8, pad=0.25, sharex=ax)
+        ax_marginalp = divider.append_axes("right", 0.8, pad=0.25, sharey=ax)
+
+        ax_marginalx.xaxis.set_tick_params(labelbottom=False)
+        ax_marginalp.yaxis.set_tick_params(labelleft=False)
+        ax_marginalp.xaxis.set_tick_params(bottom=False, top=True, labelbottom=False, labeltop=True)
+
+        ax_marginalx.plot(xvec, W.sum(axis=0))
+        ax_marginalp.plot(W.sum(axis=1), pvec)
+
+        ax_marginalx.set_ylabel("$\\left| \\psi (x) \\right|^2$")
+        ax_marginalp.set_xlabel("$\\left| \\psi (p) \\right|^2$", )
+
+        st.pyplot(fig)
+
+    else:
+        fig = go.Figure(data=[go.Surface(z=W, x=xvec, y=pvec, cmid=0)])
+        fig.update_yaxes(
+                scaleanchor="x",
+                scaleratio=1,
+                )
+        #fig.update_traces(contours_z=
+        #                  dict(show=True, usecolormap=True,
+        #                       highlightcolor="limegreen", project_z=True
+        #                       )
+        #                  )
+        #fig.update_layout(
+        #        xaxis_title="q",
+        #        yaxis_title="p",
+        #        #zaxis_title="$W(q, p)$",
+        #        )
+        st.plotly_chart(fig)
+
+
 @function_profiler
 def plot_wigner_coherent(Ndimension=100, three_dimensional=False):
     xrange = [-5.0, 5.0]
@@ -127,38 +190,8 @@ def plot_wigner_coherent(Ndimension=100, three_dimensional=False):
 
     psi = qt.coherent(Ndimension, alpha)
     W = qt.wigner(psi, xvec, pvec) 
-
-    if not three_dimensional:
-        fig, ax = plt.subplots()
-        fig.patch.set_facecolor('none')
-
-        wcmap = qt.wigner_cmap(W)
-        cbar = ax.contourf(xvec, pvec, W, levels=100, cmap=wcmap)
-        fig.colorbar(cbar, label='Quasi probability')
-
-        ax.set_aspect('equal')
-        ax.set_xlabel('$\\hat{X}_1$')
-        ax.set_ylabel('$\\hat{X}_2$')
-
-        st.pyplot(fig)
-
-    else:
-        fig = go.Figure(data=[go.Surface(z=W, x=xvec, y=pvec, cmid=0)])
-        fig.update_yaxes(
-                scaleanchor="x",
-                scaleratio=1,
-                )
-        #fig.update_traces(contours_z=
-        #                  dict(show=True, usecolormap=True,
-        #                       highlightcolor="limegreen", project_z=True
-        #                       )
-        #                  )
-        fig.update_layout(
-                xaxis_title="q",
-                yaxis_title="p",
-                #zaxis_title="$W(q, p)$",
-                )
-        st.plotly_chart(fig)
+    
+    _plot_wigner(W, xvec, pvec, three_dimensional)
 
 
 @function_profiler
@@ -171,65 +204,28 @@ def plot_wigner_number(Ndimension=100, three_dimensional=False):
     psi = qt.basis(Ndimension, n)
     W = qt.wigner(psi, xvec, pvec) 
 
-    if not three_dimensional:
-        fig, ax = plt.subplots()
-        fig.patch.set_facecolor('none')
+    _plot_wigner(W, xvec, pvec, three_dimensional)
 
-        wcmap = qt.wigner_cmap(W)
-        cbar = ax.contourf(xvec, pvec, W, levels=100, cmap=wcmap)
-        fig.colorbar(cbar, label='Quasi probability')
-
-        ax.set_aspect('equal')
-        ax.set_xlabel('$\\hat{X}_1$')
-        ax.set_ylabel('$\\hat{X}_2$')
-
-        st.pyplot(fig)
-
-    else:
-        fig = go.Figure(data=[go.Surface(z=W, x=xvec, y=pvec, cmid=0)])
-        #fig.update_traces(contours_z=
-        #                  dict(show=True, usecolormap=True,
-        #                       highlightcolor="limegreen", project_z=True
-        #                       )
-        #                  )
-        st.plotly_chart(fig)
 
 
 def plot_wigner_cat(Ndimension=100, three_dimensional=False):
-    xrange = [0.0, 3.0]
-    yrange = [0.0, 3.0]
+    st.write("$\\Ket{\\alpha} + \\Ket{-\\alpha}$")
+    xrange = [0.0, 5.0]
+    yrange = [0.0, 5.0]
     cols = st.columns(2)
-    real_alpha = cols[0].slider('Real part of complex eigenvalue (cat)', xrange[0], xrange[1], 1.0)
+    real_alpha = cols[0].slider('Real part of complex eigenvalue (cat)', xrange[0], xrange[1], 2.5)
     imag_alpha = cols[1].slider('Imaginary part of complex eigenvalue (cat)', yrange[0], yrange[1], 0.0)
     alpha = complex(real_alpha, imag_alpha)
 
+
     plot_range = xrange[1]*2
-    xvec = np.linspace(-plot_range, plot_range, 100)
+    xvec = np.linspace(-plot_range, plot_range, 250)
     pvec = xvec.copy()
 
     psi = qt.coherent(Ndimension, alpha)
     psi_minus = qt.coherent(Ndimension, -alpha)
     cat = psi + psi_minus
     W = qt.wigner(cat, xvec, pvec) 
+
+    _plot_wigner(W, xvec, pvec, three_dimensional)
     
-    if not three_dimensional:
-        fig, ax = plt.subplots()
-        fig.patch.set_facecolor('none')
-        
-        cbar = ax.contourf(xvec, pvec, W, levels=100, cmap=plt.cm.RdBu_r, norm=colors.CenteredNorm())
-        fig.colorbar(cbar, label='Quasi probability')
-
-        ax.set_aspect('equal')
-        ax.set_xlabel('$\\hat{X}_1$')
-        ax.set_ylabel('$\\hat{X}_2$')
-
-        st.pyplot(fig)
-
-    else:
-        fig = go.Figure(data=[go.Surface(z=W, x=xvec, y=pvec, cmid=0)])
-        #fig.update_traces(contours_z=
-        #                  dict(show=True, usecolormap=True,
-        #                       highlightcolor="limegreen", project_z=True
-        #                       )
-        #                  )
-        st.plotly_chart(fig)

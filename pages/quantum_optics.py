@@ -118,6 +118,15 @@ def wigner_function_gallery_3d():
     st.subheader('Schrödinger cat state')
     plot_wigner_cat(three_dimensional=True)
 
+def cool_wigner_papers():
+    st.header("Cool Wigner function papers")
+
+    text_dict = getText_prep(filename = text_path+'papers.md', split_level = 1)
+    for key in text_dict.keys():
+        name = key
+        with st.expander(name, expanded=True):
+            st.markdown(text_dict[name])
+
 
 # Navigator
 topic_dict = {
@@ -138,6 +147,7 @@ topic_dict = {
     #'Topic 14': topic14,
     'The Wigner function gallery': wigner_function_gallery,
     'The Wigner function gallery 3D': wigner_function_gallery_3d,
+    'Cool Wigner function papers': cool_wigner_papers,
     }
 
 topic = st.sidebar.selectbox("topic" , list(topic_dict.keys()))
