@@ -247,12 +247,12 @@ def plot_wigner_squeezed(Ndim=100, three_dimensional=False):
     imag_alpha = cols[1].slider('Imaginary part of complex eigenvalue of displacement', yrange[0], yrange[1], 0.0)
     alpha = complex(real_alpha, imag_alpha)
 
-    r = cols[0].slider('Squeeze parameter r', 0.0, 2.0, 0.0)
-    theta = cols[1].slider('Squeeze parameter theta', 0.0, 2.0*np.pi, 0.0)
+    r = cols[0].slider('Squeeze parameter r', 0.0, 1.5, 0.0)
+    theta = cols[1].slider('Squeeze parameter theta (degree)', 0.0, 2.0*np.pi, 0.0)
     xi = r*complex(np.cos(theta), np.sin(theta))
 
     plot_range = xrange[1]*2
-    xvec = np.linspace(-plot_range, plot_range, 100)
+    xvec = np.linspace(-plot_range, plot_range, 200)
     pvec = xvec.copy()
 
     psi = qt.displace(Ndim, alpha) * qt.squeeze(Ndim, xi) * qt.basis(Ndim, 0)
