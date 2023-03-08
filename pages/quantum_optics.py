@@ -7,8 +7,6 @@ st.set_page_config(page_title="Quantum Optics",
     layout="wide", 
     initial_sidebar_state="auto", 
     menu_items={
-        #'Get Help': 'https://github.com/tonton-golio/computational_physics',
-        #'Report a bug': "https://github.com/tonton-golio/computational_physics",
         'About': "Writer: Yoshiaki Horiike (wnq616)"
         })
 
@@ -16,7 +14,6 @@ st.set_page_config(page_title="Quantum Optics",
 
 plt.rcdefaults()
 #plt.style.use('dark_background')
-#set_rcParams()
 
 # pages
 def home():
@@ -135,6 +132,9 @@ topic_dict = {
     'Topic 2': topic2,
     'Topic 3': topic3,
     'Topic 4': topic4,
+    'The Wigner function gallery': wigner_function_gallery,
+    'The Wigner function gallery 3D': wigner_function_gallery_3d,
+    'Cool Wigner function papers': cool_wigner_papers,
     #'Topic 5': topic5,
     #'Topic 6': topic6,
     #'Topic 7': topic7,
@@ -145,11 +145,8 @@ topic_dict = {
     #'Topic 12': topic12,
     #'Topic 13': topic13,
     #'Topic 14': topic14,
-    'The Wigner function gallery': wigner_function_gallery,
-    'The Wigner function gallery 3D': wigner_function_gallery_3d,
-    'Cool Wigner function papers': cool_wigner_papers,
     }
 
-topic = st.sidebar.selectbox("topic" , list(topic_dict.keys()))
+topic = st.sidebar.selectbox("Select a topic!" , list(topic_dict.keys()))
 
 run_topic = topic_dict[topic] ; run_topic()
