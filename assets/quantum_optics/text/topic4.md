@@ -400,7 +400,7 @@ $$
     e^{-\frac{|\alpha|^2}{2}}
     e^{-\frac{|u|^2}{2}}
     e^{
-    {{\alpha^*} u}
+    {\alpha^* u}
     }
     \\&=
     e^{-|u|^2}
@@ -422,7 +422,7 @@ $$
     e^{-\frac{|\alpha|^2}{2}}
     e^{-\frac{|\beta|^2}{2}}
     e^{
-    {{\beta^*} \alpha}
+    {\beta^* \alpha}
     }
 $$
 Notice that 
@@ -540,13 +540,13 @@ $$
     e^{-\frac{|u|^2}{2}}
     e^{-\frac{|\beta|^2}{2}}
     e^{
-    {{-u^*} \beta}
+    {-u^* \beta}
     }
     \cdot
     e^{-\frac{|\beta|^2}{2}}
     e^{-\frac{|u|^2}{2}}
     e^{
-    {{\beta^*} u}
+    {\beta^* u}
     }
     \\&=
     e^{-|\beta|^2}
