@@ -21,3 +21,4 @@ gymnasium
 gym
 torchvision
 streamlit_analytics
+qutip
