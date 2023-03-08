@@ -198,7 +198,7 @@ def plot_wigner_coherent(Ndim=100, three_dimensional=False):
 @function_profiler
 def plot_wigner_number(Ndim=100, three_dimensional=False):
     st.write("$\\Ket{n}$")
-    plot_range = 7.5
+    plot_range = 10.0
     xvec = np.linspace(-plot_range, plot_range, 100)
     pvec = xvec.copy()
     n = st.slider('Number of photon', 0, 20, 0)
