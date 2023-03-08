@@ -199,9 +199,9 @@ def plot_wigner_coherent(Ndim=100, three_dimensional=False):
 def plot_wigner_number(Ndim=100, three_dimensional=False):
     st.write("$\\Ket{n}$")
     plot_range = 10.0
-    xvec = np.linspace(-plot_range, plot_range, 100)
+    xvec = np.linspace(-plot_range, plot_range, 200)
     pvec = xvec.copy()
-    n = st.slider('Number of photon', 0, 20, 0)
+    n = st.slider('Number of photon', 0, 25, 0)
 
     psi = qt.basis(Ndim, n)
     W = qt.wigner(psi, xvec, pvec) 
