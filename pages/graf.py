@@ -11,15 +11,12 @@ def get_tree(os_ = "windows", entensions = ['md','txt']):
     textdict = dict()
     counter = 0
 
-    if os_ == "windows":
-        dir_sep = "\\"
-    elif os_ == "linux":
-        dir_sep = "/"
-
-    dir_sep = {
+    dir_sep = { # directory separator
         "windows" : "\\",
-        "linux" : "/"
+        "linux" : "/", # also mac
     }[os_]
+
+
     for root, dirs, files in os.walk('.'):
         if '.'+dir_sep+'assets' in root or '.'+dir_sep+'pages' in root:
             for file in files:
@@ -71,7 +68,7 @@ with st.sidebar:
         #subjects
 
         topresults = {i.split('/')[-1].split('.')[0] : i for i in topresults}
-        filepath = topresults[st.selectbox(label = 'Select pages', options = topresults.keys())]
+        filepath = topresults[st.selectbox(label = 'Select page', options = topresults.keys())]
         # get page
 
 
