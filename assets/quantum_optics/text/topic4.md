@@ -394,7 +394,7 @@ $$
     e^{-\frac{|u|^2}{2}}
     e^{-\frac{|\alpha|^2}{2}}
     e^{
-    {{-u^*} \alpha}
+    {-u^* \alpha}
     }
     \cdot
     e^{-\frac{|\alpha|^2}{2}}
