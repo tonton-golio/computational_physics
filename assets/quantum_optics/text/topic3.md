@@ -593,13 +593,13 @@ $$
     e^{-\frac{|\beta|^2}{2}}
     \sum_{n=0}^\infty
     \frac
-    {{\beta^*}^n \alpha^n}
+    { {\beta^*}^n \alpha^n }
     {n!}
     \\&= 
     e^{-\frac{|\alpha|^2}{2}}
     e^{-\frac{|\beta|^2}{2}}
     e^{
-    {{\beta^*} \alpha}
+    {\beta^* \alpha}
     }
     \\&=
     e^{\frac{1}{2}(\beta^*\alpha - \beta\alpha^*)}
