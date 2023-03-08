@@ -103,6 +103,9 @@ def wigner_function_gallery():
     st.subheader('Schrödinger cat state')
     plot_wigner_cat()
 
+    st.subheader('Squeezed state')
+    plot_wigner_squeezed()
+
 def wigner_function_gallery_3d():
     st.header('The Wigner function gallery 3D')
 
@@ -114,6 +117,9 @@ def wigner_function_gallery_3d():
 
     st.subheader('Schrödinger cat state')
     plot_wigner_cat(three_dimensional=True)
+
+    st.subheader('Squeezed state')
+    plot_wigner_squeezed(three_dimensional=True)
 
 def cool_wigner_papers():
     st.header("Cool Wigner function papers")
