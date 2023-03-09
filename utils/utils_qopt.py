@@ -178,7 +178,7 @@ def _plot_wigner(W, xvec, pvec, three_dimensional, cmap='RdBu_r'):
 
 
 @function_profiler
-def plot_wigner_coherent(Ndim=100, three_dimensional=False):
+def plot_wigner_coherent(Ndims=100, three_dimensional=False):
     st.write("$\\Ket{\\alpha}$")
     xrange = [-5.0, 5.0]
     yrange = [-5.0, 5.0]
@@ -191,21 +191,21 @@ def plot_wigner_coherent(Ndim=100, three_dimensional=False):
     xvec = np.linspace(-plot_range, plot_range, 100)
     pvec = xvec.copy()
 
-    psi = qt.coherent(Ndim, alpha)
+    psi = qt.coherent(Ndims, alpha)
     W = qt.wigner(psi, xvec, pvec) 
     
     _plot_wigner(W, xvec, pvec, three_dimensional)
 
 
 @function_profiler
-def plot_wigner_number(Ndim=100, three_dimensional=False):
+def plot_wigner_number(Ndims=100, three_dimensional=False):
     st.write("$\\Ket{n}$")
     plot_range = 10.0
     xvec = np.linspace(-plot_range, plot_range, 200)
     pvec = xvec.copy()
     n = st.slider('Number of photon', 0, 25, 0)
 
-    psi = qt.basis(Ndim, n)
+    psi = qt.basis(Ndims, n)
     W = qt.wigner(psi, xvec, pvec) 
 
     _plot_wigner(W, xvec, pvec, three_dimensional)
@@ -213,7 +213,7 @@ def plot_wigner_number(Ndim=100, three_dimensional=False):
 
 
 @function_profiler
-def plot_wigner_cat(Ndim=100, three_dimensional=False):
+def plot_wigner_cat(Ndims=100, three_dimensional=False):
     st.write("$\\frac{1}{\\sqrt{2}}\\left(\\Ket{\\alpha} + \\Ket{-\\alpha}\\right)$")
     xrange = [0.0, 5.0]
     yrange = [0.0, 5.0]
@@ -227,8 +227,8 @@ def plot_wigner_cat(Ndim=100, three_dimensional=False):
     xvec = np.linspace(-plot_range, plot_range, 250)
     pvec = xvec.copy()
 
-    ket_alpha = qt.coherent(Ndim, alpha)
-    ket_alpha_minus = qt.coherent(Ndim, -alpha)
+    ket_alpha = qt.coherent(Ndims, alpha)
+    ket_alpha_minus = qt.coherent(Ndims, -alpha)
     psi = (ket_alpha + ket_alpha_minus)/np.sqrt(2)
     W = qt.wigner(psi, xvec, pvec) 
 
@@ -236,7 +236,7 @@ def plot_wigner_cat(Ndim=100, three_dimensional=False):
 
 
 @function_profiler
-def plot_wigner_squeezed(Ndim=100, three_dimensional=False):
+def plot_wigner_squeezed(Ndims=100, three_dimensional=False):
     st.write("$\\Ket{\\alpha, \\xi} = \\hat{D}(\\alpha) \\hat{S} (\\xi)\\Ket{0}$")
     st.write("$\\xi = r e^{i\\theta}$")
 
@@ -257,7 +257,7 @@ def plot_wigner_squeezed(Ndim=100, three_dimensional=False):
     xvec = np.linspace(-plot_range, plot_range, 200)
     pvec = xvec.copy()
 
-    psi = qt.displace(Ndim, alpha) * qt.squeeze(Ndim, xi) * qt.basis(Ndim, 0)
+    psi = qt.displace(Ndims, alpha) * qt.squeeze(Ndims, xi) * qt.basis(Ndims, 0)
     W = qt.wigner(psi, xvec, pvec) 
 
     _plot_wigner(W, xvec, pvec, three_dimensional)
