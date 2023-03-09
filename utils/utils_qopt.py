@@ -139,6 +139,7 @@ def _plot_wigner(W, xvec, pvec, three_dimensional, cmap='RdBu_r'):
         ax.set_aspect('equal')
         ax.set_xlabel('$x$')
         ax.set_ylabel('$p$')
+        #ax.xaxis.set_tick_params(rotation=-90)
 
         divider = make_axes_locatable(ax)
         ax_marginalx = divider.append_axes("top", 0.8, pad=0.25, sharex=ax)
@@ -146,7 +147,8 @@ def _plot_wigner(W, xvec, pvec, three_dimensional, cmap='RdBu_r'):
 
         ax_marginalx.xaxis.set_tick_params(labelbottom=False)
         ax_marginalp.yaxis.set_tick_params(labelleft=False)
-        ax_marginalp.xaxis.set_tick_params(bottom=False, top=True, labelbottom=False, labeltop=True)
+        #ax_marginalp.xaxis.set_tick_params(bottom=False, top=True, labelbottom=False, labeltop=True)
+        ax_marginalp.xaxis.set_tick_params(labelrotation=-90)
 
         ax_marginalx.plot(xvec, W.sum(axis=0))
         ax_marginalp.plot(W.sum(axis=1), pvec)
