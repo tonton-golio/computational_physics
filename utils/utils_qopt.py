@@ -178,6 +178,20 @@ def _plot_wigner(W, xvec, pvec, three_dimensional, cmap='RdBu_r'):
 
 
 @function_profiler
+def plot_wigner_number(Ndims=100, three_dimensional=False):
+    st.write("$\\Ket{n}$")
+    plot_range = 10.0
+    xvec = np.linspace(-plot_range, plot_range, 200)
+    pvec = xvec.copy()
+    n = st.slider('Number of photon', 0, 25, 0)
+
+    psi = qt.basis(Ndims, n)
+    W = qt.wigner(psi, xvec, pvec) 
+
+    _plot_wigner(W, xvec, pvec, three_dimensional)
+
+
+@function_profiler
 def plot_wigner_coherent(Ndims=100, three_dimensional=False):
     st.write("$\\Ket{\\alpha}$")
     xrange = [-5.0, 5.0]
@@ -194,53 +208,6 @@ def plot_wigner_coherent(Ndims=100, three_dimensional=False):
     psi = qt.coherent(Ndims, alpha)
     W = qt.wigner(psi, xvec, pvec) 
     
-    _plot_wigner(W, xvec, pvec, three_dimensional)
-
-
-@function_profiler
-def plot_wigner_number(Ndims=100, three_dimensional=False):
-    st.write("$\\Ket{n}$")
-    plot_range = 10.0
-    xvec = np.linspace(-plot_range, plot_range, 200)
-    pvec = xvec.copy()
-    n = st.slider('Number of photon', 0, 25, 0)
-
-    psi = qt.basis(Ndims, n)
-    W = qt.wigner(psi, xvec, pvec) 
-
-    _plot_wigner(W, xvec, pvec, three_dimensional)
-
-
-
-@function_profiler
-def plot_wigner_cat(Ndims=100, three_dimensional=False):
-    #st.write("$\\frac{1}{\\sqrt{2}}\\left(\\Ket{\\alpha} \\pm \\Ket{-\\alpha}\\right)$")
-    st.write("$\\frac{1}{\\sqrt{2}}\\left(\\Ket{\\alpha} + e^{i\\phi} \\Ket{-\\alpha}\\right)$")
-    xrange = [0.0, 5.0]
-    yrange = [0.0, 5.0]
-    cols = st.columns(2)
-    real_alpha = cols[0].slider('Real part of complex eigenvalue (cat)', xrange[0], xrange[1], 2.5)
-    imag_alpha = cols[1].slider('Imaginary part of complex eigenvalue (cat)', yrange[0], yrange[1], 0.0)
-    alpha = complex(real_alpha, imag_alpha)
-    #even_odd = st.radio('Choose even or odd', ('even', 'odd'))
-    phi = st.slider('phi', 0.0, 2*np.pi, 0.0)
-    imag_phi = complex(0.0, phi)
-
-
-    plot_range = xrange[1]*2
-    xvec = np.linspace(-plot_range, plot_range, 250)
-    pvec = xvec.copy()
-
-    ket_alpha = qt.coherent(Ndims, alpha)
-    ket_alpha_minus = qt.coherent(Ndims, -alpha)
-    #if even_odd == 'even':
-    #    psi = (ket_alpha + ket_alpha_minus)/np.sqrt(2)
-    #else:
-    #    psi = (ket_alpha - ket_alpha_minus)/np.sqrt(2)
-    psi = ket_alpha + np.exp(imag_phi)*ket_alpha_minus
-    psi = psi.unit()
-    W = qt.wigner(psi, xvec, pvec) 
-
     _plot_wigner(W, xvec, pvec, three_dimensional)
 
 
@@ -270,4 +237,31 @@ def plot_wigner_squeezed(Ndims=100, three_dimensional=False):
     W = qt.wigner(psi, xvec, pvec) 
 
     _plot_wigner(W, xvec, pvec, three_dimensional)
+
+
+@function_profiler
+def plot_wigner_cat(Ndims=100, three_dimensional=False):
+    st.write("$\\frac{1}{\\sqrt{2}}\\left(\\Ket{\\alpha} + e^{i\\phi} \\Ket{-\\alpha}\\right)$")
+    xrange = [0.0, 5.0]
+    yrange = [0.0, 5.0]
+    cols = st.columns(2)
+    real_alpha = cols[0].slider('Real part of complex eigenvalue (cat)', xrange[0], xrange[1], 2.5)
+    imag_alpha = cols[1].slider('Imaginary part of complex eigenvalue (cat)', yrange[0], yrange[1], 0.0)
+    alpha = complex(real_alpha, imag_alpha)
+    phi = st.slider('phi', 0.0, 2*np.pi, 0.0)
+    imag_phi = complex(0.0, phi)
+
+
+    plot_range = xrange[1]*2
+    xvec = np.linspace(-plot_range, plot_range, 250)
+    pvec = xvec.copy()
+
+    ket_alpha = qt.coherent(Ndims, alpha)
+    ket_alpha_minus = qt.coherent(Ndims, -alpha)
+    psi = ket_alpha + np.exp(imag_phi)*ket_alpha_minus
+    psi = psi.unit()
+    W = qt.wigner(psi, xvec, pvec) 
+
+    _plot_wigner(W, xvec, pvec, three_dimensional)
+
 

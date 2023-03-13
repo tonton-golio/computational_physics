@@ -94,32 +94,32 @@ def topic4():
 def wigner_function_gallery():
     st.header('The Wigner function gallery')
 
-    st.subheader('Coherent state')
-    plot_wigner_coherent()
-
     st.subheader('Number state (Fock state)')
     plot_wigner_number()
 
-    st.subheader('Schrödinger cat state')
-    plot_wigner_cat()
+    st.subheader('Coherent state')
+    plot_wigner_coherent()
 
     st.subheader('Squeezed state')
     plot_wigner_squeezed()
 
+    st.subheader('Schrödinger cat state')
+    plot_wigner_cat()
+
 def wigner_function_gallery_3d():
     st.header('The Wigner function gallery 3D')
-
-    st.subheader('Coherent state')
-    plot_wigner_coherent(three_dimensional=True)
 
     st.subheader('Number state (Fock state)')
     plot_wigner_number(three_dimensional=True)
 
-    st.subheader('Schrödinger cat state')
-    plot_wigner_cat(three_dimensional=True)
+    st.subheader('Coherent state')
+    plot_wigner_coherent(three_dimensional=True)
 
     st.subheader('Squeezed state')
     plot_wigner_squeezed(three_dimensional=True)
+
+    st.subheader('Schrödinger cat state')
+    plot_wigner_cat(three_dimensional=True)
 
 def cool_wigner_papers():
     st.header("Cool Wigner function papers")
