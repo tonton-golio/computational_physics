@@ -377,6 +377,10 @@ topic_dict = {
     #'week 7': week7,    
     }
 
-topic = st.sidebar.selectbox("topic" , list(topic_dict.keys()))
+# run with analytics
+streamlit_analytics.start_tracking()
 
+topic = st.sidebar.selectbox("topic" , list(topic_dict.keys()))
 run_topic = topic_dict[topic] ; run_topic()
+
+streamlit_analytics.stop_tracking()
