@@ -179,7 +179,7 @@ def _plot_wigner(W, xvec, pvec, three_dimensional, cmap='RdBu_r'):
 
 @function_profiler
 def plot_wigner_number(Ndims=100, three_dimensional=False):
-    st.write("$\\Ket{n}$")
+    st.write("$\\Ket{\\psi}=\\Ket{n}$")
     plot_range = 10.0
     xvec = np.linspace(-plot_range, plot_range, 200)
     pvec = xvec.copy()
@@ -193,7 +193,7 @@ def plot_wigner_number(Ndims=100, three_dimensional=False):
 
 @function_profiler
 def plot_wigner_coherent(Ndims=100, three_dimensional=False):
-    st.write("$\\Ket{\\alpha}$")
+    st.write("$\\Ket{\\psi}=\\Ket{\\alpha}$")
     xrange = [-5.0, 5.0]
     yrange = [-5.0, 5.0]
     cols = st.columns(2)
@@ -213,7 +213,7 @@ def plot_wigner_coherent(Ndims=100, three_dimensional=False):
 
 @function_profiler
 def plot_wigner_squeezed(Ndims=100, three_dimensional=False):
-    st.write("$\\Ket{\\alpha, \\xi} = \\hat{D}(\\alpha) \\hat{S} (\\xi)\\Ket{0}$")
+    st.write("$\\Ket{\\psi}=\\Ket{\\alpha, \\xi} = \\hat{D}(\\alpha) \\hat{S} (\\xi)\\Ket{0}$")
     st.write("$\\xi = r e^{i\\theta}$")
 
     cols = st.columns(2)
@@ -241,7 +241,7 @@ def plot_wigner_squeezed(Ndims=100, three_dimensional=False):
 
 @function_profiler
 def plot_wigner_cat(Ndims=100, three_dimensional=False):
-    st.write("$\\frac{1}{\\sqrt{2}}\\left(\\Ket{\\alpha} + e^{i\\phi} \\Ket{-\\alpha}\\right)$")
+    st.write("$\\Ket{\\psi}=\\mathcal{N}\\left(\\Ket{\\alpha} + e^{i\\Phi} \\Ket{-\\alpha}\\right)$")
     xrange = [0.0, 5.0]
     yrange = [0.0, 5.0]
     cols = st.columns(2)
