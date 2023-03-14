@@ -241,7 +241,7 @@ def plot_wigner_squeezed(Ndims=100, three_dimensional=False):
 
 @function_profiler
 def plot_wigner_cat(Ndims=100, three_dimensional=False):
-    st.write("$\\Ket{\\psi}=\\mathcal{N}\\left(\\Ket{\\alpha} + e^{i\\Phi} \\Ket{-\\alpha}\\right)$")
+    st.write("$\\Ket{\\psi}=\\frac{1}{\\sqrt{2+2 e^{-2 \\left|\\alpha\\right|^2} \\cos \\Phi}}\\left(\\Ket{\\alpha} + e^{i\\Phi} \\Ket{-\\alpha}\\right)$")
     xrange = [0.0, 5.0]
     yrange = [0.0, 5.0]
     cols = st.columns(2)
