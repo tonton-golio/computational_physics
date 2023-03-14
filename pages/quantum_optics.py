@@ -155,4 +155,6 @@ topic_dict = {
 
 topic = st.sidebar.selectbox("Select a topic!" , list(topic_dict.keys()))
 
+streamlit_analytics.start_tracking()
 run_topic = topic_dict[topic] ; run_topic()
+streamlit_analytics.stop_tracking()
