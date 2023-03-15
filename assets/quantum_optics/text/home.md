@@ -16,6 +16,7 @@ You can find eratta list online.
 - Leonardo Midolo (Topic 1)
 - Peter Lodahl (Topic 2-4, 12-14) 
 - Eugene Simon Polzik (Topic 5-11)
+- Evangelia Aspropotamiti (TA)
 
 # __Other useful webpage for quantum optics__
 - For general introduction [Wikipedia](https://en.wikipedia.org/wiki/Quantum_optics) but personally ch.1 of Gerry-Knight textbook is better.

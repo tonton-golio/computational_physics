@@ -36,6 +36,9 @@ def home():
     with st.expander(name, expanded=True):
         st.markdown(text_dict[name])
 
+    name = '__Writer__'
+    with st.expander(name, expanded=True):
+        st.markdown("Yoshiaki Horiike")
 
 def topic1():
     text_dict = getText_prep(filename = text_path+'topic1.md', split_level = 1)
