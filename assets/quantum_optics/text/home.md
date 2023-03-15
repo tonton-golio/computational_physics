@@ -19,5 +19,5 @@ You can find eratta list online.
 - Evangelia Aspropotamiti (TA)
 
 # __Other useful webpage for quantum optics__
-- For general introduction [Wikipedia](https://en.wikipedia.org/wiki/Quantum_optics) but personally ch.1 of Gerry-Knight textbook is better.
-- My personal recommendation is YouTube channel [@ProfessorMdoesScience](https://www.youtube.com/@ProfessorMdoesScience). If you stuck with the calculation, see their calculation. They are quite kind.
+- For general introduction [Wikipedia](https://en.wikipedia.org/wiki/Quantum_optics) but ch.1 of Gerry-Knight textbook is original.
+- My personal recommendation is YouTube channel [@ProfessorMdoesScience](https://www.youtube.com/@ProfessorMdoesScience). I learned basic stuff here.
