@@ -94,7 +94,7 @@ def topic4():
 def wigner_function_gallery():
     st.header('The Wigner function gallery')
     st.markdown('---')
-    theme = st.radio("Choose theme", ("Light", "Dark"), horizontal=True)
+    theme = st.radio("Choose a theme", ("Light", "Dark"), horizontal=True)
     st.markdown('---')
 
     if theme=="Light":
