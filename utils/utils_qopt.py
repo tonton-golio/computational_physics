@@ -101,7 +101,7 @@ def plot_coherent_on_phase_space(plotly=False):
 def plot_number_on_phase_space():
     xrange = [-10.0, 10.0]
     yrange = [-10.0, 10.0]
-    n = st.slider('Number of photon', 0, 100, 0)
+    n = st.slider('Number of photons', 0, 100, 0)
     st.write("$n={}$".format(n))
     fig, ax = plt.subplots()
     fig.patch.set_facecolor('none')
@@ -215,7 +215,7 @@ def plot_wigner_number(theme, Ndims=100, three_dimensional=False):
     plot_range = 10.0
     xvec = np.linspace(-plot_range, plot_range, 200)
     pvec = xvec.copy()
-    n = st.slider('Number of photon', 0, 25, 0)
+    n = st.slider('Number of photons', 0, 25, 0)
 
     psi = qt.basis(Ndims, n)
     W = qt.wigner(psi, xvec, pvec) 
