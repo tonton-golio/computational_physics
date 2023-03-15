@@ -141,13 +141,13 @@ def cool_wigner_papers():
 
 # Navigator
 topic_dict = {
+    'The Wigner function gallery': wigner_function_gallery,
+    'The Wigner function gallery 3D': wigner_function_gallery_3d,
     'Welcome!': home,
     'Topic 1': topic1,
     'Topic 2': topic2,
     'Topic 3': topic3,
     'Topic 4': topic4,
-    'The Wigner function gallery': wigner_function_gallery,
-    'The Wigner function gallery 3D': wigner_function_gallery_3d,
     'Cool Wigner function papers': cool_wigner_papers,
     #'Topic 5': topic5,
     #'Topic 6': topic6,
