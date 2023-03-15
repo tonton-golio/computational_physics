@@ -186,7 +186,7 @@ def _plot_wigner(W, xvec, pvec, three_dimensional, theme):
         fig.add_trace(
                 go.Surface(z=W, x=xvec, y=pvec, 
                            cmid=0, 
-                           colorscale=colorscale,
+                           #colorscale=colorscale,
                            colorbar=dict(
                                title="Quasi probability",
                                titleside="right"))
@@ -226,6 +226,7 @@ def plot_wigner_number(theme, Ndims=100, three_dimensional=False):
 @function_profiler
 def plot_wigner_coherent(theme, Ndims=100, three_dimensional=False):
     st.write("$\\Ket{\\psi} = \\Ket{\\alpha} = \\hat{D}(\\alpha) \\Ket{0}$")
+    st.write("$\\hat{D}(\\alpha) = \\exp \\left( \\alpha \\hat{a}^\dag - \\alpha^* \\hat{a} \\right)$")
     xrange = [-5.0, 5.0]
     yrange = [-5.0, 5.0]
     cols = st.columns(2)
@@ -246,6 +247,8 @@ def plot_wigner_coherent(theme, Ndims=100, three_dimensional=False):
 @function_profiler
 def plot_wigner_squeezed(theme, Ndims=100, three_dimensional=False):
     st.write("$\\Ket{\\psi}=\\Ket{\\alpha, \\xi} = \\hat{D}(\\alpha) \\hat{S} (\\xi)\\Ket{0}$")
+    st.write("$\\hat{D}(\\alpha) = \\exp \\left( \\alpha \\hat{a}^\dag - \\alpha^* \\hat{a} \\right)$")
+    st.write("$\\hat{S}(\\xi) = \\exp \\left[ \\frac{1}{2} \\left( \\xi^* \\hat{a}^2 - \\xi {\\hat{a}^\dag}^2 \\right) \\right]$")
     st.write("$\\xi = r e^{i\\theta}$")
 
     cols = st.columns(2)
