@@ -1,11 +1,14 @@
 from utils.utils_global import *
 
+from scipy.stats import multivariate_normal
+import qutip as qt
+
 import matplotlib.patches as patches
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.colors as colors
+
 import plotly.graph_objects as go
-from scipy.stats import multivariate_normal
-import qutip as qt
+from plotly.subplots import make_subplots
 
 text_path = 'assets/quantum_optics/text/'
 
@@ -14,7 +17,12 @@ text_path = 'assets/quantum_optics/text/'
 """
 TODO
 
-marginal distribution of wigner 2d
+[-] marginal distribution of wigner 2d
+[-] Wigner 3d axis label 
+[-] Wigner 3d color bar label 
+[] make code interface and get user-defined state
+[] time evolution animation with plotly
+[] make all plot with plotly
 """
 # topic 4
 @function_profiler
@@ -166,21 +174,30 @@ def _plot_wigner(W, xvec, pvec, three_dimensional, cmap='RdBu_r'):
         st.pyplot(fig)
 
     else:
-        fig = go.Figure(data=[go.Surface(z=W, x=xvec, y=pvec, cmid=0)])
+        fig = go.Figure()
+        # main surface plot
+        fig.add_trace(
+                go.Surface(z=W, x=xvec, y=pvec, 
+                           cmid=0, 
+                           colorbar=dict(
+                               title="Quasi probability",
+                               titleside="right"))
+                )
         fig.update_yaxes(
                 scaleanchor="x",
                 scaleratio=1,
                 )
+        # additional contour plot on xy-plane
         #fig.update_traces(contours_z=
         #                  dict(show=True, usecolormap=True,
-        #                       highlightcolor="limegreen", project_z=True
+        #                       highlightcolor="limegreen", project_z=True,
         #                       )
         #                  )
-        #fig.update_layout(
-        #        xaxis_title="q",
-        #        yaxis_title="p",
-        #        #zaxis_title="$W(q, p)$",
-        #        )
+        fig.update_layout(scene=dict(
+                xaxis_title="x",
+                yaxis_title="p",
+                zaxis_title="W(x, p)",
+                ))
         st.plotly_chart(fig)
 
 

@@ -12,9 +12,6 @@ st.set_page_config(page_title="Quantum Optics",
 
 
 
-plt.rcdefaults()
-#plt.style.use('dark_background')
-
 # pages
 def home():
     text_dict = getText_prep(filename = text_path+'home.md', split_level = 1)
@@ -93,6 +90,14 @@ def topic4():
 
 def wigner_function_gallery():
     st.header('The Wigner function gallery')
+    st.markdown('---')
+    theme = st.radio("Choose theme", ("Light", "Dark"), horizontal=True)
+    st.markdown('---')
+
+    if theme=="Light":
+        plt.rcdefaults()
+    else:
+        plt.style.use('dark_background')
 
     st.subheader('Number state (Fock state)')
     plot_wigner_number()
