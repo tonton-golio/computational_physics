@@ -34,13 +34,13 @@ def plot_coherent_on_phase_space(plotly=False):
     delta_phi_deg = np.rad2deg(delta_phi)
     st.write("$\\Delta\\phi={}={}\degree$".format(delta_phi, delta_phi_deg))
 
-    mean = [real_alpha, imag_alpha]
+    #mean = [real_alpha, imag_alpha]
     radius = 1/2
-    cov = [[radius, 0], [0, radius]]
-    r=1.25
-    x, y= np.mgrid[xrange[0]*r:xrange[1]*r:100j, yrange[0]*r:yrange[1]*r:100j]
-    pos = np.dstack((x, y))
-    z = multivariate_normal.pdf(pos, mean=mean, cov=cov)
+    #cov = [[radius, 0], [0, radius]]
+    #r=1.25
+    #x, y= np.mgrid[xrange[0]*r:xrange[1]*r:100j, yrange[0]*r:yrange[1]*r:100j]
+    #pos = np.dstack((x, y))
+    #z = multivariate_normal.pdf(pos, mean=mean, cov=cov)
 
     if plotly:
         fig = go.Figure(data=
@@ -70,14 +70,17 @@ def plot_coherent_on_phase_space(plotly=False):
     else:
         fig, ax = plt.subplots()
         fig.patch.set_facecolor('none')
-        ax.contourf(x, y, z, levels=100)
+        #ax.contourf(x, y, z, levels=100)
 
         x = np.linspace(0, real_alpha)
         y = np.linspace(0, imag_alpha)
-        ax.plot(x, y, c='w', ls=':')
+        ax.plot(x, y, c='k', ls='-', lw=1)
 
-        c = patches.Circle((real_alpha, imag_alpha), radius=radius, edgecolor='w', facecolor='none')
+        c = patches.Circle((real_alpha, imag_alpha), radius=radius, edgecolor='k', facecolor='none')
         ax.add_artist(c)
+
+        ax.set_xlim(xrange)
+        ax.set_ylim(yrange)
 
         ax.set_aspect('equal')
         ax.set_xlabel('$\\hat{X}_1$')
@@ -102,10 +105,13 @@ def plot_number_on_phase_space():
     x, y= np.mgrid[xrange[0]*r:xrange[1]*r:100j, yrange[0]*r:yrange[1]*r:100j]
     pos = np.dstack((x, y))
     z = multivariate_normal.pdf(pos, mean=mean, cov=cov)
-    ax.contourf(x, y, z, levels=100)
+    #ax.contourf(x, y, z, levels=100)
 
-    c = patches.Circle((0, 0), radius=radius, edgecolor='w', facecolor='none')
+    c = patches.Circle((0, 0), radius=radius, edgecolor='k', facecolor='none')
     ax.add_artist(c)
+
+    ax.set_xlim(xrange)
+    ax.set_ylim(yrange)
 
     ax.set_aspect('equal')
     ax.set_xlabel('$\\hat{X}_1$')
@@ -193,7 +199,7 @@ def plot_wigner_number(Ndims=100, three_dimensional=False):
 
 @function_profiler
 def plot_wigner_coherent(Ndims=100, three_dimensional=False):
-    st.write("$\\Ket{\\psi}=\\Ket{\\alpha}$")
+    st.write("$\\Ket{\\psi} = \\Ket{\\alpha} = \\hat{D}(\\alpha) \\Ket{0}$")
     xrange = [-5.0, 5.0]
     yrange = [-5.0, 5.0]
     cols = st.columns(2)
