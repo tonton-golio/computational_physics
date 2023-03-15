@@ -133,12 +133,18 @@ def plot_number_on_phase_space():
 ####################
 
 @function_profiler
-def _plot_wigner(W, xvec, pvec, three_dimensional, cmap='RdBu_r'):
+def _plot_wigner(W, xvec, pvec, three_dimensional, theme):
     W_original = W.copy()
     bin_width_x = xvec[1]-xvec[0]
     bin_width_p = pvec[1]-pvec[0]
     W = W*bin_width_x*bin_width_p
     W = np.round(W, 8)
+
+    if theme=="Light":
+        cmap="RdBu_r"
+    else:
+        cmap="coolwarm"
+        #cmap="RdBu_r"
 
     if not three_dimensional:
         fig, ax = plt.subplots()
@@ -202,7 +208,7 @@ def _plot_wigner(W, xvec, pvec, three_dimensional, cmap='RdBu_r'):
 
 
 @function_profiler
-def plot_wigner_number(Ndims=100, three_dimensional=False):
+def plot_wigner_number(theme, Ndims=100, three_dimensional=False):
     st.write("$\\Ket{\\psi}=\\Ket{n}$")
     plot_range = 10.0
     xvec = np.linspace(-plot_range, plot_range, 200)
@@ -212,11 +218,11 @@ def plot_wigner_number(Ndims=100, three_dimensional=False):
     psi = qt.basis(Ndims, n)
     W = qt.wigner(psi, xvec, pvec) 
 
-    _plot_wigner(W, xvec, pvec, three_dimensional)
+    _plot_wigner(W, xvec, pvec, three_dimensional, theme)
 
 
 @function_profiler
-def plot_wigner_coherent(Ndims=100, three_dimensional=False):
+def plot_wigner_coherent(theme, Ndims=100, three_dimensional=False):
     st.write("$\\Ket{\\psi} = \\Ket{\\alpha} = \\hat{D}(\\alpha) \\Ket{0}$")
     xrange = [-5.0, 5.0]
     yrange = [-5.0, 5.0]
@@ -232,11 +238,11 @@ def plot_wigner_coherent(Ndims=100, three_dimensional=False):
     psi = qt.coherent(Ndims, alpha)
     W = qt.wigner(psi, xvec, pvec) 
     
-    _plot_wigner(W, xvec, pvec, three_dimensional)
+    _plot_wigner(W, xvec, pvec, three_dimensional, theme)
 
 
 @function_profiler
-def plot_wigner_squeezed(Ndims=100, three_dimensional=False):
+def plot_wigner_squeezed(theme, Ndims=100, three_dimensional=False):
     st.write("$\\Ket{\\psi}=\\Ket{\\alpha, \\xi} = \\hat{D}(\\alpha) \\hat{S} (\\xi)\\Ket{0}$")
     st.write("$\\xi = r e^{i\\theta}$")
 
@@ -260,11 +266,11 @@ def plot_wigner_squeezed(Ndims=100, three_dimensional=False):
     psi = qt.displace(Ndims, alpha) * qt.squeeze(Ndims, xi) * qt.basis(Ndims, 0)
     W = qt.wigner(psi, xvec, pvec) 
 
-    _plot_wigner(W, xvec, pvec, three_dimensional)
+    _plot_wigner(W, xvec, pvec, three_dimensional, theme)
 
 
 @function_profiler
-def plot_wigner_cat(Ndims=100, three_dimensional=False):
+def plot_wigner_cat(theme, Ndims=100, three_dimensional=False):
     st.write("$\\Ket{\\psi}=\\frac{1}{\\sqrt{2+2 e^{-2 \\left|\\alpha\\right|^2} \\cos \\Phi}}\\left(\\Ket{\\alpha} + e^{i\\Phi} \\Ket{-\\alpha}\\right)$")
     xrange = [0.0, 5.0]
     yrange = [0.0, 5.0]
@@ -286,6 +292,6 @@ def plot_wigner_cat(Ndims=100, three_dimensional=False):
     psi = psi.unit()
     W = qt.wigner(psi, xvec, pvec) 
 
-    _plot_wigner(W, xvec, pvec, three_dimensional)
+    _plot_wigner(W, xvec, pvec, three_dimensional, theme)
 
 

@@ -100,31 +100,31 @@ def wigner_function_gallery():
         plt.style.use('dark_background')
 
     st.subheader('Number state (Fock state)')
-    plot_wigner_number()
+    plot_wigner_number(theme)
 
     st.subheader('Coherent state')
-    plot_wigner_coherent()
+    plot_wigner_coherent(theme)
 
     st.subheader('Squeezed state')
-    plot_wigner_squeezed()
+    plot_wigner_squeezed(theme)
 
     st.subheader('Schrödinger cat state')
-    plot_wigner_cat()
+    plot_wigner_cat(theme)
 
 def wigner_function_gallery_3d():
     st.header('The Wigner function gallery 3D')
 
     st.subheader('Number state (Fock state)')
-    plot_wigner_number(three_dimensional=True)
+    plot_wigner_number(theme, three_dimensional=True)
 
     st.subheader('Coherent state')
-    plot_wigner_coherent(three_dimensional=True)
+    plot_wigner_coherent(theme, three_dimensional=True)
 
     st.subheader('Squeezed state')
-    plot_wigner_squeezed(three_dimensional=True)
+    plot_wigner_squeezed(theme, three_dimensional=True)
 
     st.subheader('Schrödinger cat state')
-    plot_wigner_cat(three_dimensional=True)
+    plot_wigner_cat(theme, three_dimensional=True)
 
 def cool_wigner_papers():
     st.header("Cool Wigner function papers")
