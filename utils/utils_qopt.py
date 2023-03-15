@@ -130,6 +130,7 @@ def _plot_wigner(W, xvec, pvec, three_dimensional, cmap='RdBu_r'):
     bin_width_x = xvec[1]-xvec[0]
     bin_width_p = pvec[1]-pvec[0]
     W = W*bin_width_x*bin_width_p
+    W = np.round(W, 8)
 
     if not three_dimensional:
         fig, ax = plt.subplots()
