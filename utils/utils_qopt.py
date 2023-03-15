@@ -142,9 +142,10 @@ def _plot_wigner(W, xvec, pvec, three_dimensional, theme):
 
     if theme=="Light":
         cmap="RdBu_r"
+        colorscale="RdBu_r"
     else:
         cmap="coolwarm"
-        #cmap="RdBu_r"
+        colorscale="balance"
 
     if not three_dimensional:
         fig, ax = plt.subplots()
@@ -185,6 +186,7 @@ def _plot_wigner(W, xvec, pvec, three_dimensional, theme):
         fig.add_trace(
                 go.Surface(z=W, x=xvec, y=pvec, 
                            cmid=0, 
+                           colorscale=colorscale,
                            colorbar=dict(
                                title="Quasi probability",
                                titleside="right"))

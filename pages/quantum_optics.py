@@ -111,7 +111,7 @@ def wigner_function_gallery():
     st.subheader('Schrödinger cat state')
     plot_wigner_cat(theme)
 
-def wigner_function_gallery_3d():
+def wigner_function_gallery_3d(theme='Light'):
     st.header('The Wigner function gallery 3D')
 
     st.subheader('Number state (Fock state)')
