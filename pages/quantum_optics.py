@@ -138,6 +138,115 @@ def topic4():
     st.header('Number state on phase space')
     plot_number_on_phase_space()
 
+def topic5():
+    text_dict = getText_prep(filename = text_path+'topic5.md', split_level = 1)
+
+    st.header('Quantum coherence functions of the 1st order and photodetection')
+    st.write('22 Feb 2023')
+
+    for key in text_dict.keys():
+        name = key
+        with st.expander(name, expanded=False):
+            st.markdown(text_dict[name])
+
+def topic6():
+    text_dict = getText_prep(filename = text_path+'topic6.md', split_level = 1)
+
+    st.header('Quantum coherence functions of the 2nd order')
+    st.write('27 Feb 2023')
+
+    for key in text_dict.keys():
+        name = key
+        with st.expander(name, expanded=False):
+            st.markdown(text_dict[name])
+
+def topic7():
+    text_dict = getText_prep(filename = text_path+'topic7.md', split_level = 1)
+
+    st.header('Beam splitters')
+    st.write('1 Mar 2023')
+
+    for key in text_dict.keys():
+        name = key
+        with st.expander(name, expanded=False):
+            st.markdown(text_dict[name])
+
+def topic8():
+    text_dict = getText_prep(filename = text_path+'topic8.md', split_level = 1)
+
+    st.header('Interferometry with quantum fields')
+    st.write('6 Mar 2023')
+
+    for key in text_dict.keys():
+        name = key
+        with st.expander(name, expanded=False):
+            st.markdown(text_dict[name])
+
+def topic9():
+    text_dict = getText_prep(filename = text_path+'topic9.md', split_level = 1)
+
+    st.header('Squeezed light I')
+    st.write('8 Mar 2023')
+
+    for key in text_dict.keys():
+        name = key
+        with st.expander(name, expanded=False):
+            st.markdown(text_dict[name])
+
+def topic10():
+    text_dict = getText_prep(filename = text_path+'topic10.md', split_level = 1)
+
+    st.header('Squeezed light II')
+    st.write('13 Mar 2023')
+
+    for key in text_dict.keys():
+        name = key
+        with st.expander(name, expanded=False):
+            st.markdown(text_dict[name])
+
+def topic11():
+    text_dict = getText_prep(filename = text_path+'topic11.md', split_level = 1)
+
+    st.header('Quantum teleportation')
+    st.write('15 Mar 2023')
+
+    for key in text_dict.keys():
+        name = key
+        with st.expander(name, expanded=False):
+            st.markdown(text_dict[name])
+
+def topic12():
+    text_dict = getText_prep(filename = text_path+'topic12.md', split_level = 1)
+
+    st.header('Atom field interaction I')
+    st.write('20 Mar 2023')
+
+    for key in text_dict.keys():
+        name = key
+        with st.expander(name, expanded=False):
+            st.markdown(text_dict[name])
+
+def topic13():
+    text_dict = getText_prep(filename = text_path+'topic13.md', split_level = 1)
+
+    st.header('Atom field interaction II')
+    st.write('22 Mar 2023')
+
+    for key in text_dict.keys():
+        name = key
+        with st.expander(name, expanded=False):
+            st.markdown(text_dict[name])
+
+def topic14():
+    text_dict = getText_prep(filename = text_path+'topic14.md', split_level = 1)
+
+    st.header('Experimental cavity QED')
+    st.write('27 Mar 2023')
+
+    for key in text_dict.keys():
+        name = key
+        with st.expander(name, expanded=False):
+            st.markdown(text_dict[name])
 
 
 # Navigator
@@ -150,16 +259,16 @@ topic_dict = {
     'Topic 2': topic2,
     'Topic 3': topic3,
     'Topic 4': topic4,
-    #'Topic 5': topic5,
-    #'Topic 6': topic6,
-    #'Topic 7': topic7,
-    #'Topic 8': topic8,
-    #'Topic 9': topic9,
-    #'Topic 10': topic10,
-    #'Topic 11': topic11,
-    #'Topic 12': topic12,
-    #'Topic 13': topic13,
-    #'Topic 14': topic14,
+    'Topic 5': topic5,
+    'Topic 6': topic6,
+    'Topic 7': topic7,
+    'Topic 8': topic8,
+    'Topic 9': topic9,
+    'Topic 10': topic10,
+    'Topic 11': topic11,
+    'Topic 12': topic12,
+    'Topic 13': topic13,
+    'Topic 14': topic14,
     }
 
 # run with analytics 
