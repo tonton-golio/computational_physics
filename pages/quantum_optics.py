@@ -13,6 +13,54 @@ st.set_page_config(page_title="Quantum Optics",
 
 
 # pages
+def wigner_function_gallery():
+    st.header('The Wigner function gallery')
+    st.markdown('---')
+    theme = st.radio("Choose a theme", ("Light", "Dark"), horizontal=True)
+    st.markdown('---')
+
+    if theme=="Light":
+        plt.rcdefaults()
+    else:
+        plt.style.use('dark_background')
+
+    st.subheader('Number state (Fock state)')
+    plot_wigner_number(theme)
+
+    st.subheader('Coherent state')
+    plot_wigner_coherent(theme)
+
+    st.subheader('Squeezed state')
+    plot_wigner_squeezed(theme)
+
+    st.subheader('Schrödinger cat state')
+    plot_wigner_cat(theme)
+
+def wigner_function_gallery_3d(theme='Light'):
+    st.header('The Wigner function gallery 3D')
+
+    st.subheader('Number state (Fock state)')
+    plot_wigner_number(theme, three_dimensional=True)
+
+    st.subheader('Coherent state')
+    plot_wigner_coherent(theme, three_dimensional=True)
+
+    st.subheader('Squeezed state')
+    plot_wigner_squeezed(theme, three_dimensional=True)
+
+    st.subheader('Schrödinger cat state')
+    plot_wigner_cat(theme, three_dimensional=True)
+
+def cool_wigner_papers():
+    st.header("Cool Wigner function papers")
+
+    text_dict = getText_prep(filename = text_path+'papers.md', split_level = 1)
+    for key in text_dict.keys():
+        name = key
+        with st.expander(name, expanded=True):
+            st.markdown(text_dict[name])
+
+
 def home():
     text_dict = getText_prep(filename = text_path+'home.md', split_level = 1)
 
@@ -91,64 +139,17 @@ def topic4():
     plot_number_on_phase_space()
 
 
-def wigner_function_gallery():
-    st.header('The Wigner function gallery')
-    st.markdown('---')
-    theme = st.radio("Choose a theme", ("Light", "Dark"), horizontal=True)
-    st.markdown('---')
-
-    if theme=="Light":
-        plt.rcdefaults()
-    else:
-        plt.style.use('dark_background')
-
-    st.subheader('Number state (Fock state)')
-    plot_wigner_number(theme)
-
-    st.subheader('Coherent state')
-    plot_wigner_coherent(theme)
-
-    st.subheader('Squeezed state')
-    plot_wigner_squeezed(theme)
-
-    st.subheader('Schrödinger cat state')
-    plot_wigner_cat(theme)
-
-def wigner_function_gallery_3d(theme='Light'):
-    st.header('The Wigner function gallery 3D')
-
-    st.subheader('Number state (Fock state)')
-    plot_wigner_number(theme, three_dimensional=True)
-
-    st.subheader('Coherent state')
-    plot_wigner_coherent(theme, three_dimensional=True)
-
-    st.subheader('Squeezed state')
-    plot_wigner_squeezed(theme, three_dimensional=True)
-
-    st.subheader('Schrödinger cat state')
-    plot_wigner_cat(theme, three_dimensional=True)
-
-def cool_wigner_papers():
-    st.header("Cool Wigner function papers")
-
-    text_dict = getText_prep(filename = text_path+'papers.md', split_level = 1)
-    for key in text_dict.keys():
-        name = key
-        with st.expander(name, expanded=True):
-            st.markdown(text_dict[name])
-
 
 # Navigator
 topic_dict = {
     'The Wigner function gallery': wigner_function_gallery,
     'The Wigner function gallery 3D': wigner_function_gallery_3d,
+    'Cool Wigner function papers': cool_wigner_papers,
     'Welcome!': home,
     'Topic 1': topic1,
     'Topic 2': topic2,
     'Topic 3': topic3,
     'Topic 4': topic4,
-    'Cool Wigner function papers': cool_wigner_papers,
     #'Topic 5': topic5,
     #'Topic 6': topic6,
     #'Topic 7': topic7,
