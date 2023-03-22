@@ -251,6 +251,7 @@ def topic14():
 
 # Navigator
 topic_dict = {
+    'Topic 12': topic12,
     'The Wigner function gallery': wigner_function_gallery,
     'The Wigner function gallery 3D': wigner_function_gallery_3d,
     'Cool Wigner function papers': cool_wigner_papers,
@@ -266,7 +267,6 @@ topic_dict = {
     'Topic 9': topic9,
     'Topic 10': topic10,
     'Topic 11': topic11,
-    'Topic 12': topic12,
     'Topic 13': topic13,
     'Topic 14': topic14,
     }
