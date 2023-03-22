@@ -14,6 +14,39 @@ set_rcParams(style_dict = {
     'axes.labelcolor': "lightgreen" 
     })
 
+def important_concepts():
+    ''
+    '# Important concepts'
+
+    r"""
+    > **Reinforcement learning** is an area of machine learning concerned with how software agents ought to take actions in an environment in order to maximize some notion of cumulative reward.
+    > A Markov decision process (MDP) is a 5-tuple $(S, A, P, R, \gamma)$, where $S$ is the set of states, $A$ is the set of actions, $P$ is the state transition probability, $R$ is the reward function, and $\gamma$ is the discount factor.
+    > A **policy** is a mapping from states to actions. A **value function** is a mapping from states to real numbers. A **Q-function** is a mapping from state-action pairs to real numbers.
+    > A **state-value function** is a mapping from states to real numbers. A **state-action value function** is a mapping from state-action pairs to real numbers.
+    > Regret is the difference between the best possible reward and the reward actually received.
+    > **Exploration** is the process of finding new actions that lead to better rewards. **Exploitation** is the process of using the current knowledge to maximize the reward.
+    > **Off-policy learning** is a learning method in which the behavior policy and the target policy are different. **On-policy learning** is a learning method in which the behavior policy and the target policy are the same.
+    > **Temporal difference learning** is a model-free reinforcement learning method that learns from both full episodes and single steps.
+    > Q is a function that maps from a state and an action to a real number which holds the value of the that action in that state.
+
+
+    ---
+    ### epsilon-greedy policy
+    The epsilon-greedy policy is a simple policy that is used in reinforcement learning. It is a greedy policy that is biased towards exploration. It is a policy that is used to balance exploration and exploitation.
+    $$
+    \pi(a|s) = \begin{cases}
+    1-\epsilon + \frac{\epsilon}{|A|} & \text{if } a = \underset{a}{\operatorname{argmax}} Q(s,a) \\
+    \frac{\epsilon}{|A|} & \text{otherwise}
+    $$
+    If epsilon decreases over time, the policy will converge to the optimal policy almost surely.
+
+    ---
+    ### Q-learning
+    Q-learning is a model-free reinforcement learning algorithm. It can be used to find the optimal action-selection policy for any given (finite) Markov decision process (MDP). It does not require a model of the environment, and it can handle problems with stochastic transitions and rewards, without requiring adaptations.
+    $$
+    Q(s_t, a_t) \leftarrow Q(s_t, a_t) + \alpha \left( r_t + \gamma \max_{a} Q(s_{t+1}, a) - Q(s_t, a_t) \right)    
+    $$
+    """
 
 def pre_start():
     text_intro = """
@@ -1359,7 +1392,6 @@ def lecture_feb_23_notes():
     if lambda is 0, we recover TD(0). If lambda i one, we get monte carlo sampling.
     """
 
-
 def lectureNotes_march_02():
     ''
     """
@@ -1583,6 +1615,310 @@ def lectureNotes_march_02():
     1. Repeat steps 2-3 for a specified number of episodes or until the Q-values converge.
 
     Once the Q-table has been updated, you can use it to select the optimal action for any given state by selecting the action with the highest Q-value.
+    """
+
+def lecturenotes_march_16_deep_learning():
+    #
+    '# Deep Learning'
+    r"""
+    
+    
+    ## Function approximations
+    * using a table representation of the value function, does not allow us to generalize well to a continuous state and/or action space. Thus we bring in function approximations.
+
+    We can use function approximators with parameters $\mathbf{w}$ to approximate either $Q$ or $V$:
+    $$
+        Q(s,a_i) = \hat{Q}(s) = \mathbf{w}_i^T \phi(s,a_i)
+    $$
+    in which $\phi$ is a feature vector of the state and action. The feature vector is a vector of real numbers. The above case is a linear function approximator. We can also use a non-linear function approximator, such as a neural network. The neural network can be used to approximate $Q$ or $V$.
+
+
+    ### Targets and error for the value function
+    Estimate $V^\pi$ for the current policy $\pi$ using a function approximator. We can use the following targets and error:
+    $$
+        \begin{align}
+            V(s_t) = \mathbb{E}[R_t] = \mathbb{E}\left[\sum_{k=1}^{T-t} r_{t+k} \right]
+        \end{align}
+    $$
+    Halved sum of squares error of current valye function estimate ($\hat{V}$ paramerized by the parameters $\mathbf{w}$) 
+    $$
+        \begin{align}
+            \mathcal{L}(\mathbf{w}) = \frac{1}{2} \sum_{t=1}^T \left( V(s_t) - \hat{V}(s_t) \right)^2
+        \end{align}
+    $$
+    Lets consider $\mathcal{S} = \{ (s_{t_1}, R_{t_1}), (s_{t_2}, R_{t_2}), \dots, (s_{t_T}, R_{t_T}) \}$:
+    $$
+        \hat{L}(\mathbf{w}) = \frac{1}{2|\mathcal{S}|}\sum_{(s,R)\in\mathcal{S}}(V) - \hat{V}(s))^2
+    $$
+    We can use stochastic gradient descent to minimize $\hat{L}$:
+    $$
+        \begin{align}
+            \mathbf{w} \leftarrow \mathbf{w} + \alpha \nabla_{\mathbf{w}} \hat{L}(\mathbf{w})
+        \end{align}
+    $$
+
+    We can also add a baseline to REINFORCE:
+    $$
+        \begin{align}
+            \mathcal{L}(\mathbf{w}) = \frac{1}{2} \sum_{t=1}^T \left( V(s_t) - \hat{V}(s_t) \right)^2
+        \end{align}
+    $$
+
+    Which leads to the pseudo-code:
+    ```
+    repeat
+        Generate episode $s_0, a_0, r_1, s_1, a_1, \dots, r_T$
+        for each $t=1,2,\dots,T$ do
+            $R_t = \sum_{k=0}^{T-t} \gamma^k r_{t+k}$
+            ...
+    
+    ```
+
+    ### Actor-critic methods
+    * Policy $\pi$ with parameters $theta$: actor
+    * Value function $V$ with parameters $w$: critic
+
+    The problem with REINFORCE with baseline is that it is not fully online. We need to wait until the end of the episode to update the parameters. We can use a critic to estimate the value function $V$ and use this to update the parameters of the policy $\pi$ online. This is called an actor-critic method.
+
+    We introduce bootstrapping. I.e. update an estimate based on a new estimate. Temporal difference learning is a form of bootstrapping.
+    $$
+        V^\pi(s_t) = \mathbb{E}\left[r_{t+1} + \gamma V^\pi (s_{t+1}\right]
+    $$
+    we get the new
+    $$
+        \delta_t = r_{t+1} + \gamma V^\pi (s_{t+1}) - V^\pi(s_t)
+    $$
+
+    Lets write up the phase diagram for the one-step actor-critic method:
+    ```
+    repeat
+        $s_0 \leftarrow$ initial state
+        for each $t=0,1,\dots$ do
+            $a_t \leftarrow$ action sampled from $\pi(a_t|s_t, \theta)$
+            $s_{t+1}, r_{t+1} \leftarrow$ step in environment
+            $\delta_t \leftarrow \begin{cases}
+                r_{t+1} + \gamma V(s_{t+1}) - V(s_t) & \text{if } s_{t+1} \text{ is not terminal} \\
+                r_{t+1} - V(s_t) & \text{if } s_{t+1} \text{ is terminal}
+            \end{cases}$
+            $w \leftarrow w + \alpha_\mathbf{w} \delta_t \nabla_w V(s_t)$
+            $\theta \leftarrow \theta + \alpha_\theta \delta_t \nabla_\theta \ln\pi(s_t,a_t)
+    until stopping criterion is met
+    ```
+    caption: One-step actor-critic method
+
+    The above algortihm is difficult to train, because the update step size is unstable.
+
+    ### State-value function targets
+    Lets first make a verison of Q-learning which work with neural networks. We can use the following targets and error:
+    $$
+        \begin{align}
+            Q(s_t, a_t) \leftarrow r_{t+1} + \gamma \max_{a} Q(s_{t+1}, a) - Q(s_t, a_t)\\
+            Q(s_t, a_t) \leftarrow y(s,a) - Q(s_t, a_t)\\
+        \end{align}
+    $$
+    which leads to a halved MSE error
+    $$
+        \begin{align}
+            \mathcal{L}(\mathbf{w}) = \mathbb{E} \frac{1}{2} \left( y(s,a) - \hat{Q}(s_t, a_t) \right)^2
+        \end{align}
+    $$
+    We can thus obtain the gradient of the loss with respect to the parameters $\mathbf{w}$:
+    $$
+        \begin{align}
+            \nabla_{\mathbf{w}} \hat{l} = - \left( y(s,a) - \hat{Q}(s_t, a_t) \right) \nabla_{\mathbf{w}} \hat{Q}(s, a)
+        \end{align}
+    $$
+    Which gives the learning rule
+    $$
+        \begin{align}
+            \mathbf{w} \leftarrow \mathbf{w} + \alpha \left( y(s,a) - \hat{Q}(s_t, a_t) \right) \nabla_{\mathbf{w}} \hat{Q}(s, a)
+        \end{align}
+    $$
+    The problem is that we assume the $y(s,a)$ is independent of the parameters $\mathbf{w}$. This is not the case. We can use the following trick to get around this:
+    
+    ...
+
+
+    ### Function approximators for discrete actions
+    If we hacve discrete actions out function approximator only takes a state $s$ instead of a state action pair. Then for each state it returns values for each action.
+
+    > Updating a neural networck using stochasitc gradient step base on single observation is not recommeneded because the variance of the gradient is high. Instead we use a minibatch of observations. This is called minibatch gradient descent. The minibatch size is a hyperparameter. The minibatch size should be large enough to get a good estimate of the gradient, but not so large that it takes too long to compute. (Igel calls this: delayed Q-update). Another solution we can apply is: store experience in a FIFO buffer and then sample from this buffer. This is called experience replay.
+
+    > Another method delayed Q update is to use a target network. This is a copy of the Q-network that is updated less frequently. The target network is used to compute the target $y(s,a)$. We distinguish between $\mathbf{w}$ and $\mathbf{w}_\text{target}$. And we distinguish between $\mathbf{\theta}$ and $\mathbf{\theta}_\text{target}$. To update the target network, we can simply set $\mathbf{w}\leftarrow\mathbf{w}_\text{target}$ at every 200 steps. This increases stability. Alternatively we could smoothly blend the parameters $\mathbf{\theta}_\text{target}\leftarrow \rho\mathbf{\theta}_\text{target} + (1-\rho)\mathbf{\theta}$ for $\rho \in ]0,1[$.
+
+    > Example: Critic update based on mini-batch
+
+    $$
+        \nabla_\theta \frac{1}{N} \sum_{i=1}^N \left( r_i + \gamma \hat{Q}_{\text{target}}(s_i^', \pi_{\text{target}}(s_i^')) - \hat{Q}(s_i, a_i) \right)^2
+    $$
+
+    Now this is actually valid, because we are taking the gradient with respect to $\theta$ rather than $\theta_\text{target}$. 
+
+
+    ### Recall Greedy and soft policy
+    we have a probability of choosing the non-max action of $\frac{\epsilon}{|A|}$ and a probability of choosing the max action of $1 - \frac{\epsilon}{|A|}$. This is called a soft policy. 
+
+
+    ### Deep deterministic policy gradient DDPG
+    * model free, off policy actor-critic method
+    * continuous action space
+    * deterministic policy
+    * random exploration modified by a noise process
+    * to stabilize learning with neural network
+        * experience/replay buffer
+        * target networks
+
+    Because $\pi$ is deterministic, we have:
+    $$
+        V^\pi(s) = Q^\pi(s, \pi(s))
+    $$
+    and we have the gradient;
+    $$
+        \nabla_\theta V^\pi(s) = \nabla_\theta Q^\pi(s, \pi(s)) = \nabla_a Q^\pi(s, a)|_{a=\pi(s)} \nabla_\theta \pi(s)
+    $$
+    This yield the critic update:
+    $$
+        \begin{align}
+            \nabla_\theta \frac{1}{N}\sum_{i=1}^N \left( r_i + \gamma Q_{\text{target}}(s_i^', \pi_{\text{target}}(s_i^')) - Q(s_i, a_i) \right)^2 = -\frac{1}{2N}\sum_{i=1}^N \left( y_i - \hat{Q}(s_i, a_i) \right) \nabla_{\theta} \hat{Q}(s_i, a_i)
+    $$
+
+    The actor update is:
+    $$
+        \begin{align}
+        \ldots
+        \end{align}
+    $$
+
+    This then yields the pseudo code:
+    ```
+    Initialize policy parameters $\theta$, ...
+    ```
+
+
+    """
+
+def Lecture_26_march_afternoon():
+    ''
+    r"""
+
+    ### Online RL: Performance metrics
+    * Convergence: This should be asympotic.
+    * PAC sample complexity: This is the number of samples needed to achieve a certain level of confidence in the performance of the algorithm. PAC stands for probably approximately correct.
+    * Regret: The amount of reward lost under the policy compared to the optimal policy.
+
+    Sample complexity of exploration: The sample complexity of exploration is the number of samples in which we take the sub-optimal action. We say that $t$ is $\epsilon$-bad if $V^{\pi_t}(s_t) < V^*(s_t) - \epsilon$.
+
+
+    ### PAC-MDP algorithm
+    An algorithm is PAC-MDP if for any $\epsilon$ and $\delta$ the sample complexity is upper bounded with probability $\geq 1-\delta$ by some polynomial in
+    $$
+        S, A, \frac{1}{\epsilon}, \frac{1}{\delta}, \frac{1}{1-\gamma}
+    $$
+
+    ### OFU priciple
+    Optimisim in the face of uncertainty (UFO). In bandits replace unknown mean rewards with their upper confidence bounds. Adding the exploration component to the mean observed reward is the optimisim part. This is called optimistic exploration.
+
+    In MDPs different implementations exist
+    * model-based: select the highest possible value function.
+    * model-free: When updating the Q-function, be optimistic. Initialize all Q-values to their max possible value. And use "reward + exploration bonus" instead of "reward" alone. The max possible value is 
+    $$
+        Q_0(s,a) = \frac{R_\text{max}}{1-\gamma}
+    $$
+    where $R_\text{max}$ is the maximum possible reward. Update as follows:
+    $$
+        Q(s,a) \leftarrow Q(s,a) + \alpha \left(r_t +b_t(N_t(s,a)) + \gamma \max_{a'} Q(s',a') - Q(s,a) \right)
+    $$
+    notice the new term: $b_t(N_t(s,a)$ which is the exploration bonus.
+
+    ### UCB-QL
+    UCB + Q-learning.
+    * model-free and maintains Q-functions
+    * Q-update resembles QL
+    * it uses UCB-type exploration
+
+    Lets add the exploration bonus to the Q-update:
+    $$
+        Q_{t+1}(s_t, a_t) = (1-\alpha_t)Q_t(s_t, a_t) + \alpha_t\left(r_t + X\sqrt{\frac{\log(t)}{N_t(s_t, a_t)}} + \gamma \max_{a'} Q_t(s_{t+1}, a') \right)
+    $$
+
+    The algortihm maintains two Q-functions instead of one; 
+    * the optimisitc Q-function $Q_t(s,a)$
+    * the historical minimum Q-function $\hat{Q}(s,a)$
+
+    update Q as follows:
+    $$
+        Q(s_t, a_t) \leftarrow Q(s_t, a_t) + \alpha_{N_t(s_t, a_t)} \left( r_t + b_{N_t(s_t, a_t)} + \gamma \max_{a'} \hat{Q}(s_{t+1}, a') - Q(s_t, a_t) \right)
+    $$
+    we define $\alpha$ and $b$ as follows:
+    $$
+        \begin{align}
+            \alpha_{k} &= \frac{H+1}{H+k} \\
+            b_{k} &= \frac{R_\text{max}}{1-\gamma}\sqrt{\frac{32H}{k} log\frac{SA(K+1)(K+2)}{\delta}}
+        \end{align}
+    $$
+    Then update $\hat{Q}$ as follows:
+    $$
+        \hat{Q}(s_t, a_t) \leftarrow \min\left( \hat{Q}(s_t, a_t), Q(s_t, a_t) \right)
+    $$
+
+    The pseudo code is as follows:
+    ```
+    Initialize Q(s,a) = \hat{Q}(s,a) = \frac{R_\text{max}}{1-\gamma}, 
+    N(s,a) = 1
+    for t = 1, 2, ... do
+        Select action a_t according to UCB-QL
+        Observe reward r_t and next state s_{t+1}
+        update Q
+        update Q_hat
+        update N
+    end for
+    ```
+    recall that $k=N_t(s,a)$
+
+    A simplified choice of $H=\frac{-\log{\epsilon}}{1-\gamma}$.
+    
+    > For the asignment we may use:
+    $$
+        b_k = 0.5\sqrt{\frac{H}{k}\log\frac{SA\log(k+1)}{\delta}}
+    $$
+
+    Sample complexity of UCB-QL:
+    for any $\epsilon > 0$ and $\delta\in(0,1)$ the sample complexity is upper bounded by the order of
+    $$
+        \tilde{\mathcal{O}}\left[\frac{SA}{\epsilon^2(1-\gamma)^7}\log\left(\frac{1}{\delta}\right)\right], \text{ with probability } 1-\delta
+    $$
+    When $\tilde{\mathcal{O}}$ hides polylogarithmic terms in SA, $\epsilon^{-1}$ and $\frac{1}{1-\gamma}$.
+
+    > UCB-QL is PAC-MDP. (this is shown in the slides...)
+    ### MBIE (Model based interval estimation)
+    MBIE is a model-based PAC-MDP algorithm designed based on OFU.
+
+    1. maintains a model of the environment
+    2. uses the model to estimate the value function
+
+    We need empirical estimators of $P$ and $R$. But if we just do this emperically, we dont explore. We only exploit.
+
+    > We need to explore the model space.
+    **Step 1: model construction**
+
+    We need to define the set of all possible MDPs. Then we prune the set of MDPs based on the observations. 
+
+    **Step 2: planning**
+    $$
+        \pi_t \in\text{arg}\max_{M^'\in\mathcal{M_t}} \max_{\pi\in\prod^\text{SD}} V^\pi(M^') 
+    $$
+    Once we have $pi_t$ we can obviously choose $a(s_t) = \pi_t(s_t)$
+
+
+    ### Worst-case lower bound
+    """
+    
+
+
+def REINFORCE_algorithm():
+    ''
+    """
+    The 
     """
 
 def cart_pole():
@@ -1955,7 +2291,7 @@ def lunar_lander():
 
 
 if __name__ == '__main__':
-    functions = [pre_start, multi_armed_bandit, week1_notes, lecture2_notes, lecture3_notes, lecture_feb_23_notes, lectureNotes_march_02, #cart_pole, #lunar_lander
+    functions = [important_concepts, pre_start, multi_armed_bandit, week1_notes, lecture2_notes, lecture3_notes, lecture_feb_23_notes, lectureNotes_march_02,  lecturenotes_march_16_deep_learning,  Lecture_26_march_afternoon, #cart_pole, #lunar_lander
                 ]
     with streamlit_analytics.track():
         
