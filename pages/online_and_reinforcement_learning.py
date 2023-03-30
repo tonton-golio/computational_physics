@@ -2156,10 +2156,161 @@ def lecture_notes_23_march_afternoon():
 
     We have new classes for average-reward MDPs:
     * ergotic
-    * 
+    * communicating
+    * weakly communicating
     """
+
+def lecture_notes_30_march_morning():
+    ''
+    r"""
+    ### Second last lecture
+    ###### class definitions:
+    
+    communicating: all states are reachable from all other states, in a finite number of steps. We can introduce the notion of diameter; which is maximum over pairs of states of the number of steps needed to reach one from the other.
+    $$
+        D = \max_{s,s'\in S \cap s\neq s'} \min_{\pi\in\prod^\text{SD}} \mathbb{E}\left[T^\pi(s,s')\right]
+    $$
+    ie. the diameter is the worst-case shortest path. If an MDP is communicating, then the diameter is finite.
+
+    We may have infinite diameter, if the MDP is weakly communicating.
+
+
+    """
+    cols = st.columns((1,2))
+    g = graphviz.Digraph(graph_attr={'rankdir':'LR'})
+    g.node('s1')
+    g.node('s2')
+
+    g.edge('s1', 's2', label='δ')
+    g.edge('s2', 's1', label='1')
+    g.edge('s1', 's1', label='1-δ')
+
+    cols[0].graphviz_chart(g)
+    cols[0].markdown(r"""
+    The diameter here is $\frac{1}{\delta}$
+    """)
+
+    g.node('s3')
+    g.edge('s2', 's3', label="δ'")
+    g.edge('s3', 's2', label='1')
+    g.edge('s3', 's3', label='1-δ\'')
+    cols[1].graphviz_chart(g)
+    cols[1].markdown(r"""
+    The diameter here is $\frac{1}{\delta}+\frac{1}{\delta'}$. I.e., the diameters are additive.
+    """)
+
+    r"""
+    So the diameter of the riverswim MDP (given that the probability of rightward transtion is constant) is 
+    $$
+        \frac{L}{P_\text{right}}.
+    $$
+
+    In weakly communicating MDPs, under $\pi^*$,
+    $$
+        \mathbb{E}\left[\sum_{t=1}^N r_t \mid S_1 =s \right] = Ng^*(s) + \mathcal{O}(\text{sp}(b^*))
+    $$
+    and 
+    $$
+        \sum_{t=1}^N r_t = Ng^* +  \mathcal{O}(\text{sp}(b^*)\sqrt{N\log{N/\delta}}), w.p. \geq 1-\delta.
+    $$
+    """
+
+
+    # new stuff
+
+    r"""
+    # Online reinforcement learning in average-reward MDPs
+    * potentially unbounded horizon
+    * without reset
+
+    The objective here is; total reward: $\sum_{t=1}^\infty r_t$. We need to balance exploration and exploitation.
+
+    Performance measure:
+    * convergence to the optimal policy
+    * PAC sample complexity
+    * regret:  
+    $$
+    \mathcal{R (\mathbb{A}, T) :=\sum_{t=1}^\infty r_t^* - \sum_{t=1}^\infty r_t}
+    $$
+    in which $\mathbb{A}$ is the algorithm, $\forall t: a_t = \mathbb{A}(h_t)$.
+
+    Regret is the difference between the optimal reward and the reward obtained by the algorithm. Regret $\mathcal{R}$ is a random variable, so we can eith consider the expected value of regret, or bound it with a probability.
+    $$
+    \begin{align*}
+        \mathbb{E}[\mathcal{R(\mathbb{A}, T)}] =\mathcal{o}(T) &  \text{ or } & \mathcal{R(\mathbb{A}, T)} = \mathcal{O}(T) & \text{ with high probability }.
+    \end{align*}
+    $$
+    Mathematicians would call this; sub-linear regret.
     
 
+    ## Approaches
+    * Model-based, update $\hat{P}$ and $\hat{R}$. and use value iteration to optain $\hat{V}^*$. Choose best action with probability $1-\epsilon$, and random action with probability $\epsilon$. BAD EMPERICAL RESULTS.
+    * UCRL: Upper Confidence Bound Reinforcement Learning. BUGGY
+    * UCRL2 (model based): Upper Confidence Bound Reinforcement Learning. maintain confidence sets. Choose optimistic models and optimistic policy leading to highest gain. BETTTER.
+    $$
+        \pi_t \in \arg \max_{M'\in\mathcal{M_t}} \max_{\pi\in\prod^\text{SD}} g^{\pi'}(M')
+    $$
+    if suffices to find a $frac{1}{\sqrt{t}}$ optimal policy;
+    $$
+        \ldots
+
+    $$
+    * UCRL2-L: does not update every time step. Rather it proceeds in internal epochs. We update when $N_t(s,a)$ for some (s,a) is doubled. We thus need a global counter and a counter within the epoch.
+    * model-free: Q-learning, but use "reward + exploration bonus" as the Q-value. Better
+    """
+
+
+def notes_last_lecture():
+    ''
+    """
+    # Summary of the course:
+
+    ### Model-free or model-based?
+    * Model free is computationally cheaper, and they directly lend themselves to generalization. Great for infinite MDPS. 
+    * Model-based typically show better performance for finite MDPs.
+
+    ### Classes
+    insert picture from phone
+    """
+    g = graphviz.Digraph(graph_attr={'rankdir':'LR'})
+    g.node('MDPs')
+    g.node('Discounted MDPs')
+    g.node('Average reward MDPs')
+    g.node('Episodic MDPs')
+
+    g.node('VI')
+    g.node('PI')
+    g.node('dynamic-learning')
+
+    g.edge('MDPs', 'Discounted MDPs', label='discount factor < 1')
+    g.edge('MDPs', 'Average reward MDPs', label='discount factor = 1')
+    g.edge('MDPs', 'Episodic MDPs', label='discount factor = 1, reset')
+
+    g.edge('Discounted MDPs', 'VI', )
+    g.edge('Discounted MDPs', 'PI',)
+    g.edge('Average reward MDPs', 'VI')
+    g.edge('Episodic MDPs', 'dynamic-learning')
+
+    st.graphviz_chart(g)
+
+    '''
+    #### RL
+    * Online vs offline
+    * off-policy vs on-policy
+    * model-based vs model-free vs policy search
+    '''
+
+    """
+    #### Learning from data
+    * Policy evaluation -> TD or model-based
+    * Off-policy learning
+    * off-policy optimization - >   Q-learning, model-based
+    """
+
+    """
+    #### Online RL
+    ...
+    """
 def REINFORCE_algorithm():
     ''
     """
@@ -2536,7 +2687,10 @@ def lunar_lander():
 
 
 if __name__ == '__main__':
-    functions = [important_concepts, pre_start, multi_armed_bandit, week1_notes, lecture2_notes, lecture3_notes, lecture_feb_23_notes, lectureNotes_march_02,  lecturenotes_march_16_deep_learning,  Lecture_16_march_afternoon,lecture_notes_23_march_morning, lecture_notes_23_march_afternoon,#cart_pole, #lunar_lander
+    functions = [important_concepts, pre_start, multi_armed_bandit, week1_notes, lecture2_notes, lecture3_notes, lecture_feb_23_notes, lectureNotes_march_02,  lecturenotes_march_16_deep_learning,  Lecture_16_march_afternoon,lecture_notes_23_march_morning, lecture_notes_23_march_afternoon,
+                 lecture_notes_30_march_morning,
+                 notes_last_lecture,
+                 #cart_pole, #lunar_lander
                 ]
     with streamlit_analytics.track():
         
