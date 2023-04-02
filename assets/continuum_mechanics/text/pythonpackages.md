@@ -65,3 +65,12 @@ def bottom_boundary(x, on_boundary): return on_boundary and near(x\[0\], 0)
 bc1 = DirichletBC(V, Constant(0), bottom_boundary) # u_z = 0 (no displacement) at z=0 (bottom boundary)
 bcs = \[bc1\]
 *From Nicholas Notebook*
+
+## __Gridap__
+Another FEM package for Julia - For illustration it can be helpful to see, that the syntax and procedure is somewhat similar
+
+gripap.github.io
+
+## __Gmsh__
+Not exactly a python package, but a tool to build custom meshes for Fenics to solve.
+https://gmsh.info/

@@ -28,9 +28,10 @@ def frontpage():
     2. The Continuum Approximation
     3. Tensor Fundamentals
     4. Elasticity (*TBC*)
-    5. Finite Element Modelling
-    6. Fluids at Rest
-    7. Fluids in Motion (*TBC*)
+    5. Dynamics (*TBC*)
+    6. Finite Element Modelling
+    7. Fluids at Rest
+    8. Fluids in Motion (*TBC*)
     
     __Appendix__
     * Iceberg Simulator (*TBS*)
@@ -144,7 +145,25 @@ def elasticity():
     key='__Work and Energy__'
     with st.expander(key, expanded=False):
         st.markdown(text_dict[key])
+    
+    key='__Vibrations and Sound__'
+    with st.expander(key, expanded=False):
+        st.markdown(text_dict[key])    
 
+    st.write(signatur)
+
+def dynamics():
+    st.markdown(r"""# __Dynamics__ """)
+    text_dict = getText_prep(filename = textfile_path+'dynamics.md', split_level = 2)
+    
+    key='__Introduction__'
+    with st.expander(key, expanded=True):
+        st.markdown(text_dict[key])
+    
+    key='__Definitions__'
+    with st.expander(key, expanded=True):
+        st.markdown(text_dict[key])
+        
     st.write(signatur)
     
 def finiteelementmodelling():
@@ -205,19 +224,40 @@ def fluidfundamental():
     
 def fluidsinmotion():
     st.markdown(r"""# __Fluids in Motion__""")
-    text_dict = getText_prep(filename = textfile_path+'fluids.md', split_level = 2)
+    text_dict = getText_prep(filename = textfile_path+'fluidsinmotion.md', split_level = 2)
     
     key='__Introduction__'
     with st.expander(key, expanded=True):
         st.markdown(text_dict[key])
         
+    key='__Ideal Flows__'
+    with st.expander(key, expanded=False):
+        st.markdown(text_dict[key])
+    
+    key='__Viscosity__'
+    with st.expander(key, expanded=False):
+        st.markdown(text_dict[key])
+        
+    key='__Channels and Pipes__'    
+    with st.expander(key, expanded=False):
+        st.markdown(text_dict[key])
+        
+    key='__Gravity Waves__'    
+    with st.expander(key, expanded=False):
+        st.markdown(text_dict[key])
+    
+    key='__Creeping Flow - Newtonian Fluids__'    
+    with st.expander(key, expanded=False):
+        st.markdown(text_dict[key])
+        
+    key='__Creeping Flow - Non-Newtonian Fluids__'
+    with st.expander(key, expanded=False):
+        st.markdown(text_dict[key])    
     st.write(signatur)
 
 def stressandstrainvisualizer():
     st.markdown(r"""# __Stress and Strain Visualizer__""")
     visualizer()
-    
-    
     
 def pythonpackages():
     st.markdown(r"""# __Useful Python Packages__""")
@@ -249,8 +289,39 @@ def pythonpackages():
     
     st.write(signatur)
     
+def examdisposition():
+    st.markdown(r"""# __Exam Dispositions__""")
+    text_dict = getText_prep(filename = textfile_path+'examdisp.md', split_level = 2)
+    
+    key='__1. Hydrostatics, Buoyancy__'
+    with st.expander(key, expanded=True):
+        st.markdown(text_dict[key])   
+
+    key='__2. Stress & Strain__'
+    with st.expander(key, expanded=True):
+        st.markdown(text_dict[key])  
+
+    key='__3. Elasticity & Vibrations__'
+    with st.expander(key, expanded=True):
+        st.markdown(text_dict[key])          
+        
+    key='__4. Continuum Mechanics__'
+    with st.expander(key, expanded=True):
+        st.markdown(text_dict[key])  
+      
+    key='__5. (Nearly) Ideal Flows and the Sverdrup Balance__'
+    with st.expander(key, expanded=True):
+        st.markdown(text_dict[key])  
+
+    key='__6. Viscous Flows__'
+    with st.expander(key, expanded=True):
+        st.markdown(text_dict[key])  
+
+    key='__7. Stokes flows and Channels & Pipes__'
+    with st.expander(key, expanded=True):
+        st.markdown(text_dict[key])          
 #Navigator
 if __name__ == '__main__':
-    functions = [frontpage, contapprox, tensorfundamentals, elasticity, finiteelementmodelling, fluidfundamental, fluidsinmotion, stressandstrainvisualizer, pythonpackages]
-    names = ['1. Frontpage', '2. The Continuum Approximation', '3. Tensor Fundamentals', '4. Elasticity', '5. Finite Element Modelling', '6. Fluids at Rest','7. Fluids in Motion', 'Stress and Strain Visualizer', 'Useful Python Packages']
+    functions = [frontpage, contapprox, tensorfundamentals, elasticity, dynamics, finiteelementmodelling, fluidfundamental, fluidsinmotion, stressandstrainvisualizer, pythonpackages, examdisposition]
+    names = ['1. Frontpage', '2. The Continuum Approximation', '3. Tensor Fundamentals', '4. Elasticity', '5. Dynamics', '6. Finite Element Modelling', '7. Fluids at Rest','8. Fluids in Motion', 'Stress and Strain Visualizer', 'Useful Python Packages', 'Exam Dispositions']
     navigator(functions, names)

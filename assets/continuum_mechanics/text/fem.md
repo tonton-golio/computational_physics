@@ -86,4 +86,22 @@ It is based upon Galerkin’s method, It is computationally systematic and effic
 It is based on reformulations of the differential equation that remove the problems
 of restrictive differentiability requirements.
 
+## __Minimum potential energy principle
+The weak problem is known as a variational problem, which is related to that of determning U such that the potential energy function W(u) is minimized
+
+$$
+W(u)=1/2 \int \epsilon (u) : \sigma(\epsilon(u))dV - \int f \cdot u dV
+$$
+
+If u mnimizes W(u) then any variation of u should lead to larger W(u)
+
+Instead of varying a scalar, we vary a functino to minize a scalar.
+
+Because of linearity, the change in some parameter of the function, will cause a linear change in the function W, ie. the original term plus additional terms. 
+
+By doing the math, we see that the variation look like a derivative, but for a functional.
+That means that we can employ similar methods as when minimizing ordinary function. ie. setting the functional derivative to zero and solve. That found function is the true minimizer of the energy.
+
+
+
 **For the practical implementation of the finite element modelling, including choice of basisfunction $\phi_i$ and determining $a_i$ using the fenics python package, see the Finite Element Modelling Illustrator and Useful Python Packages topics.**

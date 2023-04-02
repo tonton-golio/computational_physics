@@ -53,3 +53,22 @@ The units will be in Pascal, which essentially is the same as Joules.
 
 ## __Slender Rods__
 
+## __Vibrations and Sound__
+Sound, wirte EQ 24.5
+
+Examples of vibration; platetectonics and earthquakes.
+Bruel and Kjær uses microphones on objects and when vibrated using inverse problems can tell alot of the object.
+
+Two types of waves, L-ongditudinal or P. Divergence and curl free, producing pressure and shear waves.
+
+also known as primary and secondary waves
+Pressure faster than shear.
+
+For poisson coefficients of $1/3$, $c_L=2c_P$
+
+Insert picture of plane wave propagation for comparision.
+For pressure waves, the polarization vector is aligned with the wavevector $\vec{K}$.
+
+For shear waves, there exists two polarization vectors perpendicular to the wavevector $\vec{K}$.
+
+
