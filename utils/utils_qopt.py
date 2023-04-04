@@ -156,10 +156,10 @@ def _plot_wigner(W, xvec, pvec, three_dimensional, theme):
     
         cbar = ax.contourf(xvec, pvec, W, 
                            levels=100, cmap=cmap, norm=colors.CenteredNorm())
-        fig.colorbar(cbar, label='Quasi probability')
+        fig.colorbar(cbar, label='Quasi probability distribution $W(q, p)$')
 
         ax.set_aspect('equal')
-        ax.set_xlabel('$x$')
+        ax.set_xlabel('$q$')
         ax.set_ylabel('$p$')
         #ax.xaxis.set_tick_params(rotation=-90)
 
@@ -175,7 +175,7 @@ def _plot_wigner(W, xvec, pvec, three_dimensional, theme):
         ax_marginalx.plot(xvec, W.sum(axis=0))
         ax_marginalp.plot(W.sum(axis=1), pvec)
 
-        ax_marginalx.set_ylabel("$\\left| \\psi (x) \\right|^2$")
+        ax_marginalx.set_ylabel("$\\left| \\psi (q) \\right|^2$")
         ax_marginalp.set_xlabel("$\\left| \\psi (p) \\right|^2$", )
 
         st.pyplot(fig)
