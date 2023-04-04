@@ -1797,7 +1797,7 @@ def lecturenotes_march_16_deep_learning():
 
     """
 
-def Lecture_26_march_afternoon():
+def Lecture_16_march_afternoon():
     ''
     r"""
 
@@ -1912,9 +1912,405 @@ def Lecture_26_march_afternoon():
 
     ### Worst-case lower bound
     """
+
+def lecture_notes_23_march_morning():
+    ''
+    r"""
+    Today: we will talk about the follwing topics:
+    * Acynchronous Advantage actor-critic (A3C)
+    * Proximal Policy Optimization (PPO)
+
+    ### Recall
+    $$
+        J(\pi) = \mathbb{E} \left[ \sum_{t=1}^\infty \gamma^{t-1} r_t  \mid s_0, \pi\right]
+    $$
+    The advantange of doing $a$ in state $s$ is defined as:
+    $$
+        A^{\pi}(s,a) = Q^{\pi}(s,a) - V^{\pi}(s)
+    $$
+    we can defind the expected return for a reference policy $\pi'$ as well:
+    $$
+        J(\pi') = J(\pi) + \mathbb{E} \left[ \sum_{t=0}^\infty \gamma^t A^\pi(s_t,a_t) \mid s_0, \pi'\right]
+    $$
+    From a sample $(s_t, a_t, r_{t+1})$ we can estimate the advantage as follows:
+    $$
+        A^{\pi}(s_t, a_t) \approx r_{t+1} + \gamma \hat{V}^{\pi}(s_{t+1}) - V^{\pi}(s_t)
+    $$
+    Can be improved by looking at longer sequences of states and actions (obviously we need to discount the rewards appropriately):
+    $$
+        A^{\pi}(s_t, a_t) \approx - V^{\pi}(s_t)+ \gamma^{T-t} \hat{V}^{\pi}(s_{t+k+1})+\sum_{k=0}^T \gamma^k r_{t+k+1} 
+    $$
+
+    ### A3C (used by large AI companies, for parallelization)
+    * A3C == Asynchronous Advantage Actor-Critic (AAAC)...
+    > What does the term "asynchronous" mean?
+    
+    * The agents are not synchronized --> so how do we update the value funciton in a meaningful manner? So we accumulate gradient information for a bunch of steps, and then apply those to update our value function.
+    
+    > critic update:
+    * delayed crituc update: $\hat{Q}$ and $\hat{Q}_\text{target}$ are updated every $K$ steps. And have parameters $\mathbf{w}$ and $\mathbf{w}_\text{target}$ respectively.
+
+    > initialization:
+    * initial actor params $\mathbf{\theta}$
+    * step counter $t=0$
+    * initial value function weights $\mathbf{w}$ and $\mathbf{w}_\text{target}$
+    * accumulated gradient $\delta_\mathbf{w} \leftarrow 0$
+    * observed intial state, $s$.
+
+    * pseudo code:
+    ```
+    repeat
+        take action a, epsilon-greed based on $\hat{Q}(s,a)$
+        observe reward $r$ and next state $s'$
+        $$y = \begin{cases}  & \text{for terminal state:} $s'$ \\ r+\gamma\max_{a'}\hat{Q}_\text{target}(s',a') & \text{otherwise:} \end{cases}$$
+        
+        accumulate gradient $\delta_\mathbf{w} \leftarrow \delta_\mathbf{w} + \nabla_\mathbf{w} \left( \hat{Q}(s,a) - y \right)^2$
+        $s \leftarrow s'$
+        $t \leftarrow t+1$
+        if $t % T_\text{targer-update} =0 :
+            \mathbf{w}_\text{target} \leftarrow \mathbf{w}$
+        if $t % T_\text{critic-update} =0 :
+            update W base on $\delta_\mathbf{w}$ and reset $\delta_\mathbf{w} \leftarrow 0$
+
+    until termination
+    ```
+
+    * pseudo code 2 (for actor):
+    ```
+    repeat
+        $\delta_\mathbf{\theta} \leftarrow 0$
+        $\delta_\mathbf{w} \leftarrow 0$
+        for $e = 1, ..., T_\text{update}$:
+            $t\leftarrow 0$
+            observe state $s_t$
+            repeat
+                take action $a_t$, according to $\pi_\theta(a_t|s_t)$
+                observe reward $r_{t+1}$ and next state $s_{t+1}$
+                t \leftarrow t+1
+            until $s_{t+1}$ is terminal or $t=T$
+            R \leftarrow 0 if $s_{t+1}$ is terminal, otherwise R\leftarrow \hat{V}_\text{target}(s_{t})$
+            for i = t-1, ..., 0:
+                R \leftarrow r_{i} + \gamma R
+                $\delta_\mathbf{\theta} \leftarrow \delta_\mathbf{\theta} + \nabla_\mathbf{\theta} \log \pi_\theta(a_{i-1}|s_{i-1}) \left( R - \hat{V}(s_{i-1}) \right)$
+                $\delta_\mathbf{w} \leftarrow \delta_\mathbf{w} + \nabla_\mathbf{w} \left( \hat{V}(s_{i-1}) - R \right)^2$
+        update $\mathbf{\theta}$ based on $\delta_\mathbf{\theta}$
+        update $\mathbf{w}$ based on $\delta_\mathbf{w}$
+    until termination
+    ```
+
+
+    ### PPO
+    * PPO == Proximal Policy Optimization
+    * popular
+    * robust
+    * works for discrete and continuous action spaces
+    * PPO is used by OpenAI for ChatGPT
+    * **Ingredients*:**
+        * "Surrograte loss" function: CPI loss
+        * "Clipping" --> 
+        * Optimize n_steps using mini-batches drawn from experience buffer\
+        
+    $$
+    \begin{align*}
+    \eta^\pi_\gamma = \mathbb{E}_{s_0\sim p_\text{start}}\left[ \sum_{k=0}^\infty \gamma^k \text{Pr}\{s_0\rightarrow^k s|\pi\} \right]
+    \end{align*}
+    $$
+
+    We can express the expectred return of $\pi'$ in terms of $\eta$:
+    $$
+    J(\pi') = J(\pi) + \sum_s\eta^{\pi'}_\gamma (s) \sum_a \pi'(a|s) A^\pi(s,a)
+    $$
+    DIFFIUCLT TO OPTIMIZE; thus a local approximation is introduced:
+    $$
+        J^{\text{CPI}}_\pi(\pi') \approx J(\pi) + \sum_s\eta^{\pi}_\gamma (s) \sum_a \pi'(a|s) \hat{A}^\pi(s,a)
+    $$
+    $J(\pi)$ can be dropped when optimizing. Notice we are using $\eta^\pi$ instead of $\eta^{\pi'}$.
+
+    **Approximation 2**
+    Let $\mathbf{\theta}'$ be the parameters of $\pi'$, our objective is thus;
+    $$
+        \max_{\mathbf{\theta}'} \sum_s\eta^{\pi}_\gamma (s) \sum_a \pi'(a|s) \hat{A}^\pi(s,a)
+    $$
+    replace the sum over $\eta$ with an expectation over the start state $s_0$ sampled from $\eta$:
+    
+    $$
+    \begin{align*}
+        \ldots
+    \end{align*}
+    $$
+    see slies (41 ish)
+
+
+    After some math (shown in slides), we arrive at the following objective:
+    $$
+        \left[
+        \frac{\pi'(a_t|s_t)}{\pi(a_t|s_t)} \hat{A}^\pi(s_t,a_t)
+        \right]
+    $$
+    maximized base on one or several (sub-)episodes.
+
+    **Clipping**
+    PPO-Clip: 
+    $$
+        \min \left[
+            \frac{\pi'(a_t|s_t)}{\pi(a_t|s_t)} \hat{A}^\pi(s_t,a_t),
+            \text{clip}\left(
+                \frac{\pi'(a_t|s_t)}{\pi(a_t|s_t)}, 1-\epsilon, 1+\epsilon \right) \hat{A}^\pi(s_t,a_t) \right)
+        \right]
+    $$
+    with $\text{clip}(x, a, b) = \min(\max(x,a),b)$
+    This limits the update rate of the policy. We only update if $\frac{\pi'(a_t|s_t)}{\pi(a_t|s_t)} \in [1-\epsilon, 1+\epsilon]$.
+
+    *pseudo code*: ## see slides
+    ```
+    repeat
+        M = null
+        gather n_steps of experience
+
+
+    """
+
+def lecture_notes_23_march_afternoon():
+    ''
+    r"""
+    # Lecture notes 23 March afternoon
+
+    ### Sample complexity
+    input param $\epsilon$, which defines how bad we can accept. For an ignorant algorithm, the number of bad steps is only bounded by the total number of time steps. For a good algorithm, the number of bad steps is bounded with probability $\geq 1-\delta$ by some polynomial in 
+    $$
+        \mathcal{S}, \mathcal{A}, \frac{1}{\epsilon}, \frac{1}{\delta}, \frac{1}{1-\gamma}
+    $$
+    We should understand $\frac{1}{1-\gamma}$ as the expected number of days until the end of the world.
+
+    ### MBIE
+    * MBIE == Monte Carlo Bootstrapped Importance Sampling Estimator
+    #### Step 1: Confidence sets
+    define confidence sets $C_{s,a}$ and $C_{s,a}^*$ such that
+
+    #### Step 2: Planning
+    $$
+        \pi_t\in\text{arg}\max_{M'\in\mathcal{M}_t} \max_{\pi\in\prod^\text{SD}V^\pi_{M'}
+    $$
+    and then coose $a_t=\pi_t(s_t)$. 
+
+    Alternatively using Bellmans optimality equation:
+    see slide 32
+    $$
+        \tilde{Q}(s,a) = \max_{R'(s,a)\in C_{s,a}} R'(s,a) + \gamma\max_{P'(\cdot\mid s,a)\in C^'_{s,a}}\sum_x P'(x\mid s,a)\max_{a'}\tilde{Q}(x,a')
+    $$
+    The first term is:
+    $$
+    \max_{R'(s,a)\in C_{s,a}} R'(s,a) = \hat{R}_t(s,a)+\beta_{N_t(s,a)}
+    $$
+
+    The second term can be approximated by: extended value iteration.
+
+    The pseudo code:
+    ```
+    input \epsilon, \delta
+    initialize for all state-action pairs
+    N(s,a) = 0
+    Q(s,a) = \frac{R_\max}{1-\gamma}
+
+    for t=1,2,3,... do
+        compute estimates: $\hat{R}_t$ and $\hat{P}_t$
+        find \tilde{Q} using EVI
+        chose action
+        reveice reward
+        recieve next state
+        update
+    ```
+    see slides from Sadagh for the EVI part.
+
+
+    # Theory of average-reward MDPs
+    ## Average-reward MDPs
+    We can throw away the discount-factor, and just use the average reward.
+    $$
+    \begin{align*}
+        \mathcal{M} = \langle S, A, P, R \rangle\\
+        \sup_\text{all strategies} \lim_{N\to\infty} \frac{1}{N}\mathbb{E}\left[\sum_{t=1}^N R(s_t,a_t)\right]
+    \end{align*}
+    $$
+    This holds for a stochastic reward function $R$.
+
+    ### Gain and Bias
+    These are value functions:
+    #### Gain function
+    The gain function of policy $\pi$ is a mapping $g^\pi:S\to\mathbb{R}$ defined as:
+    $$
+        g^\pi(s) := \lim_{N\to\infty} \frac{1}{N}\mathbb{E}\left[\sum_{t=1}^N R(s_t,a_t)\mid s_1=s\right]
+    $$
+    $g^\pi$ is the per-step reward of $\pi$ starting in state $s$ in the long run.
+
+    To find the optimal gain:
+    $$
+        g^*(s) = \sup_{\pi\in\prod^\text{SD}} g^\pi(s)
+    $$
+    This works in stready state, but not in transient states. To include transient states, we introduce bias.
+    #### Bias function
+    The bias function of policy $\pi$ is a mapping $b^\pi:S\to\mathbb{R}$ defined as:
+    $$
+        b^\pi(s) := \mathbb{E}\left[\sum_{t=1}^\infty R(s_t,a_t) - g^\pi(s)\mid s_1=s\right]
+    $$
+
+    We have new classes for average-reward MDPs:
+    * ergotic
+    * communicating
+    * weakly communicating
+    """
+
+def lecture_notes_30_march_morning():
+    ''
+    r"""
+    ### Second last lecture
+    ###### class definitions:
+    
+    communicating: all states are reachable from all other states, in a finite number of steps. We can introduce the notion of diameter; which is maximum over pairs of states of the number of steps needed to reach one from the other.
+    $$
+        D = \max_{s,s'\in S \cap s\neq s'} \min_{\pi\in\prod^\text{SD}} \mathbb{E}\left[T^\pi(s,s')\right]
+    $$
+    ie. the diameter is the worst-case shortest path. If an MDP is communicating, then the diameter is finite.
+
+    We may have infinite diameter, if the MDP is weakly communicating.
+
+
+    """
+    cols = st.columns((1,2))
+    g = graphviz.Digraph(graph_attr={'rankdir':'LR'})
+    g.node('s1')
+    g.node('s2')
+
+    g.edge('s1', 's2', label='δ')
+    g.edge('s2', 's1', label='1')
+    g.edge('s1', 's1', label='1-δ')
+
+    cols[0].graphviz_chart(g)
+    cols[0].markdown(r"""
+    The diameter here is $\frac{1}{\delta}$
+    """)
+
+    g.node('s3')
+    g.edge('s2', 's3', label="δ'")
+    g.edge('s3', 's2', label='1')
+    g.edge('s3', 's3', label='1-δ\'')
+    cols[1].graphviz_chart(g)
+    cols[1].markdown(r"""
+    The diameter here is $\frac{1}{\delta}+\frac{1}{\delta'}$. I.e., the diameters are additive.
+    """)
+
+    r"""
+    So the diameter of the riverswim MDP (given that the probability of rightward transtion is constant) is 
+    $$
+        \frac{L}{P_\text{right}}.
+    $$
+
+    In weakly communicating MDPs, under $\pi^*$,
+    $$
+        \mathbb{E}\left[\sum_{t=1}^N r_t \mid S_1 =s \right] = Ng^*(s) + \mathcal{O}(\text{sp}(b^*))
+    $$
+    and 
+    $$
+        \sum_{t=1}^N r_t = Ng^* +  \mathcal{O}(\text{sp}(b^*)\sqrt{N\log{N/\delta}}), w.p. \geq 1-\delta.
+    $$
+    """
+
+
+    # new stuff
+
+    r"""
+    # Online reinforcement learning in average-reward MDPs
+    * potentially unbounded horizon
+    * without reset
+
+    The objective here is; total reward: $\sum_{t=1}^\infty r_t$. We need to balance exploration and exploitation.
+
+    Performance measure:
+    * convergence to the optimal policy
+    * PAC sample complexity
+    * regret:  
+    $$
+    \mathcal{R (\mathbb{A}, T) :=\sum_{t=1}^\infty r_t^* - \sum_{t=1}^\infty r_t}
+    $$
+    in which $\mathbb{A}$ is the algorithm, $\forall t: a_t = \mathbb{A}(h_t)$.
+
+    Regret is the difference between the optimal reward and the reward obtained by the algorithm. Regret $\mathcal{R}$ is a random variable, so we can eith consider the expected value of regret, or bound it with a probability.
+    $$
+    \begin{align*}
+        \mathbb{E}[\mathcal{R(\mathbb{A}, T)}] =\mathcal{o}(T) &  \text{ or } & \mathcal{R(\mathbb{A}, T)} = \mathcal{O}(T) & \text{ with high probability }.
+    \end{align*}
+    $$
+    Mathematicians would call this; sub-linear regret.
     
 
+    ## Approaches
+    * Model-based, update $\hat{P}$ and $\hat{R}$. and use value iteration to optain $\hat{V}^*$. Choose best action with probability $1-\epsilon$, and random action with probability $\epsilon$. BAD EMPERICAL RESULTS.
+    * UCRL: Upper Confidence Bound Reinforcement Learning. BUGGY
+    * UCRL2 (model based): Upper Confidence Bound Reinforcement Learning. maintain confidence sets. Choose optimistic models and optimistic policy leading to highest gain. BETTTER.
+    $$
+        \pi_t \in \arg \max_{M'\in\mathcal{M_t}} \max_{\pi\in\prod^\text{SD}} g^{\pi'}(M')
+    $$
+    if suffices to find a $frac{1}{\sqrt{t}}$ optimal policy;
+    $$
+        \ldots
 
+    $$
+    * UCRL2-L: does not update every time step. Rather it proceeds in internal epochs. We update when $N_t(s,a)$ for some (s,a) is doubled. We thus need a global counter and a counter within the epoch.
+    * model-free: Q-learning, but use "reward + exploration bonus" as the Q-value. Better
+    """
+
+
+def notes_last_lecture():
+    ''
+    """
+    # Summary of the course:
+
+    ### Model-free or model-based?
+    * Model free is computationally cheaper, and they directly lend themselves to generalization. Great for infinite MDPS. 
+    * Model-based typically show better performance for finite MDPs.
+
+    ### Classes
+    insert picture from phone
+    """
+    g = graphviz.Digraph(graph_attr={'rankdir':'LR'})
+    g.node('MDPs')
+    g.node('Discounted MDPs')
+    g.node('Average reward MDPs')
+    g.node('Episodic MDPs')
+
+    g.node('VI')
+    g.node('PI')
+    g.node('dynamic-learning')
+
+    g.edge('MDPs', 'Discounted MDPs', label='discount factor < 1')
+    g.edge('MDPs', 'Average reward MDPs', label='discount factor = 1')
+    g.edge('MDPs', 'Episodic MDPs', label='discount factor = 1, reset')
+
+    g.edge('Discounted MDPs', 'VI', )
+    g.edge('Discounted MDPs', 'PI',)
+    g.edge('Average reward MDPs', 'VI')
+    g.edge('Episodic MDPs', 'dynamic-learning')
+
+    st.graphviz_chart(g)
+
+    '''
+    #### RL
+    * Online vs offline
+    * off-policy vs on-policy
+    * model-based vs model-free vs policy search
+    '''
+
+    """
+    #### Learning from data
+    * Policy evaluation -> TD or model-based
+    * Off-policy learning
+    * off-policy optimization - >   Q-learning, model-based
+    """
+
+    """
+    #### Online RL
+    ...
+    """
 def REINFORCE_algorithm():
     ''
     """
@@ -2291,7 +2687,10 @@ def lunar_lander():
 
 
 if __name__ == '__main__':
-    functions = [important_concepts, pre_start, multi_armed_bandit, week1_notes, lecture2_notes, lecture3_notes, lecture_feb_23_notes, lectureNotes_march_02,  lecturenotes_march_16_deep_learning,  Lecture_26_march_afternoon, #cart_pole, #lunar_lander
+    functions = [important_concepts, pre_start, multi_armed_bandit, week1_notes, lecture2_notes, lecture3_notes, lecture_feb_23_notes, lectureNotes_march_02,  lecturenotes_march_16_deep_learning,  Lecture_16_march_afternoon,lecture_notes_23_march_morning, lecture_notes_23_march_afternoon,
+                 lecture_notes_30_march_morning,
+                 notes_last_lecture,
+                 #cart_pole, #lunar_lander
                 ]
     with streamlit_analytics.track():
         
