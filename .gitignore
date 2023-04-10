@@ -1,3 +1,5 @@
 venv/
 pages/data.npz
 .pyc
+.gz
+ybyte
