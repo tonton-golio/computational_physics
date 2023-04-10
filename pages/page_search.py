@@ -74,8 +74,8 @@ def draw_tree(tree, level1_names_input = None, level2_names_input = None, st=st)
                     if level2_names_input is not None:
                         for name in level2_names:
                             if name in level2_names_input:
-                                g.node(name, name[:-3], pos='{},{}!'.format(30*j, -2))
-                                g.edge(level1_name, name, style='box', color='red')
+                                g.node(level1_name+name, name[:-3], pos='{},{}!'.format(30*j, -2))
+                                g.edge(level1_name, level1_name+name, style='box', color='red')
 
 
     #g.view()
@@ -99,7 +99,7 @@ def search(searchterm, tree, return_all = False):
     
     matches = [(key,val) for key, val in matches.items()]
     df = pd.DataFrame(matches)
-    df.sort_values(by=[1], ascending=False, inplace = True)#.head(5)
+    df.sort_values(by=[1], ascending=False, inplace = True)
     
     if return_all:
         results = df[0].values
@@ -108,8 +108,6 @@ def search(searchterm, tree, return_all = False):
         topresults = df.head(5)[0].values
         return topresults
         
-
-
 
 cols = st.columns((1,4))
 tree_md = get_tree(os_="linux") 
@@ -121,9 +119,10 @@ searchterm = cols[0].text_input(label = 'Search')
 #st.write("searchterm = ", searchterm)
 try:
 
-    topresults = search(searchterm, tree_md)
+    topresults = search(searchterm, tree_md, return_all = True)
     level1_names_input = [i.split('/')[2] for i in topresults]
     level2_names_input = [i.split('/')[-1] for i in topresults]
+    
     draw_tree(tree_md, level1_names_input, level2_names_input, st=cols[1])
     #level1_names_input
 
