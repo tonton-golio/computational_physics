@@ -14,43 +14,18 @@ set_rcParams(style_dict = {
     'axes.labelcolor': "lightgreen" 
     })
 
-def important_concepts():
+
+
+def front_page():
     ''
-    '# Important concepts'
+    '# Online and reinforcement learning'
+    text_dict = getText_prep_new(filename = 'assets/online_reinforcement/'+'orel_page1.md')
+    text_dict['concepts']
+    
 
-    r"""
-    > **Reinforcement learning** is an area of machine learning concerned with how software agents ought to take actions in an environment in order to maximize some notion of cumulative reward.
-    > A Markov decision process (MDP) is a 5-tuple $(S, A, P, R, \gamma)$, where $S$ is the set of states, $A$ is the set of actions, $P$ is the state transition probability, $R$ is the reward function, and $\gamma$ is the discount factor.
-    > A **policy** is a mapping from states to actions. A **value function** is a mapping from states to real numbers. A **Q-function** is a mapping from state-action pairs to real numbers.
-    > A **state-value function** is a mapping from states to real numbers. A **state-action value function** is a mapping from state-action pairs to real numbers.
-    > Regret is the difference between the best possible reward and the reward actually received.
-    > **Exploration** is the process of finding new actions that lead to better rewards. **Exploitation** is the process of using the current knowledge to maximize the reward.
-    > **Off-policy learning** is a learning method in which the behavior policy and the target policy are different. **On-policy learning** is a learning method in which the behavior policy and the target policy are the same.
-    > **Temporal difference learning** is a model-free reinforcement learning method that learns from both full episodes and single steps.
-    > Q is a function that maps from a state and an action to a real number which holds the value of the that action in that state.
-
-
-    ---
-    ### epsilon-greedy policy
-    The epsilon-greedy policy is a simple policy that is used in reinforcement learning. It is a greedy policy that is biased towards exploration. It is a policy that is used to balance exploration and exploitation.
-    $$
-    \pi(a|s) = \begin{cases}
-    1-\epsilon + \frac{\epsilon}{|A|} & \text{if } a = \underset{a}{\operatorname{argmax}} Q(s,a) \\
-    \frac{\epsilon}{|A|} & \text{otherwise}
-    $$
-    If epsilon decreases over time, the policy will converge to the optimal policy almost surely.
-
-    ---
-    ### Q-learning
-    Q-learning is a model-free reinforcement learning algorithm. It can be used to find the optimal action-selection policy for any given (finite) Markov decision process (MDP). It does not require a model of the environment, and it can handle problems with stochastic transitions and rewards, without requiring adaptations.
-    $$
-    Q(s_t, a_t) \leftarrow Q(s_t, a_t) + \alpha \left( r_t + \gamma \max_{a} Q(s_{t+1}, a) - Q(s_t, a_t) \right)    
-    $$
-    """
-
-def pre_start():
+def bounds():
     text_intro = """
-    ## Pre course start
+    ## Bounds
     """
 
     st.markdown(text_intro)
@@ -715,8 +690,8 @@ def pre_start():
 
 def multi_armed_bandit():
     ''
-    
-    st.markdown(r"""
+    cols = st.columns((2,1))
+    cols[0].markdown(r"""
     # Multi armed bandit
 
     [link to youtube vid](https://www.youtube.com/watch?v=e3L4VocZnnQ)
@@ -727,7 +702,7 @@ def multi_armed_bandit():
 
     We measure the goodness of a strategy by the regret, $\rho$. Regret is the difference from the maximal expectation value happiness.
     """)
-
+    cols[1].image('https://billig-billy.dk/cache/8/7/2/2/0/5/bandit-hat-fit-500x500x100.webp')
     '---'
     cols = st.columns((1,1))
     cols[0].markdown("""
@@ -764,47 +739,6 @@ def multi_armed_bandit():
     """)
     scores, epls = many_bandit_runs(restaurants, n_epsilons=10, n_exp=2,  method='UCB')
     cols[1].pyplot(show_bandit_scores(scores, epls))
-
-def week1_notes():
-    st.header('Notes lecture 1')
-    cols = st.columns((2,1))
-    cols[0].markdown(r"""
-
-    Batch versus Online. Batch is great if we dont need to update dynamically...
-
-    > A key assumption we make is that the new data is from the same distribution as the data on which we trained. And samples are i.i.d.
-
-    Example of online learning: Stock market investing, spam filtering, interweb suggestions, and others 
-
-    """) # intro
-    cols[1].image('https://billig-billy.dk/cache/8/7/2/2/0/5/bandit-hat-fit-500x500x100.webp')
-
-    st.markdown(r"""
-        ---
-        **Kinds of feedback**
-
-        We see diffent cases in terms of what kinda feedback we get. We may have full feedback as in the case of the stock market (you dont have to buy as stock to know the price), however for a medical treatment, we have to execute the strategy to assess the succes. The limited (bandit) feedback scenario exists in the middle. This difference affects the exploration-exploitation trade-off. (think $\epsilon$-greedy)
-    """) # kinds of feedback
-    st.markdown(r"""
-        ---
-        **Environmental resistance**
-
-        Another axis differenciating online learning problems, is how the environment react to the algorithm. This spam-fitering; the spammers will adapt, overcome, prosper. We label this kinda set-up: *adversarial*. If we have adversarial environment reaction, we cannot do batch learning.
-
-        We introduce *regret* as a metric for evaluation. We use hindsight to calculate this.
-    """) # Environmental resistance
-    st.markdown(r"""
-        ----
-        **Structural complexity**
-
-        We may have a stateless system; think single medical treatemnt of patients. They have no affect on each other.
-        
-        However if we do multiple treatments on a single patient, they influnce each other. This is a centextual problem, a class of problem where batch ML performs well.
-
-        In cases where we have high depence, we can use Markov Decision Processes (MDP).
-
-
-    """) # structural complexity
 
 def lecture2_notes():
     """"""
@@ -947,16 +881,25 @@ def lecture2_notes():
     ```
     """
 
-def lecture3_notes():
+def Markov_Decision_Process_MDP():
     """"""
 
     r"""
     # Markov Decision Process (MDP)
-    #### FROM YT VIDS
     [Intro to MDP video by Computerphile](https://www.youtube.com/watch?v=2iF9PRriA7w)
     [David silver from Deepmind om MDP](https://www.youtube.com/watch?v=lfHX2hHRMVQ)
 
-    A simple case is where we have a fully observable environment.
+    A simple case is where we have a fully observable environment, an example is the riwerswim MDP:
+    """
+    #Let's have a look at the riverSwim vizualization:
+    L = 4#st.slider("number of states", 2, 20, 5, 1)
+    states = np.arange(L)
+    transitions = riverSwim_transtions(L)
+    actions = np.arange(2)
+    reward = np.zeros(L); reward[-1] = 1
+    mdp = MDP(states, actions, transitions, reward, gamma=None, state_names=None, action_names=None, policy=None)
+    mdp
+    r"""
 
     #### Markov Property
     The future is independent of the past given the present.
@@ -985,9 +928,6 @@ def lecture3_notes():
         G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \ldots = \sum_{k=0}^{\infty} \gamma^k R_{t+k+1}
     $$ 
 
-
-    
-    
     """
 
     '---'
@@ -1022,21 +962,28 @@ def lecture3_notes():
     $$
     """
 
-    r"""
-    ### Classification of MDPs
+    
+    "### Classification of MDPs"
+    cols = st.columns(3)
+    cols[0].markdown(r"""
     * Finite-horizon MDPs; with objective function: 
     $$
     \max \mathbb{E} \left[ \sum_{t=1}^{N-1} r(s_t, a_t) + r(s_N) \right]
     $$
+    """)
+    cols[1].markdown(r"""
     * Infinite-horizon discounted MDPs; with objective function: 
     $$
     \max \mathbb{E} \left[ \sum_{t=1}^{\infty} \gamma^{t-1} r(s_t, a_t) \right]
     $$
+    """)
+    cols[2].markdown(r"""
     * Infinite-horizon undiscounted MDPs; with objective function:
     $$
     \max \lim_{N\rightarrow\infty}\frac{1}{N} \mathbb{E} \left[ \sum_{t=1}^{N} r(s_t, a_t) \right]
     $$
-    """
+    """)
+
     "---"
     r"""
     > For todays lecuter we will focus our attention on infinite-horizon discounted MDPs.
@@ -1218,13 +1165,10 @@ def lecture3_notes():
 
         """
 
-def lecture_feb_23_notes():
-    ''
-    r"""
-    It seems I missed a lecture this morning...
-    > topic was: Stochastic bandits + Adversarial full info
+def Policy_Evaluation_from_data():
+    ''   
 
-    ---
+    r"""
     # Policy Evaluation from data
 
     A Markov decision procces becomes a markov reward process if we choose a policy.
@@ -1243,20 +1187,6 @@ def lecture_feb_23_notes():
     V^\pi = (I - \gamma P^\pi)^{-1} r^\pi
     $$
 
-
-    """
-    #Let's have a look at the riverSwim vizualization:
-    L = st.slider("number of states", 2, 20, 5, 1)
-    states = np.arange(L)
-    transitions = riverSwim_transtions(L)
-    actions = np.arange(2)
-    reward = np.zeros(L); reward[-1] = 1
-    mdp = MDP(states, actions, transitions, reward, gamma=None, state_names=None, action_names=None, policy=None)
-    mdp
-    
-
-    r"""
-    # Policy Evaluation from data
     The data here indicates that we donty have full information regarding the MDP. We only have access to the state and the reward. We can use this to estimate the value function.
 
     Online versus offline; we can either update the value function after each step, or after each episode.
@@ -1392,32 +1322,18 @@ def lecture_feb_23_notes():
     if lambda is 0, we recover TD(0). If lambda i one, we get monte carlo sampling.
     """
 
-def lectureNotes_march_02():
+def Off_policy_optimization():
     ''
-    """
-
-    # Lecture Notes - March 2nd
-    We have introduced a whole lot of different frameworks...
-    """
-    st.image('https://miro.medium.com/max/1400/1*ywOrdJAHgSL5RP-AuxsfJQ.png')
-    
-    # Cold-open...
-    st.markdown("""
-    
-    We have a couple different types of MDPs:
-    * Episodic
-    * Discounted
-    * Average reward
-
-    If the MDP is known, then we can just do policy iteration or value iteration. But if the MDP is unknown, then we need to do model-free RL. We can for example use policy evaluation from data, or we can do off-policy evaluation (not covered in this course), or we can do off-policy optimization (which we do do). Notice, that all the methods mentioned for solving unknown MDPs are off-policy.
-    """)
-
-    '---'
-
-
+   
     # What is off-policy optimization, and what is Q-learning?
     st.markdown(r"""
     ## Off-policy optimization and Tabular Q-learning
+    *quote: all models are wrong, but some are useful.* -- **George Box**
+    We have a couple different types of MDPs: Episodic, Discounted, Average reward.
+
+    If the MDP is known, then we can just do policy iteration or value iteration. But if the MDP is unknown, then we need to do model-free RL. We can for example use policy evaluation from data, or we can do off-policy evaluation (not covered in this course), or we can do off-policy optimization (which we do do). Notice, that all the methods mentioned for solving unknown MDPs are off-policy.
+
+
     The focus of today is is off-policy optimization, which is Q-learning. 
     > Notice, this method does not desal with online learning, which is a different topic.
     
@@ -1593,31 +1509,9 @@ def lectureNotes_march_02():
     - Ergoticity: an MDP is ergodic if every state is reachable from every other state under any policy.
     - In Deep Q-learning, a deep neural network is used to approximate the Q-values instead of using a lookup table
     """)
-    # quote: all models are wrong, but some are useful. -- George Box
+    
 
-    # CHAT GPT DESCRIPTION OF Q-LEARNING
-    r"""
-    ---
-    ---
-    ---
-    ## ChatGPTs description of Q-learning 
-    To implement $Q$-learning for the riverswim MDP using a history of actions and rewards, you would need to first initialize a $Q$-table, which is a table that stores the $Q$-values for each state-action pair. You can use the following steps to update the $Q$-table:
-    1. Initialize the $Q$-table with random values.
-    1. For each episode, initialize the agent's position to a random starting location.
-    1. While the agent has not reached the goal location or exceeded the maximum number of time steps:
-        1. Use an exploration policy, such as epsilon-greedy or softmax, to select an action based on the current Q-values.
-        1. Apply the selected action and observe the resulting reward and next state.
-        1. Update the Q-value for the current state-action pair using the Q-learning update rule:
-        $$
-            Q(s, a) = Q(s, a) + \alpha * (r + \gamma * \max(Q(s', a')) - Q(s, a))
-        $$
-        where $s$ is the current state, a is the selected action, r is the observed reward, s' is the next state, alpha is the learning rate, and gamma is the discount factor.
-    1. Repeat steps 2-3 for a specified number of episodes or until the Q-values converge.
-
-    Once the Q-table has been updated, you can use it to select the optimal action for any given state by selecting the action with the highest Q-value.
-    """
-
-def lecturenotes_march_16_deep_learning():
+def Function_approximations():
     #
     '# Deep Learning'
     r"""
@@ -1797,7 +1691,7 @@ def lecturenotes_march_16_deep_learning():
 
     """
 
-def Lecture_16_march_afternoon():
+def PAC_MDP():
     ''
     r"""
 
@@ -1911,9 +1805,97 @@ def Lecture_16_march_afternoon():
 
 
     ### Worst-case lower bound
+    ...
+    
+    # Lecture notes 23 March afternoon
+
+    ### Sample complexity
+    input param $\epsilon$, which defines how bad we can accept. For an ignorant algorithm, the number of bad steps is only bounded by the total number of time steps. For a good algorithm, the number of bad steps is bounded with probability $\geq 1-\delta$ by some polynomial in 
+    $$
+        \mathcal{S}, \mathcal{A}, \frac{1}{\epsilon}, \frac{1}{\delta}, \frac{1}{1-\gamma}
+    $$
+    We should understand $\frac{1}{1-\gamma}$ as the expected number of days until the end of the world.
+
+    ### MBIE
+    * MBIE == Monte Carlo Bootstrapped Importance Sampling Estimator
+    #### Step 1: Confidence sets
+    define confidence sets $C_{s,a}$ and $C_{s,a}^*$ such that
+
+    #### Step 2: Planning
+    $$
+        \pi_t\in\text{arg}\max_{M'\in\mathcal{M}_t} \max_{\pi\in\prod^\text{SD}V^\pi_{M'}
+    $$
+    and then coose $a_t=\pi_t(s_t)$. 
+
+    Alternatively using Bellmans optimality equation:
+    see slide 32
+    $$
+        \tilde{Q}(s,a) = \max_{R'(s,a)\in C_{s,a}} R'(s,a) + \gamma\max_{P'(\cdot\mid s,a)\in C^'_{s,a}}\sum_x P'(x\mid s,a)\max_{a'}\tilde{Q}(x,a')
+    $$
+    The first term is:
+    $$
+    \max_{R'(s,a)\in C_{s,a}} R'(s,a) = \hat{R}_t(s,a)+\beta_{N_t(s,a)}
+    $$
+
+    The second term can be approximated by: extended value iteration.
+
+    The pseudo code:
+    ```
+    input \epsilon, \delta
+    initialize for all state-action pairs
+    N(s,a) = 0
+    Q(s,a) = \frac{R_\max}{1-\gamma}
+
+    for t=1,2,3,... do
+        compute estimates: $\hat{R}_t$ and $\hat{P}_t$
+        find \tilde{Q} using EVI
+        chose action
+        reveice reward
+        recieve next state
+        update
+    ```
+    see slides from Sadagh for the EVI part.
+
+
+    # Theory of average-reward MDPs
+    ## Average-reward MDPs
+    We can throw away the discount-factor, and just use the average reward.
+    $$
+    \begin{align*}
+        \mathcal{M} = \langle S, A, P, R \rangle\\
+        \sup_\text{all strategies} \lim_{N\to\infty} \frac{1}{N}\mathbb{E}\left[\sum_{t=1}^N R(s_t,a_t)\right]
+    \end{align*}
+    $$
+    This holds for a stochastic reward function $R$.
+
+    ### Gain and Bias
+    These are value functions:
+    #### Gain function
+    The gain function of policy $\pi$ is a mapping $g^\pi:S\to\mathbb{R}$ defined as:
+    $$
+        g^\pi(s) := \lim_{N\to\infty} \frac{1}{N}\mathbb{E}\left[\sum_{t=1}^N R(s_t,a_t)\mid s_1=s\right]
+    $$
+    $g^\pi$ is the per-step reward of $\pi$ starting in state $s$ in the long run.
+
+    To find the optimal gain:
+    $$
+        g^*(s) = \sup_{\pi\in\prod^\text{SD}} g^\pi(s)
+    $$
+    This works in stready state, but not in transient states. To include transient states, we introduce bias.
+    #### Bias function
+    The bias function of policy $\pi$ is a mapping $b^\pi:S\to\mathbb{R}$ defined as:
+    $$
+        b^\pi(s) := \mathbb{E}\left[\sum_{t=1}^\infty R(s_t,a_t) - g^\pi(s)\mid s_1=s\right]
+    $$
+
+    We have new classes for average-reward MDPs:
+    * ergotic
+    * communicating
+    * weakly communicating
     """
 
-def lecture_notes_23_march_morning():
+
+def A3C_and_PPO():
     ''
     r"""
     Today: we will talk about the follwing topics:
@@ -2070,95 +2052,6 @@ def lecture_notes_23_march_morning():
 
     """
 
-def lecture_notes_23_march_afternoon():
-    ''
-    r"""
-    # Lecture notes 23 March afternoon
-
-    ### Sample complexity
-    input param $\epsilon$, which defines how bad we can accept. For an ignorant algorithm, the number of bad steps is only bounded by the total number of time steps. For a good algorithm, the number of bad steps is bounded with probability $\geq 1-\delta$ by some polynomial in 
-    $$
-        \mathcal{S}, \mathcal{A}, \frac{1}{\epsilon}, \frac{1}{\delta}, \frac{1}{1-\gamma}
-    $$
-    We should understand $\frac{1}{1-\gamma}$ as the expected number of days until the end of the world.
-
-    ### MBIE
-    * MBIE == Monte Carlo Bootstrapped Importance Sampling Estimator
-    #### Step 1: Confidence sets
-    define confidence sets $C_{s,a}$ and $C_{s,a}^*$ such that
-
-    #### Step 2: Planning
-    $$
-        \pi_t\in\text{arg}\max_{M'\in\mathcal{M}_t} \max_{\pi\in\prod^\text{SD}V^\pi_{M'}
-    $$
-    and then coose $a_t=\pi_t(s_t)$. 
-
-    Alternatively using Bellmans optimality equation:
-    see slide 32
-    $$
-        \tilde{Q}(s,a) = \max_{R'(s,a)\in C_{s,a}} R'(s,a) + \gamma\max_{P'(\cdot\mid s,a)\in C^'_{s,a}}\sum_x P'(x\mid s,a)\max_{a'}\tilde{Q}(x,a')
-    $$
-    The first term is:
-    $$
-    \max_{R'(s,a)\in C_{s,a}} R'(s,a) = \hat{R}_t(s,a)+\beta_{N_t(s,a)}
-    $$
-
-    The second term can be approximated by: extended value iteration.
-
-    The pseudo code:
-    ```
-    input \epsilon, \delta
-    initialize for all state-action pairs
-    N(s,a) = 0
-    Q(s,a) = \frac{R_\max}{1-\gamma}
-
-    for t=1,2,3,... do
-        compute estimates: $\hat{R}_t$ and $\hat{P}_t$
-        find \tilde{Q} using EVI
-        chose action
-        reveice reward
-        recieve next state
-        update
-    ```
-    see slides from Sadagh for the EVI part.
-
-
-    # Theory of average-reward MDPs
-    ## Average-reward MDPs
-    We can throw away the discount-factor, and just use the average reward.
-    $$
-    \begin{align*}
-        \mathcal{M} = \langle S, A, P, R \rangle\\
-        \sup_\text{all strategies} \lim_{N\to\infty} \frac{1}{N}\mathbb{E}\left[\sum_{t=1}^N R(s_t,a_t)\right]
-    \end{align*}
-    $$
-    This holds for a stochastic reward function $R$.
-
-    ### Gain and Bias
-    These are value functions:
-    #### Gain function
-    The gain function of policy $\pi$ is a mapping $g^\pi:S\to\mathbb{R}$ defined as:
-    $$
-        g^\pi(s) := \lim_{N\to\infty} \frac{1}{N}\mathbb{E}\left[\sum_{t=1}^N R(s_t,a_t)\mid s_1=s\right]
-    $$
-    $g^\pi$ is the per-step reward of $\pi$ starting in state $s$ in the long run.
-
-    To find the optimal gain:
-    $$
-        g^*(s) = \sup_{\pi\in\prod^\text{SD}} g^\pi(s)
-    $$
-    This works in stready state, but not in transient states. To include transient states, we introduce bias.
-    #### Bias function
-    The bias function of policy $\pi$ is a mapping $b^\pi:S\to\mathbb{R}$ defined as:
-    $$
-        b^\pi(s) := \mathbb{E}\left[\sum_{t=1}^\infty R(s_t,a_t) - g^\pi(s)\mid s_1=s\right]
-    $$
-
-    We have new classes for average-reward MDPs:
-    * ergotic
-    * communicating
-    * weakly communicating
-    """
 
 def lecture_notes_30_march_morning():
     ''
@@ -2687,7 +2580,15 @@ def lunar_lander():
 
 
 if __name__ == '__main__':
-    functions = [important_concepts, pre_start, multi_armed_bandit, week1_notes, lecture2_notes, lecture3_notes, lecture_feb_23_notes, lectureNotes_march_02,  lecturenotes_march_16_deep_learning,  Lecture_16_march_afternoon,lecture_notes_23_march_morning, lecture_notes_23_march_afternoon,
+    functions = [front_page, 
+                 bounds, 
+                 multi_armed_bandit, lecture2_notes, 
+                 Markov_Decision_Process_MDP, 
+                 Policy_Evaluation_from_data, 
+                 Off_policy_optimization, 
+                 Function_approximations,
+                 PAC_MDP,
+                 A3C_and_PPO, 
                  lecture_notes_30_march_morning,
                  notes_last_lecture,
                  #cart_pole, #lunar_lander
