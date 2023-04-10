@@ -22,3 +22,13 @@
 
 * **Q** is a function that maps from a state and an action to a real number which holds the value of the that action in that state.
 
+
+
+## Lecture 2 notes (9 feb 2023)
+    
+
+
+
+///
+
+

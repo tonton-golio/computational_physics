@@ -2,17 +2,32 @@
 from utils.utils_global import *
 from utils.utils_orel import *
 
+mode = 'light'
+width_mode = 'skinny'
 
-set_rcParams(style_dict = { 
-    'patch.facecolor': (0.4, 0.65, 0.1),
-    'axes.facecolor': (0.14, 0.16, 0.3),
-    'figure.facecolor': (0.2, 0.05, 0.3),
-    'xtick.color': 'white',
-    'ytick.color': 'white',
-    'text.color': 'white',
-    'figure.autolayout': True,
-    'axes.labelcolor': "lightgreen" 
-    })
+if mode == 'dark':
+    set_rcParams(style_dict = { 
+        'patch.facecolor': (0.4, 0.65, 0.1),
+        'axes.facecolor': (0.14, 0.16, 0.3),
+        'figure.facecolor': (0.2, 0.05, 0.3),
+        'xtick.color': 'white',
+        'ytick.color': 'white',
+        'text.color': 'white',
+        'figure.autolayout': True,
+        'axes.labelcolor': "lightgreen" 
+        })
+elif mode == 'light':
+    set_rcParams(style_dict = { 
+        'patch.facecolor': (0.4, 0.65, 0.1),
+        'axes.facecolor': (0.9, 0.9, 0.9),
+        'figure.facecolor': (0.9, 0.9, 0.9),
+        'xtick.color': 'black',
+        'ytick.color': 'black',
+        'text.color': 'black',
+        'figure.autolayout': True,
+        'axes.labelcolor': "black" 
+        })
+
 
 
 
@@ -22,7 +37,11 @@ def front_page():
     text_dict = getText_prep_new(filename = 'assets/online_reinforcement/'+'orel_page1.md')
     text_dict['concepts']
     
-
+def notation():
+    ''
+    '# Notation'
+    text_dict = getText_prep_new(filename = 'assets/online_reinforcement/'+'notation.md')
+    text_dict['notation']
 def bounds():
     text_intro = """
     ## Bounds
@@ -689,197 +708,127 @@ def bounds():
         print('page loaded')
 
 def multi_armed_bandit():
-    ''
-    cols = st.columns((2,1))
-    cols[0].markdown(r"""
-    # Multi armed bandit
+    """
+    In this section we discuss multi armed bandits as the simplest example of reinforcement learning. We discuss methods for balancing exploration and exploitation.
+    """
+    # load text dict
+    text_dict = getText_prep_new(filename = 'assets/online_reinforcement/'+'multi_armed_bandit.md')
 
-    [link to youtube vid](https://www.youtube.com/watch?v=e3L4VocZnnQ)
+    # Title
+    st.title('Multi armed bandits')
+    cols = st.columns((3,1))
 
-    We are a professor staying in a small town for 300 days. In the town there are 3 restaurants. They bring different amounts of happiness per meal, but at the beginning we dont know.
+    # Intro
+    cols[0].markdown(text_dict['intro'])
+    if mode == 'dark':
+        cols[1].image('assets/online_reinforcement/smurf_at_bandit.png', width=200)
+    else:
+        cols[1].image('assets/online_reinforcement/dino_at_bandit.png', width=200)
 
-    We have to balance two concepts; exploration and exploitation.
-
-    We measure the goodness of a strategy by the regret, $\rho$. Regret is the difference from the maximal expectation value happiness.
-    """)
-    cols[1].image('https://billig-billy.dk/cache/8/7/2/2/0/5/bandit-hat-fit-500x500x100.webp')
     '---'
-    cols = st.columns((1,1))
-    cols[0].markdown("""
-    ### Greedy
-    We choose the restaurant which historically has yielded the highest average happiness. However $\epsilon$\% of the time we choose a random restaurant.
-    """)
-
-    restaurants = { # (mu, sigma)
-        "City wok"      : (8, 1),
-        "McDonald's"  : (5,3),
-        "Da Cavalino" : (10,3)}
-
-
-    scores, epls = many_bandit_runs(restaurants, n_epsilons=10, n_exp=2,  method='standard')
-    cols[1].pyplot(show_bandit_scores(scores, epls))
+    # policies
+    if width_mode == 'wide':
+        cols = st.columns((1,1,1,1))
+    else:
+        cols = st.columns((1,1)) + st.columns((1,1))
+    cols[0].markdown(text_dict['greedy policy'])
+    cols[1].markdown(text_dict['epsilon greedy policy'])
+    cols[2].markdown(text_dict['upper confidence bound'])
+    cols[3].markdown(text_dict['lower confidence bound'])
 
 
     '---'
+    # experiment
+    st.markdown(text_dict['experiment'])
 
-    cols = st.columns((1,1))
-    cols[0].markdown(r"""
-    ### Upper confidence bound (UCB)
+    # code
+    # We compare the performance of the four policies. The problem at hand is a four-armed bandit which give binomial rewards (0 or 1), with probabilities $\{0.1, 0.15, 0.2, 0.5\}$.
+    n_arms = 4
+    arms = np.arange(n_arms)
+    probs = np.array([0.1, 0.15, 0.2, 0.5])
+    T = 500
+    n_experiments = 10
+    def bandit_run(arms, probs, T, method='greedy', epsilon=0.1):
+        """
+        Run a single bandit experiment.
+        """
+        n_arms = len(arms)
+        # initialize
+        n = np.zeros(n_arms)  # number of pulls
+        X = np.zeros(n_arms)  # cumulative reward per arm
+        rewards = np.zeros(T)  # cumulative reward
+        for t in range(T):
+            # choose arm
+            if method == 'greedy':
+                i = np.argmax(X / n)
+            elif method == 'epsilon-greedy':
+                if np.random.rand() < epsilon:
+                    i = np.random.choice(arms)
+                else:
+                    i = np.argmax(X / n)
+            elif method == 'UCB':
+                i = np.argmax(X / n + np.sqrt(2 * np.log(t) / n))
+            elif method == 'LCB':
+                i = np.argmax(X / n - np.sqrt(2 * np.log(t) / n))
 
-    We may obtain a better algortihm by adressing a central flaw
-    > When comparing means, these may have very different numbers of samples.
+            # sample reward
+            x = np.random.binomial(1, probs[i])
 
-    The new mean is defined as;
-    $$
-    \mu_r = \hat{\mu_r} + \sqrt{\frac{2\ln(t)}{N_t(r)}},
-    $$
-    maximize this, i.e., maximize Hoffding's inequality.
-    where $t$ is the iteration step, and $N_t(r)$ is the number of times restaurant $r$ has been visited so far.
+            # update
+            n[i] += 1
+            X[i] += x
+            rewards[t] = x+rewards[t-1] if t > 0 else x
 
-    """)
-    scores, epls = many_bandit_runs(restaurants, n_epsilons=10, n_exp=2,  method='UCB')
-    cols[1].pyplot(show_bandit_scores(scores, epls))
+        return rewards, X / n
+    cum_rewards = {}
 
-def lecture2_notes():
-    """"""
-    r"""
-    ## Lecture 2 notes (9 feb 2023)
-    In the stateless seeting: we have a loss matrix which looks like the following:
-    $$
-    \begin{bmatrix}
-        l_{1,1} & l_{2,1} & \ldots & l_{t,1}\\
-        l_{1,2} & l_{2,2} & \ldots & l_{t,2}\\
-        \vdots & \vdots & \vdots & \vdots \\
-        l_{1,k} & l_{2,k} & \ldots & l_{t,k}\\
-    \end{bmatrix}
-    $$
-    Notice, we have $k$ actions in our action space.
-    ### Performance meaure:
-    Regret:
-    $$
-        R_T = \sum_{t=1}^T l_{t, A_t} - \min_a \sum_{t=1}^T l_{t,a}
-    $$
-    The above equation describes the regret as the loss of the algorithm minus the best action applied contiously, i.e., the best row of the loss matrix in hindsight.
+    # run experiments
+    for method in ['greedy', 'epsilon-greedy', 'UCB', 'LCB']:
+        cum_rewards[method] = []
+        for i in range(n_experiments):
+            cum_rewards[method].append(bandit_run(arms, probs, T, method=method)[0])
 
-    It the regret is order $T$ $\Rightarrow$ no learning. We want sublinear regret, which means we are learning something.
-
-    #### Expected regret
-    $$
-        \mathbb{E}[R_T] = \mathbb{E}[\sum_{t=1}^T l_{t, A_t}] - \mathbb{E}[\min_a \sum_{t=1}^T l_{t,a}]
-    $$
-
-
-    ##### Oblivious adversary
-    $l_{t,a}$ are independent of actions. Meaning the adversary is not able to know our actions.
-    
-    We will only consider oblivious adversary, in which case the last term in the equation above becomes deterministic.
-
-    ##### Adaptive adversary
-    $l_{t,a}$ may depend on actions.
-
-    
-    #### Pseudo regret
-    only defined in i.i.d. setting
-
-    $$
-        \bar{R}_T = \mathbb{E}[\sum l_{t, A_t}] - min_a \mathbb{E}[\sum l_{t,a}]
-    $$
-    notice, here we have the minimum of the expectation rather than the expectation of the minimum.
-    $$
-    \begin{align*}
-        \bar{R}_T &= \mathbb{E}[\sum l_{t, A_t}] - min_a \mu(a)T\\
-         &= \mathbb{E}[\sum l_{t, A_t} - \mu^*]\\
-         &= \mathbb{E}[\sum_t^T \Delta(A_t)]\\
-         &= \sum_a \Delta(a) \mathbb{E}[N_T(a)]
-    \end{align*}
-    $$
-    where $\mu^* = \min_a \mu(a)$.
-
-    We also define $\Delta(a) = \mu(a)- \min \mu(a) = \mu(a) - \mu^*$
-    
+    # convert to numpy array
+    for method in ['greedy', 'epsilon-greedy', 'UCB', 'LCB']:
+        cum_rewards[method] = np.array(cum_rewards[method])
 
 
-    Notice, the pseudo regret is always less than or equal to the expected regret. We always use pseudo-regret for i.i.d. :shrug.
+    # plot
+    show_conf_bound = False
+    fig, ax = plt.subplots(figsize=(10, 4))
+    for method in ['greedy', 'epsilon-greedy', 'UCB', 'LCB']:
+        ax.plot(np.mean(cum_rewards[method], axis=0), label=method)
+        if show_conf_bound:
+            ax.fill_between(np.arange(T), 
+                        np.mean(cum_rewards[method], axis=0) - 1.96 * np.std(cum_rewards[method], axis=0) / np.sqrt(n_experiments),
+                        np.mean(cum_rewards[method], axis=0) + 1.96 * np.std(cum_rewards[method], axis=0) / np.sqrt(n_experiments), alpha=0.2)
+    ax.set_xlabel('Time')
+    ax.set_ylabel('Average reward')
+    ax.legend(loc='upper left')
+    st.pyplot(fig)
 
-    The reason for this is that the comparator is more reasonable. The comparator we are using is $T\mu^*$...
-
-
+def regret():
     """
-
-
-    r"""
-    ---
-    Now we shall consider the iid bandit case (remember the bandit case is one where feedback is limited).
-
-    #### Exploration-exploitation trade-off
-    * action space width = 2
-    * T = known total time
-    * Delta is known
-
-    The actions yield $1/2 \pm \Delta$ respectively. If $\Delta$ is small, we should explore for a while, before determining which action is best. And then after that just repeat that action. 
-
-
-    We may bound the pseudo regret by:
-    $$
-        \bar{R}_T \leq \frac{1}{2}\epsilon T\Delta + \delta(\epsilon) \Delta (1-\epsilon)T \leq (\frac{1}{2}\epsilon + \delta(\epsilon))\Delta T
-    $$
-    In which $\delta(\epsilon)$ is the probability that we selected the suboptimal action. We can bound this by:
-    $$ 
-        \leq \mathbb{P} (\hat{\mu_{\epsilon T}} (a) \leq \hat{\mu_{\epsilon T}} (a^*))
-    $$ 
-    We can bound this chance of having chosen a bad arm by:
-    $$
-        \leq \mathbb{P} (\hat{\mu_{\epsilon T}} (a^*) \geq 
-        \hat{\mu_{\epsilon T}} (a^*) + \frac{1}{2}\Delta)
-        + \mathbb{P}(\hat{\mu_{\epsilon T}} (a) \leq \mu(a) - \frac{1}{2}\Delta)
-    $$
-    We may employ Hoeffding's inequality to bound the first term:
-    $$
-        \leq 2 e^{- \epsilon T \Delta^2 / 4}
-    $$
-    So now we can choose an epsilon to minimize the probability of choosing the bad arm.
-    $$
-        \epsilon^* = \frac{4\ln (T\Delta^2)}{T\Delta^2}
-    $$
-    yielding a pseudo regret of:
-    $$
-        \bar{R}_T \leq \frac{2(\ln(T\Delta^2)+1)}{\Delta}
-    $$
-
-    To summarize the above, it takes a longer time to dicern which action is better if the actions are closer together. It goes with $\Delta^2$. Each time we choose the wrong action, we lose $\Delta$, so pseudo regret goes with $\Delta$.
+    In this section we discuss the regret of a learning algorithm.
     """
+    # load text dict
+    text_dict = getText_prep_new(filename = 'assets/online_reinforcement/'+'regret.md')
 
+    # Title
+    st.title('Regret')
+
+    # Intro
+    st.markdown(text_dict['intro'])
+
+    '---'
+    # main
+    st.markdown(text_dict['main'])
     
+    '---'
+    # example
+    with st.expander("Example", expanded=False):
+        st.markdown(text_dict['example'])
 
-    T = 100
-    action_space = [0,1]
-    Delta = .1
-    reward_func = lambda a : 1/2 + [-1,1][a] * np.random.normal(0,Delta,None)
-
-    def explore(action_space, reward_func):
-        action = np.random.choice(action_space)
-        return action, reward_func(action)
-
-    def exploit(experiences, reward_func):
-        action = max(experiences, key=lambda a: np.mean(experiences[a]))
-        return action, reward_func(action)
-
-    experiences = {}
-
-
-
-    r"""
-    #### Lower confidence bound (LCB)
-    $$
-        L_t^{CR} = \hat{\mu_{t-1}}(a) - \sqrt{\frac{3\ln t}{2 N_{t-1}(a)}}
-    $$
-    This has the following algorithm:
-    ```
-    play each arm once (i.e., K plays)
-    for t = K to T:
-        A_t = argmin_a L_t^{CR}(a)
-    ```
-    """
 
 def Markov_Decision_Process_MDP():
     """"""
@@ -2581,8 +2530,10 @@ def lunar_lander():
 
 if __name__ == '__main__':
     functions = [front_page, 
+                 notation,
                  bounds, 
-                 multi_armed_bandit, lecture2_notes, 
+                 multi_armed_bandit, 
+                 regret, 
                  Markov_Decision_Process_MDP, 
                  Policy_Evaluation_from_data, 
                  Off_policy_optimization, 
