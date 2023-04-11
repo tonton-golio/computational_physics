@@ -1,7 +1,5 @@
 
 from utils.utils_ADL import *
-from tqdm import tqdm
-
 #import PCA
 from sklearn.decomposition import PCA
 
@@ -643,26 +641,29 @@ def generative_adversarial_networks():
                     
                 cur_step += 1
 
-    # train model
-    train(D, G, criterion, d_optimizer, g_optimizer, train_loader, num_epochs=10)
+    if st.button('train'):
+        st.write('cant train now...')
+        if 8==0:
+            # train model
+            train(D, G, criterion, d_optimizer, g_optimizer, train_loader, num_epochs=10)
 
-    # define function to generate images
-    def get_generator_image(G, z_dim, index):
-        z = torch.randn(1, z_dim)
-        fake_image = G(z)
-        img = fake_image[0].detach().numpy()
-        img = np.transpose(img, (1, 2, 0))
-        img = (img + 1) / 2
-        return img
-    
-    # generate images
-    z_dim = 10
-    index = 0
-    img = get_generator_image(G, z_dim, index)
-    
-    fig = plt.figure(figsize=(4, 4))
-    plt.imshow(img)
-    st.pyplot(fig)
+            # define function to generate images
+            def get_generator_image(G, z_dim, index):
+                z = torch.randn(1, z_dim)
+                fake_image = G(z)
+                img = fake_image[0].detach().numpy()
+                img = np.transpose(img, (1, 2, 0))
+                img = (img + 1) / 2
+                return img
+            
+            # generate images
+            z_dim = 10
+            index = 0
+            img = get_generator_image(G, z_dim, index)
+            
+            fig = plt.figure(figsize=(4, 4))
+            plt.imshow(img)
+            st.pyplot(fig)
 
 
     
