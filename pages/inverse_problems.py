@@ -9,7 +9,7 @@ st.set_page_config(page_title="Inverse Problems",
 
 
 
-#st.title('Inverse Problems')
+#st.title('Inverse Problems') 
 #"Course taught by: Klaus Mosegaard."
 
 set_rcParams(style_dict = {
@@ -972,8 +972,16 @@ def monteCarlo():
 
 # Navigator
 if __name__ == '__main__':
-    functions = [landingPage, informationTheory, Probabilistic, monteCarlo, Least_squares, Weakly_nonlinear, DensityVar_LeastSquare, ass1, ass2, ass3_glacier_thickness]
-    function_names = ['Landing Page', 'Information theory', 'Probabilistic inference', 'Monte Carlo', 'Least-squares / Tikonov', 'Weakly nonlinear problems and optimization', 'Density variations (Tikonov)', 'Linear Tomography (Tikonov)', 'Vertical Fault (Monte Carlo)', 'Glacier thickness (Monte Carlo)']
-    with streamlit_analytics.track(verbose=True):
+    functions = [landingPage, informationTheory, Probabilistic, 
+                monteCarlo, Least_squares, Weakly_nonlinear, 
+                DensityVar_LeastSquare, ass1, ass2, 
+                ass3_glacier_thickness]
+    
+    function_names = ['Landing Page', 'Information theory', 'Probabilistic inference', 
+                        'Monte Carlo', 'Least-squares / Tikonov', 'Weakly nonlinear problems and optimization',
+                        'Density variations (Tikonov)', 'Linear Tomography (Tikonov)', 'Vertical Fault (Monte Carlo)', 
+                        'Glacier thickness (Monte Carlo)']
+
+    with streamlit_analytics.track(verbose=False):
         
         navigator(functions, function_names)
