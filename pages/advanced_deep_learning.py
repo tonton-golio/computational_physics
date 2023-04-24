@@ -3,7 +3,167 @@ from utils.utils_ADL import *
 #import PCA
 from sklearn.decomposition import PCA
 
+import graphviz
+
 filepath_assets = 'assets/advanced_deep_learning/'
+
+def landing_page():
+    '''Landing page for advanced deep learning section. For now I'll just fill this with notes for the first lecture.'''
+
+    r"""
+    # Advanced Deep Learning
+    #### Lecture 1: notes (April 24, 2023)
+
+    For an intro to backpropagation see: [MicroGrad github page](https://github.com/karpathy/micrograd) and [walkthrough: Youtube video](https://www.youtube.com/watch?v=VMj-3S1tku0) . Basically we have to define a value class, which automatically propagates the gradient:
+    """
+    with st.expander('Value class', expanded=False):
+        """
+        ```python
+
+    class Value:
+        '''stores a single scalar value and its gradient'''
+
+        def __init__(self, data, _children=(), _op=''):
+            self.data = data
+            self.grad = 0
+            # internal variables used for autograd graph construction
+            self._backward = lambda: None
+            self._prev = set(_children)
+            self._op = _op # the op that produced this node, for graphviz / debugging / etc
+
+        def __add__(self, other):
+            other = other if isinstance(other, Value) else Value(other)
+            out = Value(self.data + other.data, (self, other), '+')
+
+            def _backward():
+                self.grad += out.grad
+                other.grad += out.grad
+            out._backward = _backward
+
+            return out
+
+        def __mul__(self, other):
+            other = other if isinstance(other, Value) else Value(other)
+            out = Value(self.data * other.data, (self, other), '*')
+
+            def _backward():
+                self.grad += other.data * out.grad
+                other.grad += self.data * out.grad
+            out._backward = _backward
+
+            return out
+
+        def backward(self):
+
+            # topological order all of the children in the graph
+            topo = []
+            visited = set()
+            def build_topo(v):
+                if v not in visited:
+                    visited.add(v)
+                    for child in v._prev:
+                        build_topo(child)
+                    topo.append(v)
+            build_topo(self)
+
+            # go one variable at a time and apply the chain rule to get its gradient
+            self.grad = 1
+            for v in reversed(topo):
+                v._backward()
+        ```
+        """
+
+
+    r"""
+    After creating this value class, we have to define a class for setting up a network (acutally we need a couple classes).
+    """
+    with st.expander('Network classes', expanded=False):
+        """
+        ```python
+    class Module:
+
+        def zero_grad(self):
+            for p in self.parameters():
+                p.grad = 0
+
+        def parameters(self):
+            return []
+
+    class Neuron(Module):
+
+        def __init__(self, nin, nonlin=True):
+            self.w = [Value(random.uniform(-1,1)) for _ in range(nin)]
+            self.b = Value(0)
+            self.nonlin = nonlin
+
+        def __call__(self, x):
+            act = sum((wi*xi for wi,xi in zip(self.w, x)), self.b)
+            return act.relu() if self.nonlin else act
+
+        def parameters(self):
+            return self.w + [self.b]
+
+        def __repr__(self):
+            return f"{'ReLU' if self.nonlin else 'Linear'}Neuron({len(self.w)})"
+
+    class Layer(Module):
+
+        def __init__(self, nin, nout, **kwargs):
+            self.neurons = [Neuron(nin, **kwargs) for _ in range(nout)]
+
+        def __call__(self, x):
+            out = [n(x) for n in self.neurons]
+            return out[0] if len(out) == 1 else out
+
+    class MLP(Module):
+
+        def __init__(self, nin, nouts):
+            sz = [nin] + nouts
+            self.layers = [Layer(sz[i], sz[i+1], nonlin=i!=len(nouts)-1) for i in range(len(nouts))]
+
+        def __call__(self, x):
+            for layer in self.layers:
+                x = layer(x)
+            return x
+    ```
+        """
+
+    """
+    And there we go; now we have propagate gradients through the network. Note; atm it ouly works with addition and multiplication.
+    """
+
+    # lets draw up a simple neural network
+    # 3 input neurons
+    # 2 hidden layers with 4 neurons each
+    # 1 output neuron
+    g = graphviz.Digraph()
+    for i in range(3):
+        g.node('x'+str(i))
+    for i in range(4):
+        g.node('h1'+str(i))
+
+    for i in range(4):
+        g.node('h2'+str(i))
+
+    g.node('y')
+
+    for i in range(3):
+        for j in range(4):
+            g.edge('x'+str(i), 'h1'+str(j))
+
+    for i in range(4):
+        for j in range(4):
+            g.edge('h1'+str(i), 'h2'+str(j))
+
+    for i in range(4):
+        g.edge('h2'+str(i), 'y')
+
+    # display, laying down
+    st.graphviz_chart(g, use_container_width=True)
+    
+
+
+
 
 def artificial_neural_networks():
 
@@ -312,7 +472,6 @@ def U_net():
                 loss_chart.add_rows([[loss.item()]])
             model.eval()
 
-
 def variational_autoencoders():
     # load text
     text_dict = getText_prep_new(filepath_assets+'vae.md')
@@ -493,10 +652,11 @@ def generative_adversarial_networks():
     
     fig, ax = plt.subplots(1, 4, figsize=(10, 10))
     for i in range(4):
-        ax[i].imshow(images[i].permute(1,2,0))
+        ax[i].imshow(images[i].view(28, 28), cmap='gray')
         if i != 0:
             ax[i].axis('off')
     st.pyplot(fig)
+
 
     # define model
     class Discriminator(nn.Module):
@@ -543,10 +703,22 @@ def generative_adversarial_networks():
         def forward(self, noise):
             x = noise.view(len(noise), self.z_dim, 1, 1)
             return self.gen(x)
-        
+    
+
     # initialize models
     D = Discriminator()
     G = Generator()
+
+    # view model
+    cols = st.columns((1,1))
+
+    view_model(G, st=cols[0]) # view graph of model
+    #print number of parameters
+    cols[1].markdown('**Number of parameters:** '+str(sum(p.numel() for p in G.parameters() if p.requires_grad)))
+
+    view_model(D, st=cols[1], input_sz=(1, 28,28)) # view graph of model
+    #print number of parameters
+    cols[1].markdown('**Number of parameters:** '+str(sum(p.numel() for p in D.parameters() if p.requires_grad)))
 
     # define loss function
     criterion = nn.BCELoss()
@@ -665,13 +837,9 @@ def generative_adversarial_networks():
             plt.imshow(img)
             st.pyplot(fig)
 
-
-    
-
-
-
 if __name__ == '__main__':
-    functions = [artificial_neural_networks,
+    functions = [landing_page,
+                 artificial_neural_networks,
                  convolutional_neural_networks,
                  U_net,
                  variational_autoencoders,
@@ -679,5 +847,3 @@ if __name__ == '__main__':
     with streamlit_analytics.track():
         
         navigator(functions)
-
-
