@@ -837,12 +837,67 @@ def generative_adversarial_networks():
             plt.imshow(img)
             st.pyplot(fig)
 
+def MLops():
+    ''
+    '# Machine Learning Operations (MLOps)'
+    cols = st.columns(2)
+    with cols[0]:
+        r"""
+        * we want to get insights into the behaviour of our models.
+        * we want to be able to reproduce our results.
+        * we want to be able to deploy our models.
+        """
+
+        """
+        CI/CD : Continuous Integration / Continuous Deployment. Refers to the process of automating the building, testing and deployment of software.
+        """
+
+
+    with cols[1]:st.image('https://ml-ops.org/img/mlops-loop-en.jpg', width=400)
+    '---'
+    cols = st.columns((1,1))
+    with cols[0]:
+        st.markdown("""
+            ### Weights and Biases    <img src=https://raw.githubusercontent.com/wandb/assets/04cfa58cc59fb7807e0423187a18db0c7430bab5/wandb-dots-logo.svg width=69, align='right'>
+            In practice, we can use [weights and biases](wandb.com) to track our experiments.
+
+            To use W&B, do the following:
+            1. Install the library: `pip install wandb`
+            2. Import the library: `import wandb`
+            3. Login to your account: `wandb login` --> I did this in my terminal
+            4. Initialize a new run: `wandb.init(project="my-project-name")`
+            5. Log metrics and visualize them in the dashboard: `wandb.log({"Epoch":epoch, "loss": loss})`
+            6. Visualize the model: `wandb.watch(model)`
+
+            note: i had to run as super user, i.e. `sudo python3 main.py` to avoid permission errors.
+
+
+        """, unsafe_allow_html=True)
+
+        """
+        ##### Sweeps
+        A sweep is a set of runs that each contain different hyperparameters. We do this to find the best hyperparameters for our model.
+
+        To implement a sweep in W&B, do the following:
+        1. Define the sweep configuration: `sweep_config = {'method': 'grid', 'parameters': {'learning_rate': {'values': [0.01, 0.001]}}}`
+        2. Initialize the sweep: `sweep_id = wandb.sweep(sweep_config, project="my-project-name")`
+        3. Define the training function: `def train(): ...`
+        4. Define the training loop: `wandb.init() for epoch in range(epochs): ...`
+        5. Run the sweep agent: `wandb.agent(sweep_id, function=train)`
+
+        The results are shown on the W&B dashboard.
+        """
+    with cols[1]:
+        st.image('https://assets.website-files.com/5ac6b7f2924c656f2b13a88c/63c6b3b7218b038527171ad3_hero-app.jpg')
+    
+
 if __name__ == '__main__':
     functions = [landing_page,
                  artificial_neural_networks,
                  convolutional_neural_networks,
                  U_net,
                  variational_autoencoders,
-                 generative_adversarial_networks]
+                 generative_adversarial_networks,
+                 MLops]
     with streamlit_analytics.track():
         navigator(functions)
