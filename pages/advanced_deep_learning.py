@@ -845,5 +845,4 @@ if __name__ == '__main__':
                  variational_autoencoders,
                  generative_adversarial_networks]
     with streamlit_analytics.track():
-        
         navigator(functions)
