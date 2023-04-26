@@ -1,8 +1,16 @@
 import streamlit as st
 from utils.utils_global import *
+from utils.utils_ADL import *
 
 from scipy.ndimage import gaussian_filter
 import plotly.graph_objects as go
+
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
+
+
 def landing_page():
     ''
     """# Applied Machine Learning"""
@@ -235,14 +243,77 @@ def lecture_2():
     test_train_split_()
     decision_trees_()
         
+def lecture_3():
+    ''
+    '## Lecture 3: April 26, 2023'
+    '### Neural networks'
+    cols = st.columns(2)
+    with cols[0]:
+        "To get an intuition for neural networks, watch Andrej Karparthys video on building MicroGrad: [link](https://www.youtube.com/watch?v=VMj-3S1tku0&t=3s&pp=ygUJbWljcm9ncmFk)"
 
-    
+        """
+        #### Activation functions
+        * sigmoid, tanh, ReLU, Leaky ReLU, ELU, Maxout
+        """
+
+        # view these functions
+        x = np.linspace(-3,3,100)
+        funcs = {
+            'sigmoid': lambda x: 1/(1+np.exp(-x)),
+            'tanh': np.tanh,
+            'ReLU': lambda x: np.maximum(0, x),
+            'Leaky ReLU': lambda x: np.maximum(.1*x, x),
+            'ELU': lambda x: np.where(x>0, x, np.exp(x)-1),
+            #'Maxout': lambda x: np.maximum(x, -x)
+        }
+        fig = plt.figure(figsize=(6,3))
+        for i, (name, func) in enumerate(funcs.items(), start=1):
+            plt.plot(x, func(x), label=name)
+        plt.legend()
+        plt.grid()
+        st.pyplot(fig)
+        plt.close()
+
+        """
+        #### Regularization techniques
+        * $x' = (x-\mu) / \sigma$
+        * ...
+        """
+
+        """
+        #### Architectures:
+        * Feedforward NN (MLP)
+        * Recurrent NN (RNN) -> allows for memory by letting nodes in the same layer be connected.
+        * Long short-term memory (LSTM) -> RNN with memory gates
+        * Adversarial
+        * Graph NN
+        * etc.
+        """
+    with cols[1]:
+        st.image('https://www.asimovinstitute.org/wp-content/uploads/2019/04/NeuralNetworkZoo20042019.png')
+
+    '''
+    #### Dropout
+    drop nodes in the network. We can either select these randomly and evaluate performance of the pruned network. Or we can use a dropout rate, which is the probability of dropping a node. This is a hyperparameter that needs to be tuned.
+
+    Typically, we let the network train for some number of epochs until the loss is decreasing a monotonic fashion. Then we start to apply dropout. This is called annealing.
+
+    But note; there are plenty of ways to do this...🥵
+    '''
+
+
+    """
+    #### Hyperparameter tuning
+    To get a NN to work well, it need tuning. For more on this topic see Advanced deep learning - MLOps. 
+    """
+
 
 
     
 
 
 if __name__ == '__main__':
-    functions = [lecture_2,]
+    functions = [lecture_2,
+                 lecture_3]
     with streamlit_analytics.track():
         navigator(functions)
