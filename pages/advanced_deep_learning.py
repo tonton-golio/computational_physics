@@ -161,10 +161,6 @@ def landing_page():
     # display, laying down
     st.graphviz_chart(g, use_container_width=True)
     
-
-
-
-
 def artificial_neural_networks():
 
     # load text
@@ -244,6 +240,43 @@ def convolutional_neural_networks():
     <img src="https://miro.medium.com/v2/resize:fit:1100/format:webp/1*L1SVH2rBxGvJx3L4aB59Cg.png" width=500>
     </div>
     ''', unsafe_allow_html=True)
+
+    # kernels
+    with st.expander('kernels', expanded=False):
+        st.markdown(text_dict['kernels'])
+
+        # lets show some of these: averaging, gaussian blur, and Dilated (Atrous) Convolution
+        n = 20
+        # avg
+        x_averaging = np.zeros((n,n))
+        x_averaging [1:4,1:4] = 1/9
+        # gauss blur
+        center, sigma = (2,2), 0.015
+        x_gaussian_blur = np.ones((n,n))
+        gauss_blur = lambda r : 1/(2*np.pi*sigma)**.5 * np.exp(-r**2/(2*sigma**2))
+        for i in range(n):
+            for j in range(n):
+                d = ((i-center[0])**2 + (j-center[1])**2)/1000
+                
+                x_gaussian_blur[i,j] *= gauss_blur(d)
+
+        # Dilated (Atrous) Convolution
+        x_dilated = np.zeros((n,n))
+        for i in range(1, 7, 2):
+            for j in range(1,7,2):
+                x_dilated[i,j] = 1
+
+        x_dilated/=np.sum(x_dilated)
+
+        fig, ax = plt.subplots(1,3, figsize=(12,4))
+        ax[0].imshow(x_averaging) ; ax[0].set_title('averaging kernel')
+        ax[1].imshow(x_gaussian_blur)
+        ax[2].imshow(x_dilated)
+
+        st.pyplot(fig)
+
+
+
 
     # load data
     transform = transforms.ToTensor()

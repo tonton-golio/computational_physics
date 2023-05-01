@@ -2,6 +2,12 @@
 KEY: intro
 Convolutional neural networks are better for image recognition, because they take advantage of spatial structures, and recognize larger scale patterns in the image.
 
+KEY: kernels
+We may choose from a variety of kernel:
+* averaging (`np.ones(x,x)/x**2`)
+* Gaussian blur
+* Dilated (Atrous) Convolution
+
 KEY: convolutional neural network model
 ```python
 

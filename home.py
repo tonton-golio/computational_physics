@@ -3,7 +3,7 @@ import pandas as pd
 st.set_page_config(page_title='Computational Physics',#"plz contribute", 
 	page_icon=":microscope:", 
 	layout="wide", 
-	initial_sidebar_state="collapsed", 
+	initial_sidebar_state="expanded", 
 	menu_items=None)
 st.markdown(r"""
 	# Computational Physics
