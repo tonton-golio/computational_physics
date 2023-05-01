@@ -15,23 +15,26 @@ def get_tree(os_ = "windows", entensions = ['md','txt']):
     dir_sep = { # directory separator
         "windows" : "\\",
         "linux" : "/", # also mac
+        "darwin": "/",
     }[os_]
 
 
     for root, dirs, files in os.walk('.'):
         if '.'+dir_sep+'assets' in root or '.'+dir_sep+'pages' in root:
             for file in files:
-                
-                extension = file.split('.')[1]
-                if extension in entensions:
-                    with open(root + dir_sep + file,'rt', encoding='utf-8') as f:
+                try:
+                    extension = file.split('.')[1]
+                    if extension in entensions:
+                        with open(root + dir_sep + file,'rt', encoding='utf-8') as f:
 
-                        textdict[counter] = {
-                            'root' : root,
-                            'filename' : root + dir_sep+file,
-                            'content' : f.read(),
-                            }
-                        counter += 1
+                            textdict[counter] = {
+                                'root' : root,
+                                'filename' : root + dir_sep+file,
+                                'content' : f.read(),
+                                }
+                            counter += 1
+                except:
+                    pass
 
     return textdict
     
