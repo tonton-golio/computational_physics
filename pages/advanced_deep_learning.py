@@ -4,7 +4,7 @@ from utils.utils_ADL import *
 from sklearn.decomposition import PCA
 
 import graphviz
-
+from scipy.signal import convolve2d
 filepath_assets = 'assets/advanced_deep_learning/'
 
 def landing_page():
@@ -242,40 +242,88 @@ def convolutional_neural_networks():
     ''', unsafe_allow_html=True)
 
     # kernels
-    with st.expander('kernels', expanded=False):
-        st.markdown(text_dict['kernels'])
+    with st.expander('kernels', expanded=True):
+        cols = st.columns((1,2))
+        with cols[0]:
+            st.markdown(text_dict['kernels'])
+        with cols[1]:
+            # lets show some of these: averaging, gaussian blur, and Dilated (Atrous) Convolution
+            n = 20
+            # avg
+            x_averaging = np.zeros((n,n))
+            x_averaging [1:4,1:4] = 1/9
+            # gauss blur
+            center, sigma = (2,2), 0.015
+            x_gaussian_blur = np.ones((n,n))
+            gauss_blur = lambda r : 1/(2*np.pi*sigma)**.5 * np.exp(-r**2/(2*sigma**2))
+            for i in range(n):
+                for j in range(n):
+                    d = ((i-center[0])**2 + (j-center[1])**2)/1000
+                    
+                    x_gaussian_blur[i,j] *= gauss_blur(d)
 
-        # lets show some of these: averaging, gaussian blur, and Dilated (Atrous) Convolution
-        n = 20
-        # avg
-        x_averaging = np.zeros((n,n))
-        x_averaging [1:4,1:4] = 1/9
-        # gauss blur
-        center, sigma = (2,2), 0.015
-        x_gaussian_blur = np.ones((n,n))
-        gauss_blur = lambda r : 1/(2*np.pi*sigma)**.5 * np.exp(-r**2/(2*sigma**2))
-        for i in range(n):
-            for j in range(n):
-                d = ((i-center[0])**2 + (j-center[1])**2)/1000
-                
-                x_gaussian_blur[i,j] *= gauss_blur(d)
+            # Dilated (Atrous) Convolution
+            x_dilated = np.zeros((n,n))
+            for i in range(1, 7, 2):
+                for j in range(1,7,2):
+                    x_dilated[i,j] = 1
 
-        # Dilated (Atrous) Convolution
-        x_dilated = np.zeros((n,n))
-        for i in range(1, 7, 2):
-            for j in range(1,7,2):
-                x_dilated[i,j] = 1
+            x_dilated/=np.sum(x_dilated)
 
-        x_dilated/=np.sum(x_dilated)
+            # Dilated (Atrous) Convolution bigger
+            x_dilated_big = np.zeros((n,n))
+            for i in range(1, 13, 3):
+                for j in range(1,13,3):
+                    x_dilated_big[i,j] = 1
 
-        fig, ax = plt.subplots(1,3, figsize=(12,4))
-        ax[0].imshow(x_averaging) ; ax[0].set_title('averaging kernel')
-        ax[1].imshow(x_gaussian_blur)
-        ax[2].imshow(x_dilated)
+            x_dilated_big/=np.sum(x_dilated_big)
+
+            fig, ax = plt.subplots(1,4, figsize=(15,3))
+            ax[0].imshow(x_averaging) ; ax[0].set_title('averaging kernel')
+            ax[1].imshow(x_gaussian_blur) ; ax[1].set_title('gaussian blur kernel')
+            ax[2].imshow(x_dilated) ; ax[2].set_title('dilated kernel')
+            ax[3].imshow(x_dilated_big) ; ax[3].set_title('dilated kernel bigger')
+            for axi in ax:
+                axi.set(xticks=[], yticks=[])
+
+            st.pyplot(fig)
+
+            plt.close()
+
+        # lets convolve with this kernel
+        img = plt.imread('assets/advanced_deep_learning/shiba.png')
+        fig, ax = plt.subplots(1,6, figsize=(12,4))
+        ax[0].imshow(img) ; ax[0].set_title('original image', fontsize=10)
+        # grey scale
+        img = np.mean(img, axis=2)
+
+        # down sample
+        def downscale(img, factor=5):
+            # make sure divisible by factor
+            img = img[:img.shape[0]//factor*factor, :img.shape[1]//factor*factor]
+            # max pooling
+            maxes = np.max(img.reshape(img.shape[0]//factor, factor, img.shape[1]//factor, factor), axis=(1,3))
+
+            return maxes
+        
+        img = downscale(img)
+
+        
+        ax[1].set_title('grey and downsample', fontsize=10)
+        ax[1].imshow(img)
+        
+        ax[2].set_title('averaging conv.', fontsize=10)
+        ax[2].imshow(convolve2d(img, x_averaging[:5,:5]))
+        ax[3].set_title('gaussian blur conv.', fontsize=10)
+        ax[3].imshow(convolve2d(img, x_gaussian_blur[:5,:5]))
+        ax[4].set_title('dilated conv.', fontsize=10)
+        ax[4].imshow(convolve2d(img, x_dilated[1:7,1:7]))
+        ax[5].set_title('dilated conv. big', fontsize=10)
+        ax[5].imshow(convolve2d(img, x_dilated_big[:13,:13]))
+        for axi in ax:
+            axi.set(xticks=[], yticks=[])
 
         st.pyplot(fig)
-
-
 
 
     # load data
