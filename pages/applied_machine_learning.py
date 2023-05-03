@@ -13,6 +13,7 @@ from torchvision import datasets, transforms
 
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
+from umap.umap_ import UMAP
 
 
 def landing_page():
@@ -335,14 +336,14 @@ def dimensionality_reduction():
         pca = PCA(n_components=2)
         PC = pca.fit(X)
         # plot PCs as lines
-        fig, ax = plt.subplots(figsize=(6,6))
+        fig, ax = plt.subplots(figsize=(6,4))
         colors = ['g', 'b']
         fig.suptitle('PCA om random, correlated data', fontsize=16)
         plt.scatter(X[:,0], X[:,1], c='k', marker='x', label='data', alpha=.5)
         for i, (x, y) in enumerate(zip(PC.components_[0], PC.components_[1])):
             plt.plot([0, y], 
                      [0, x], label=f'PC{i+1}', lw=3, c=colors[i])
-        ax.set(xlim=(-1.5,1.5), ylim=(-1.5,1.5))
+        ax.set(xlim=(-1.,1.), ylim=(-1.5,1.5))
         plt.legend()
         plt.close()
         st.pyplot(fig)
@@ -353,9 +354,17 @@ def dimensionality_reduction():
     with cols[0]:
         """
         ### t-SNE
-        t-distributed stochastic neighbor embedding. We look for non-linear combinations of features in our data which describe most variance in our data.
+        t-distributed stochastic neighbor embedding. We look for non-linear combinations of features in our data which describe most variance in our data. 
 
         For the example here, let's work with the Iris dataset. We have 4 dimensions, so it's kinda hard to visualize... Therefore we embed it into 2 dimensions.
+
+        t-SNE is not a projection method, instead it is a manifold method. What is perserved under the transformation; is the likeness between samples. So, what happens is; we throw our high-dimensional data into a smaller space, and try to perserve the inter-sample distances. 
+
+        To get both high and low density regions right (weighted with equal importance), we need to consider the density around a point in question when determining the similarity too other points.
+
+        (remember to normalize the similarity matrix)
+
+        **Perplexity**: regards to the expected density -> how many neighbors to consider when determining the similarity between points. This lets us decide; are we interested in global structure or local structure? (low perplexity -> global structure, high perplexity -> local structure). This is a trade-off.
         """
         with st.expander('Iris dataset', expanded=False):
             iris = sns.load_dataset('iris')
@@ -364,16 +373,29 @@ def dimensionality_reduction():
         
         X = iris.drop('species', axis=1)
         y = iris['species']
-        tsne = TSNE(n_components=2)
+        perplexity = 30 #
+        tsne = TSNE(n_components=2, perplexity=perplexity, random_state=42)
         X_embedded = tsne.fit_transform(X)
 
-        fig, ax = plt.subplots(figsize=(6,6))
+        fig, ax = plt.subplots(figsize=(6,4))
         fig.suptitle('t-SNE embedding of Iris dataset', fontsize=16)
         sns.scatterplot(x=X_embedded[:,0], y=X_embedded[:,1], hue=y, ax=ax)
         plt.close()
         st.pyplot(fig)
     '---'
-    'lets try embedding the MNIST dataset with these two methods'
+
+    # UMAP
+    cols = st.columns(2)
+    with cols[0]:
+        """
+        ### UMAP
+        Uniform Manifold Approximation and Projection (UMAP) is yet another embedding method.
+
+        [paper](https://arxiv.org/pdf/1802.03426.pdf)
+        """
+
+    '---'
+    'lets try embedding the MNIST dataset with these three methods'
 
     # load data (10k)
     Mnist = datasets.MNIST(root='assets/advanced_deep_learning/data/', train=True, download=True)
@@ -391,32 +413,35 @@ def dimensionality_reduction():
 
     X_embedded_PCA = pca.fit_transform(X)
     # t-SNE
-    tsne = TSNE(n_components=2)
+    tsne = TSNE(n_components=2, 
+                # to she barnes hut: 
+                method='barnes_hut',
+
+                perplexity=st.slider('t-SNE Perplexity', 5, 50, 30),
+                random_state=42
+                )
     X_embedded_TSNE = tsne.fit_transform(X)
 
+    umap = UMAP(n_components=2, random_state=42, n_neighbors=5
+                ) # to import from umap.umap_ import UMAP
+    X_embedded_UMAP = umap.fit_transform(X)
+
     # plot
-    fig, ax = plt.subplots(1,2, figsize=(12,6))
-    fig.suptitle('MNIST dataset embedded with PCA and t-SNE', fontsize=16)
-    sns.scatterplot(x=X_embedded_PCA[:,0], y=X_embedded_PCA[:,1], hue=y, ax=ax[0])
-
-    sns.scatterplot(x=X_embedded_TSNE[:,0], y=X_embedded_TSNE[:,1], hue=y, ax=ax[1])
-
+    fig, ax = plt.subplots(1,3, figsize=(12,4))
+    fig.suptitle('MNIST dataset embedded with PCA, t-SNE and UMAP', fontsize=16)
+    sns.scatterplot(x=X_embedded_PCA[:,0], y=X_embedded_PCA[:,1], hue=y, ax=ax[0]) ; ax[0].set_title('PCA')
+    sns.scatterplot(x=X_embedded_TSNE[:,0], y=X_embedded_TSNE[:,1], hue=y, ax=ax[1]); ax[1].set_title('t-SNE')
+    sns.scatterplot(x=X_embedded_UMAP[:,0], y=X_embedded_UMAP[:,1], hue=y, ax=ax[2]); ax[2].set_title('UMAP')
     plt.close()
     st.pyplot(fig)
 
+    '---'
 
-
+    """
+    Also try trimap or pacmap
+    """
 
     '---'
-    # UMAP
-    cols = st.columns(2)
-    with cols[0]:
-        """
-        ### UMAP
-        Uniform Manifold Approximation and Projection (UMAP) is yet another embedding method.
-
-        [paper](https://arxiv.org/pdf/1802.03426.pdf)
-        """
         
     # Autoencoders
     cols = st.columns(2)
@@ -425,10 +450,11 @@ def dimensionality_reduction():
         ### Autoencoders
         NN based approach, which consists of an encoder and decoder pair. The output tries to match the input. The two components are connect by a latent layer. If we set the latent layer width to eg 3, and we are able to get outputs which match the inputs well, we have determined that we can losslessly compress our data into 3 dimensions, i.e., the intrinsic dimension is at most 3. 
 
-        '### Variational autoencoders'
-        Use mu and sigma in the latent layer, and are thus able to be generative.
+        #### Variational autoencoders
+        Use $\mu$ and $\sigma$ in the latent layer, and are thus able to be generative.
         """
-
+    with cols[1]:
+        st.image('https://www.compthree.com/images/blog/ae/ae.png', caption='autoencoder')
 
 if __name__ == '__main__':
     functions = [lecture_2,

@@ -2,10 +2,17 @@
 from utils.utils_ADL import *
 #import PCA
 from sklearn.decomposition import PCA
+import matplotlib as mpl
 
 import graphviz
 from scipy.signal import convolve2d
 filepath_assets = 'assets/advanced_deep_learning/'
+
+
+# set rc params
+#mpl.rcParams['figure.dpi'] = 100
+
+
 
 def landing_page():
     '''Landing page for advanced deep learning section. For now I'll just fill this with notes for the first lecture.'''
@@ -325,6 +332,15 @@ def convolutional_neural_networks():
 
         st.pyplot(fig)
 
+    # conv2d
+    with st.expander('conv2d', expanded=True):
+        '''
+        * We define a kernel to use to step through our matrix.
+        * This makes the shape smaller, so we can pad it to keep the shape the same. (we typically pad with zeros)
+        * the step size is called the stride.
+
+        * 
+        '''
 
     # load data
     transform = transforms.ToTensor()
