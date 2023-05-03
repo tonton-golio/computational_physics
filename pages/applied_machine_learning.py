@@ -9,6 +9,10 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+from torchvision import datasets, transforms
+
+from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
 
 
 def landing_page():
@@ -307,13 +311,128 @@ def lecture_3():
     To get a NN to work well, it need tuning. For more on this topic see Advanced deep learning - MLOps. 
     """
 
-
-
+def dimensionality_reduction():
+    ''
+    '## Dimensionality reduction'
     
+    # PCA
+    cols = st.columns(2)
+    with cols[0]:
+        """
+        ### PCA
+        Principal component analysis. We look for linear combinations of features in our data which describe most variance in our data.
+
+        So intialliy, we find the axis of most variance (the principal component). Thereafter, we look for the dimension containing most variance in the space orthogonal to the first principal component. This is the second principal component. And so on.
+
+        In Practice, this is done not iteratively, but instead by finding the eigenvalues and eigenvectors of the covariance matrix of the data. The eigenvectors are the principal components, and the eigenvalues are the variance explained by each principal component.
+
+        **Note**: you should apply a standard scalar first 🥸
+        """
+    with cols[1]:
+        X = np.random.normal(0, 1, (200,2))
+        X[:,1] = X[:,0]*1.2 + X[:,1]
+        X /= 5
+        pca = PCA(n_components=2)
+        PC = pca.fit(X)
+        # plot PCs as lines
+        fig, ax = plt.subplots(figsize=(6,6))
+        colors = ['g', 'b']
+        fig.suptitle('PCA om random, correlated data', fontsize=16)
+        plt.scatter(X[:,0], X[:,1], c='k', marker='x', label='data', alpha=.5)
+        for i, (x, y) in enumerate(zip(PC.components_[0], PC.components_[1])):
+            plt.plot([0, y], 
+                     [0, x], label=f'PC{i+1}', lw=3, c=colors[i])
+        ax.set(xlim=(-1.5,1.5), ylim=(-1.5,1.5))
+        plt.legend()
+        plt.close()
+        st.pyplot(fig)
+    '---'
+    # t-SNE
+    cols = st.columns(2)
+
+    with cols[0]:
+        """
+        ### t-SNE
+        t-distributed stochastic neighbor embedding. We look for non-linear combinations of features in our data which describe most variance in our data.
+
+        For the example here, let's work with the Iris dataset. We have 4 dimensions, so it's kinda hard to visualize... Therefore we embed it into 2 dimensions.
+        """
+        with st.expander('Iris dataset', expanded=False):
+            iris = sns.load_dataset('iris')
+            iris
+    with cols[1]:
+        
+        X = iris.drop('species', axis=1)
+        y = iris['species']
+        tsne = TSNE(n_components=2)
+        X_embedded = tsne.fit_transform(X)
+
+        fig, ax = plt.subplots(figsize=(6,6))
+        fig.suptitle('t-SNE embedding of Iris dataset', fontsize=16)
+        sns.scatterplot(x=X_embedded[:,0], y=X_embedded[:,1], hue=y, ax=ax)
+        plt.close()
+        st.pyplot(fig)
+    '---'
+    'lets try embedding the MNIST dataset with these two methods'
+
+    # load data (10k)
+    Mnist = datasets.MNIST(root='assets/advanced_deep_learning/data/', train=True, download=True)
+    X = Mnist.data.numpy()
+    y = Mnist.targets.numpy()
+    X = X.reshape(X.shape[0], -1)
+
+    # take a subset
+    idx = np.random.choice(np.arange(X.shape[0]), 500, replace=False)
+    X = X[idx]
+    y = y[idx]
+
+    # PCA
+    pca = PCA(n_components=2)
+
+    X_embedded_PCA = pca.fit_transform(X)
+    # t-SNE
+    tsne = TSNE(n_components=2)
+    X_embedded_TSNE = tsne.fit_transform(X)
+
+    # plot
+    fig, ax = plt.subplots(1,2, figsize=(12,6))
+    fig.suptitle('MNIST dataset embedded with PCA and t-SNE', fontsize=16)
+    sns.scatterplot(x=X_embedded_PCA[:,0], y=X_embedded_PCA[:,1], hue=y, ax=ax[0])
+
+    sns.scatterplot(x=X_embedded_TSNE[:,0], y=X_embedded_TSNE[:,1], hue=y, ax=ax[1])
+
+    plt.close()
+    st.pyplot(fig)
+
+
+
+
+    '---'
+    # UMAP
+    cols = st.columns(2)
+    with cols[0]:
+        """
+        ### UMAP
+        Uniform Manifold Approximation and Projection (UMAP) is yet another embedding method.
+
+        [paper](https://arxiv.org/pdf/1802.03426.pdf)
+        """
+        
+    # Autoencoders
+    cols = st.columns(2)
+    with cols[0]:
+        """
+        ### Autoencoders
+        NN based approach, which consists of an encoder and decoder pair. The output tries to match the input. The two components are connect by a latent layer. If we set the latent layer width to eg 3, and we are able to get outputs which match the inputs well, we have determined that we can losslessly compress our data into 3 dimensions, i.e., the intrinsic dimension is at most 3. 
+
+        '### Variational autoencoders'
+        Use mu and sigma in the latent layer, and are thus able to be generative.
+        """
 
 
 if __name__ == '__main__':
     functions = [lecture_2,
-                 lecture_3]
+                 lecture_3,
+                 dimensionality_reduction]
     with streamlit_analytics.track():
         navigator(functions)
