@@ -24,3 +24,4 @@ streamlit_analytics
 qutip
 torchviz
 xgboost
+umap
