@@ -25,3 +25,4 @@ qutip
 torchviz
 xgboost
 umap
+umap-learn
