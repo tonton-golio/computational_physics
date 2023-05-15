@@ -98,8 +98,14 @@ def navigator(functions, names=None):
     :param functions: a list of functions to put in sidebar for navigation
     :return: None
     """
+    def prep_func_name(func):
+        func_name = func.__name__.replace('_', ' ')
+        #replace first letter with capital
+        func_name = func_name[0].upper() + func_name[1:]
+        return func_name
+
     if names is None:
-        topic_dict = {func.__name__.replace('_', ' ').title(): func for func in functions}
+        topic_dict = {prep_func_name(func): func for func in functions}
     else:
         topic_dict = {name: func for name, func in zip(names, functions)}
 

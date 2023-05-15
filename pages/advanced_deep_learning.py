@@ -569,40 +569,55 @@ def U_net():
                 loss_chart.add_rows([[loss.item()]])
             model.eval()
 
-def variational_autoencoders():
+def autoencoders():
     # load text
     text_dict = getText_prep_new(filepath_assets+'vae.md')
 
     # title
-    st.markdown('# Variational Autoencoders', unsafe_allow_html=True)
+    st.markdown('# Autoencoders', unsafe_allow_html=True)
 
     # intro text
     st.markdown(text_dict['intro'], unsafe_allow_html=True)
 
     # load data -> fashion MNIST
     transform = transforms.ToTensor()
-    train_data = datasets.FashionMNIST(root=filepath_assets+'data', train=True, download=True, transform=transform)
-    test_data = datasets.FashionMNIST(root=filepath_assets+'data', train=False, download=True, transform=transform)
+    train_data = datasets.MNIST(root=filepath_assets+'data', train=True, download=True, transform=transform)
+    test_data = datasets.MNIST(root=filepath_assets+'data', train=False, download=True, transform=transform)
+
+     # dont use all data
+    train_data, _ = torch.utils.data.random_split(train_data, [10000, 50000])
+    test_data, _ = torch.utils.data.random_split(test_data, [10000, 0])
 
     # DataLoader
     torch.manual_seed(69)
 
-    train_loader = DataLoader(train_data, batch_size=300, shuffle=True)
-    test_loader = DataLoader(test_data, batch_size=500, shuffle=False)
+    train_loader = DataLoader(train_data, batch_size=400, shuffle=True)
+    test_loader = DataLoader(test_data, batch_size=400, shuffle=False)
 
+   
+    # view data
+    fig, ax = plt.subplots(1, 10, figsize=(10, 5))
+    for i in range(10):
+        ax[i].axis('off')
+        ax[i].imshow(train_data[i][0].squeeze().numpy())
+    st.pyplot(fig)
+    plt.close()
     # define model
     class VAE(nn.Module):
-        def __init__(self):
+        def __init__(self, latent_dim=2):
             super().__init__()
             self.fc1 = nn.Linear(784, 400)
-            self.fc2 = nn.Linear(400, 8)
-            self.fc3 = nn.Linear(8, 400)
+            self.fc2 = nn.Linear(400, latent_dim)
+            self.fc3 = nn.Linear(latent_dim, 400)
             self.fc4 = nn.Linear(400, 784)
             self.relu = nn.ReLU()
             self.sigmoid = nn.Sigmoid()
+
+            self.fc__ = nn.Linear(400, 400)
         
         def encode(self, x):
             h1 = self.relu(self.fc1(x))
+            h1 = self.relu(self.fc__(h1))
             return self.fc2(h1)
         
         def reparameterize(self, mu):
@@ -612,19 +627,88 @@ def variational_autoencoders():
         
         def decode(self, z):
             h3 = self.relu(self.fc3(z))
+            h3 = self.relu(self.fc__(h3))
             return self.sigmoid(self.fc4(h3))
         
         def forward(self, x):
             mu = self.encode(x.view(-1, 784))
             z = self.reparameterize(mu)
             return self.decode(z), mu
+    
+    class VAE_with_conv2d(nn.Module):
+        def __init__(self, latent_dim=2):
+            self.latent_dim = latent_dim
+            super().__init__()
+            self.conv1 = nn.Conv2d(1, 16, 3, padding=1)
+            self.conv2 = nn.Conv2d(16, 32, 3, padding=1)
+            self.conv2_ = nn.Conv2d(32, 16, 3, padding=1)
+            self.conv1_ = nn.Conv2d(16, 3, 3, padding=1)
+            self.flatten = nn.Flatten()
+            self.fc1 = nn.Linear(784*2*2, 256)
+            self.fc2 = nn.Linear(256, 64)
+            self.fc3 = nn.Linear(64, 16)
+            self.fc4 = nn.Linear(16, latent_dim*2)
+            self.fc4_ = nn.Linear(latent_dim, 16)
+            self.fc3_ = nn.Linear(16, 64)
+            self.fc2_ = nn.Linear(64, 256)
+            self.fc1_ = nn.Linear(256, 784)
+            self.relu = nn.ReLU()
+            self.sigmoid = nn.Sigmoid()
+
+
+        def encode(self, x):
+            h1 = self.relu(self.conv1(x))
+            h1 = self.relu(self.conv2(h1))
+            h1 = self.relu(self.conv2_(h1))
+            h1 = self.conv1_(h1)
+            h1 = self.flatten(h1)
+            h1 = torch.cat((h1, x.view(-1, 784)), dim=1)
+            h1 = self.relu(self.fc1(h1))
+            h1 = self.relu(self.fc2(h1))
+            h1 = self.relu(self.fc3(h1))
+            return self.sigmoid(self.fc4(h1))
         
+        
+        def reparameterize(self, mu_std):
+            #st.write(mu_std.shape)
+            std = mu_std[:, self.latent_dim:]
+            mu = mu_std[:, :self.latent_dim]
+            eps = torch.randn_like(std)
+            out = mu + eps*std
+            #st.write('out shape', out.shape)
+            return self.sigmoid(out)
+        
+        def decode(self, z):
+            h3 = self.relu(self.fc4_(z))
+            h3 = self.relu(self.fc3_(h3))
+            h3 = self.relu(self.fc2_(h3))
+            h3 = self.fc1_(h3)
+            h3 = h3.view(-1, 1, 28, 28)
+            return self.sigmoid(h3)
+        
+        def forward(self, x):
+            mu_std = self.encode(x)
+            z = self.reparameterize(mu_std)
+            return self.decode(z), mu_std
+        
+        
+
     # instantiate model
-    model = VAE()
+    st.radio('Choose model', ['Linear VAE', 'Convolutional VAE'], key='model_type')
+    if st.session_state.model_type == 'Linear VAE':
+        model = VAE()
+        model_filename = 'vae.pt'
+    else:
+        model = VAE_with_conv2d()
+        model_filename = 'vae_conv.pt'
 
     # view model
+
     cols = st.columns((1,1))
-    cols[0].markdown(text_dict['VAE model'], unsafe_allow_html=True)
+    if st.session_state.model_type == 'Linear VAE':
+        cols[0].markdown(text_dict['VAE model'], unsafe_allow_html=True)
+    else:
+        cols[0].markdown(text_dict['VAE conv model'], unsafe_allow_html=True)
     view_model(model, st=cols[1], input_sz=(1,1, 28,28)) # view graph of model
 
     #print number of parameters
@@ -634,35 +718,70 @@ def variational_autoencoders():
     criterion = nn.BCELoss()
     
     # define optimizer
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+    lr = 0.01
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+    cols = st.columns((1,1))
+    with cols[0]:
+        if st.button('Load model from file'):
+            try:
+                # load model
+                model.load_state_dict(torch.load(filepath_assets+'models/'+model_filename))
+                st.success('Loaded model from file')
+            except:
+                st.error('Could not load model from file')
+    with cols[1]:
+        latent_dim = st.slider('Latent dimension', 2, 10, 2)
+        if st.session_state.model_type == 'Linear VAE':
+            model = VAE(latent_dim=latent_dim)
+            model_filename = 'vae.pt'
+        else:
+            model = VAE_with_conv2d(latent_dim=latent_dim)
+            model_filename = 'vae_conv.pt'
+        train_button = st.button('Train model')
+    if train_button:
 
-    if st.button('Train model'):
         # train model
-        epochs = 1
+        epochs = 3
         train_losses = []
         test_losses = []
         # center text in col
+        
         st.markdown("""<div style="text-align: center, font-type: bold
-        ">Loss</div>""", unsafe_allow_html=True)
-        loss_chart = st.line_chart()
+    ">Train Loss</div>""", unsafe_allow_html=True)
+        loss_chart = st.line_chart() 
+        # add labels to chart
+
+
+        
         for i in range(epochs):
             train_loss = 0.0
             test_loss = 0.0
             accuracy = 0
-            model.train()
-            for images, labels in train_loader:
+            
+            for (images_train, labels_train), (images_test, labels_test) in zip(train_loader, test_loader):
+                model.train()
                 optimizer.zero_grad()
-                output, mu = model(images)
-                loss = criterion(output, images.view(-1, 784)) + 0.0001*torch.sum(mu**2)
-                loss.backward()
+                output_train, mu_train = model(images_train)
+                if st.session_state.model_type == 'Linear VAE':
+                    loss_train = criterion(output_train, images_train.view(-1, 784)) + 0.0001*torch.sum(mu_train**2)
+                else:
+                    loss_train = criterion(output_train, images_train.view(-1,1, 28,28)) + 0.0001*torch.sum(mu_train**2)
+                loss_train.backward()
                 optimizer.step()
-                train_loss += loss.item()*images.size(0)
-                loss_chart.add_rows([[loss.item()]])
-            model.eval()
-            for images, labels in test_loader:
-                output, mu = model(images)
-                loss = criterion(output, images.view(-1, 784)) + 0.0001*torch.sum(mu**2)
-                test_loss += loss.item()*images.size(0)
+                train_loss += loss_train.item()*images_train.size(0)
+                
+                
+                # eval
+                model.eval()
+                output_test, mu_test = model(images_test)
+                if st.session_state.model_type == 'Linear VAE':
+                    loss_test = criterion(output_test, images_test.view(-1, 784)) + 0.0001*torch.sum(mu_test**2)
+                else:
+                    
+                    loss_test = criterion(output_test, images_test.view(-1,1, 28,28)) + 0.0001*torch.sum(mu_test**2)
+                test_loss += loss_test.item()*images_test.size(0)
+                loss_chart.add_rows([{'train loss' :loss_train.item(), 'test loss' :loss_test.item()}])
+
             train_loss = train_loss/len(train_loader.sampler)
             test_loss = test_loss/len(test_loader.sampler)
             train_losses.append(train_loss)
@@ -670,14 +789,15 @@ def variational_autoencoders():
             print('Epoch: {} \tTraining Loss: {:.6f} \tTest Loss: {:.6f}'.format(
                 i+1, train_loss, test_loss))
             
+            lr *= .5
+            optimizer = torch.optim.Adam(model.parameters(), lr=lr)
         # save model
-        torch.save(model.state_dict(), filepath_assets+'models/vae.pt')
-            
+        torch.save(model.state_dict(), filepath_assets+'models/'+model_filename)
         
     
-    # load model
-    model.load_state_dict(torch.load(filepath_assets+'models/vae.pt'))
+    
     '''---'''
+
     # view model output -> latent space
     st.markdown(text_dict['latent space'], unsafe_allow_html=True)
     cols = st.columns(2)
@@ -688,7 +808,11 @@ def variational_autoencoders():
 
     # encode all images
     for images, labels in train_loader:
-        z = model.encode(images.view(-1, 784))
+        if st.session_state.model_type == 'Linear VAE':
+            z = model.encode(images.view(-1, 784))
+        else:
+            z = model.encode(images.view(-1,1,28,28))
+            z = model.reparameterize(z)
 
         break
 
@@ -701,12 +825,14 @@ def variational_autoencoders():
     fig = plt.figure(figsize=(10, 10))
     plt.scatter(z[:, 0], z[:, 1], c=labels, cmap='tab10')
     
+    # PCs should be randomly distributed points in the span of z
+    PCs = np.random.normal(np.mean(z[:,:2], axis=0), np.std(z[:,:2], axis=0), size=(4,2))
 
-    PCs = np.array([[-.5,1],
-                    [1.1, .1],
-                    [-.47,-.8],
-                    [1.1, -.5],
-                    ])
+    # PCs = np.array([[-.5,1],
+    #                 [1.1, .1],
+    #                 [-.47,-.8],
+    #                 [1.1, -.5],
+    #                 ])
 
     plt.scatter(PCs[:,0], PCs[:,1], c='black', s=200, marker='x')
     cols[0].pyplot(fig)
@@ -722,6 +848,7 @@ def variational_autoencoders():
 
         ax.imshow(model.decode(z_trans).view(1, 28, 28).detach().numpy()[0], cmap='gray')
     cols[1].pyplot(fig_latent)
+    plt.close()
 
 def generative_adversarial_networks():
     # load text
@@ -987,14 +1114,212 @@ def MLops():
     with cols[1]:
         st.image('https://assets.website-files.com/5ac6b7f2924c656f2b13a88c/63c6b3b7218b038527171ad3_hero-app.jpg')
     
+def Natural_Language_processing():
+    ''
+
+    """
+    # Natural Language Processing (NLP)
+    ## Word2Vec
+    """
+    cols = st.columns((1,1))
+    with cols[0]:
+        """
+        Finds word embeddings, how are different words related to each other? We can pass these embeddings to a neural network (like a multiLayerPerceptron) to perform NLP tasks.
+
+        The word are embedded as a high-dimensional vector. The resulting embeddings capture the semantic and syntactic relationships between words.
+
+        A slightly better approach to interpreting the embeddings that a simple MLP is a CNN. The CNN can capture the local structure of the text. This is still not great...
+
+        So we use a recurrent neural network (RNN). This is a neural network that has a memory. It can remember the previous words in the sentence and use that information to predict the next word. This is called a language model.
+
+        The RNN has context of previously written words. An improvement is the bi-directional RNN. This is a RNN that has context of both the previous and the next words because it reads from both ends (use `torch.flip()` to get reverse order of words).   
+        
+        To deal with words outside the corpus provided to the embedding network, we can use a character-level embedding.
+        """
+    with cols[1]:
+        st.markdown("""**Word2vec embbeding**""")
+        st.image('https://www.researchgate.net/profile/Hakime-Oeztuerk/publication/339013257/figure/fig1/AS:857837307691008@1581535760669/The-illustration-of-the-Skip-Gram-architecture-of-the-Word2Vec-algorithm-For-a.ppm')
+    '---'
+    '### Applications of RNNs'
+    """
+    * classification
+        * Sentiment classification: classify a sentence as positive or negative
+        * Named entity recognition: classify words in a sentence as names, locations, organizations, etc.
+    * Sequence encoding
+        * Similarity between sentences: how similar are two sentences?
+    * Sequence generation
+        * Machine translation: translate a sentence from one language to another.
+    """
+    tabs = st.tabs(['BACKEND', 'RNN-based classification', 'similarity between sentences', 'machine translation'])
+    with tabs[0]: # backend
+        st.markdown("""
+        ```python
+        import torch
+        import torch.nn as nn
+
+        class RNNCell(nn.Module):
+            def __init__(self, input_size, hidden_size, output_size):
+                super(RNNCell, self).__init__()
+                self.hidden_size = hidden_size
+                self.input_to_hidden = nn.Linear(input_size + hidden_size, hidden_size)
+                self.hidden_to_output = nn.Linear(hidden_size, output_size)
+            def forward(self, input, hidden_state):
+                combined = torch.cat((input, hidden_state), 1)
+                hidden_state = nn.Tanh(self.input_to_hidden(combined))
+                output = self.hidden_to_output(hidden_state)
+                return output, hidden
+            
+            def init_hidden(self):
+                return torch.zeros(1, self.hidden_size)
+
+        class RNN(nn.Module):
+            def __init__(self, input_size, hidden_size, output_size, n_layers=1):
+                super(RNNCell, self).__init__()
+                self.RNN_layers = [RNNCell(input_size, hidden_size, output_size) for _ in range(n_layers)]
+
+            def forward(self, input, hidden=None):
+                outputs = []
+                if hidden is None:
+                    hidden = self.init_hidden()
+                for layer_idx in range(len(self.RNN_layers)):
+                    layer_outputs = []
+                    for input_idx in range(input.size(1)):
+                        x = input[:, input_idx, :]
+                        output, hidden = self.RNN_layers[layer_idx](x, hidden)
+                        layer_outputs.append(output)
+                    outputs.append(torch.stack(layer_outputs, dim=1))
+                    input = outputs[-1]
+                return torch.stack(outputs, dim=1)
+
+            def init_hidden(self):
+                return torch.zeros(1, self.hidden_size) 22
+
+        class TextRNNEncoder(nn.Module):
+            def __init__(self, vocab_size, input_size, hidden_size, output_size, n_layers=2):
+                super(TextRNNEncoder, self).__init__()
+                self.Emb = nn.Embedding(vocab_size, input_size)
+                self.RNN_f = RNN(input_size, hidden_size, output_size, n_layers)
+                self.RNN_b = RNN(input_size, hidden_size, output_size, n_layers)
+
+            def forward(self, input):
+                word_embeddings = self.Emb(input)
+                outputs_f = self.RNN(word_embeddings)
+                outputs_b = self.RNN(torch.flip(word_embeddings, dim=(1,)))
+                outputs = torch.cat((outputs_f, torch.flip(outputs_b, dim=(1,)), dim=1)
+                return outputs
+            
+
+
+        ```""",)
+    with tabs[1]: # RNN-based classification
+        st.markdown("""
+        ```python
+        class TextRNNClassifier(nn.Module):
+            def __init__(self, vocab_size, input_size, hidden_size, output_size, n_layers=2, n_classes=2):
+                super(TextRNNClassifier, self).__init__()
+                self.Emb = nn.Embedding(vocab_size, input_size)
+                self.RNN_f = RNN(input_size, hidden_size, output_size, n_layers)
+                self.RNN_b = RNN(input_size, hidden_size, output_size, n_layers)
+                self.classifier = nn.Linear(hidden_size, n_classes)
+                
+            def forward(self, input):
+                word_embeddings = self.Emb(input)
+                outputs_f = self.RNN(word_embeddings)
+                outputs_b = self.RNN(torch.flip(word_embeddings, dim=(1,)))
+                outputs = torch.cat((outputs_f, torch.flip(outputs_b, dim=(1,)), dim=1)
+                logits = self.classifier(outputs[:, -1, -1, :].squeeze(1))
+                return outputs
+
+        ```""",)
+
+    with tabs[2]: # similarity between sentences
+        st.markdown("""
+        ```python
+        class TextRNNSimilarity(nn.Module):
+            def __init__(self, vocab_size, input_size, hidden_size, output_size, n_layers=2):
+                super(TextRNNSimilarity, self).__init__()
+                self.rnn_encoder = TextRNNEncoder(vocab_size, input_size, hidden_size,
+                output_size, n_layers)
+                
+            def forward(self, input_s, input_t):
+                output_s = self.rnn_encoder(input_s)[:, -1, -1, :]
+                output_t = self.rnn_encoder(input_t)[:, -1, -1, :]
+                sim_score = F.cosine_similarity(input_s, input_t)
+                return sim_score
+            
+        ```""",)
+
+    with tabs[3]: # machine translation
+        st.markdown("""
+        ```python
+        class TextRNNSGenerator(nn.Module):
+            def __init__(self, vocab_size, input_size, hidden_size, output_size, n_layers=2):
+                super(TextRNNSimilarity, self).__init__()
+                self.rnn_encoder = TextRNNEncoder(vocab_size, input_size, hidden_size,
+                output_size, n_layers)
+                self.rnn_decoder = TextRNNEncoder(vocab_size, input_size, hidden_size,
+                output_size, n_layers)
+                self.word_decoder = nn.Linear(hidden_size, vocab_size)
+
+            def forward(self, input):
+                encoded_outputs = self.rnn_encoder(input)[:, -1, -1, :]
+                decoder_inputs = torch.zeros(1, 1)
+                for _ in range(self.max_gen_length):
+                    decoder_outputs = self.rnn_encoder(decoder_inputs, hidden=encoded_outputs)[:, -1, -1, :]
+                    predicted_logits = self.word_decoder(decoder_outputs)
+                    predicted_words = predicted_logits.argmax(1).unsqueeze(0)
+                    decoder_inputs = torch.cat((decoder_inputs, predicted_words), dim=1)
+                return decoder_inputs 
+
+        ```""",)
+
+
+
+
+
+    "## Gated Recurrent Units (GRUs)"
+    cols = st.columns((1,1))
+    with cols[0]:
+        """
+        
+        """
+
+    with cols[1]:
+        st.image('https://d2l.ai/_images/gru-3.svg')
+
+
+    "## Long Short-Term Memory (LSTM)"
+    cols = st.columns((1,1))
+    with cols[0]:
+        """
+        Similar to the GRU, but with two hidden states. 
+        """
+
+    with cols[1]:
+        st.image('https://d2l.ai/_images/lstm-3.svg')
+    
+
+    '## ELMo'
+    cols = st.columns((1,1))
+    with cols[0]:
+        """
+        Passes embeddings to a bi-directional LSTM network. 
+
+        This embeds words given a context -> So "snake" isnt just a snake, its "snake" given the context: i.e., this man was a "snake" (a bad person).
+
+        """
+    with cols[1]:
+        st.image('https://www.researchgate.net/publication/356967282/figure/fig1/AS:1099809205288962@1639226356684/The-architecture-of-ELMo.png')
+
 
 if __name__ == '__main__':
     functions = [landing_page,
                  artificial_neural_networks,
                  convolutional_neural_networks,
                  U_net,
-                 variational_autoencoders,
+                 autoencoders,
                  generative_adversarial_networks,
-                 MLops]
+                 MLops,
+                 Natural_Language_processing]
     with streamlit_analytics.track():
         navigator(functions)
