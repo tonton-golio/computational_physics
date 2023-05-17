@@ -456,6 +456,16 @@ def dimensionality_reduction():
     with cols[1]:
         st.image('https://www.compthree.com/images/blog/ae/ae.png', caption='autoencoder')
 
+def recurrent_neural_networks():
+    ''
+
+    """
+    ## Recurrent neural networks,
+
+    the outout of a cell of the network is passed as input to the next cell along with the next obersevation. This lets us predict the next value. Alternatively me may gauge global properties of the timeseries.
+    
+    """
+
 if __name__ == '__main__':
     functions = [lecture_2,
                  lecture_3,

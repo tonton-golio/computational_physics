@@ -1311,6 +1311,60 @@ def Natural_Language_processing():
     with cols[1]:
         st.image('https://www.researchgate.net/publication/356967282/figure/fig1/AS:1099809205288962@1639226356684/The-architecture-of-ELMo.png')
 
+def Transformers():
+    ''
+    """
+    # Transformers
+    """
+    cols = st.columns((1,1))
+    with cols[0]:
+        r"""
+        Transformers are a type of neural network architecture that uses attention mechanisms to learn contextual relations between words in a text.
+
+        Steps in a transformer:
+        1. Embedding -> Embeds words in a text, we can use word2vec or other methods.
+        1. Positional encoding -> Adds information about the position of the words in the text. This can be done simply with a sine function.
+        1. Encoder (apply this N times) ->
+            1. Attention -> A mutli head attention block is used to learn the contextual relations between words in a text. We project embeddings in values, keys and queries: and pass these into a scaled dot-product attention block. This figures out how important a value is given a query-key pair.
+                * Value: what a token represents in general
+                * Key: what a token represents in the context of a query
+                * Query: what a token is asking for in the context of a key
+            > We obtain token-to-token attention scores: how important each token is to each other token.
+            > Multi-head provides multiple different attention scores, which are concatenated and passed on.
+            2. Add and Norm -> Add raw embeddings to the output of the attention block, and normalise. Normalize as:
+            $$
+            y = \frac{x - \mathbb{E}[x]}{\sqrt{\text{Var}[x] + \epsilon}} \odot \gamma + \beta
+            $$
+            3. Feed forward -> Reverse bottleneck FFN: which 
+        1. Decoder (apply this N times) ->
+            1. Attention -> same as in encoder, but preceded by masked attention. This prevents the decoder from cheating by looking at the future. Inputs of the decoder are the outputs of the encoder along with the output of the previous decoder block and the output of the total transformer.
+
+        
+        
+        
+        """
+    with cols[1]:
+        st.image('https://charon.me/img/15873749167025.jpg')
+        st.caption('To implement use `torch.nn.Transformer()`')
+        st.markdown('''
+        This model solves the problem of long term dependencies in RNNs. It is also parallelisable, and can be trained on multiple GPUs.
+        
+        ''')
+
+    '---'
+    '## BERT: Bidirectional Encoder Representations from Transformers'
+    """
+    Two tasks we can use BERT for are:
+    * fill in masked words in a sentence (MLM) -> given a sentence with a masked word, what is the masked word?
+    * next sentence prediction (NSP) -> given two sentences, is the second sentence the next sentence in the text?
+
+    
+
+
+
+
+
+    """
 
 if __name__ == '__main__':
     functions = [landing_page,
@@ -1320,6 +1374,7 @@ if __name__ == '__main__':
                  autoencoders,
                  generative_adversarial_networks,
                  MLops,
-                 Natural_Language_processing]
+                 Natural_Language_processing,
+                 Transformers]
     with streamlit_analytics.track():
         navigator(functions)
