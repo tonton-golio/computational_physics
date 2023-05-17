@@ -1338,6 +1338,10 @@ def Transformers():
             3. Feed forward -> Reverse bottleneck FFN: which 
         1. Decoder (apply this N times) ->
             1. Attention -> same as in encoder, but preceded by masked attention. This prevents the decoder from cheating by looking at the future. Inputs of the decoder are the outputs of the encoder along with the output of the previous decoder block and the output of the total transformer.
+            2. Add and Norm -> same as in encoder
+            3. Feed forward -> same as in encoder
+        1. Output -> linear layer to get the output of the transformer.
+        1. Softmax -> to get the probability of each word in the vocabulary.
 
         
         
@@ -1353,19 +1357,88 @@ def Transformers():
 
     '---'
     '## BERT: Bidirectional Encoder Representations from Transformers'
-    """
-    Two tasks we can use BERT for are:
-    * fill in masked words in a sentence (MLM) -> given a sentence with a masked word, what is the masked word?
-    * next sentence prediction (NSP) -> given two sentences, is the second sentence the next sentence in the text?
 
+    st.image('https://miro.medium.com/v2/resize:fit:1400/1*8hhmXwfT3-rBzppJ7X9pRA.png')
+    """
     
 
-
-
-
+    Tasks we can use BERT include:
+    * fill in masked words in a sentence (MLM) -> given a sentence with a masked word, what is the masked word?
+    * next sentence prediction (NSP) -> given two sentences, is the second sentence the next sentence in the text?
+    * text classification -> given a sentence, what is the class of the sentence?
+    * contradiction detection -> given two sentences, are they contradictory? Concatenate the two with a seperator in between.
+    * Question answering -> given a question and a paragraph, where in the paragraph is the answer?
+    * Token classification -> given a sentence, what is the class of each token?
 
     """
+    "## GPT"
+    cols = st.columns((3,2))
+    with cols[0]:
+        """
+        * Just keep the decoder part of the transformer.
+        * Doesn't just assess cross-entropy loss on the masked tokens, but instead evaluate on the whole sentence. This provides additional context to the model. Thus we achieve more well informed gradient updates; resulting in faster convergence.
 
+        """
+    with cols[1]:
+        st.image('https://static-asset-delivery.hasbroapps.com/a9e79c9b34ea183cad07eb995c5f51818b6c9447/7c16f2e99f466b413f741efd5bd3a804.png')
+
+
+    "## Recent advancements"
+    cols = st.columns((2,3))
+    with cols[0]:
+        """
+        Recent advancements have come from scaling up the model, and using more data. This has turned out ot work better than expected. With great size comes **emergent capabilities**.
+
+        Some of the emerged capabilities include:
+        * zero/few shot learning -> the model can perform well on tasks it has not been trained on.
+
+        Nowadays, we can also feed huge prompts like 100k tokens (2023)!!
+
+        
+        """
+    with cols[1]:
+        st.image('https://substackcdn.com/image/fetch/f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fbucketeer-e05bbc84-baa3-437e-9518-adb32be77984.s3.amazonaws.com%2Fpublic%2Fimages%2F88b01f2b-e8ea-4ea5-9bc5-afa9a68d9120_1600x955.png')
+    '#### Chain-of-thought prompting'
+    cols_inner = st.columns((1,1))
+
+    with cols_inner[0]:
+        '''
+        **Typical prompt:**
+
+        Q: Elli has 7 apples, she gives 2 to her friend John and 1 to her mother. How many apples does Elli have now?
+
+        A: 4
+
+        Q: Brian has 19 hats, he has two friends. If trying to split evenly with the friends (with brian taking left overs), how many hats does each person get?            
+        '''
+    with cols_inner[1]:
+        '''
+        **Chain-of-thought prompt:**
+
+        Q: Elli has 7 apples, she gives 2 to her friend John and 1 to her mother. How many apples does Elli have now?
+
+        A: Elli start with 7 apples and gives away a total of 3 apples, leaving her with 4 apples.
+
+        Q: Brian has 19 hats, he has two friends. If trying to split evenly with the friends (with brian taking left overs), how many hats does each person get?            
+        '''
+    """
+    #### Allignment with human feedback
+    Users provide feedback on the model's output, and the model is fine-tuned to improve its output. We can have the model produce a few outputs, and the user can select the best one. This provides data for a helped network, which learns which output most probably would satisfy the user.
+    """
+
+
+    "## Vision transformers"
+    """
+    We can use transformers for vision tasks as well.
+    * split the image into patches and pass through encoder and get class probabilities.
+    * Similar to BERT, mask parts of a image, and ask the model to predict the masked parts.
+    * Use a transformer to generate a caption for an image.
+    """
+
+    '## Multi-modal transformers'
+    """
+    Since we can get transformers to understand text, images, sound, etc. we can for example do text2image, image2text, etc.
+    """
 if __name__ == '__main__':
     functions = [landing_page,
                  artificial_neural_networks,
