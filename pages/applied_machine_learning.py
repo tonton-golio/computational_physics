@@ -14,7 +14,8 @@ from torchvision import datasets, transforms
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 from umap.umap_ import UMAP
-
+from torch_scatter import scatter_mean
+import graphviz
 
 def landing_page():
     ''
@@ -466,9 +467,131 @@ def recurrent_neural_networks():
     
     """
 
+def graph_neural_networks():
+    ''
+    '# Graph neural networks'
+    cols = st.columns(2)
+    with cols[0]:
+        r'''
+        
+        Data structured as a matrix, is interpreted by a convolutional networks, as being equidistant from its nearest neighbours. A graph considers data in which points may connected to different numbers on neighbours and with variable distance.
+
+        So we can be free from making assumptions about the data structure, and instead let the network learn the structure. This lets us work with geometrical data.
+
+        Many of the networks previously discussed work for graphs: LSTMs, CNNs, autoencoders, etc. But we can also use graph specific networks.
+
+        Instead of convolving over pixels, we convolve over nodes or edges. This outputs another graph.
+        
+        An example of a convolution is **edgeconv**
+        $$
+            \tilde{x}_j = \sum_{i=1}^n f(x_j, x_j-x_i)
+        $$
+        '''
+    with cols[1]:
+        st.image('https://tkipf.github.io/graph-convolutional-networks/images/gcn_web.png')
+    '---'
+    # example
+   
+    
+    '''
+    ### Example
+    lets make a matrix, and display it as a graph
+
+    then we make a model which takes the matrix as input, and outputs a new matrix
+    '''
+    cols = st.columns((4,1,4))
+    with cols[0]:
+    
+        # make matrix
+        n = 10
+        A = np.random.poisson(0.4, size=(n,n))
+        A = np.round(A)
+        A = A + A.T
+        A = np.where(A>0, 1, 0)
+        A = A - np.eye(n)
+        # display
+        G = graphviz.Digraph()
+        for i in range(n):
+            G.node(str(i))
+        for i in range(n):
+            for j in range(n):
+                if A[i,j] == 1:
+                    G.edge(str(i), str(j))
+
+        st.graphviz_chart(G, use_container_width=True)
+
+        # make model
+        class EdgeConv(nn.Module):
+            def __init__(self, in_channels, out_channels):
+                super(EdgeConv, self).__init__()
+                self.mlp = nn.Sequential(
+                    nn.Linear(in_channels*2, out_channels),
+                    nn.ReLU(),
+                    nn.Linear(out_channels, out_channels)
+                )
+            def forward(self, x, edge_index):
+                row, col = edge_index
+                out = torch.cat([x[row], x[col]], dim=1)
+                #st.write(out)
+                out = self.mlp(out)
+                out = scatter_mean(out, row, dim=0, dim_size=x.size(0)) # to import from torch_scatter import scatter_mean
+                return out
+            
+        class Net(nn.Module):
+            def __init__(self):
+                super(Net, self).__init__()
+                self.conv1 = EdgeConv(10, 32)
+                self.conv2 = EdgeConv(32, 32)
+                self.conv3 = EdgeConv(32, 10)
+            def forward(self, x, edge_index):
+                #st.write(x.shape, edge_index.shape)
+                x = self.conv1(x, edge_index)
+                x = self.conv2(x, edge_index)
+                x = self.conv3(x, edge_index)
+                return x
+            
+        # train model
+        model = Net()
+        optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+        criterion = nn.MSELoss()
+        for epoch in range(5):
+            optimizer.zero_grad()
+            output = model(torch.Tensor(A), torch.Tensor(np.array(np.where(A==1))).long())
+            loss = criterion(output, torch.Tensor(A))
+            loss.backward()
+            optimizer.step()
+
+        output = output.detach().numpy()
+        #output
+        # display output
+        G = graphviz.Digraph()
+        for i in range(n):
+            G.node(str(i))
+        for i in range(n):
+            for j in range(n):
+                if output[i,j] > 0.5:
+                    G.edge(str(i), str(j))
+
+    with cols[1]:
+        for i in range(6):
+            '.'
+        r'$\Rightarrow$'
+    with cols[2]:
+        st.graphviz_chart(G, use_container_width=True)
+            
+
+
+    '---'
+
+
+
+
+
 if __name__ == '__main__':
     functions = [lecture_2,
                  lecture_3,
-                 dimensionality_reduction]
+                 dimensionality_reduction,
+                 recurrent_neural_networks,
+                 graph_neural_networks]
     with streamlit_analytics.track():
         navigator(functions)
