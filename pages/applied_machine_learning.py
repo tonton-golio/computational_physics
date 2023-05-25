@@ -584,6 +584,135 @@ def graph_neural_networks():
     '---'
 
 
+def generative_adversarial_networks():
+    ''
+    "# Generative adversarial networks"
+
+    cols = st.columns(2)
+    with cols[0]:
+        """
+        *One way to generate, is variational autoencoders (see advanced machine learning)*. By making the latent layer stochastic we can sample from it in a way which yield probable sampels. This makes the latent latent embedding continuous, and we can interpolate between samples.
+
+
+        GANs is a different approach; we have a gnerator and and discriminator. The generator makes a smaple, and the discriminator evaluates whether it look like a real sample. The generator is trained to fool the discriminator.
+        
+        """
+    with cols[1]:
+        st.image('https://d18rbf1v22mj88.cloudfront.net/wp-content/uploads/sites/3/2018/03/29200233/GAN_en.png')
+
+
+    '---'
+
+    # lets train a gan on the mnist dataset
+    cols = st.columns(2)
+    with cols[0]:
+        """
+        ### Example
+
+        """
+
+    with cols[1]:
+        # load data
+        batch_size = 32
+        mnist = datasets.MNIST(root='./data', train=True, download=True, transform=transforms.ToTensor())
+        dataloader = torch.utils.data.DataLoader(mnist, batch_size=batch_size, shuffle=True)
+        # make model
+        class Generator(nn.Module):
+            def __init__(self):
+                super(Generator, self).__init__()
+                self.model = nn.Sequential(
+                    nn.Linear(100, 128),
+                    nn.ReLU(),
+                    nn.Linear(128, 256),
+                    nn.ReLU(),
+                    nn.Linear(256, 512),
+                    nn.ReLU(),
+                    nn.Linear(512, 784), # 28*28
+                    nn.Sigmoid()
+                )
+            def forward(self, x):
+                x = self.model(x)
+                return x
+        class Discriminator(nn.Module):
+            def __init__(self):
+                super(Discriminator, self).__init__()
+                self.model = nn.Sequential(
+                    nn.Linear(784, 512),
+                    nn.ReLU(),
+                    nn.Linear(512, 256),
+                    nn.ReLU(),
+                    nn.Linear(256, 1),
+                    nn.Sigmoid()
+                )
+            def forward(self, x):
+                x = self.model(x)  # output is probability of being real
+                return x
+            
+        generator = Generator()
+        discriminator = Discriminator()
+        # train model
+        
+        #use Minimax loss
+        def loss_Minimax(D_x, D_G_z):
+            return -torch.mean(torch.log(D_x) + torch.log(1 - D_G_z))
+        
+        criterion = nn.BCELoss()
+        optimizer_g = torch.optim.Adam(generator.parameters(), lr=0.01)
+
+        optimizer_d = torch.optim.Adam(discriminator.parameters(), lr=0.01)
+
+        for epoch in range(5):
+            for i, (images, _) in enumerate(dataloader):
+                for i in range(10):
+                    # train discriminator
+                    optimizer_d.zero_grad()
+                    images = images.view(images.size(0), -1)
+                    real_labels = torch.ones(images.size(0), 1)
+                    fake_labels = torch.zeros(images.size(0), 1)
+                    # train on real
+                    D_x = discriminator(images)
+                    loss_real = criterion(D_x, real_labels)
+                    loss_real.backward()
+                    #print('loss_real', loss_real)
+
+                    # train on fake
+                    z = torch.randn(images.size(0), 100)
+                    fake_images = generator(z)
+                    D_G_z = discriminator(fake_images)
+                    loss_fake = criterion(D_G_z, fake_labels)
+                    loss_fake.backward()
+
+
+                    optimizer_d.step()
+
+
+                # train generator
+                optimizer_g.zero_grad()
+                z = torch.randn(images.size(0), 100)
+                fake_images = generator(z)
+                D_G_z = discriminator(fake_images)
+                loss_g = criterion(D_G_z, real_labels)
+                loss_g.backward()
+                optimizer_g.step()
+
+            # print statistics
+            print('Epoch: %d, loss_d: %.3f, loss_g: %.3f' % (epoch + 1, loss_real.item() + loss_fake.item(), loss_g.item()))
+
+
+
+
+
+        # display output
+        z = torch.randn(1, 100)
+        fake_images = generator(z)
+        fake_images = fake_images.view(28, 28).detach().numpy()
+        fig, ax = plt.subplots()
+        plt.imshow(fake_images, cmap='gray')
+        ax.axis('off')
+        st.pyplot(fig)
+
+
+
 
 
 
@@ -592,6 +721,7 @@ if __name__ == '__main__':
                  lecture_3,
                  dimensionality_reduction,
                  recurrent_neural_networks,
-                 graph_neural_networks]
+                 graph_neural_networks, 
+                    generative_adversarial_networks]
     with streamlit_analytics.track():
         navigator(functions)
