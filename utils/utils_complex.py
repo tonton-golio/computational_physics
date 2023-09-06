@@ -22,7 +22,6 @@ def escapeCharacters(text, inverted=True):
     return text
 
 @function_profiler
-@st.cache_data()
 def getText_prep(filename = 'pages/stat_mech.md', split_level = 2):
     with open(filename,'r', encoding='utf8') as f:
         file = escapeCharacters(f.read())
@@ -33,7 +32,6 @@ def getText_prep(filename = 'pages/stat_mech.md', split_level = 2):
     return text_dict    
 
 @function_profiler
-@st.cache_data()
 def text_expander(key, text_dict, expanded=False):
     with st.expander(key, expanded=expanded):
         st.markdown(text_dict[key])
@@ -41,7 +39,6 @@ def text_expander(key, text_dict, expanded=False):
 
 # General
 @function_profiler
-@st.cache_data()
 def power_law_on_hist(hist, ax=plt, p0=[.1, 420, 5,-100], legend=False):
 
     def power_law(x,k,a,b,c):
@@ -65,7 +62,6 @@ def power_law_on_hist(hist, ax=plt, p0=[.1, 420, 5,-100], legend=False):
 
 # statatistical mechanics
 @function_profiler
-@st.cache_data()
 def ising(size, nsteps, beta, nsnapshots):
     # initialize
     X = np.random.rand(size,size)
@@ -113,7 +109,6 @@ def ising(size, nsteps, beta, nsnapshots):
     return results, data
 
 @function_profiler
-@st.cache_data()
 def plotSnapshots(results, nsnapshots):
     
     fig, ax = plt.subplots(nsnapshots//4,4, figsize=(9,9))
@@ -127,7 +122,6 @@ def plotSnapshots(results, nsnapshots):
     return fig
 
 @function_profiler
-@st.cache_data()
 def plotEnergy_magnetization(results):
     fig, ax = plt.subplots(1,1, figsize=(5,3))
     ax2 = ax.twinx()
@@ -142,7 +136,6 @@ def plotEnergy_magnetization(results):
     return fig
 
 @function_profiler
-@st.cache_data()
 def plotSusceptibility(data):
     ## susceptibility plot
 
@@ -157,7 +150,6 @@ def plotSusceptibility(data):
     return fig
 
 @function_profiler
-@st.cache_data()
 def metropolisVisualization(beta):
     dEs = np.linspace(-1,3,1000)
     prob_change = np.exp(-beta*dEs)
@@ -175,7 +167,6 @@ def metropolisVisualization(beta):
 
 # Percolation and Fractals
 @function_profiler
-@st.cache_data()
 def percolation(size=10, seed=69, p=0.4,marker='.', devmod=False):
     def makeGrid(size, seed=42): 
         np.random.seed(seed)
@@ -250,7 +241,6 @@ def percolation(size=10, seed=69, p=0.4,marker='.', devmod=False):
         return fig, domains
 
 @function_profiler
-@st.cache_data()
 def percolation_many_ps(n_ps, size, seed):
         Ns = {}
         for p_ in np.linspace(0.01,.9,n_ps):
@@ -267,7 +257,6 @@ def percolation_many_ps(n_ps, size, seed):
         return fig
 
 @function_profiler
-@st.cache_data()
 def animate_many_percolations(size=30 , steps = 10, filename='animation.gif', fps=5):
     def many_perc(size = 30, low=0.01, high=0.9, steps=10, seed=42, marker='.'):
         out = {}
@@ -332,7 +321,6 @@ def animate_many_percolations(size=30 , steps = 10, filename='animation.gif', fp
     animate(out, filename=filename, fps=fps)
 
 @function_profiler
-@st.cache_data()
 def betheLattice(p=0.1, size=62, get_many=False, ps=[.5], degree=3):
     def makeBetheLattice(n_nodes = 10, degree=3):
         M = np.zeros((n_nodes,n_nodes))
@@ -418,7 +406,6 @@ def betheLattice(p=0.1, size=62, get_many=False, ps=[.5], degree=3):
         return Ns
 
 @function_profiler
-@st.cache_data()
 def run_fractals(size_fractal, a ,n):
     def stable(z):
         try: return False if abs(z) > 2 else True
@@ -449,7 +436,6 @@ def run_fractals(size_fractal, a ,n):
     return plot_(res), res
 
 @function_profiler
-@st.cache_data()
 def fractal_dimension(res):
 
     def get_box_counts(box_sizes):
@@ -511,7 +497,6 @@ def fractal_dimension(res):
 
 # Phase Transitions and Critical Phenomena
 @function_profiler
-@st.cache_data()
 def ising_1d(size, beta, nsteps):
     chain = np.zeros(size) ; chain[chain<.5] = -1; chain[chain>=.5] = 1
     chain_MF = chain.copy()
@@ -562,7 +547,6 @@ def ising_1d(size, beta, nsteps):
 # SOC
 ## BakSneppen
 @function_profiler
-@st.cache_data()
 def bakSneppen(size = 100, nsteps = 10000, random_func='uniform'):
     random = {
             "uniform" : np.random.rand,
@@ -581,7 +565,6 @@ def bakSneppen(size = 100, nsteps = 10000, random_func='uniform'):
     return chains, idx_arr, np.mean(chains, axis=1)
 
 @function_profiler
-@st.cache_data()
 def bakSneppen_plot_imshow(X, size, nsteps):
     fig, ax = plt.subplots()
     ax.imshow(X, aspect  = size/nsteps/2, vmin=0, vmax=1, cmap='gist_rainbow')
@@ -589,7 +572,6 @@ def bakSneppen_plot_imshow(X, size, nsteps):
     return fig
 
 @function_profiler
-@st.cache_data()
 def bakSneppen_plot_initial(chains, skip_init, idx_arr):
     fig, ax = plt.subplots(2,1, figsize=(6,6), dpi=300, sharex=True)
     
@@ -607,7 +589,6 @@ def bakSneppen_plot_initial(chains, skip_init, idx_arr):
     return fig
 
 @function_profiler
-@st.cache_data()
 def avalanches(idx_arr, skip_init=10):
     
     idx_arr = idx_arr[skip_init:]
@@ -631,7 +612,6 @@ def avalanches(idx_arr, skip_init=10):
     return avalanches_dict
 
 @function_profiler
-@st.cache_data()
 def skipInit(chains, patience=100, tol=0.01):
     m = chains.mean(axis=1)
     for i, _ in enumerate(m, start=patience):
@@ -639,7 +619,6 @@ def skipInit(chains, patience=100, tol=0.01):
             return i
 
 @function_profiler
-@st.cache_data()
 def plotAvalanches(idx_arr, skip_init, avalanches_dict):
 
 
@@ -701,14 +680,12 @@ def plotAvalanches(idx_arr, skip_init, avalanches_dict):
     return fig
 
 @function_profiler
-@st.cache_data()
 def accumulate(x):
     X=np.zeros(len(x)) ; X[0] = x[0]
     for i, _ in enumerate(x): X[i] = X[i-1]+x[i]
     return X
 
 @function_profiler
-@st.cache_data()
 def randomWalk_2d(nsteps, sigma2=1, seed=42, axisscale='linear', step_size=0):
     (dx_f, dy_f) = (lambda theta, r=1: r*trig(theta) for trig in (np.cos, np.sin)) 
     dx_f = lambda theta, r = 1: r*np.cos(theta)
@@ -774,7 +751,6 @@ def randomWalk_2d(nsteps, sigma2=1, seed=42, axisscale='linear', step_size=0):
     return plot2()
 
 @function_profiler
-@st.cache_data()
 def firstReturn1D(nsteps=1000, nwalks=50):
     lengths = []
     lines = {}
@@ -811,7 +787,6 @@ def firstReturn1D(nsteps=1000, nwalks=50):
     plt.close()
 
 @function_profiler
-@st.cache_data()
 def firstReturn2D(
     nsteps=4000, nwalks=20):
     lengths = []
@@ -864,7 +839,6 @@ def firstReturn2D(
     plt.close()
 
 @function_profiler
-@st.cache_data()
 def bereaucrats(nsteps, size=20):
 
         def makeGrid(size):
@@ -933,7 +907,6 @@ def bereaucrats(nsteps, size=20):
 
 # Networks
 @function_profiler
-@st.cache_data()
 def makeBetheLattice(n_nodes = 10, degree=3):
     M = np.zeros((n_nodes,n_nodes))
 
@@ -947,7 +920,6 @@ def makeBetheLattice(n_nodes = 10, degree=3):
     return M+M.T
 
 @function_profiler
-@st.cache_data()
 def make_network(n_persons = 5,alpha=.4):
     
     A = np.zeros((n_persons,n_persons))
@@ -962,7 +934,6 @@ def make_network(n_persons = 5,alpha=.4):
     return A
 
 @function_profiler
-@st.cache_data()
 def draw_from_matrix(M, sick=[], pos=[]):
     sick = np.zeros(len(M)) if len(sick) == 0 else sick
     G = nx.Graph()
@@ -982,7 +953,6 @@ def draw_from_matrix(M, sick=[], pos=[]):
     return fig, G
 
 @function_profiler
-@st.cache_data()
 def network_analysis(net, G):
     fig, ax = plt.subplots(2,2, figsize=(9,7))
     ax[0,0].hist(net.sum(axis=1))
@@ -1025,7 +995,6 @@ def network_analysis(net, G):
 
 # Agents
 @function_profiler
-@st.cache_data()
 def game_of_life(size=6, nsteps=4, initial_config = 'boat'):
     """
     If the cell is alive, then it stays alive if it has either 2 or 3 live neighbors
@@ -1097,7 +1066,6 @@ def game_of_life(size=6, nsteps=4, initial_config = 'boat'):
 
 # Econophysics
 @function_profiler
-@st.cache_data()
 def var_of_stock(ticker = 'GOOGL'):
     # Set the start and end date
     start_date = '2020-01-01'
@@ -1131,7 +1099,6 @@ def var_of_stock(ticker = 'GOOGL'):
     return fig, data.Close.values
 
 @function_profiler
-@st.cache_data()
 def hurstExponent(time_series):
     def get_hurst_exponent(time_series, max_lag=20):
         """Returns the Hurst Exponent of the time series"""
@@ -1160,7 +1127,6 @@ def hurstExponent(time_series):
     return fig
 
 @function_profiler
-@st.cache_data()
 def betHedging(p, noise, invest_per_round, nsteps, win_multiplier=2, loss_multiplier=.5):
     capital = [1]
     
