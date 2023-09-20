@@ -8,7 +8,9 @@ st.set_page_config(page_title='Computational Physics',#"plz contribute",
 	menu_items=None)
 st.markdown(r"""
 	# Computational Physics
-	A collection of computational physics projects in Python.
+	Notes and simluations for computational physics.
+			
+	If you notice, errors feel welcome to submit a pull request or mention it in the discord server.
 	""")
 
 cols = st.columns(2)
