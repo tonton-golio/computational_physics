@@ -10,7 +10,7 @@ st.markdown(r"""
 	# Computational Physics
 	Notes and simluations for computational physics.
 			
-	If you notice, errors feel welcome to submit a pull request or mention it in the discord server.
+	If you notice errors; feel welcome to submit a pull request or mention it in the discord server.
 	""")
 
 cols = st.columns(2)
