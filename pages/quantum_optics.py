@@ -15,7 +15,7 @@ st.set_page_config(page_title="Quantum Optics",
 # pages
 def wigner_function_gallery():
     st.header('The Wigner function gallery')
-    st.markdown("$W(q, p) = \\frac{1}{2\\pi\\hbar} \\int_\\infty^{-\\infty} \\Braket{q+\\frac{1}{2}x|\\hat{\\rho}|q-\\frac{1}{2}x} e^{ipx/\\hbar} \\mathrm{d}x$")
+    st.markdown("$W(q, p) = \\frac{1}{2\\pi\\hbar} \\int_{-\\infty}^\\infty \\Braket{q+\\frac{1}{2}x|\\hat{\\rho}|q-\\frac{1}{2}x} e^{ipx/\\hbar} \\mathrm{d}x$")
     st.markdown('---')
     theme = st.radio("Choose a theme", ("Light", "Dark"), horizontal=True)
     st.markdown('---')
@@ -39,7 +39,7 @@ def wigner_function_gallery():
 
 def wigner_function_gallery_3d(theme='Light'):
     st.header('The Wigner function gallery 3D')
-    st.markdown("$W(q, p) = \\frac{1}{2\\pi\\hbar} \\int_\\infty^{-\\infty} \\Braket{q+\\frac{1}{2}x|\\hat{\\rho}|q-\\frac{1}{2}x} e^{ipx/\\hbar} \\mathrm{d}x$")
+    st.markdown("$W(q, p) = \\frac{1}{2\\pi\\hbar} \\int_{-\\infty}^\\infty \\Braket{q+\\frac{1}{2}x|\\hat{\\rho}|q-\\frac{1}{2}x} e^{ipx/\\hbar} \\mathrm{d}x$")
 
     st.subheader('Number state (Fock state)')
     plot_wigner_number(theme, three_dimensional=True)
