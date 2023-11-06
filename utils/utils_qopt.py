@@ -202,9 +202,9 @@ def _plot_wigner(W, xvec, pvec, three_dimensional, theme):
         #                       )
         #                  )
         fig.update_layout(scene=dict(
-                xaxis_title="x",
+                xaxis_title="q",
                 yaxis_title="p",
-                zaxis_title="W(x, p)",
+                zaxis_title="W(q, p)",
                 ))
         st.plotly_chart(fig)
 
