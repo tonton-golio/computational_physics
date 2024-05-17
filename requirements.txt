@@ -26,4 +26,4 @@ torchviz
 xgboost
 umap
 umap-learn
-# torch-scatter==2.1.1
+torch-scatter

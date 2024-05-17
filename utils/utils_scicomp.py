@@ -1,7 +1,7 @@
 from utils.utils_global import *
 
 text_path = 'assets/scientific_computing/text/'
-
+ 
 
 
 # Linear Equations

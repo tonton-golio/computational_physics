@@ -5,7 +5,7 @@ st.set_page_config(page_title="Scientific Computing",
     layout="wide", 
     initial_sidebar_state="collapsed", 
     menu_items=None)
-
+ 
 
 # Pages
 def home():

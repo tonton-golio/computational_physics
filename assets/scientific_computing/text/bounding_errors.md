@@ -2,7 +2,7 @@
 ## Header 1
 **Sources of approximation** include modelling, 
 empirical measurements, previous computations, truncation/discretization, rounding.
-
+ 
 **Absolute error** and **relative error** are different in the obvious manner, i.e., abs. error 
 = approx. value- true value, and rel. error = abs. error / true value.
 **Data error and computational errror**, the hats indicate an approximation;
