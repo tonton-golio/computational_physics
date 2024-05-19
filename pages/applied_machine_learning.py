@@ -14,7 +14,7 @@ from torchvision import datasets, transforms
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 from umap.umap_ import UMAP
-from torch_scatter import scatter_mean
+# from torch_scatter import scatter_mean
 import graphviz
 
 def landing_page():
@@ -534,8 +534,19 @@ def graph_neural_networks():
                 out = torch.cat([x[row], x[col]], dim=1)
                 #st.write(out)
                 out = self.mlp(out)
-                out = scatter_mean(out, row, dim=0, dim_size=x.size(0)) # to import from torch_scatter import scatter_mean
+                out = self.scatter_mean(out, row, dim=0, dim_size=x.size(0)) # to import from torch_scatter import scatter_mean
                 return out
+            
+            def scatter_mean(self, src, index, dim=0, out=None, dim_size=None, fill_value=0):
+                # he we write it out in torch
+                if out is not None:
+                    out = out.fill_(fill_value)
+                else:
+                    size = list(src.size())
+                    size[dim] = dim_size
+                    out = src.new_full(size, fill_value)
+                return out.scatter_add_(dim, index, src)
+
             
         class Net(nn.Module):
             def __init__(self):

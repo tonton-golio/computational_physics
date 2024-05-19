@@ -3,8 +3,8 @@ from utils.utils_inverse import *
 
 st.set_page_config(page_title="Inverse Problems", 
     page_icon="🧊", 
-    #layout="wide", 
-    initial_sidebar_state="collapsed", 
+    layout="centered",
+    initial_sidebar_state="expanded", 
     menu_items=None)
 
 
@@ -981,7 +981,8 @@ if __name__ == '__main__':
                         'Monte Carlo', 'Least-squares / Tikonov', 'Weakly nonlinear problems and optimization',
                         'Density variations (Tikonov)', 'Linear Tomography (Tikonov)', 'Vertical Fault (Monte Carlo)', 
                         'Glacier thickness (Monte Carlo)']
+    
+    
 
     with streamlit_analytics.track(verbose=False):
-        
         navigator(functions, function_names)

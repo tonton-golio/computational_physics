@@ -4,9 +4,6 @@ from scipy.special import rel_entr
 
 text_path = 'assets/inverse_problems/text/'
 
-
-
-
 @function_profiler
 def entropy_discrete(x):
 
@@ -60,9 +57,9 @@ def contour_of_G(G, xlabel='$x$-position', ylabel='depth'):
 @function_profiler
 def getParams(G, d_obs, eps_space = np.logspace(-12, -10, 200)):
     ms = []
-    
+    # st.write('G', G.shape, 'd_obs', d_obs.shape, 'eps_space', eps_space.shape)
     for epsilon in eps_space:
-        m_e = np.linalg.inv(G.T@G + epsilon**2 * np.eye(100) ) @  (G.T @d_obs)
+        m_e = np.linalg.inv(G.T@G + epsilon**2 * np.eye(G.shape[1]) ) @  (G.T @d_obs)
 
         ms.append(m_e)
 
@@ -320,7 +317,6 @@ def ass2():
     plt.tight_layout()
     plt.close()
     cols[1].pyplot(fig)
-
 
 @function_profiler
 def ass3_glacier_thickness():
@@ -813,6 +809,5 @@ def sphereINcube_demo(data = []):
     c.pyplot(fig_guess)
     
     cols[1].caption("we just show the first two dimensions, and the color indicates whether we are within the unit (hyper)sphere")
-
 
 

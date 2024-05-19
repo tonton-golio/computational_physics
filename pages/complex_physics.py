@@ -3,7 +3,7 @@ from utils.utils_complex import *
 st.set_page_config(page_title="Complex Physics", 
     page_icon="🧊", 
 	layout="centered", 
-	initial_sidebar_state="collapsed", 
+	initial_sidebar_state="expanded", 
 	menu_items=None)
 
 set_rcParams(style_dict = {
@@ -498,10 +498,11 @@ def econophysics():
 
 # Navigator
 topic_dict = {
+    'Percolation and Fractals' :               percolation_and_fractals,
     'Contents' :                               homeComplex,
     'Statistical Mechanics' :                  statisticalMechanics,
     'Phase transitions & Critical phenomena' : phaseTransitions_CriticalPhenomena,
-    'Percolation and Fractals' :               percolation_and_fractals,
+    
 	'Self-organized Criticality' :             selfOrganizedCriticality,
     'Networks' :                               networks,
     'Agent based models' :               agent_event_models,

@@ -2,8 +2,8 @@ from utils.utils_scicomp import *
 
 st.set_page_config(page_title="Scientific Computing", 
     page_icon="🧊", 
-    layout="wide", 
-    initial_sidebar_state="collapsed", 
+    layout="centered", 
+    initial_sidebar_state="expanded",
     menu_items=None)
  
 
@@ -164,6 +164,7 @@ def partialDifferentialEquations():
 
 # Navigator
 func_dict = {
+	"Initial Value Problems" : initialValueProblems,
 	'Home' : home,
 	'Bounding Errors' : boundingErrors,
 	'Linear Equations': linearEquations,

@@ -274,9 +274,9 @@ def  format_value(value, decimals):
     Floats has 'decimals' number of decimals.
     """
     # extra function
-    if isinstance(value, (float, np.float)):
+    if isinstance(value, float):
         return f'{value:.{decimals}f}'
-    elif isinstance(value, (int, np.integer)):
+    elif isinstance(value, int):
         return f'{value:d}'
     else:
         return f'{value}'

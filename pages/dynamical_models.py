@@ -3,7 +3,7 @@ from utils.utils_dynbio import *
 st.set_page_config(page_title="Dynamical Models", 
     page_icon="🧊", 
     layout="wide", 
-    initial_sidebar_state="collapsed", 
+    initial_sidebar_state="expanded", 
     menu_items=None)
 
 

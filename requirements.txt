@@ -1,29 +1,39 @@
-seaborn
+# requrements.txt
+
+# Core Data Science
 pandas
 matplotlib
 plotly
+seaborn
 numpy
+
+# Streamlit
 streamlit
-scipy
-click
-gspread
-networkx
-graphviz
-yfinance
 streamlit_toggle_switch
+streamlit_analytics
+
+#Computational and Scientific
+scipy
 numba
 scikit-learn
 psutil
-# torch
-streamlit-profiler
-celluloid
+umap
+umap-learn
+xgboost
+
+# Network Analysis
+networkx
+graphviz
+torchviz
+
+# Data Access
+click
+gspread
+yfinance
+
+# Machine Learning
 gymnasium
 gym
 torchvision
-streamlit_analytics
 qutip
-torchviz
 xgboost
-umap
-umap-learn
-torch-scatter

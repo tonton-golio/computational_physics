@@ -358,13 +358,32 @@ def run_reactionDiffusion():
         meta_data['runtime'] = timer
         return snapshots, meta_data
 
-    def repr(snapshots, meta_data):    
+    # @st.cache
+    def make_figs(snapshots):
+        saved_figs = {}
+        # st.write('snapshots[''p''].keys()', snapshots['p'].keys())
+        for n in snapshots['p'].keys():
+            fig, ax = plt.subplots(1,2, sharex=True, sharey=True)
+            for i, arr, name in zip([0,1],[snapshots['p'][n],snapshots['q'][n]], ['p','q']):
+                ax[i].imshow(arr)
+                ax[i].set(title=name, xticks=[], yticks = [])
+                # st.write('snapshot')
+
+            plt.tight_layout()
+            fig.patch.set_facecolor('darkgrey')
+            saved_figs[n] = fig
+        return saved_figs
+    if 'saved_figs' not in st.session_state:
+        st.session_state.saved_figs = {}
+
+    def repr(saved_figs, meta_data):    
         method_map = {
                 'forward-Euler': 0,
                 'Runge-Kutta'  : 1,
                 'backward-Euler': 2,
                 }
-
+        # st.write(saved_figs.keys())
+        st.write(st.session_state.saved_figs.keys())
         #data
         index = 0 if len(data.keys()) == 0 else max(list(data.keys()))+1
         data[index] = meta_data
@@ -377,18 +396,9 @@ def run_reactionDiffusion():
             df[col] = df[col].apply(float) 
 
         # plot snapshots
-        n = st.select_slider('snapshot',snapshots['p'].keys())
-        p,q = snapshots['p'][n],snapshots['q'][n]
-
-        fig, ax = plt.subplots(1,2, sharex=True, sharey=True)
-        for i, arr, name in zip([0,1],[p,q], ['p','q']):
-            ax[i].imshow(arr)
-            ax[i].set(title=name, xticks=[], yticks = [])
-
-        plt.tight_layout()
-        #plt.savefig(f'figures/reDi0_K{K}.png', dpi=300, transparent=True)
-        fig.patch.set_facecolor('darkgrey')
-        st.pyplot(fig)
+        n = st.select_slider('snapshot',snapshots['p'].keys()) 
+        st.write(saved_figs.keys()) 
+        st.pyplot(saved_figs[n]    )
 
         st.markdown(r"## Stability")
         
@@ -422,4 +432,5 @@ def run_reactionDiffusion():
         forward-Euler method.''')
 
     snapshots, meta_data  = run()
-    repr(snapshots, meta_data)
+    saved_figs = make_figs(snapshots)
+    repr(saved_figs, meta_data)

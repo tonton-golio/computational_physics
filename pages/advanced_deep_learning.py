@@ -12,7 +12,11 @@ filepath_assets = 'assets/advanced_deep_learning/'
 # set rc params
 #mpl.rcParams['figure.dpi'] = 100
 
-
+st.set_page_config(page_title="Advanced Deep Learning",
+    page_icon="🧊", 
+    layout="centered", 
+    initial_sidebar_state="expanded", 
+    menu_items=None)
 
 def landing_page():
     '''Landing page for advanced deep learning section. For now I'll just fill this with notes for the first lecture.'''
@@ -1439,6 +1443,7 @@ def Transformers():
     """
     Since we can get transformers to understand text, images, sound, etc. we can for example do text2image, image2text, etc.
     """
+
 if __name__ == '__main__':
     functions = [landing_page,
                  artificial_neural_networks,

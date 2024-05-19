@@ -1,5 +1,11 @@
 from utils.utils_continuum import *
 
+st.set_page_config(page_title="Applied statistics", 
+    page_icon="🧊", 
+    layout="wide", 
+    initial_sidebar_state="expanded", 
+    menu_items=None)
+
 set_rcParams()
 
 def frontpage():    
