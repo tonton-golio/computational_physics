@@ -972,14 +972,17 @@ def monteCarlo():
 
 # Navigator
 if __name__ == '__main__':
-    functions = [landingPage, informationTheory, Probabilistic, 
+    functions = [ass1,
+                    landingPage, 
+                 informationTheory, Probabilistic, 
                 monteCarlo, Least_squares, Weakly_nonlinear, 
-                DensityVar_LeastSquare, ass1, ass2, 
+                DensityVar_LeastSquare, ass2, 
                 ass3_glacier_thickness]
     
-    function_names = ['Landing Page', 'Information theory', 'Probabilistic inference', 
+    function_names = ['Linear Tomography (Tikonov)', 
+                      'Landing Page', 'Information theory', 'Probabilistic inference', 
                         'Monte Carlo', 'Least-squares / Tikonov', 'Weakly nonlinear problems and optimization',
-                        'Density variations (Tikonov)', 'Linear Tomography (Tikonov)', 'Vertical Fault (Monte Carlo)', 
+                        'Density variations (Tikonov)', 'Vertical Fault (Monte Carlo)', 
                         'Glacier thickness (Monte Carlo)']
     
     
