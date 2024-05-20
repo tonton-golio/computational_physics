@@ -2544,6 +2544,6 @@ if __name__ == '__main__':
                  notes_last_lecture,
                  #cart_pole, #lunar_lander
                 ]
-    with streamlit_analytics.track():
+    # with streamlit_analytics.track():
         
-        navigator(functions)
+    navigator(functions)

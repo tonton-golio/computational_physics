@@ -1454,5 +1454,5 @@ if __name__ == '__main__':
                  MLops,
                  Natural_Language_processing,
                  Transformers]
-    with streamlit_analytics.track():
-        navigator(functions)
+    # with streamlit_analytics.track():
+    navigator(functions)

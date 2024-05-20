@@ -987,5 +987,5 @@ if __name__ == '__main__':
     
     
 
-    with streamlit_analytics.track(verbose=False):
-        navigator(functions, function_names)
+    # with streamlit_analytics.track(verbose=False):
+    navigator(functions, function_names)
