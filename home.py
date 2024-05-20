@@ -42,15 +42,26 @@ st.image('assets/images/mandel_front.png', use_column_width=True)
 def get_contributors():
 	contributors = {}
 	logins = json.loads(requests.get("https://api.github.com/repos/tonton-golio/computational_physics/contributors?per_page=100").text)
+	print(logins)
 	for login in logins:
-		name = login['login']
-		avatar = login['avatar_url']
-		contributions = login['contributions']
-		url = login['html_url']
+		try: name = login['login']
+		except: continue
+
+		try: avatar = login['avatar_url']
+		except: avatar = None
+
+
+		try: contributions = login['contributions']
+		except: contributions = 1
+
+		try: url = login['html_url']
+		except: url = None
+
 		contributors[name] = {'avatar': avatar, 'contributions': contributions, 'url': url}
 
 
 	contributors_sorted = {k: v for k, v in sorted(contributors.items(), key=lambda item: item[1]['contributions'], reverse=True)}
+	contributors_sorted
 	return contributors_sorted
 
 
@@ -65,7 +76,7 @@ def make_contributors_table(contributors):
 				contributor = list(contributors.keys())[i+j]
 				col.image(contributors[contributor]['avatar'], width=100)
 				col.markdown(f"**[{contributor}]({contributors[contributor]['url']})**")
-				#col.markdown(f"Contributions: {contributors[contributor]['contributions']}")
+				col.markdown(f"Commits: {contributors[contributor]['contributions']}")
 			except IndexError:
 				pass
  
