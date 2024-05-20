@@ -734,5 +734,5 @@ if __name__ == '__main__':
                  recurrent_neural_networks,
                  graph_neural_networks, 
                     generative_adversarial_networks]
-    with streamlit_analytics.track():
-        navigator(functions)
+    # with streamlit_analytics.track():
+    navigator(functions)

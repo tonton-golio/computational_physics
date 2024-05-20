@@ -10,7 +10,7 @@ numpy
 # Streamlit
 streamlit
 streamlit_toggle_switch
-streamlit_analytics
+# streamlit_analytics
 
 #Computational and Scientific
 scipy

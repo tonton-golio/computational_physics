@@ -14,7 +14,7 @@ import matplotlib.cm as cm
 from matplotlib.gridspec import GridSpec
 from scipy.constants import gravitational_constant
 from scipy.optimize import curve_fit
-import streamlit_analytics
+# import streamlit_analytics
 
 ##### DEVMOD ##########     this determines whether
 devmod = False #########     or not we profile, i.e 
