@@ -42,7 +42,7 @@ st.image('assets/images/mandel_front.png', use_column_width=True)
 def get_contributors():
 	contributors = {}
 	logins = json.loads(requests.get("https://api.github.com/repos/tonton-golio/computational_physics/contributors?per_page=100").text)
-	st.write(logins)
+	
 	for login in logins:
 		try: name = login['login']
 		except: continue
@@ -61,8 +61,8 @@ def get_contributors():
 
 
 	contributors_sorted = {k: v for k, v in sorted(contributors.items(), key=lambda item: item[1]['contributions'], reverse=True)}
-	contributors_sorted
-	return contributors_sorted
+	# contributors_sorted
+	return contributors_sorted, logins
 
 
 
@@ -82,5 +82,9 @@ def make_contributors_table(contributors):
  
  
 st.markdown(r"""### Contributors (so far)""")
-contributors = get_contributors()
-make_contributors_table(contributors)
+contributors, logins = get_contributors()
+if len(contributors) > 0:
+	make_contributors_table(contributors)
+else:
+	st.write("Contributors not found.")
+	st.write(logins)
