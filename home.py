@@ -42,7 +42,7 @@ st.image('assets/images/mandel_front.png', use_column_width=True)
 def get_contributors():
 	contributors = {}
 	logins = json.loads(requests.get("https://api.github.com/repos/tonton-golio/computational_physics/contributors?per_page=100").text)
-	print(logins)
+	st.write(logins)
 	for login in logins:
 		try: name = login['login']
 		except: continue
