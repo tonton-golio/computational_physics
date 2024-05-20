@@ -37,3 +37,6 @@ gym
 torchvision
 qutip
 xgboost
+
+# Misc
+celluloid
