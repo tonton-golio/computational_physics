@@ -1,13 +1,13 @@
 import requests, json
 import streamlit as st
 import pandas as pd
-st.set_page_config(page_title='Computational Physics',#"plz contribute", 
+st.set_page_config(page_title='Koala Brain',#"plz contribute", 
 	page_icon=":microscope:", 
 	layout="centered", 
 	initial_sidebar_state="expanded", 
 	menu_items=None)
 st.markdown(r"""
-	# Computational Physics
+	# Koala Brain
 	Notes and simluations for computational physics.
 			
 	If you notice errors; feel welcome to submit a pull request or mention it in the discord server.

@@ -358,7 +358,7 @@ def run_reactionDiffusion():
         meta_data['runtime'] = timer
         return snapshots, meta_data
 
-    # @st.cache
+    
     def make_figs(snapshots):
         saved_figs = {}
         # st.write('snapshots[''p''].keys()', snapshots['p'].keys())
@@ -371,10 +371,13 @@ def run_reactionDiffusion():
 
             plt.tight_layout()
             fig.patch.set_facecolor('darkgrey')
+            plt.savefig(f'tmp/reDi{n}.png', dpi=300, transparent=True)
             saved_figs[n] = fig
+        
+        if 'saved_figs' not in st.session_state:
+            st.session_state.saved_figs = saved_figs
+
         return saved_figs
-    if 'saved_figs' not in st.session_state:
-        st.session_state.saved_figs = {}
 
     def repr(saved_figs, meta_data):    
         method_map = {
@@ -431,6 +434,16 @@ def run_reactionDiffusion():
         Notice, the stability of the Runge-Kutta method is greater than that of the 
         forward-Euler method.''')
 
-    snapshots, meta_data  = run()
-    saved_figs = make_figs(snapshots)
-    repr(saved_figs, meta_data)
+    with st.sidebar:
+        # run button
+        run_ = st.button('Run simulation')
+
+    if not 'saved_figs' in st.session_state or run_:
+        snapshots, meta_data  = run()
+
+        saved_figs = make_figs(snapshots)
+
+    try:
+        repr(saved_figs, meta_data)
+    except:
+        print('no data to repr')
