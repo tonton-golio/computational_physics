@@ -3,11 +3,16 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 // Dynamically import Plot to avoid SSR issues
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
 const SIZE = 50;
+
+function createEmptyGrid(): number[][] {
+  return Array.from({ length: SIZE }, () => Array(SIZE).fill(0));
+}
 
 function createRandomGrid(): number[][] {
   const grid = [];
@@ -20,6 +25,49 @@ function createRandomGrid(): number[][] {
   }
   return grid;
 }
+
+function setPattern(grid: number[][], pattern: number[][], startX: number, startY: number): number[][] {
+  const newGrid = grid.map(row => [...row]);
+  pattern.forEach((row, i) => {
+    row.forEach((cell, j) => {
+      if (startX + i < SIZE && startY + j < SIZE) {
+        newGrid[startX + i][startY + j] = cell;
+      }
+    });
+  });
+  return newGrid;
+}
+
+const patterns = {
+  random: createRandomGrid,
+  glider: [
+    [0, 1, 0],
+    [0, 0, 1],
+    [1, 1, 1],
+  ],
+  blinker: [
+    [1, 1, 1],
+  ],
+  beacon: [
+    [1, 1, 0, 0],
+    [1, 1, 0, 0],
+    [0, 0, 1, 1],
+    [0, 0, 1, 1],
+  ],
+  toad: [
+    [0, 1, 1, 1],
+    [1, 1, 1, 0],
+  ],
+  block: [
+    [1, 1],
+    [1, 1],
+  ],
+  beehive: [
+    [0, 1, 1, 0],
+    [1, 0, 0, 1],
+    [0, 1, 1, 0],
+  ],
+};
 
 function countNeighbors(grid: number[][], x: number, y: number): number {
   let count = 0;
@@ -58,6 +106,7 @@ function nextGeneration(grid: number[][]): number[][] {
 export function GameOfLife() {
   const [grid, setGrid] = useState(createRandomGrid);
   const [running, setRunning] = useState(false);
+  const [selectedPattern, setSelectedPattern] = useState('random');
 
   useEffect(() => {
     if (!running) return;
@@ -73,15 +122,48 @@ export function GameOfLife() {
   const stop = () => setRunning(false);
   const reset = () => {
     setRunning(false);
-    setGrid(createRandomGrid());
+    if (selectedPattern === 'random') {
+      setGrid(createRandomGrid());
+    } else {
+      const emptyGrid = createEmptyGrid();
+      const pattern = patterns[selectedPattern as keyof typeof patterns];
+      if (Array.isArray(pattern)) {
+        const startX = Math.floor(SIZE / 2) - Math.floor(pattern.length / 2);
+        const startY = Math.floor(SIZE / 2) - Math.floor(pattern[0].length / 2);
+        setGrid(setPattern(emptyGrid, pattern, startX, startY));
+      } else {
+        setGrid(pattern());
+      }
+    }
+  };
+
+  const selectPattern = (pattern: string) => {
+    setSelectedPattern(pattern);
+    reset();
   };
 
   return (
     <div>
-      <div className="mb-4 flex gap-2">
-        <Button onClick={start} disabled={running}>Start</Button>
-        <Button onClick={stop} disabled={!running}>Stop</Button>
+      <div className="mb-4 flex gap-2 flex-wrap">
+        <Button onClick={start} disabled={running}>Play</Button>
+        <Button onClick={stop} disabled={!running}>Pause</Button>
         <Button onClick={reset}>Reset</Button>
+      </div>
+      <div className="mb-4">
+        <label className="text-white mr-2">Initial Pattern:</label>
+        <select
+          value={selectedPattern}
+          onChange={(e) => selectPattern(e.target.value)}
+          className="bg-gray-700 text-white p-2 rounded"
+        >
+          <option value="random">Random</option>
+          <option value="glider">Glider</option>
+          <option value="blinker">Blinker</option>
+          <option value="beacon">Beacon</option>
+          <option value="toad">Toad</option>
+          <option value="block">Block</option>
+          <option value="beehive">Beehive</option>
+        </select>
       </div>
       <Plot
         data={[
