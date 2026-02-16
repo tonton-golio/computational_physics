@@ -307,7 +307,7 @@ export function PowerMethodAnimation({}: SimulationProps) {
 // 3. Gershgorin Circles
 export function GershgorinCircles({}: SimulationProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [matrix] = useState([[4, 1, 0], [2, 3, 1], [0, 1, 2]]);
+  const [matrix, setMatrix] = useState([[2, 1], [1, 3]]);
   
   useEffect(() => {
     const container = containerRef.current;
