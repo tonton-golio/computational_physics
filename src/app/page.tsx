@@ -1,4 +1,3 @@
-// TODO: Advanced Deep Learning
 // TODO: Applied Statistics
 // TODO: Complex Physics
 // TODO: Continuum Mechanics

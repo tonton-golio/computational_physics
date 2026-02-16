@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import Plotly from 'react-plotly.js';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
