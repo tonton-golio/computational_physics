@@ -3,3 +3,4 @@ export { Card, CardHeader, CardTitle, CardDescription, CardContent } from "./car
 export { CodeBlock, InlineCode } from "./code-block";
 export { LoadingSpinner, LoadingPage, LoadingSkeleton, CardSkeleton } from "./loading";
 export { ErrorMessage, NotFoundPage } from "./error";
+export { Slider } from "./slider";

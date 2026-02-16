@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { math } from 'mathjs';
+import * as math from 'mathjs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';

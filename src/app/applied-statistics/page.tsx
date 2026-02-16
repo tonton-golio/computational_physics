@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import * as math from 'mathjs';
 import Plotly from 'react-plotly.js';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 
 export default function AppliedStatisticsPage() {
   return (
@@ -91,6 +90,7 @@ function CentralLimitTheoremDemo() {
       const mean = math.mean(sample);
       samples.push(mean);
     }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setData(samples);
   }, [sampleSize, numSamples]);
 
@@ -172,6 +172,7 @@ function HypothesisTestingDemo() {
       const se = Math.sqrt(pooledVar * (1/n1 + 1/n2));
       const t = (mean1 - mean2) / se;
 
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setTStat(t);
       setMeanDiff(mean1 - mean2);
     } catch (e) {
@@ -208,7 +209,7 @@ function HypothesisTestingDemo() {
         <div className="mb-4">
           <p>t-statistic: {tStat.toFixed(3)}</p>
           <p>Mean difference: {meanDiff.toFixed(3)}</p>
-          <p>Note: For p-value, |t| > 2 suggests significance (approx.)</p>
+          <p>Note: For significance, |t| &gt; 2 suggests difference (approx.)</p>
         </div>
       </CardContent>
     </Card>

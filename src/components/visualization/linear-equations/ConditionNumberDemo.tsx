@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { math } from 'mathjs';
+import * as math from 'mathjs';
 import Plotly from 'react-plotly.js';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 
@@ -97,33 +96,33 @@ const ConditionNumberDemo: React.FC<Props> = () => {
         <div className="grid grid-cols-3 gap-4 text-sm">
           <div>
             <Label>a11</Label>
-            <Slider min={-2} max={2} step={0.1} value={[a11]} onValueChange={([v]) => setA11(v)} />
+            <input type="range" min={-2} max={2} step={0.1} value={a11} onChange={(e) => setA11(parseFloat(e.target.value))} />
             <span>{a11.toFixed(2)}</span>
           </div>
           {/* similar for a12, a21, a22, b1, b2 */}
           <div>
             <Label>a12</Label>
-            <Slider min={-2} max={2} step={0.1} value={[a12]} onValueChange={([v]) => setA12(v)} />
+            <input type="range" min={-2} max={2} step={0.1} value={a12} onChange={(e) => setA12(parseFloat(e.target.value))} />
             <span>{a12.toFixed(2)}</span>
           </div>
           <div>
             <Label>a21</Label>
-            <Slider min={-2} max={2} step={0.1} value={[a21]} onValueChange={([v]) => setA21(v)} />
+            <input type="range" min={-2} max={2} step={0.1} value={a21} onChange={(e) => setA21(parseFloat(e.target.value))} />
             <span>{a21.toFixed(2)}</span>
           </div>
           <div>
             <Label>a22</Label>
-            <Slider min={-2} max={2} step={0.1} value={[a22]} onValueChange={([v]) => setA22(v)} />
+            <input type="range" min={-2} max={2} step={0.1} value={a22} onChange={(e) => setA22(parseFloat(e.target.value))} />
             <span>{a22.toFixed(2)}</span>
           </div>
           <div>
             <Label>b1</Label>
-            <Slider min={-2} max={2} step={0.1} value={[b1]} onValueChange={([v]) => setB1(v)} />
+            <input type="range" min={-2} max={2} step={0.1} value={b1} onChange={(e) => setB1(parseFloat(e.target.value))} />
             <span>{b1.toFixed(2)}</span>
           </div>
           <div>
             <Label>b2</Label>
-            <Slider min={-2} max={2} step={0.1} value={[b2]} onValueChange={([v]) => setB2(v)} />
+            <input type="range" min={-2} max={2} step={0.1} value={b2} onChange={(e) => setB2(parseFloat(e.target.value))} />
             <span>{b2.toFixed(2)}</span>
           </div>
         </div>
@@ -133,7 +132,7 @@ const ConditionNumberDemo: React.FC<Props> = () => {
         </div>
         <div>
           <Label>Eps</Label>
-          <Slider min={0} max={0.2} step={0.01} value={[eps]} onValueChange={([v]) => setEps(v)} />
+          <input type="range" min={0} max={0.2} step={0.01} value={eps} onChange={(e) => setEps(parseFloat(e.target.value))} />
           <span>{eps.toFixed(3)}</span>
         </div>
         <div className="grid grid-cols-2 gap-4 text-lg font-mono">
