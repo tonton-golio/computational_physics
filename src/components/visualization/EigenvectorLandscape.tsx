@@ -2,7 +2,8 @@
 
 import { useRef, useState, useMemo, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, ArrowHelper } from '@react-three/drei';
+import { OrbitControls } from '@react-three/drei';
+import { ArrowHelper } from 'three';
 import * as THREE from 'three';
 
 type Matrix2x2 = number[][];

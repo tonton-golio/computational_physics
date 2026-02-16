@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import Plot from 'react-plotly.js';
+import { Data, Layout } from 'plotly.js';
 
 interface HistoryPoint {
   t: number;
@@ -120,7 +121,7 @@ const GeneNetsPage: React.FC = () => {
     }];
   })();
 
-  const phaseData = [
+  const phaseData: Data[] = [
     {
       type: 'scatter',
       x: preyNullclineX,
@@ -145,13 +146,13 @@ const GeneNetsPage: React.FC = () => {
       line: { color: 'blue', width: 3 },
       name: 'Trajectory'
     },
-    ...quiverData
+    ...(quiverData as Data[])
   ];
 
-  const phaseLayout = {
-    title: 'Lotka-Volterra Phase Portrait',
-    xaxis: { title: 'Prey (x)', range: [0, maxPop] },
-    yaxis: { title: 'Predator (y)', range: [0, maxPop] },
+  const phaseLayout: Partial<Layout> = {
+    title: { text: 'Lotka-Volterra Phase Portrait' },
+    xaxis: { title: { text: 'Prey (x)' }, range: [0, maxPop] },
+    yaxis: { title: { text: 'Predator (y)' }, range: [0, maxPop] },
     showlegend: true,
     width: 600,
     height: 500
@@ -162,7 +163,7 @@ const GeneNetsPage: React.FC = () => {
   const preyY = fullHistory.slice(0, currentIndex + 1).map(p => p.x);
   const predY = fullHistory.slice(0, currentIndex + 1).map(p => p.y);
 
-  const timeData = [
+  const timeData: Data[] = [
     {
       type: 'scatter',
       x: timeX,
@@ -182,12 +183,12 @@ const GeneNetsPage: React.FC = () => {
     }
   ];
 
-  const timeLayout = {
-    title: 'Populations over Time',
-    xaxis: { title: 'Time' },
-    yaxis: { title: 'Prey', side: 'left' },
+  const timeLayout: Partial<Layout> = {
+    title: { text: 'Populations over Time' },
+    xaxis: { title: { text: 'Time' } },
+    yaxis: { title: { text: 'Prey' }, side: 'left' },
     yaxis2: {
-      title: 'Predator',
+      title: { text: 'Predator' },
       side: 'right',
       overlaying: 'y'
     },
