@@ -51,7 +51,7 @@ const ContinuumMechanicsPage: React.FC = () => {
         x: epsilonValues,
         y: linearSigma,
         mode: 'lines',
-        name: 'Hooke\'s Law (Linear)',
+        name: 'Hooke&apos;s Law (Linear)',
         line: { color: 'blue', width: 2 }
       },
       {
@@ -95,23 +95,23 @@ const ContinuumMechanicsPage: React.FC = () => {
         <h2 className="text-2xl font-semibold mb-4">Parameters</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           <div>
-            <label>E (Young's Modulus, GPa): {params.E.toFixed(0)}</label>
+            <label>{`E (Young's Modulus, GPa): ${params.E.toFixed(0)}`}</label>
             <input type="range" min={50} max={500} step={10} value={params.E} onChange={updateParam('E')} className="w-full" />
           </div>
           <div>
-            <label>α: {params.alpha.toFixed(4)}</label>
+            <label>{`α: ${params.alpha.toFixed(4)}`}</label>
             <input type="range" min={0.0001} max={0.01} step={0.0001} value={params.alpha} onChange={updateParam('alpha')} className="w-full" />
           </div>
           <div>
-            <label>n: {params.n.toFixed(1)}</label>
+            <label>{`n: ${params.n.toFixed(1)}`}</label>
             <input type="range" min={1} max={20} step={0.1} value={params.n} onChange={updateParam('n')} className="w-full" />
           </div>
           <div>
-            <label>Max Strain: {params.maxStrain.toFixed(3)}</label>
+            <label>{`Max Strain: ${params.maxStrain.toFixed(3)}`}</label>
             <input type="range" min={0.01} max={0.1} step={0.005} value={params.maxStrain} onChange={updateParam('maxStrain')} className="w-full" />
           </div>
           <div>
-            <label>Num Points: {params.numPoints}</label>
+            <label>{`Num Points: ${params.numPoints}`}</label>
             <input type="range" min={50} max={200} step={10} value={params.numPoints} onChange={updateParam('numPoints')} className="w-full" />
           </div>
         </div>
@@ -121,7 +121,7 @@ const ContinuumMechanicsPage: React.FC = () => {
         <h2 className="text-2xl font-semibold mb-4">Equations</h2>
         <ul className="list-disc list-inside">
           <li><strong>Hooke's Law (Linear):</strong> σ = E ε</li>
-          <li><strong>Ramberg-Osgood (Nonlinear):</strong> ε = σ/E + α (σ/E)^n</li>
+          <li><strong>Ramberg-Osgood (Nonlinear):</strong> ε = σ/E + α (σ/E)<sup>n</sup></li>
         </ul>
         <p className="mt-4">
           The Ramberg-Osgood model captures nonlinear elastic behavior, often used in materials science for metals exhibiting power-law hardening.
