@@ -1,143 +1,395 @@
-
-## Header 1
+# Eigenvalue Problems
 
 Any stable physical/chemical system can be described with an eigensystem. Wavefunctions in quantum mechanics are a typical example.
+
 $$
 Ax = \lambda x
 $$
-$A$ is the operator (mapping $\mathbb{C}^n \rightarrow \mathbb{C}^n$), $x$ an eigevector, $\lambda$ an eigenvalue. The question is, **How do we obtain the eigen-vectors and -values?**
 
-## Header 2
+Where $A$ is the operator (mapping $\mathbb{C}^n \rightarrow \mathbb{C}^n$), $x$ an eigenvector, and $\lambda$ an eigenvalue. The question is: **How do we obtain the eigenvalues and eigenvectors?**
 
-For any fixed $\lambda$, you've got a linear system
-$$(A-\lambda I)x = 0$$
-which has non=trivial ($x\neq0$) solutions if 
-$$det(A-\lambda I) = 0$$
-Eigenvectors always come in subspaces; $E_\lambda = \{x\in \mathbb{C}^n\vert Ax=\lambda x\}$; and the spaces they span are called _eigenspaces_. The spaces are the kernels of the above matrix. If you have two eigenvectors, then their sum is an eigenvector as well.
+[[simulation eigen-transformation]]
 
-If we can find $\lambda_1, \lambda_2, \dots \lambda_p$, such that $\mathbb{C}^n=E_{\lambda_1}\oplus E_{\lambda_2}\oplus \dots \oplus E_{\lambda_p}$, then we fully understand the actions of $A$
+## Why Eigenvalues Matter
 
-Notice that $det(A-\lambda I)=0$ is a polynomial in $\lambda$, called the _characteristic polynomial_. By the **fundamental theorem of algebra**, any $n$ degree polynomial has exactly $n$ complex root, with multiplicity, such that you can write the polynomial as $P(\lambda)=c_0(\lambda-\lambda_1)(\lambda-\lambda_2)\dots(\lambda-\lambda_n)$ where $\lambda_1,\lambda_2,\dots,\lambda_n\in\mathbb{C}$
+Eigenvalues appear throughout physics and engineering:
 
-The issue is that we have two types of multiplicity for an eigenvalue $\lambda$
-1. **Algebraic multiplicity:** How many times an eigenvalue, $\lambda_i$, appears in the characteristic polynomial.
-2. **Geometric multiplicity:** You can have a multiple root that has only a 1D eigenspace. The dimension of your eigenspace is the number of linearly independent eigenvectors.
+- **Quantum mechanics**: Energy levels are eigenvalues of the Hamiltonian
+- **Vibrations**: Natural frequencies of structures
+- **Stability analysis**: System behavior near equilibrium points
+- **Principal Component Analysis**: Dimensionality reduction in data science
+- **Google PageRank**: Largest eigenvector of the web graph
 
-Geometric multiplicity $\leq$ algrebraic. Two cases:
-* They're equal: _Non-defective_: $\sum_{\lambda\in Sp(A)} Dim(E_\lambda) = n$. This is the good case.
-* _Defective_: $\sum_{\lambda\in Sp(A)} Dim(E_\lambda) \lt n$. Nothing works here, and so we'll conveniently ignore them
+[[figure eigen-applications]]
 
-The $Sp(A)$ is the _spectrum_ of operator $A$. It's the set of all the eigenvalues of $A$. $Sp(A)=\{\lambda\in\mathbb{C}\vert P(\lambda=0)\}$
+---
 
-Thankfully, most cases in natural sciences are not defective, and so we can analyze them. Non-defectiveness is guaranteed if:
-* $A$ is _normal_: $A^H A = AA^H$ ($A^H$ is the hermitian adjoint of $A$)
-* $\lambda_1,\lambda_2,\dots,\lambda_n$ are distinct
-* The best case: $A$ is Hermitian: $A=A^H$. In this case, we are guaranteed to get an orthonormal basis of eigenvectors.
+## Mathematical Foundations
 
-Then $A = U \Lambda U^H$ ($\Lambda = Sp(A)$)
+### The Characteristic Polynomial
 
-## The power method
+For any fixed $\lambda$, we have a linear system:
 
-Let $A:\mathbb{C}^n \rightarrow \mathbb{C}^n$ be a non-defective linear operator. $A=T\Lambda T^{-1}$, and let's order the eigenvalues in descending order: $\vert\lambda_1\vert\geq\vert\lambda_2\vert\geq\dots\geq\vert\lambda_n\vert$ ($\geq$ because the eigenvectors are not necessarily distinct)
+$$
+(A-\lambda I)x = 0
+$$
 
-Because eigenvectors $\{t_1,t_2,\dots,t_n\}$ forms a basis for $\mathbb{C}^n$, for any $x\in\mathbb{C}^n$,
-$$Ax = A(\tilde{x}_1t_1+\tilde{x}_2t_2,\dots,\tilde{x}_nt_n)$$
-By the linearity of $A$, we get
-$$= \tilde{x}_1At_1+\tilde{x}_2At_2,\dots,\tilde{x}_nAt_n$$
-We know what $A$ does to eigenvectors:
-$$= \tilde{x}_1\,\lambda_1\,t_1+\tilde{x}_2\,\lambda_2\,t_2,\dots,\tilde{x}_n\,\lambda_n\,t_n$$
-If we apply $A$ $k$ times, then we'd get
-$$A^kx=\tilde{x}_1\,\lambda_1^k\,t_1+\tilde{x}_2\,\lambda_2^k\,t_2,\dots,\tilde{x}_n\,\lambda_n^k\,t_n$$
-$$=\lambda_1^k\left(\tilde{x}_1\,t_1+\tilde{x}_2\,\left(\frac{\lambda_2}{\lambda_1}\right)^kt_2,\dots,\tilde{x}_n\,\left(\frac{\lambda_n}{\lambda_1}\right)^kt_n\right)$$
-But since $\lambda_1$ is the biggest, the ratio of the other brackets go to 0 as $k\to\infty$
-$$= \lambda_1^k\left(\tilde{x}_1t_1 + O\left(\lvert\frac{\lambda_2}{\lambda_1}\rvert\right)\right)$$
-as $\lambda_2$ is the second largest eigenvalue
-$$\lim_{k\to\infty}\frac{A^kx}{\Vert A^k x \Vert} = t_1, \qquad\text{if }\tilde{x}_1\neq0 \text{ and } \lambda_2<\lambda_1$$
-If $\lambda_1=\lambda_2=\dots=\lambda_n$, it still gives the eigenvector to $\lambda_1$: Namely, the projection $t_{\lambda_1}=P_{\lambda_t}x$
+This has **non-trivial** solutions ($x\neq0$) if and only if:
 
-#### Power method algorithm
+$$
+\det(A-\lambda I) = 0
+$$
+
+[[simulation characteristic-polynomial]]
+
+### Eigenspaces and Multiplicity
+
+Eigenvectors form subspaces called **eigenspaces**:
+
+$$
+E_\lambda = \{x\in \mathbb{C}^n \mid Ax=\lambda x\}
+$$
+
+The characteristic polynomial $P(\lambda) = \det(A-\lambda I)$ is of degree $n$, and by the **fundamental theorem of algebra**, has exactly $n$ complex roots (counting multiplicity).
+
+**Two types of multiplicity:**
+
+1. **Algebraic multiplicity**: How many times $\lambda_i$ appears in the characteristic polynomial
+2. **Geometric multiplicity**: Dimension of the eigenspace $E_\lambda$
+
+[[figure multiplicity-diagram]]
+
+**Key inequality**: Geometric multiplicity $\leq$ algebraic multiplicity
+
+### Defective vs Non-Defective Matrices
+
+- **Non-defective**: $\sum_{\lambda\in Sp(A)} \dim(E_\lambda) = n$ — we have a complete eigenbasis
+- **Defective**: $\sum_{\lambda\in Sp(A)} \dim(E_\lambda) < n$ — not enough eigenvectors
+
+**Non-defectiveness is guaranteed if:**
+- $A$ is **normal**: $A^H A = AA^H$
+- All eigenvalues are distinct
+- $A$ is **Hermitian**: $A=A^H$ (best case — guarantees orthonormal eigenbasis)
+
+For Hermitian matrices: $A = U \Lambda U^H$
+
+[[simulation hermitian-demo]]
+
+---
+
+## The Power Method
+
+Let $A$ be non-defective with $A=T\Lambda T^{-1}$. Order the eigenvalues by magnitude:
+
+$$
+|\lambda_1| \geq |\lambda_2| \geq \dots \geq |\lambda_n|
+$$
+
+### Derivation
+
+For any $x \in \mathbb{C}^n$, expressed in the eigenbasis:
+
+$$
+x = \tilde{x}_1 t_1 + \tilde{x}_2 t_2 + \dots + \tilde{x}_n t_n
+$$
+
+Applying $A$ repeatedly:
+
+$$
+A^k x = \tilde{x}_1 \lambda_1^k t_1 + \tilde{x}_2 \lambda_2^k t_2 + \dots + \tilde{x}_n \lambda_n^k t_n
+$$
+
+$$
+= \lambda_1^k \left(\tilde{x}_1 t_1 + \tilde{x}_2 \left(\frac{\lambda_2}{\lambda_1}\right)^k t_2 + \dots + \tilde{x}_n \left(\frac{\lambda_n}{\lambda_1}\right)^k t_n\right)
+$$
+
+Since $|\lambda_1|$ is largest, the ratios approach zero:
+
+$$
+\lim_{k\to\infty}\frac{A^k x}{\|A^k x\|} = t_1, \quad \text{if } \tilde{x}_1 \neq 0 \text{ and } |\lambda_2| < |\lambda_1|
+$$
+
+[[simulation power-method-animation]]
+
+### Power Method Algorithm
 
 ```python
-def PowerIterate(A, x_0):
-    x = x_0
-    while (not_converged(A, x)):
-        x = A @ x
-        x /= np.linalg.norm(x)
-    return x
+def power_iterate(A, x0, tol=1e-10, max_iter=1000):
+    """
+    Find the dominant eigenvalue and eigenvector.
+    
+    Parameters:
+        A: Square matrix
+        x0: Initial guess vector
+        tol: Convergence tolerance
+        max_iter: Maximum iterations
+    
+    Returns:
+        eigenvalue, eigenvector, iterations
+    """
+    x = x0 / np.linalg.norm(x0)
+    
+    for i in range(max_iter):
+        y = A @ x
+        x_new = y / np.linalg.norm(y)
+        
+        # Rayleigh quotient for eigenvalue estimate
+        eigenvalue = x_new @ A @ x_new
+        
+        if np.linalg.norm(x_new - x) < tol or np.linalg.norm(x_new + x) < tol:
+            return eigenvalue, x_new, i + 1
+        
+        x = x_new
+    
+    return eigenvalue, x, max_iter
 ```
 
-You can check for convergence by seeing if it's an eigenvector. Either check if $Ax$ is parallel to $x$, or use the Rayleigh equation (which we'll cover in lecture 6).
+### Limitations
 
-### Something else he's squeezed in
+- Only finds the **dominant eigenvalue** (largest magnitude)
+- Fails if the dominant eigenvalue is not unique
+- Slow convergence when $|\lambda_1| \approx |\lambda_2|$ (small spectral gap)
 
-Let $A, B$ be non-defective with the same eigenvectors $T$.
+[[figure convergence-comparison]]
 
-$A=T\Lambda_AT^{-1}$, $B=T\Lambda_BT^{-1}$. Then
-1. $A+B=T\Lambda_AT^{-1}+T\Lambda_BT^{-1}=T\left(\Lambda_A+\Lambda_B\right)T^{-1}$
-2. $AB=T\Lambda_AT^{-1}T\Lambda_BT^{-1}=T\Lambda_A\Lambda_BT^{-1}$
-3. $A+\sigma I=T\Lambda_AT^{-1}+T\sigma IT^{-1}=T\left(\Lambda_A+\sigma I\right)T^{-1}$
+---
 
-Because we have these, we can construct polynomials.
+## Inverse Iteration
 
-$$P(A)=c_0J+c_1A+c_2A^2+\dots+c_dA^d$$
-$$=\sum_{k=0}^d c_kA^k=\sum_{k=0}^d T \Lambda_A T^{-1}$$
-Using the linearity of $T$:
-$$=T \left(\sum_{k=0}^d\Lambda_A\right) T^{-1} = T\; P(A)\; T^{-1}$$
+To find an eigenvalue **closest to a shift** $\sigma$, apply the power method to $(A - \sigma I)^{-1}$:
 
-Now, we use _math_
+The eigenvalues of $(A - \sigma I)^{-1}$ are $(\lambda_i - \sigma)^{-1}$, so the one closest to $\sigma$ becomes dominant.
 
-Let $f:\mathbb{C}\rightarrow\mathbb{C}$ be continuous, then there exists a sequence of $d$ degree polynomials $P_d(\lambda)$ such that $f(\lambda)=\lim_{d\to\infty} P_d(\lambda)$
-$$f(A) = \lim_{d\to\infty} P_d(\Lambda_A) = \lim_{d\to\infty}\left(T\;P(\Lambda_A)\;T^{-1}\right)$$
-$$ =T\left(\lim_{d\to\infty}P(\Lambda_A)\right)T^{-1} $$
-
-## Gershgorin centers
-### Gershgorin centers
-We can appoximate the eigenvalues using the Gershgorin center method:
-
-## gershgorin
-def gershgorin(K, _sort=True):
-    # Starting with row one, we take the element on the diagonal, $a_{ii}$ as the center for the disc. # wikipedia
-    centers = np.array([K[i,i] for i in range(len(K))])
-
-    # We then take the remaining elements in the row and apply the formula:
-    # $$\sum _{{j\neq i}}|a_{{ij}}|=R_{i}$$
-    radii = np.array([np.sum(np.hstack( [np.abs(K[i,:i]), np.abs(K[i,i+1:])] )) for i in range(len(K))])
+```python
+def inverse_iterate(A, sigma, x0, tol=1e-10, max_iter=1000):
+    """
+    Find eigenvalue closest to sigma.
+    """
+    n = len(A)
+    x = x0 / np.linalg.norm(x0)
+    A_shifted = A - sigma * np.eye(n)
     
-    if _sort:  # sorting
-        sort_index = np.argsort(centers)[::-1]
-        centers = centers[sort_index]; radii = radii[sort_index]
+    for i in range(max_iter):
+        # Solve (A - sigma*I) y = x
+        y = np.linalg.solve(A_shifted, x)
+        x_new = y / np.linalg.norm(y)
+        
+        eigenvalue = x_new @ A @ x_new
+        
+        if np.linalg.norm(x_new - x) < tol or np.linalg.norm(x_new + x) < tol:
+            return eigenvalue, x_new, i + 1
+        
+        x = x_new
+    
+    return eigenvalue, x, max_iter
+```
+
+[[simulation inverse-iteration]]
+
+---
+
+## Rayleigh Quotient Iteration
+
+The **Rayleigh quotient** provides an eigenvalue estimate:
+
+$$
+\lambda_R(x) = \frac{x^T A x}{x^T x}
+$$
+
+Rayleigh quotient iteration updates the shift at each step, achieving **cubic convergence** for Hermitian matrices!
+
+```python
+def rayleigh_quotient_iteration(A, x0, tol=1e-12, max_iter=100):
+    """
+    Fast cubic convergence for Hermitian matrices.
+    """
+    n = len(A)
+    x = x0 / np.linalg.norm(x0)
+    eigenvalue = x @ A @ x
+    
+    for i in range(max_iter):
+        A_shifted = A - eigenvalue * np.eye(n)
+        
+        try:
+            y = np.linalg.solve(A_shifted, x)
+        except np.linalg.LinAlgError:
+            # Singular matrix means we hit an eigenvalue
+            return eigenvalue, x, i
+        
+        x_new = y / np.linalg.norm(y)
+        eigenvalue_new = x_new @ A @ x_new
+        
+        if abs(eigenvalue_new - eigenvalue) < tol:
+            return eigenvalue_new, x_new, i + 1
+        
+        x = x_new
+        eigenvalue = eigenvalue_new
+    
+    return eigenvalue, x, max_iter
+```
+
+[[simulation rayleigh-convergence]]
+
+### Convergence Comparison
+
+| Method | Convergence Rate | Finds |
+|--------|------------------|-------|
+| Power Method | Linear | Dominant $\lambda$ |
+| Inverse Iteration | Linear | $\lambda$ near shift |
+| Rayleigh Quotient Iteration | **Cubic** (Hermitian) | Single $\lambda$ |
+
+---
+
+## QR Algorithm
+
+The **QR algorithm** is the standard method for computing **all eigenvalues** of a matrix.
+
+### Basic QR Iteration
+
+$$
+\begin{aligned}
+A_0 &= A \\
+\text{For } k &= 0, 1, 2, \dots: \\
+A_k &= Q_k R_k \quad \text{(QR factorization)} \\
+A_{k+1} &= R_k Q_k
+\end{aligned}
+$$
+
+The matrices $A_k$ converge to (quasi-)upper triangular form, with eigenvalues on the diagonal!
+
+[[simulation qr-algorithm-animation]]
+
+### Why It Works
+
+Each iteration is a similarity transformation:
+
+$$
+A_{k+1} = R_k Q_k = Q_k^T Q_k R_k Q_k = Q_k^T A_k Q_k
+$$
+
+Similar matrices have the same eigenvalues, and upper triangular matrices have eigenvalues on the diagonal.
+
+```python
+def qr_algorithm(A, max_iter=1000, tol=1e-12):
+    """
+    Compute all eigenvalues using QR iteration.
+    """
+    n = len(A)
+    A_k = A.copy()
+    
+    for i in range(max_iter):
+        Q, R = np.linalg.qr(A_k)
+        A_k = R @ Q
+        
+        # Check convergence (subdiagonal elements small)
+        off_diag = np.sum(np.abs(np.tril(A_k, -1)))
+        if off_diag < tol:
+            break
+    
+    eigenvalues = np.diag(A_k)
+    return eigenvalues, A_k, i + 1
+```
+
+### Practical Improvements
+
+- **Hessenberg reduction**: Transform to upper Hessenberg form first (saves computation)
+- **Shifts**: Use Wilkinson or Francis shifts for faster convergence
+- **Implicit QR**: Avoid explicit QR factorization for efficiency
+
+[[figure qr-convergence-plot]]
+
+---
+
+## Gershgorin Circle Theorem
+
+A quick way to **bound eigenvalues** without computing them.
+
+### Theorem
+
+Every eigenvalue of $A$ lies within at least one **Gershgorin disc**:
+
+$$
+D_i = \left\{ z \in \mathbb{C} : |z - a_{ii}| \leq R_i \right\}
+$$
+
+where the radius is:
+
+$$
+R_i = \sum_{j \neq i} |a_{ij}|
+$$
+
+[[simulation gershgorin-circles]]
+
+### Implementation
+
+```python
+def gershgorin(A):
+    """
+    Compute Gershgorin disc centers and radii.
+    
+    Every eigenvalue lies within at least one disc.
+    """
+    n = len(A)
+    centers = np.array([A[i, i] for i in range(n)])
+    radii = np.array([np.sum(np.abs(A[i, :])) - np.abs(A[i, i]) 
+                      for i in range(n)])
     return centers, radii
-
-
-## rayleigh iterate
-
-
-#### Rayleigh quotient
-```python
-def rayleigh_qt(A,x=None):
-    return x.T @ A @ x / (x.T @ x)
 ```
 
-#### Rayleigh iterate
-```python
-def rayleigh_iterate(A,x0, shift0, tol=0.001):
-    norm = lambda v : np.max(abs(v))
-    
-    A = A.copy()
-    
-    ys = [] ; xs = [x0] ; cs = []
-    lambda_ = 420 ; lambda_prev = -300
-    A_less_eig = A - shift0*np.eye(len(A))
-    i = 0
-    while abs(lambda_-lambda_prev) > tol:
-        lambda_prev = lambda_
-        ys.append(solve_lin_eq(A_less_eig, xs[i]))
-        cs.append( ( ys[i] @ xs[i] ) / (xs[i] @ xs[i]) )
-        xs.append( ys[i]/norm(ys[i]) )
-        
-        lambda_ = 1/cs[i] + shift0
-        i +=1
-        
-        
-    return lambda_, xs[-1], i
-```
+[[figure gershgorin-example]]
+
+---
+
+## Functions of Matrices
+
+For non-defective $A = T\Lambda T^{-1}$, we can define functions of matrices:
+
+$$
+f(A) = T f(\Lambda) T^{-1} = T \begin{pmatrix} f(\lambda_1) & & \\ & \ddots & \\ & & f(\lambda_n) \end{pmatrix} T^{-1}
+$$
+
+### Applications
+
+- **Matrix exponential**: $e^{At}$ solves $\frac{dx}{dt} = Ax$
+- **Matrix logarithm**: Used in Lie groups
+- **Matrix square root**: In covariance analysis
+
+$$
+P(A) = \sum_{k=0}^{d} c_k A^k = T \left(\sum_{k=0}^{d} c_k \Lambda^k\right) T^{-1} = T P(\Lambda) T^{-1}
+$$
+
+[[simulation matrix-exponential]]
+
+---
+
+## Algorithm Comparison
+
+| Algorithm | Finds | Convergence | Complexity/iter | Best For |
+|-----------|-------|-------------|-----------------|----------|
+| Power Method | Dominant $\lambda$ | Linear | $O(n^2)$ | Single largest eigenvalue |
+| Inverse Iteration | $\lambda$ near shift | Linear | $O(n^3)$ | Single eigenvalue with estimate |
+| Rayleigh Quotient | Single $\lambda$ | Cubic | $O(n^3)$ | Fast convergence |
+| QR Algorithm | All $\lambda$ | Quadratic | $O(n^3)$ | All eigenvalues |
+| Lanczos | $k$ largest/smallest | Superlinear | $O(kn)$ | Large sparse matrices |
+
+[[figure algorithm-comparison]]
+
+---
+
+## Summary
+
+1. **Eigenvalues** characterize how linear transformations scale vectors
+2. **Power method** finds the dominant eigenvalue with linear convergence
+3. **Inverse iteration** finds eigenvalues near a given shift
+4. **Rayleigh quotient iteration** achieves cubic convergence for Hermitian matrices
+5. **QR algorithm** computes all eigenvalues and is the industry standard
+6. **Gershgorin circles** provide quick eigenvalue bounds without computation
+
+---
+
+## References
+
+1. Trefethen & Bau, *Numerical Linear Algebra*, Chapters 24-28
+2. Golub & Van Loan, *Matrix Computations*, Chapter 7
+3. Demmel, *Applied Numerical Linear Algebra*, Chapter 5
+4. 3Blue1Brown: [Eigenvalues and Eigenvectors](https://www.youtube.com/watch?v=PFDu9oVAE-g)

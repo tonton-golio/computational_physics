@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import Plotly from 'plotly.js-dist';
 
 interface GraphProps {
@@ -123,7 +123,7 @@ function wignerGaussian(params: Record<string, number>): { data: Plotly.Data[]; 
       type: 'heatmap',
       z,
       x,
-      p,
+      y: p,
       colorscale: 'RdBu_r',
       reversescale: true,
       colorbar: { title: { text: 'W(x,p)', side: 'right' } },
@@ -162,7 +162,7 @@ function wignerNumberState(params: Record<string, number>): { data: Plotly.Data[
       type: 'heatmap',
       z,
       x,
-      p,
+      y: p,
       colorscale: 'RdBu_r',
       reversescale: true,
       colorbar: { title: { text: 'W(q,p)', side: 'right' } },
@@ -203,7 +203,7 @@ function wignerCatState(params: Record<string, number>): { data: Plotly.Data[]; 
       type: 'heatmap',
       z,
       x,
-      p,
+      y: p,
       colorscale: 'RdBu_r',
       reversescale: true,
       colorbar: { title: { text: 'W(q,p)', side: 'right' } },
@@ -478,17 +478,22 @@ function phasePortrait(params: Record<string, number>): { data: Plotly.Data[]; l
     });
   });
   
-  // Add vector field as quiver
-  data.push({
-    type: 'quiver',
-    x: vectors.x,
-    y: vectors.y,
-    u: vectors.u,
-    v: vectors.v,
-    mode: 'lines',
-    line: { color: '#444', width: 1 },
-    scale: 0.5,
-  } as Plotly.Data);
+  // Add vector field as arrows using scatter (simplified)
+  for (let i = 0; i < vectors.x.length; i += 3) {
+    const x = vectors.x[i];
+    const y = vectors.y[i];
+    const u = vectors.u[i];
+    const v = vectors.v[i];
+    
+    data.push({
+      x: [x, x + u],
+      y: [y, y + v],
+      type: 'scatter',
+      mode: 'lines',
+      line: { color: '#444', width: 1 },
+      showlegend: false,
+    });
+  }
   
   return {
     data,
@@ -533,14 +538,15 @@ function lorenzAttractor(params: Record<string, number>): { data: Plotly.Data[];
       x: trajectory.x,
       y: trajectory.y,
       z: trajectory.z,
-      line: { color: trajectory.z.map((_, i) => i / steps), colorscale: 'Viridis', width: 2 },
+      line: { color: trajectory.z.map((_, i) => i / steps), width: 2 },
+      marker: { colorscale: 'Viridis' },
     }],
     layout: {
       paper_bgcolor: 'rgba(0,0,0,0)',
       scene: {
-        xaxis: { title: 'x', gridcolor: '#1e1e2e', color: '#9ca3af' },
-        yaxis: { title: 'y', gridcolor: '#1e1e2e', color: '#9ca3af' },
-        zaxis: { title: 'z', gridcolor: '#1e1e2e', color: '#9ca3af' },
+        xaxis: { title: { text: 'x' }, gridcolor: '#1e1e2e', color: '#9ca3af' },
+        yaxis: { title: { text: 'y' }, gridcolor: '#1e1e2e', color: '#9ca3af' },
+        zaxis: { title: { text: 'z' }, gridcolor: '#1e1e2e', color: '#9ca3af' },
         bgcolor: 'rgba(15,15,25,1)',
       },
       title: { text: 'Lorenz Attractor' },
@@ -587,84 +593,60 @@ const ALIASES: Record<string, string> = {
 
 export function InteractiveGraph({ type, params = {}, title }: GraphProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [error, setError] = useState<string | null>(null);
   
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
     
+    // Resolve alias
     const resolvedType = ALIASES[type] || type;
     const generator = GRAPH_GENERATORS[resolvedType];
     
-    if (!generator) {
-      // Use setTimeout to defer setState outside effect
-      setTimeout(() => setError(`Unknown graph type: ${type}`), 0);
-      return;
-    }
-    
-    setTimeout(() => setError(null), 0);
-    
-    try {
+    if (generator) {
       const { data, layout } = generator(params);
+      const finalLayout = title ? { ...layout, title: { text: title } } : layout;
       
-      if (title) {
-        layout.title = { text: title };
-      }
-      
-      Plotly.newPlot(container, data, layout, {
+      Plotly.newPlot(container, data, finalLayout, {
         responsive: true,
         displayModeBar: false,
       });
-    } catch (e) {
-      setTimeout(() => setError(`Error generating graph: ${e}`), 0);
+    } else {
+      // Fallback for unknown types
+      Plotly.newPlot(container, [], {
+        ...BASE_LAYOUT,
+        title: { text: `Unknown graph type: ${type}` },
+      });
     }
     
     return () => {
-      if (container) {
-        Plotly.purge(container);
-      }
+      Plotly.purge(container);
     };
   }, [type, params, title]);
-  
-  if (error) {
-    return (
-      <div className="w-full h-64 bg-[#151525] rounded-lg flex items-center justify-center text-red-400">
-        {error}
-      </div>
-    );
-  }
   
   return (
     <div 
       ref={containerRef} 
-      className="w-full h-80 bg-[#151525] rounded-lg overflow-hidden"
+      className="w-full h-64 bg-[#151525] rounded-lg overflow-hidden"
     />
   );
 }
 
-// Export graph definitions for documentation
-export const GRAPH_DEFS: Record<string, { type: string; params: Record<string, number>; description: string }> = {
-  // Basic Physics
-  'harmonic-motion': { type: 'harmonic-motion', params: { amplitude: 1, frequency: 2, phase: 0 }, description: 'Simple harmonic oscillator' },
-  'damped-oscillator': { type: 'damped-oscillator', params: { amplitude: 1, frequency: 2, damping: 0.15 }, description: 'Damped harmonic oscillator with envelope' },
-  'wave-propagation': { type: 'wave-propagation', params: { wavenumber: 1, frequency: 1 }, description: 'Traveling wave at multiple time snapshots' },
-  
-  // Quantum Optics
-  'wigner-gaussian': { type: 'wigner-gaussian', params: { x_mean: 0, p_mean: 0, stddev: 0.5 }, description: 'Wigner function for coherent state' },
-  'wigner-number': { type: 'wigner-number', params: { n: 0 }, description: 'Wigner function for Fock state |n⟩' },
-  'wigner-cat': { type: 'wigner-cat', params: { alpha: 2 }, description: 'Wigner function for cat state' },
-  
-  // Statistics
-  'gaussian': { type: 'gaussian', params: { mean: 0, stddev: 1 }, description: 'Normal/Gaussian distribution' },
-  'binomial': { type: 'binomial', params: { n: 20, probability: 0.5 }, description: 'Binomial distribution' },
-  'poisson': { type: 'poisson', params: { lambda: 5 }, description: 'Poisson distribution' },
-  'central-limit': { type: 'central-limit', params: { n: 100, samples: 1000 }, description: 'Central limit theorem demonstration' },
-  
-  // Continuum Mechanics
-  'beam-deflection': { type: 'beam-deflection', params: { length: 10, force: 100 }, description: 'Cantilever beam deflection' },
-  'stress-strain': { type: 'stress-strain', params: { youngs_modulus: 200, yield_stress: 250 }, description: 'Stress-strain curve for material' },
-  
-  // Dynamical Systems
-  'phase-portrait': { type: 'phase-portrait', params: { alpha: -0.5, omega: 1 }, description: '2D phase portrait with trajectories' },
-  'lorenz': { type: 'lorenz', params: { sigma: 10, rho: 28, beta: 2.667 }, description: 'Lorenz attractor 3D visualization' },
+// List of available graphs for content
+export const GRAPH_DEFS: Record<string, GraphProps> = {
+  'harmonic-motion': {
+    type: 'harmonic',
+    params: { amplitude: 1, frequency: 2, phase: 0 },
+  },
+  'damped-oscillator': {
+    type: 'damped',
+    params: { amplitude: 1, frequency: 2, damping: 0.15 },
+  },
+  'wave-propagation': {
+    type: 'wave',
+    params: { wavenumber: 1, frequency: 1 },
+  },
+  'gaussian': {
+    type: 'gaussian',
+    params: { mean: 0, stddev: 1 },
+  },
 };
