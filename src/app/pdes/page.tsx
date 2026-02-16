@@ -12,7 +12,7 @@ const dt = 0.00001;
 
 const initialConditions = {
   sine: (x: number) => Math.sin(Math.PI * x),
-  gaussian: (x: number) => Math.exp(-((x - 0.5) / 0.1) ** 2),
+  gaussian: (x: number) => Math.exp( - (((x - 0.5) / 0.1) ** 2) ),
   step: (x: number) => x < 0.5 ? 1 : 0,
 };
 
