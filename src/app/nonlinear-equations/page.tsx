@@ -210,7 +210,7 @@ const NonlinearEquationsPage: React.FC = () => {
 
       <div className="mb-4">
         <label className="mr-4">System:</label>
-        <select value={system} onChange={(e) => setSystem(e.target.value as any)} className="border p-2">
+        <select value={system} onChange={(e) => setSystem(e.target.value)} className="border p-2">
           <option value="lotka">Lotka-Volterra</option>
           <option value="logistic">Logistic</option>
         </select>

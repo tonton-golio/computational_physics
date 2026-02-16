@@ -84,7 +84,7 @@ const ContinuumMechanicsPage: React.FC = () => {
     <div className="p-8 max-w-7xl mx-auto">
       <h1 className="text-4xl font-bold mb-8">Continuum Mechanics: 1D Stress-Strain</h1>
       <p className="mb-8 text-lg">
-        Explore Hooke's law and nonlinear elasticity using the Ramberg-Osgood model.
+        Explore Hooke&apos;s law and nonlinear elasticity using the Ramberg-Osgood model.
       </p>
 
       <div className="mb-8">

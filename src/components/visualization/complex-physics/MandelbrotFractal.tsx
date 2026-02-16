@@ -11,7 +11,7 @@ const HEIGHT = 400;
 const MAX_ITER = 100;
 
 function mandelbrot(c: { re: number; im: number }): number {
-  let z = { re: 0, im: 0 };
+  const z = { re: 0, im: 0 };
   let n = 0;
   while (z.re * z.re + z.im * z.im <= 4 && n < MAX_ITER) {
     const temp = z.re * z.re - z.im * z.im + c.re;

@@ -17,7 +17,7 @@ export default function ComplexPhysicsPage() {
       </section>
 
       <section className="mb-12">
-        <h2 className="text-2xl font-semibold mb-4 text-white">Conway's Game of Life</h2>
+        <h2 className="text-2xl font-semibold mb-4 text-white">Conway&apos;s Game of Life</h2>
         <p className="text-gray-300 mb-4">Cellular automaton simulation. Start, stop, or reset.</p>
         <GameOfLife />
       </section>

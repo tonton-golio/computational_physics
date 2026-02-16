@@ -45,8 +45,8 @@ const GaussianElimDemo: React.FC = () => {
       setStep(1);
     } else if (step === 1) {
       // Back substitution
-      let x2 = aug[1][2] / aug[1][1];
-      let x1 = (aug[0][2] - aug[0][1] * x2) / aug[0][0];
+      const x2 = aug[1][2] / aug[1][1];
+      const x1 = (aug[0][2] - aug[0][1] * x2) / aug[0][0];
       setSolution([x1, x2]);
       setStep(2);
     }

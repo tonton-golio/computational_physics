@@ -41,6 +41,7 @@ function LinearRegressionDemo() {
       return yHat[i] - t * se;
     });
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setData({ x, y, yHat, residuals, ciUpper, ciLower });
   }, [noise, sampleSize]);
 

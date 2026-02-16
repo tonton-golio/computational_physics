@@ -4,40 +4,35 @@ import dynamic from 'next/dynamic';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
-import { useState, useEffect } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 
 export default function ScientificComputing() {
   const [a, setA] = useState(-2);
   const [b, setB] = useState(2);
   const [c, setC] = useState(1);
-  const [iterations, setIterations] = useState([]);
-  const [running, setRunning] = useState(false);
-
   const f = (x) => x * x - c;
 
-  const bisection = (a, b, tol = 1e-6, maxIter = 20) => {
-    let steps = [];
+  const bisection = useCallback((a, b, tol = 1e-6, maxIter = 20) => {
+    const steps = [];
     let fa = f(a), fb = f(b);
     if (fa * fb > 0) return steps; // no root
     for (let i = 0; i < maxIter; i++) {
-      let c = (a + b) / 2;
-      let fc = f(c);
-      steps.push({ step: i+1, a, b, c, fc });
+      const c_mid = (a + b) / 2;
+      const fc = f(c_mid);
+      steps.push({ step: i+1, a, b, c: c_mid, fc });
       if (Math.abs(fc) < tol || Math.abs(b - a) < tol) break;
       if (fa * fc < 0) {
-        b = c;
+        b = c_mid;
         fb = fc;
       } else {
-        a = c;
+        a = c_mid;
         fa = fc;
       }
     }
     return steps;
-  };
+  }, [c]);
 
-  useEffect(() => {
-    setIterations(bisection(a, b));
-  }, [a, b, c]);
+  const iterations = useMemo(() => bisection(a, b), [a, b, bisection]);
 
   const xMin = Math.min(a, b) - 1;
   const xMax = Math.max(a, b) + 1;
@@ -116,7 +111,7 @@ export default function ScientificComputing() {
           </tr>
         </thead>
         <tbody>
-          {iterations.map((it, idx) => {
+          {iterations.map((it) => {
             const error = Math.abs(it.b - it.a);
             return (
               <tr key={it.step} style={{border: '1px solid black'}}>

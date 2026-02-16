@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic';
 import { useState } from 'react';
 import { create, all } from 'mathjs';
+import type { Complex } from 'mathjs';
 
 const math = create(all);
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
@@ -46,7 +47,7 @@ export default function QuantumOptics() {
   const JTotalNorm = normTotal ? [math.divide(JTotal[0], normTotal), math.divide(JTotal[1], normTotal)] : [0, 0];
 
   // Generate polarization ellipse
-  const generateEllipse = (J: any[]) => {
+  const generateEllipse = (J: Complex[]) => {
     const x = [];
     const y = [];
     for (let t = 0; t < 2 * Math.PI; t += 0.1) {
