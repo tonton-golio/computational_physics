@@ -49,6 +49,8 @@ export function EigenvectorLandscape() {
   const [c, setC] = useState(2);
   const [resetKey, setResetKey] = useState(0);
 
+  const handleReset = useCallback(() => setResetKey(prev => prev + 1), []);
+
   const surfaceRef = useRef<THREE.Mesh>(null!);
   const ballRef = useRef<THREE.Group>(null!);
   const velocityRef = useRef([0, 0] as [number, number]);
