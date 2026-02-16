@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import Plotly from 'plotly.js-dist';
 
 interface GraphProps {
-  type: 'harmonic' | 'wave' | 'gaussian' | 'custom';
+  type: 'harmonic' | 'wave' | 'gaussian' | 'damped' | 'custom';
   params?: Record<string, number>;
   title?: string;
 }
@@ -92,6 +92,25 @@ export function InteractiveGraph({ type, params = {}, title }: GraphProps) {
         layout.title = { text: title || 'Gaussian Distribution' };
         break;
       }
+      
+      case 'damped': {
+        const A = params.amplitude || 1;
+        const omega = params.frequency || 2;
+        const gamma = params.damping || 0.3;
+        const x = Array.from({ length: 200 }, (_, i) => (i / 200) * 8 * Math.PI);
+        const y = x.map(xi => A * Math.exp(-gamma * xi) * Math.cos(omega * xi));
+        const envelope = x.map(xi => A * Math.exp(-gamma * xi));
+        
+        data = [
+          { x, y, type: 'scatter', mode: 'lines', line: { color: '#3b82f6', width: 2 }, name: 'x(t)' },
+          { x, y: envelope, type: 'scatter', mode: 'lines', line: { color: '#ef4444', width: 1, dash: 'dash' }, name: 'Envelope' },
+          { x, y: envelope.map(e => -e), type: 'scatter', mode: 'lines', line: { color: '#ef4444', width: 1, dash: 'dash' }, showlegend: false },
+        ];
+        layout.xaxis = { ...layout.xaxis, title: { text: 'Time' } };
+        layout.yaxis = { ...layout.yaxis, title: { text: 'Displacement' } };
+        layout.title = { text: title || 'Damped Harmonic Motion' };
+        break;
+      }
     }
     
     Plotly.newPlot(containerRef.current, data, layout, {
@@ -119,6 +138,10 @@ export const GRAPH_DEFS: Record<string, GraphProps> = {
   'harmonic-motion': {
     type: 'harmonic',
     params: { amplitude: 1, frequency: 2, phase: 0 },
+  },
+  'damped-oscillator': {
+    type: 'damped',
+    params: { amplitude: 1, frequency: 2, damping: 0.15 },
   },
   'wave-propagation': {
     type: 'wave',
