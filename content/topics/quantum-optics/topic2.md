@@ -6,6 +6,8 @@ __Topic 2 keywords__
 - Lamb shift
 - Casimir forces
 
+{{graph:wigner-gaussian}}
+
 # __Readings__
 Ch. 2.4-6, App. A.
 

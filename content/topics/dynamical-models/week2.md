@@ -2,6 +2,8 @@
 # title
 Differential equation in a nutshell
 
+{{graph:phase-portrait}}
+
 # Week 2 description
 - Nov 28: Intuitively understanding differential equation for gene regulation 
 (no worries, we do not need to solve difficult differential equation!!).
@@ -35,6 +37,8 @@ $$
 $$
 Thus this simple molecules creation process can be discribed by differential 
 equation.
+
+{{graph:damped-oscillator}}
 
 Solution become
 $$
