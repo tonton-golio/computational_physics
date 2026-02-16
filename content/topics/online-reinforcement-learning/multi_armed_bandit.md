@@ -1,3 +1,6 @@
+# Multi-Armed Bandits
+
+
 KEY: intro
 In this section we discuss multi armed bandits as the simplest example of reinforcement learning. We discuss methods for balancing exploration and exploitation. To asses the performance of an algorithm, we employ **regret**: the difference between the best possible reward and the reward actually received.
 

@@ -1,3 +1,6 @@
+# Convolutional Neural Networks
+
+
 
 KEY: intro
 Convolutional neural networks are better for image recognition, because they take advantage of spatial structures, and recognize larger scale patterns in the image.

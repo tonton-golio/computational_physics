@@ -1,3 +1,6 @@
+# Linear Least Squares
+
+
 
 ## Header 1
 With given data and a desired function, determine the paramters of the function to minimize the distance to data points.

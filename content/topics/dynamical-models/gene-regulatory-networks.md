@@ -1,6 +1,4 @@
-
-# title
-Gene regulatory networks
+# Gene Regulatory Networks
 
 # Week 5 description
 - Dec 19: How is gene expression is regulated by networks?

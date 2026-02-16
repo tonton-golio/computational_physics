@@ -1,3 +1,4 @@
+# Statistical Mechanics
 
 ## Microcanonical Ensemble
 The central assumption of statistical mechanics is the principle of *equal a priori probabilities*, which argues that all states that share an energy level are equally likely to exist in the system.

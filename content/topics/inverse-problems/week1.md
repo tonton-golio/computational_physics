@@ -1,3 +1,4 @@
+# Density Variations Exercise
 
 # Ex 1
 ### Density variations (Tikonov)

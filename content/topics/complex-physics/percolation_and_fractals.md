@@ -1,3 +1,4 @@
+# Percolation and Fractals
 
 ### Resources
 | name/link      | Description |

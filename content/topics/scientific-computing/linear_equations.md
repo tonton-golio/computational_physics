@@ -1,3 +1,6 @@
+# Linear Equations
+
+
 
 ## Header 1
 Linear systems are special: It's something we can solve really well, and it covers an enourmous amount of problems. Even when you've got a non-linear system, you can isolate the linearity and solve that, and treat the non-linearity in another way.

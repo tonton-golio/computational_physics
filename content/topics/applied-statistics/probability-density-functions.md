@@ -1,6 +1,6 @@
+# Probability Density Functions
 
 # description
-* Nov 28: Probability Density Functions (PDF) especially Binomial, Poisson and Gaussian.
 * Nov 29: Principle of maximum likelihood and fitting (which is an art!).
 * Dec 2: 8:15 - Group A: Project (for Wednesday the 14th of December) doing experiments in First Lab. 9:15 - Group B: Systematic Uncertainties and analysis of "Table Measurement data" Discussion of real data analysis (usual rooms).
 

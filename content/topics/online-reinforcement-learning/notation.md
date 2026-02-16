@@ -1,3 +1,6 @@
+# Notation
+
+
 
 KEY: notation
 * $\mathcal{K}$ is the action space

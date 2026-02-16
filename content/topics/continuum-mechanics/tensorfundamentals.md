@@ -1,3 +1,6 @@
+# Tensor Fundamentals
+
+
 
 ## __Introduction__
 The Cauchy stress tensor, Cauchy strain tensor, the stress deviator, gradient tensor and spin tensor are essential concepts in the field of continuum mechanics. The Cauchy stress tensor is a mathematical construct used to describe stress in a material. The Cauchy strain tensor describes the deformation of the material due to stress. The Cauchy strain tensor together with the spin tensor gives the combined gradient tensor. 

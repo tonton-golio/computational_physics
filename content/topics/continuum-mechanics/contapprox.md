@@ -1,3 +1,6 @@
+# Continuum Approximation
+
+
 
 ## __Introduction__
 The physics of continuum mechanics, requires that a mass of particles can be 

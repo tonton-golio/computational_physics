@@ -1,3 +1,6 @@
+# Exam Dispensation
+
+
 Van de Waals Forces and Lennard Jones potential.
 
 ## __1. Hydrostatics, Buoyancy__

@@ -1,3 +1,6 @@
+# Agent-Based Models
+
+
 
 ### Game of life
 In this type of model, we consider autonomous agents following a set of rules. The example which immediately springs to mind, is Conway's *Game of Life*. The rules are simple, we consider each site to have 8 nieghbors. 

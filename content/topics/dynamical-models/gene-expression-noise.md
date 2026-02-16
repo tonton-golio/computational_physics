@@ -1,6 +1,4 @@
-
-# title
-Quantifying noise of gene expression
+# Quantifying Noise of Gene Expression
 
 # Week 1 description
 - Nov 21: How to characterize noise in gene expression

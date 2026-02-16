@@ -1,6 +1,4 @@
-
-# title
-Signal transduction
+# Signal Transduction
 
 # Week 6 description
 - Jan 4: How cell respond to external stimulation?

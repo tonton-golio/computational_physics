@@ -1,3 +1,6 @@
+# Nonlinear Equations and Optimization
+
+
 
 # Header 1
 ## Notation:

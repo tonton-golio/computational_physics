@@ -1,3 +1,6 @@
+# Artificial Neural Networks
+
+
 
 KEY: intro
 To get started with artificial neural networks, we'll work with the MNIST dataset. This dataset contains images (28x28) of handwritten digits, each of which is labeled with the digit it represents.

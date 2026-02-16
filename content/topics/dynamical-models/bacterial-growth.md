@@ -1,6 +1,4 @@
-
-# title
-Bacterial growth physiology
+# Bacterial Growth Physiology
 
 # Week 4 description
 - Dec 12: How bacteria grow?

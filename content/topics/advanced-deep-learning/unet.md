@@ -1,4 +1,4 @@
-# the unet model
+# U-Net Model
 
 KEY: intro
 U-net is a fully convolutional network for (fast) image segmentation. The network takes in an image, and returns a segmentation mask of the same size as the input image.

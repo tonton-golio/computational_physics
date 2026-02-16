@@ -1,3 +1,4 @@
+# Self-Organized Criticality
 
 ## Intro
 Self-organized criticality, is a property of dynamic systems which have a critical point as an attractor. In this type of model, we may set initial values rather arbitrarily, as the system itself, will evolve toward the critical state. At the criticality, the model displays spatial and/or temporal scale-invariance.

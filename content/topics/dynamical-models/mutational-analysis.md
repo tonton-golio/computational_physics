@@ -1,6 +1,4 @@
-
-# title
-Probability for Mutational Analysis
+# Probability for Mutational Analysis
 
 # Week 3 description
 - Dec 5: Fundamentals of mutations and probability for mutational analysis

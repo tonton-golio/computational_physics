@@ -1,3 +1,6 @@
+# Variational Autoencoders
+
+
 
 KEY: intro
 Variation auto encoders are symmetric encoder decoder neural networks. They can be used for data compression, dimensionality reduction, and image generation, intrinsic dimensionality estimation, and probably other things.

@@ -1,3 +1,4 @@
+# Linear Tomography
 
 # intro
 Linear tomography is a mathematical technique used to reconstruct an image from a set of projection data. In this case, we apply this technique to determine a map of density variations under the earth's surface using data from a series of seismographs that record the arrival times of signals from two earthquakes. Denser regions will cause faster wave propagation, resulting in an anomaly in the arrival time.

@@ -1,6 +1,4 @@
-
-# title
-Differential equation in a nutshell
+# Differential Equations in a Nutshell
 
 {{graph:phase-portrait}}
 
