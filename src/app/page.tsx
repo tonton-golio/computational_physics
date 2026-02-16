@@ -1,65 +1,146 @@
-import Image from "next/image";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+
+const featuredTopics = [
+  {
+    title: "Quantum Optics",
+    description: "Wigner functions, phase space dynamics, and quantum state visualization",
+    href: "/topics/quantum-optics",
+    difficulty: "Expert",
+    color: "bg-purple-100 text-purple-800",
+  },
+  {
+    title: "Continuum Mechanics",
+    description: "Rod dynamics, iceberg simulations, and gravity waves",
+    href: "/topics/continuum-mechanics",
+    difficulty: "Expert",
+    color: "bg-blue-100 text-blue-800",
+  },
+  {
+    title: "Inverse Problems",
+    description: "Tikhonov regularization and practical inversion techniques",
+    href: "/topics/inverse-problems",
+    difficulty: "Advanced",
+    color: "bg-green-100 text-green-800",
+  },
+  {
+    title: "Complex Physics",
+    description: "Statistical mechanics, percolation, and fractals",
+    href: "/topics/complex-physics",
+    difficulty: "Intermediate",
+    color: "bg-orange-100 text-orange-800",
+  },
+  {
+    title: "Scientific Computing",
+    description: "Linear equations, optimization, and numerical methods",
+    href: "/topics/scientific-computing",
+    difficulty: "Intermediate",
+    color: "bg-cyan-100 text-cyan-800",
+  },
+  {
+    title: "Online Reinforcement Learning",
+    description: "Multi-armed bandits and regret analysis",
+    href: "/topics/online-reinforcement-learning",
+    difficulty: "Intermediate",
+    color: "bg-pink-100 text-pink-800",
+  },
+  {
+    title: "Advanced Deep Learning",
+    description: "GANs, VAEs, CNNs, and U-Net architectures",
+    href: "/topics/advanced-deep-learning",
+    difficulty: "Advanced",
+    color: "bg-red-100 text-red-800",
+  },
+  {
+    title: "Applied Statistics",
+    description: "Statistical methods and data analysis techniques",
+    href: "/topics/applied-statistics",
+    difficulty: "Beginner",
+    color: "bg-yellow-100 text-yellow-800",
+  },
+];
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      {/* Hero Section */}
+      <header className="mx-auto max-w-7xl px-6 py-24 sm:py-32">
+        <div className="text-center">
+          <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
+            Koala-Brain
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="mt-6 text-lg leading-8 text-gray-600 sm:text-xl">
+            Computational physics education — where precision meets accessibility.
           </p>
+          <p className="mt-4 text-base text-gray-500">
+            Masters-level content with interactive visualizations
+          </p>
+          <div className="mt-10 flex items-center justify-center gap-4">
+            <Button href="/topics" size="lg">
+              Explore Topics
+            </Button>
+            <Button href="/about" variant="outline" size="lg">
+              About
+            </Button>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </header>
+
+      {/* Topics Grid */}
+      <main className="mx-auto max-w-7xl px-6 pb-24">
+        <h2 className="mb-8 text-2xl font-semibold text-gray-900">Topics</h2>
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {featuredTopics.map((topic) => (
+            <Link key={topic.title} href={topic.href}>
+              <Card className="h-full transition-shadow hover:shadow-md cursor-pointer">
+                <CardHeader>
+                  <div className="mb-2">
+                    <span className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${topic.color}`}>
+                      {topic.difficulty}
+                    </span>
+                  </div>
+                  <CardTitle>{topic.title}</CardTitle>
+                  <CardDescription>{topic.description}</CardDescription>
+                </CardHeader>
+              </Card>
+            </Link>
+          ))}
         </div>
       </main>
+
+      {/* Features Section */}
+      <section className="mx-auto max-w-7xl px-6 py-16">
+        <div className="grid gap-8 md:grid-cols-3">
+          <div className="text-center">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary-100">
+              <span className="text-2xl">📐</span>
+            </div>
+            <h3 className="font-semibold text-gray-900">Interactive Math</h3>
+            <p className="mt-2 text-sm text-gray-600">
+              LaTeX rendering with KaTeX for beautiful equations
+            </p>
+          </div>
+          <div className="text-center">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary-100">
+              <span className="text-2xl">📊</span>
+            </div>
+            <h3 className="font-semibold text-gray-900">Rich Visualizations</h3>
+            <p className="mt-2 text-sm text-gray-600">
+              Plotly, D3, and Three.js for physics simulations
+            </p>
+          </div>
+          <div className="text-center">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary-100">
+              <span className="text-2xl">🎯</span>
+            </div>
+            <h3 className="font-semibold text-gray-900">Problem Sets</h3>
+            <p className="mt-2 text-sm text-gray-600">
+              Interactive exercises with instant feedback
+            </p>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
