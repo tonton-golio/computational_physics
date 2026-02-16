@@ -187,6 +187,8 @@ If we roll sufficiently many dice; they will naturally find a mean around 3.5;
 
 The mean of many such extravagent rolls, will often tend towards a gaussian. In fact, *The distribution of numbers samples from a variety of distributions, is Gaussian given that they share variance and mean.*
 
+{{graph:gaussian}}
+
 # Central limit theorem 2
 ###### Combining samples from different distributions
 if we concatenate data from different distributions, the mean will be Gaussian.

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getTopicSlugs, getTopicFile, TOPICS, type TopicSlug } from "@/lib/content";
-import { MarkdownContent } from "@/components/content/MarkdownContent";
+import { ContentRenderer } from "@/components/content/ContentRenderer";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 // Get all topic/slug combinations for static generation
@@ -53,7 +53,7 @@ export default function LessonPage({ params }: { params: { topic: string; slug: 
             <CardTitle className="text-2xl">{lesson.title}</CardTitle>
           </CardHeader>
           <CardContent>
-            <MarkdownContent content={lesson.content} />
+            <ContentRenderer content={lesson.content} />
           </CardContent>
         </Card>
       </div>

@@ -119,6 +119,9 @@ $$
 Here, we introduced $p(t)=\dot{q}(t)$. Again we gonna see why we use symbol $p$.
 #### Finally, let's calculate energy!
 We have electric field and magnetic field so we can calculate energy.
+
+{{graph:harmonic-motion}}
+
 However, as you can see the difficulty is $\int \mathrm{d} V$. 
 How do we process this?
 We introduce new variable cross section $\sigma$.
