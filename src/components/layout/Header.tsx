@@ -10,14 +10,20 @@ export function Header() {
         </Link>
         
         <nav className="flex items-center gap-6">
-          <Link 
-            href="/graph" 
+          <Link
+            href="/graph"
             className="text-sm font-medium text-gray-400 transition-colors hover:text-white"
           >
             Explore
           </Link>
-          <Link 
-            href="/about" 
+          <Link
+            href="/applied-statistics"
+            className="text-sm font-medium text-gray-400 transition-colors hover:text-white"
+          >
+            Statistics
+          </Link>
+          <Link
+            href="/about"
             className="text-sm font-medium text-gray-400 transition-colors hover:text-white"
           >
             About
