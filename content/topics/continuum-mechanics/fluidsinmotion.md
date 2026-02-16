@@ -6,6 +6,9 @@ Deivatoric stress and strain rate plot. (n\<1, n=1 n\>1)
 
 ## __Ideal Flows__
 Ideal flows are incompressible, has no viscocity (internal friction, ie. no resistance to shear stresses).
+
+{{graph:wave-propagation}}
+
 $$
 \sigma = -p I
 $$
