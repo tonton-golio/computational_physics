@@ -342,7 +342,7 @@ function ContentPanel({
         throwOnError: false,
         trust: true,
       });
-    } catch (e) {
+    } catch {
       return `<span class="text-red-400">${latex}</span>`;
     }
   }, []);

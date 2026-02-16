@@ -11,7 +11,7 @@ export function Footer() {
           </div>
           
           <nav className="flex items-center gap-6 text-sm text-gray-600">
-            <Link href="/topics" className="hover:text-gray-900">Topics</Link>
+            <Link href="/graph" className="hover:text-gray-900">Explore</Link>
             <Link href="/about" className="hover:text-gray-900">About</Link>
             <a 
               href="https://github.com/tonton-golio/computational_physics" 

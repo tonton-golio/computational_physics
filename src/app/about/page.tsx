@@ -121,6 +121,9 @@ export default function AboutPage() {
               >
                 github.com/tonton-golio/computational_physics
               </a>
+              <p className="mt-4 text-sm text-gray-500">
+                <a href="/graph" className="text-primary-600 hover:underline">← Back to Explore</a>
+              </p>
             </CardContent>
           </Card>
         </div>
