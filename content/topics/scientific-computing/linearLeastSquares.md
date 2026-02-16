@@ -7,14 +7,14 @@ With given data and a desired function, determine the paramters of the function 
 
 
 ## Least Square Solution
-* **Always Exists:** solution to $Ax=\tilde{b}$ is the least square solution. 
-$\tilde{b}$ is the projection on the image space, and $b^\perp$ 
+* **Always Exists:** solution to $Ax=ilde{b}$ is the least square solution. 
+$ilde{b}$ is the projection on the image space, and $b^\perp$ 
 the projection on the orthogonal component
 * **Unique if Rank(A) = n:** If the rank is less than n, there are 
 infinitely many solutions: you can find one and add the kernel space 
 to it to get them all
 * **Normal equations**: 
-$A^T_ir=0 \Rightarrow A^Tr=0 \implies A^T(b-Ax)=A^Tb-A^TAx=0$. 
+$A^T_ir=0 \Rightarrow A^Tr=0 mplies A^T(b-Ax)=A^Tb-A^TAx=0$. 
 The fact that the residual is orthogonal to the image means that 
 for all the rows of $A$, the dot product with the residual has to be 0.
 * **$A^TA$ is a small square matrix**
@@ -25,7 +25,7 @@ We're almost at our goal, but not there yet. We've found an efficient solution (
 
 ### How do we save our significant digits (hopefully without too much work?)
 
-Note that $Im(A)^\perp = Ker(A^T) \implies \mathbb{C}^m=Im(A)\oplus Ker(A^T)$.
+Note that $Im(A)^\perp = Ker(A^T) mplies \mathbb{C}^m=Im(A)plus Ker(A^T)$.
 
 ### Recap
 We decomposed the target space $\mathbb{C}^m$. [todo: google "Chiyo Prison Scool"] 
@@ -36,7 +36,7 @@ We just need to construct the effect of multiplying our matrix by $Q^T$. In gene
 
 ## Building a least squares algorithm from scratch
 
-Note: Norm $\left(\,||x||\,\right)$ always refers to the Euclidean Norm $\left(\,||x||_2\,\right)$ when we're talking about least squares.
+Note: Norm $eft(\,||x||\,ight)$ always refers to the Euclidean Norm $eft(\,||x||_2\,ight)$ when we're talking about least squares.
 
 **Goal:** Construct the effect of $Q^T$ such that $Q^T A = B$, where $B$ is a matrix with the bottom part being 0 and the upper part being upper triangular.
 
@@ -49,15 +49,15 @@ Note: Norm $\left(\,||x||\,\right)$ always refers to the Euclidean Norm $\left(\
 
 First, we reflect vector (column) $a$ onto basis vector $e_1$. Consider a mirror, which is the angle bisector in between $a$ and $e_1$. We could reflect it onto $e_1$ or even onto the negative side, $-e_1$. Call the two mirrors $v^+$ and $v^-$
 
-The operation needs to transform $\vec{a} \rightarrowtail \alpha \vec{e_1}$, where $\alpha= \pm ||a||$
+The operation needs to transform $\vec{a} ightarrowtail \alpha \vec{e_1}$, where $\alpha= \pm ||a||$
 
 $$Ha = a - 2 Pva$$
-$$ H = I - 2Pv \qquad v=v^+ \text{ or } v^-$$
+$$ H = I - 2Pv \qquad v=v^+ ext{ or } v^-$$
 
 How to find $v^+, v^-$?
 
-Projection operator, $P_v a = \frac{v^T a}{||v||^2} v= \frac{v^T a}{v^T v} v = \left(\frac{vv^T}{v^tv} a\right)$
-$$\implies P_v = \frac{vv^T}{v^Tv}$$
+Projection operator, $P_v a = \frac{v^T a}{||v||^2} v= \frac{v^T a}{v^T v} v = eft(\frac{vv^T}{v^tv} aight)$
+$$mplies P_v = \frac{vv^T}{v^Tv}$$
 
 $$\alpha e_1 = Ha = a-2\frac{v^Ta}{v^Tv}v$$
 $$\underbrace{\frac{2v^Ta}{v^Tv}} v =a-\alpha e_1$$

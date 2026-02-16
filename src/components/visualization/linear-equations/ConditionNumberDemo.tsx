@@ -1,0 +1,155 @@
+import React, { useState, useEffect, useCallback } from 'react';
+import { math } from 'mathjs';
+import Plotly from 'react-plotly.js';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Slider } from '@/components/ui/slider';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+
+type Matrix2 = number[][];
+
+type Props = {};
+
+const ConditionNumberDemo: React.FC<Props> = () => {
+  const [a11, setA11] = useState(1);
+  const [a12, setA12] = useState(0);
+  const [a21, setA21] = useState(0);
+  const [a22, setA22] = useState(1);
+  const [b1, setB1] = useState(1);
+  const [b2, setB2] = useState(0);
+  const [eps, setEps] = useState(0);
+  const [perturbType, setPerturbType] = useState<'b' | 'A'>('b');
+  const [randomPerturb, setRandomPerturb] = useState(false);
+
+  const A = [[a11, a12], [a21, a22]] as Matrix2;
+  const b = math.matrix([b1, b2]);
+
+  const [x, setX] = useState([0, 0]);
+  const [cond, setCond] = useState(1);
+  const [xPert, setXPert] = useState([0, 0]);
+  const [relError, setRelError] = useState(0);
+
+  useEffect(() => {
+    try {
+      const Am = math.matrix(A);
+      const invA = math.inv(Am);
+      const normA = math.norm(Am, 'inf');
+      const normInvA = math.norm(invA, 'inf');
+      setCond(normA * normInvA);
+
+      const xSol = math.multiply(invA, b);
+      setX([xSol.get([0,0]), xSol.get([1,0])]);
+
+      // Perturb
+      let bPert = b;
+      let APert = Am;
+      if (perturbType === 'b') {
+        const db = math.random([2,1], -eps, eps);
+        bPert = math.add(b, db);
+      } else {
+        const dA = math.random([2,2], -eps, eps);
+        APert = math.add(Am, dA);
+      }
+      const xPertSol = math.lusolve(APert, bPert);
+      setXPert([xPertSol.get([0,0]), xPertSol.get([1,0])]);
+
+      const dx = math.subtract(xPertSol, xSol);
+      const relDx = math.divide(math.norm(dx, 'inf'), math.norm(xSol || math.matrix([1,0]), 'inf'));
+      const relDb = eps; // approx
+      setRelError(relDx.get([0,0]) / relDb);
+    } catch (e) {
+      console.error(e);
+    }
+  }, [A, b1, b2, eps, perturbType]);
+
+  const line1 = {
+    x: [-10, 10],
+    y: [(b1 - a11 * -10) / a12 || 0, (b1 - a11 * 10) / a12 || 0],
+    mode: 'lines',
+    name: 'Eq 1',
+    line: { color: 'blue', width: 3 },
+  };
+
+  const line2 = {
+    x: [-10, 10],
+    y: [(b2 - a21 * -10) / a22 || 0, (b2 - a21 * 10) / a22 || 0],
+    mode: 'lines',
+    name: 'Eq 2',
+    line: { color: 'red', width: 3 },
+  };
+
+  const line1p = perturbType === 'b' ? {
+    x: [-10, 10],
+    y: [/* compute perturbed */],
+    mode: 'lines',
+    name: 'Eq 1 pert',
+    line: { color: 'blue', width: 2, dash: 'dash' },
+  } : line1;
+
+  // Simplified plot, add perturb lines similarly
+
+  return (
+    <Card className="flex flex-col h-[600px] w-full">
+      <CardHeader>
+        <CardTitle>Condition Number Demo (2x2)</CardTitle>
+      </CardHeader>
+      <CardContent className="flex-1 flex flex-col gap-4 p-4">
+        <div className="grid grid-cols-3 gap-4 text-sm">
+          <div>
+            <Label>a11</Label>
+            <Slider min={-2} max={2} step={0.1} value={[a11]} onValueChange={([v]) => setA11(v)} />
+            <span>{a11.toFixed(2)}</span>
+          </div>
+          {/* similar for a12, a21, a22, b1, b2 */}
+          <div>
+            <Label>a12</Label>
+            <Slider min={-2} max={2} step={0.1} value={[a12]} onValueChange={([v]) => setA12(v)} />
+            <span>{a12.toFixed(2)}</span>
+          </div>
+          <div>
+            <Label>a21</Label>
+            <Slider min={-2} max={2} step={0.1} value={[a21]} onValueChange={([v]) => setA21(v)} />
+            <span>{a21.toFixed(2)}</span>
+          </div>
+          <div>
+            <Label>a22</Label>
+            <Slider min={-2} max={2} step={0.1} value={[a22]} onValueChange={([v]) => setA22(v)} />
+            <span>{a22.toFixed(2)}</span>
+          </div>
+          <div>
+            <Label>b1</Label>
+            <Slider min={-2} max={2} step={0.1} value={[b1]} onValueChange={([v]) => setB1(v)} />
+            <span>{b1.toFixed(2)}</span>
+          </div>
+          <div>
+            <Label>b2</Label>
+            <Slider min={-2} max={2} step={0.1} value={[b2]} onValueChange={([v]) => setB2(v)} />
+            <span>{b2.toFixed(2)}</span>
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <Button variant={perturbType === 'b' ? 'default' : 'outline'} onClick={() => setPerturbType('b')}>Perturb b</Button>
+          <Button variant={perturbType === 'A' ? 'default' : 'outline'} onClick={() => setPerturbType('A')}>Perturb A</Button>
+        </div>
+        <div>
+          <Label>Eps</Label>
+          <Slider min={0} max={0.2} step={0.01} value={[eps]} onValueChange={([v]) => setEps(v)} />
+          <span>{eps.toFixed(3)}</span>
+        </div>
+        <div className="grid grid-cols-2 gap-4 text-lg font-mono">
+          <div>x: [{x[0].toFixed(2)}, {x[1].toFixed(2)}] | cond ≈ {cond.toFixed(1)}</div>
+          <div>x&#39;: [{xPert[0].toFixed(2)}, {xPert[1].toFixed(2)}] | rel err ≈ {relError.toFixed(1)}</div>
+        </div>
+        <div className="flex-1 min-h-0">
+          <Plotly
+            data={[line1, line2]}
+            layout={{ width: 400, height: 400, title: 'Equation Lines (x,y plane)', xaxis: {title: 'x1'}, yaxis: {title: 'x2'} }}
+            config={{ staticPlot: false, displayModeBar: false }}
+          />
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default ConditionNumberDemo;

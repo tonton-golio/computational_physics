@@ -1,1 +1,167 @@
-'use client';\n\nimport { useRef, useState, useMemo, useEffect } from 'react';\nimport { Canvas, useFrame } from '@react-three/fiber';\nimport { OrbitControls } from '@react-three/drei';\nimport * as THREE from 'three';\n\ntype Matrix2x2 = number[][];\n\nfunction computeEigen2x2(matrix: Matrix2x2): { evals: [number, number]; evecs: [[number, number], [number, number]] } {\n  const a = matrix[0][0], b = matrix[0][1];\n  const c = matrix[1][0], d = matrix[1][1];\n  const disc = Math.sqrt((a - d) ** 2 + 4 * b * c);\n  const lambda1 = (a + d + disc) / 2;\n  const lambda2 = (a + d - disc) / 2;\n  let v1: [number, number], v2: [number, number];\n  if (Math.abs(b) > 1e-10) {\n    v1 = [1, (lambda1 - a) / b];\n    v2 = [1, (lambda2 - a) / b];\n  } else if (Math.abs(c) > 1e-10) {\n    v1 = [(lambda1 - d) / c, 1];\n    v2 = [(lambda2 - d) / c, 1];\n  } else {\n    v1 = [1, 0];\n    v2 = [0, 1];\n  }\n  const norm1 = Math.sqrt(v1[0] ** 2 + v1[1] ** 2);\n  const norm2 = Math.sqrt(v2[0] ** 2 + v2[1] ** 2);\n  v1 = [v1[0] / norm1, v1[1] / norm1];\n  v2 = [v2[0] / norm2, v2[1] / norm2];\n  const scale = 3;\n  v1 = [v1[0] * scale, v1[1] * scale];\n  v2 = [v2[0] * scale, v2[1] * scale];\n  return { evals: [lambda1, lambda2], evecs: [v1, v2] };\n}\n\nfunction computeQuadratic(a: number, b: number, c: number, x: number, y: number): number {\n  return 0.5 * (a * x * x + 2 * b * x * y + c * y * y);\n}\n\nfunction computeGradient(a: number, b: number, c: number, x: number, y: number): [number, number] {\n  return [a * x + b * y, b * x + c * y];\n}\n\nexport function EigenvectorLandscape() {\n  const [a, setA] = useState(3);\n  const [b, setB] = useState(1);\n  const [c, setC] = useState(2);\n  const [resetKey, setResetKey] = useState(0);\n\n  const surfaceRef = useRef<THREE.Mesh>(null!);\n  const ballRef = useRef<THREE.Group>(null!);\n  const velocityRef = useRef([0, 0] as [number, number]);\n\n  const geometry = useMemo(\n    () => new THREE.PlaneGeometry(8, 8, 64, 64).rotateX(-Math.PI / 2),\n    []\n  );\n\n  const { evals, evecs } = useMemo(() => {\n    const res = computeEigen2x2([[a, b], [b, c]]);\n    return res;\n  }, [a, b, c]);\n\n  const updateSurface = useCallback(() => {\n    if (!surfaceRef.current) return;\n    const geo = surfaceRef.current.geometry as THREE.BufferGeometry;\n    const pos = geo.attributes.position as THREE.Float32BufferAttribute;\n    for (let i = 0; i < pos.count; i++) {\n      const x = pos.getX(i);\n      const y = pos.getY(i);\n      const z = computeQuadratic(a, b, c, x, y);\n      pos.setZ(i, z);\n    }\n    pos.needsUpdate = true;\n    geo.computeVertexNormals();\n  }, [a, b, c]);\n\n  useEffect(() => {\n    updateSurface();\n  }, [updateSurface]);\n\n  useEffect(() => {\n    if (ballRef.current) {\n      ballRef.current.position.set(2.5, 1.2, 0);\n      velocityRef.current = [0, 0];\n    }\n  }, [resetKey]);\n\n  useFrame((state, delta) => {\n    if (!ballRef.current) return;\n    const p = ballRef.current.position;\n    const [gx, gy] = computeGradient(a, b, c, p.x, p.y);\n    velocityRef.current[0] -= gx * 5 * delta;\n    velocityRef.current[1] -= gy * 5 * delta;\n    velocityRef.current[0] *= 0.95;\n    velocityRef.current[1] *= 0.95;\n    p.x += velocityRef.current[0] * delta * 2;\n    p.y += velocityRef.current[1] * delta * 2;\n    // bounds\n    p.x = Math.max(-3.5, Math.min(3.5, p.x));\n    p.y = Math.max(-3.5, Math.min(3.5, p.y));\n    p.z = computeQuadratic(a, b, c, p.x, p.y);\n  });\n\n  return (\n    <div className="space-y-6">\n      <div className="flex gap-4 items-center flex-wrap">\n        <span className="text-white">Quadratic Form:</span>\n        <label>\n          a11: <input type="number" step="0.1" value={a} onChange={(e) => setA(parseFloat(e.target.value) || 0)} className="w-20 px-2 py-1 bg-[#151525] rounded text-white text-center" />\n        </label>\n        <label>\n          a12=a21: <input type="number" step="0.1" value={b} onChange={(e) => setB(parseFloat(e.target.value) || 0)} className="w-20 px-2 py-1 bg-[#151525] rounded text-white text-center" />\n        </label>\n        <label>\n          a22: <input type="number" step="0.1" value={c} onChange={(e) => setC(parseFloat(e.target.value) || 0)} className="w-20 px-2 py-1 bg-[#151525] rounded text-white text-center" />\n        </label>\n        <span className="text-green-400">λ1={evals[0].toFixed(2)}, λ2={evals[1].toFixed(2)}</span>\n        <button onClick={handleReset} className="px-4 py-1 bg-blue-600 rounded hover:bg-blue-700 ml-auto">\n          Reset Ball\n        </button>\n        <button\n          onClick={() => {\n            setA(3);\n            setB(1);\n            setC(2);\n          }}\n          className="px-4 py-1 bg-gray-600 rounded hover:bg-gray-700"\n        >\n          Reset Matrix\n        </button>\n      </div>\n      <div className="w-full h-96 bg-black rounded-lg">\n        <Canvas camera={{ position: [5, 5, 5] }}>\n          <ambientLight intensity={0.4} />\n          <directionalLight position={[10, 10, 5]} intensity={1} />\n          <mesh ref={surfaceRef} geometry={geometry}>\n            <meshPhongMaterial color="#ffaa00" shininess={100} />\n          </mesh>\n          <group ref={ballRef}>\n            <mesh>\n              <sphereGeometry args={[0.15]} />\n              <meshPhongMaterial color="#00aaff" shininess={100} />\n            </mesh>\n          </group>\n          {/* Eigenvectors */}\n          {evecs.map((vec, i) => (\n            <arrowHelper\n              key={i}\n              args={[\n                new THREE.Vector3(vec[0], vec[1], 0).normalize(),\n                new THREE.Vector3(0, 0, 0),\n                2,\n                i === 0 ? 0x00ff00 : 0xff0000,\n              ]}\n            />\n          ))}\n          <OrbitControls />\n        </Canvas>\n      </div>\n      <p className="text-sm text-gray-400">\n        The landscape is z = ½ xᵀ A x. Ball rolls downhill following gradient descent. Eigenvectors (arrows) are directions of no curvature change (steepest ascent/descent paths).\n      </p>\n    </div>\n  );\n}
+'use client';
+
+import { useRef, useState, useMemo, useEffect } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { OrbitControls, ArrowHelper } from '@react-three/drei';
+import * as THREE from 'three';
+
+type Matrix2x2 = number[][];
+
+function computeEigen2x2(matrix: Matrix2x2): { evals: [number, number]; evecs: [[number, number], [number, number]] } {
+  const a = matrix[0][0], b = matrix[0][1];
+  const c = matrix[1][0], d = matrix[1][1];
+  const disc = Math.sqrt((a - d) ** 2 + 4 * b * c);
+  const lambda1 = (a + d + disc) / 2;
+  const lambda2 = (a + d - disc) / 2;
+  let v1: [number, number], v2: [number, number];
+  if (Math.abs(b) > 1e-10) {
+    v1 = [1, (lambda1 - a) / b];
+    v2 = [1, (lambda2 - a) / b];
+  } else if (Math.abs(c) > 1e-10) {
+    v1 = [(lambda1 - d) / c, 1];
+    v2 = [(lambda2 - d) / c, 1];
+  } else {
+    v1 = [1, 0];
+    v2 = [0, 1];
+  }
+  const norm1 = Math.sqrt(v1[0] ** 2 + v1[1] ** 2);
+  const norm2 = Math.sqrt(v2[0] ** 2 + v2[1] ** 2);
+  v1 = [v1[0] / norm1, v1[1] / norm1];
+  v2 = [v2[0] / norm2, v2[1] / norm2];
+  const scale = 3;
+  v1 = [v1[0] * scale, v1[1] * scale];
+  v2 = [v2[0] * scale, v2[1] * scale];
+  return { evals: [lambda1, lambda2], evecs: [v1, v2] };
+}
+
+function computeQuadratic(a: number, b: number, c: number, x: number, y: number): number {
+  return 0.5 * (a * x * x + 2 * b * x * y + c * y * y);
+}
+
+function computeGradient(a: number, b: number, c: number, x: number, y: number): [number, number] {
+  return [a * x + b * y, b * x + c * y];
+}
+
+export function EigenvectorLandscape() {
+  const [a, setA] = useState(3);
+  const [b, setB] = useState(1);
+  const [c, setC] = useState(2);
+  const [resetKey, setResetKey] = useState(0);
+
+  const surfaceRef = useRef<THREE.Mesh>(null!);
+  const ballRef = useRef<THREE.Group>(null!);
+  const velocityRef = useRef([0, 0] as [number, number]);
+
+  const geometry = useMemo(
+    () => new THREE.PlaneGeometry(8, 8, 64, 64).rotateX(-Math.PI / 2),
+    []
+  );
+
+  const { evals, evecs } = useMemo(() => {
+    const res = computeEigen2x2([[a, b], [b, c]]);
+    return res;
+  }, [a, b, c]);
+
+  const updateSurface = useCallback(() => {
+    if (!surfaceRef.current) return;
+    const geo = surfaceRef.current.geometry as THREE.BufferGeometry;
+    const pos = geo.attributes.position as THREE.Float32BufferAttribute;
+    for (let i = 0; i < pos.count; i++) {
+      const x = pos.getX(i);
+      const y = pos.getY(i);
+      const z = computeQuadratic(a, b, c, x, y);
+      pos.setZ(i, z);
+    }
+    pos.needsUpdate = true;
+    geo.computeVertexNormals();
+  }, [a, b, c]);
+
+  useEffect(() => {
+    updateSurface();
+  }, [updateSurface]);
+
+  useEffect(() => {
+    if (ballRef.current) {
+      ballRef.current.position.set(2.5, 1.2, 0);
+      velocityRef.current = [0, 0];
+    }
+  }, [resetKey]);
+
+  useFrame((state, delta) => {
+    if (!ballRef.current) return;
+    const p = ballRef.current.position;
+    const [gx, gy] = computeGradient(a, b, c, p.x, p.y);
+    velocityRef.current[0] -= gx * 5 * delta;
+    velocityRef.current[1] -= gy * 5 * delta;
+    velocityRef.current[0] *= 0.95;
+    velocityRef.current[1] *= 0.95;
+    p.x += velocityRef.current[0] * delta * 2;
+    p.y += velocityRef.current[1] * delta * 2;
+    // bounds
+    p.x = Math.max(-3.5, Math.min(3.5, p.x));
+    p.y = Math.max(-3.5, Math.min(3.5, p.y));
+    p.z = computeQuadratic(a, b, c, p.x, p.y);
+  });
+
+  return (
+    <div className="space-y-6">
+      <div className="flex gap-4 items-center flex-wrap">
+        <span className="text-white">Quadratic Form:</span>
+        <label>
+          a11: <input type="number" step="0.1" value={a} onChange={(e) => setA(parseFloat(e.target.value) || 0)} className="w-20 px-2 py-1 bg-[#151525] rounded text-white text-center" />
+        </label>
+        <label>
+          a12=a21: <input type="number" step="0.1" value={b} onChange={(e) => setB(parseFloat(e.target.value) || 0)} className="w-20 px-2 py-1 bg-[#151525] rounded text-white text-center" />
+        </label>
+        <label>
+          a22: <input type="number" step="0.1" value={c} onChange={(e) => setC(parseFloat(e.target.value) || 0)} className="w-20 px-2 py-1 bg-[#151525] rounded text-white text-center" />
+        </label>
+        <span className="text-green-400">λ1={evals[0].toFixed(2)}, λ2={evals[1].toFixed(2)}</span>
+        <button onClick={handleReset} className="px-4 py-1 bg-blue-600 rounded hover:bg-blue-700 ml-auto">
+          Reset Ball
+        </button>
+        <button
+          onClick={() => {
+            setA(3);
+            setB(1);
+            setC(2);
+          }}
+          className="px-4 py-1 bg-gray-600 rounded hover:bg-gray-700"
+        >
+          Reset Matrix
+        </button>
+      </div>
+      <div className="w-full h-96 bg-black rounded-lg">
+        <Canvas camera={{ position: [5, 5, 5] }}>
+          <ambientLight intensity={0.4} />
+          <directionalLight position={[10, 10, 5]} intensity={1} />
+          <mesh ref={surfaceRef} geometry={geometry}>
+            <meshPhongMaterial color="#ffaa00" shininess={100} />
+          </mesh>
+          <group ref={ballRef}>
+            <mesh>
+              <sphereGeometry args={[0.15]} />
+              <meshPhongMaterial color="#00aaff" shininess={100} />
+            </mesh>
+          </group>
+          {/* Eigenvectors */}
+          {evecs.map((vec, i) => (
+            <arrowHelper
+              key={i}
+              args={[
+                        new THREE.Vector3(vec[0], vec[1], 0).normalize(),
+                new THREE.Vector3(0, 0, 0),
+                2,
+                i === 0 ? "#00ff00" : "#ff0000",
+              ]}
+            />
+          ))}
+          <OrbitControls />
+        </Canvas>
+      </div>
+      <p className="text-sm text-gray-400">
+        The landscape is z = ½ xᵀ A x. Ball rolls downhill following gradient descent. Eigenvectors (arrows) are directions of no curvature change (steepest ascent/descent paths).
+      </p>
+    </div>
+  );
+}

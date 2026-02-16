@@ -1,1 +1,11 @@
-import { GershgorinCircles } from '@/components/visualization/EigenvalueSimulations';\n\nexport default function GershgorinPage() {\n  return (\n    <main className="container mx-auto p-8 max-w-4xl">\n      <h1 className="text-4xl font-bold mb-8 text-white">Gershgorin Circles</h1>\n      <p className="text-lg text-gray-300 mb-8">Each disk contains at least one eigenvalue. Adjust the matrix to see bounds change.</p>\n      <GershgorinCircles />\n    </main>\n  );\n}
+import { GershgorinCircles } from '@/components/visualization/EigenvalueSimulations';
+
+export default function GershgorinPage() {
+  return (
+    <main className="container mx-auto p-8 max-w-4xl">
+      <h1 className="text-4xl font-bold mb-8 text-white">Gershgorin Circles</h1>
+      <p className="text-lg text-gray-300 mb-8">Each disk contains at least one eigenvalue. Adjust the matrix to see bounds change.</p>
+      <GershgorinCircles />
+    </main>
+  );
+}

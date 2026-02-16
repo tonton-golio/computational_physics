@@ -3,7 +3,7 @@
 
 
 ## Header 1
-Linear systems are special: It's something we can solve really well, and it covers an enourmous amount of problems. Even when you've got a non-linear system, you can isolate the linearity and solve that, and treat the non-linearity in another way.
+Linear systems are special: It's something we can solve really well, and it covers an enormous amount of problems. Even when you've got a non-linear system, you can isolate the linearity and solve that, and treat the non-linearity in another way.
 
 ## Header 2
 #### Going from abstract linear systems to matrices
@@ -11,14 +11,14 @@ Linear systems are special: It's something we can solve really well, and it cove
 A **linear function** is anything that behaves in the way we call linear. They exist in vector spaces: A mapping $F: X \rightarrow Y$ (abstract, eg: wave functions) is linear if $F(ax + bx') = aF(x) + bF(x')$. 
 
 Linear functions and matrices are the same thing!
-* Let's say you have a basis for $X$, eg: $\{e_{1}, e_2, \dots e_n\}$, then any vector $x \in X$ can be writte uniquely as $x = a_1e_1 + \dots + a_n e_n$
-* Let $\{f_{1}, f_2, \dots f_n\}$ form a basis for $Y$, any vector $y \in Y$ can be writtten as $y = b_1f_1 + \dots + b_m f_m$
+* Let's say you have a basis for $X$, eg: $\{e_{1}, e_2, \dots e_n\}$, then any vector $x \in X$ can be written uniquely as $x = a_1e_1 + \dots + a_n e_n$
+* Let $\{f_{1}, f_2, \dots f_n\}$ form a basis for $Y$, any vector $y \in Y$ can be written as $y = b_1f_1 + \dots + b_m f_m$
 * $$F(e_j)=b_{1j}f_1 + \dots + b_{mj}f_m$$
 	We can write it because of linearity, but you'll notice that it's just matrix multiplication.
 * $$ F(x) = F(a_1e_1 + \dots + a_ne_n) = a_1F(e_1) + \dots + a_nF(e_n) $$
 	$$ = \sum_{j=1}^n a_j \sum_{i=i}^m b_{ij} f_i $$ 
 	$$ = \sum_{i=i}^m f_i \left(\sum_{j=1}^n a_j b_{ij} \right) $$ 
-	The thing on the right is nothing more than a matrix product. Think of the total thing as:  Representation of $F$ in $e,f$ basis $*$ (Coorrdinates of $x$ in $e$ basis) = Coordinates of $y$ in $f$ basis
+	The thing on the right is nothing more than a matrix product. Think of the total thing as:  Representation of $F$ in $e,f$ basis $*$ (Coordinates of $x$ in $e$ basis) = Coordinates of $y$ in $f$ basis
 
 We've shown how an abstract linear problem can be represented with matrices. 
 
@@ -54,7 +54,7 @@ Three cases when $n=m$
 * $Rank(\underline{F}) = n$
 * $det(\underline{F}) \neq 0$
 * $\underline{F}\,\underline{x} = 0 \leftrightarrow \underline{x}=0$ (trivial kernel)
-* $\underline{F}$ is invertible (Deterministiclaly find unique solution)
+* $\underline{F}$ is invertible (Deterministically find unique solution)
 * **$F$ is singular**:
 * $Im(F) \not\subseteq Y$
 * $Span(\underline{F} \not\subseteq \mathbb{C}^n)$
@@ -64,13 +64,23 @@ Three cases when $n=m$
 
 Singular $F$ splits into two sub-cases:
 1. $y \not\in Im(F) \implies$ there are no solutions
-2. $y \in Im(F) \implies$ infinitely many solutions (becaues we can add something from the kernel and get another solution).
+2. $y \in Im(F) \implies$ infinitely many solutions (because we can add something from the kernel and get another solution).
 
 That was the mathematical part: Now we're going to look at a case where we have exact solutions: when are the solutions stable, and when do small perturbations cause it to blow up?
+
+## Condition Number Interactive Demo
+
+<ConditionNumberDemo />
 
 ## Sensitivity of a Linear System of Equations
 
 The more orthogonal the matrix is, the lower the condition number. It's ~1 for orthogonal, but as they get closer to one another, i.e, they get closer to being linearly dependent on one another, condition number increases. The webpage has a calculation of the exact condition number.
+
+## Interactive Gaussian Elimination and LU Decomposition
+
+<GaussianElimDemo />
+
+<LUDecompDemo />
 
 ## How to build the algorithms from scratch
 
@@ -188,4 +198,4 @@ with Pythagoras (only valid in L2 norm),
 $$ ||\tilde{b}=Ax||^2 + || b^\perp ||^2$$
 The first is in the image, the second is in the perpendicular subspace. We can somehow set the first term to be zero, and the second term is somehow a constant.
 
-**So:** residueal of least square is perpendicular to Im(A)
+**So:** residual of least square is perpendicular to Im(A)

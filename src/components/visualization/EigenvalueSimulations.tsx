@@ -23,7 +23,66 @@ const BASE_LAYOUT: Partial<Plotly.Layout> = {
   yaxis: { gridcolor: COLORS.grid, zerolinecolor: COLORS.zero },
 };
 
-// Utils for eigenvalue computations\ntype PlotData = Plotly.Data[];\ntype PlotLayout = Partial<Plotly.Layout>;\n\ntype Matrix2x2 = number[][];\n\nfunction computeEigen2x2(matrix: Matrix2x2): { evals: [number, number]; evecs: [[number, number], [number, number]] } {\n  const a = matrix[0][0], b = matrix[0][1];\n  const c = matrix[1][0], d = matrix[1][1];\n  \n  const disc = Math.sqrt((a - d) ** 2 + 4 * b * c);\n  const lambda1 = (a + d + disc) / 2;\n  const lambda2 = (a + d - disc) / 2;\n  \n  let v1: [number, number], v2: [number, number];\n  if (Math.abs(b) > 1e-10) {\n    v1 = [1, (lambda1 - a) / b];\n    v2 = [1, (lambda2 - a) / b];\n  } else if (Math.abs(c) > 1e-10) {\n    v1 = [(lambda1 - d) / c, 1];\n    v2 = [(lambda2 - d) / c, 1];\n  } else {\n    v1 = [1, 0];\n    v2 = [0, 1];\n  }\n  \n  const norm1 = Math.sqrt(v1[0] ** 2 + v1[1] ** 2);\n  const norm2 = Math.sqrt(v2[0] ** 2 + v2[1] ** 2);\n  v1 = [v1[0] / norm1, v1[1] / norm1];\n  v2 = [v2[0] / norm2, v2[1] / norm2];\n  \n  const scale = 2;\n  v1 = [v1[0] * scale, v1[1] * scale];\n  v2 = [v2[0] * scale, v2[1] * scale];\n  \n  return { evals: [lambda1, lambda2], evecs: [v1, v2] };\n}\n\nfunction computeUnitEllipse(matrix: Matrix2x2): { circleX: number[]; circleY: number[]; ellipseX: number[]; ellipseY: number[] } {\n  const nPoints = 50;\n  const circleX: number[] = [];\n  const circleY: number[] = [];\n  const ellipseX: number[] = [];\n  const ellipseY: number[] = [];\n  \n  for (let i = 0; i <= nPoints; i++) {\n    const theta = (2 * Math.PI * i) / nPoints;\n    const x = Math.cos(theta);\n    const y = Math.sin(theta);\n    circleX.push(x);\n    circleY.push(y);\n    ellipseX.push(matrix[0][0] * x + matrix[0][1] * y);\n    ellipseY.push(matrix[1][0] * x + matrix[1][1] * y);\n  }\n  \n  return { circleX, circleY, ellipseX, ellipseY };\n}\n\n// ============ EIGENVALUE VISUALIZATIONS ============\n
+// Utils for eigenvalue computations
+type PlotData = Plotly.Data[];
+type PlotLayout = Partial<Plotly.Layout>;
+
+type Matrix2x2 = number[][];
+
+function computeEigen2x2(matrix: Matrix2x2): { evals: [number, number]; evecs: [[number, number], [number, number]] } {
+  const a = matrix[0][0], b = matrix[0][1];
+  const c = matrix[1][0], d = matrix[1][1];
+  
+  const disc = Math.sqrt((a - d) ** 2 + 4 * b * c);
+  const lambda1 = (a + d + disc) / 2;
+  const lambda2 = (a + d - disc) / 2;
+  
+  let v1: [number, number], v2: [number, number];
+  if (Math.abs(b) > 1e-10) {
+    v1 = [1, (lambda1 - a) / b];
+    v2 = [1, (lambda2 - a) / b];
+  } else if (Math.abs(c) > 1e-10) {
+    v1 = [(lambda1 - d) / c, 1];
+    v2 = [(lambda2 - d) / c, 1];
+  } else {
+    v1 = [1, 0];
+    v2 = [0, 1];
+  }
+  
+  const norm1 = Math.sqrt(v1[0] ** 2 + v1[1] ** 2);
+  const norm2 = Math.sqrt(v2[0] ** 2 + v2[1] ** 2);
+  v1 = [v1[0] / norm1, v1[1] / norm1];
+  v2 = [v2[0] / norm2, v2[1] / norm2];
+  
+  const scale = 2;
+  v1 = [v1[0] * scale, v1[1] * scale];
+  v2 = [v2[0] * scale, v2[1] * scale];
+  
+  return { evals: [lambda1, lambda2], evecs: [v1, v2] };
+}
+
+function computeUnitEllipse(matrix: Matrix2x2): { circleX: number[]; circleY: number[]; ellipseX: number[]; ellipseY: number[] } {
+  const nPoints = 50;
+  const circleX: number[] = [];
+  const circleY: number[] = [];
+  const ellipseX: number[] = [];
+  const ellipseY: number[] = [];
+  
+  for (let i = 0; i <= nPoints; i++) {
+    const theta = (2 * Math.PI * i) / nPoints;
+    const x = Math.cos(theta);
+    const y = Math.sin(theta);
+    circleX.push(x);
+    circleY.push(y);
+    ellipseX.push(matrix[0][0] * x + matrix[0][1] * y);
+    ellipseY.push(matrix[1][0] * x + matrix[1][1] * y);
+  }
+  
+  return { circleX, circleY, ellipseX, ellipseY };
+}
+
+// ============ EIGENVALUE VISUALIZATIONS ============
+
 
 interface SimulationProps {
   id?: string;

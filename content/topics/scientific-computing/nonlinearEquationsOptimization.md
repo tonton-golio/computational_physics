@@ -97,7 +97,7 @@ If $\lim_{k\to 0} \frac{\vert e_{k+1}\vert}{\vert e_k\vert^r} = c$, and $0 \leq 
 
 A systeamtic approach that works (also in n-dimensions). It uses the fixed point theorem: here we'll use _Banache's theorem_. It doesn't just hold in a vector space, but even in a metric space.
 
-Let $S$ be  closed set $S \sub \mathbb{R}^n$ (todo change to proper subset)
+Let $S$ be  closed set $S \subseteq \mathbb{R}^n$
 and $g:\mathbb{R}^n \to \mathbb{R}^n$, if there exists $0\leq c \lt 1$ such that
 $$\Vert g(x) - g(x') \Vert \leq c\Vert x - x'\Vert$$
 for $x, x' \in S$, the we call $g$ a _contraction_ on $S$ and we are guaranteed a solution to $g(x)=x$ on $S$, which is
@@ -223,7 +223,61 @@ $$ 1 - \frac{f'(x)f'(x) + f(x)f''(x)}{f'(x)^2} $$
 $$  = - \frac{f(x)f''(x)}{f'(x)^2}$$
 $$ \to 0 \quad \text{when}\quad f(x)=0$$
 
-## Quasi - Newton/Secant method
+## Quasi-Newton/Secant Methods
+
+These are methods that try to replicate the wonderful properties of Newton's method, but without having to evaluate the derivative. In higher dimensions, you don't want to be evaluating the derivative cause it's a massive matrix.
+
+**Method**: Use secant (finite difference) instead of tangent (derivative).
+
+$$f'(x) \\approx \\frac{f(x_k) - f(x_{k-1})}{x_k - x_{k-1}}$$
+In 1D, we have the following equation for $\\Delta x$
+$$\\Delta x_{k+1} = -\\frac{f(x_k)}{\\hat{f}'(x_k)}$$
+where
+$$\\hat{f}'(x_k) = \\frac{f(x_k) - f(x_{k-1})}{x_k - x_{k-1}}$$
+For higher dimensions, we want to write it like
+$$ \\hat{f}'(x_k) \\Delta x_{k+1} = - f(x_k)$$
+Cause we'll solve a linear system instead
+
+## Interactive Visualizations
+
+### Newton's Method in 1D: Cobweb Diagram
+
+Explore Newton's method interactively. Select functions with known roots, adjust initial guess `x₀`, and step through iterations. The cobweb diagram visualizes the fixed-point iteration `x = g(x)` where `g(x) = x - f(x)/f'(x)`.
+
+```tsx
+import Newton1D from '@/components/visualization/nonlinear-equations/Newton1D';
+&lt;Newton1D /&gt;
+```
+
+<Newton1D />
+
+Observe quadratic convergence near the root and potential overshoots or divergences.
+
+### 2D Nonlinear Optimization: Contour Descent and Basins of Attraction
+
+The Himmelblau function has four minima:
+- ≈ (3.0, 2.0)
+- ≈ (-2.8, 3.1)
+- ≈ (-3.8, -3.3)
+- ≈ (3.6, -1.8)
+
+Compare Gradient Descent (GD) and Newton's method. Toggle basins to see attraction regions from initial points grid. Newton's method has smaller, more precise basins due to curvature info.
+
+```tsx
+import Himmelblau2D from '@/components/visualization/nonlinear-equations/Himmelblau2D';
+&lt;Himmelblau2D /&gt;
+```
+
+<Himmelblau2D />
+
+**Research Insights & Gaps Filled:**
+- **Basin Attractors**: Visualizes fractal-like boundaries in practice, sensitive to method.
+- **Contour Descent**: Paths show GD zigzagging (Rosenbrock-like valley), Newton direct.
+- **Interactivity**: Sliders for params/init, animation reveals dynamics.
+- **Gaps**: Few web interactives compare Newton/secant(quasi) in 2D basins; this adds Newton vs GD proxy for secant ideas.
+
+For secant methods like Broyden/BFGS, paths approximate Newton without exact derivs/Hessians.
+
 
 These are methods that try to replicate the wonderful properties of Newton's method, but without having to evaluate the derivative. In higher dimensions, you don't want to be evaluating the derivative cause it's a massive matrix.
 
