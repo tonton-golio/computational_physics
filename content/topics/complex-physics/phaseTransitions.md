@@ -1,6 +1,10 @@
 # Phase Transitions
 
+## Ising Model Simulation
 
+The Ising model demonstrates phase transitions in magnetic systems. Watch how the system orders below the critical temperature.
+
+[[simulation ising-model]]
 
 ## Mean-field Hamiltonian
 By approximating the energy acting on a spin in the 1D Ising model, not as the sum of nearest neighbors but instead the mean of the chain, we may simplify interesting terms. We obtain the mean-field Hamiltonian, 

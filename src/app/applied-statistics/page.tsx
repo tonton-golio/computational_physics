@@ -1,363 +1,189 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import * as math from 'mathjs';
-import Plotly from 'react-plotly.js';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React from 'react';
+import { MarkdownContent } from '@/components/content/MarkdownContent';
 
-function LinearRegressionDemo() {
-  const [noise, setNoise] = useState(1);
-  const [sampleSize, setSampleSize] = useState(20);
-  const [data, setData] = useState<{x: number[], y: number[], yHat: number[], residuals: number[], ciUpper: number[], ciLower: number[]}>({
-    x: [],
-    y: [],
-    yHat: [],
-    residuals: [],
-    ciUpper: [],
-    ciLower: []
-  });
+const content = `# Applied Statistics
 
-  useEffect(() => {
-    const beta0 = 2;
-    const beta1 = 1.5;
-    const x = Array.from({length: sampleSize}, () => math.random(0, 10));
-    const y = x.map(xi => beta0 + beta1 * xi + (Math.random() - 0.5) * noise * 2);
-    const meanX = math.number(math.mean(x));
-    const meanY = math.number(math.mean(y));
-    const covXY = math.number(math.mean(x.map((xi, i) => (xi - meanX) * (y[i] - meanY))));
-    const varX = math.number(math.variance(x));
-    const b1 = (covXY as number) / (varX as number);
-    const b0 = meanY - b1 * meanX;
-    const yHat = x.map(xi => b0 + b1 * xi);
-    const residuals = y.map((yi, i) => yi - yHat[i]);
-    const ssRes = math.number(math.sum(residuals.map(e => e * e)));
-    const sigmaHat = Math.sqrt(ssRes / (sampleSize - 2));
-    const sumSqX = math.number(math.sum(x.map(xi => (xi - meanX) ** 2)));
-    const t = 2; // approx for large n
-    const ciUpper = x.map((xi, i) => {
-      const se = sigmaHat * Math.sqrt(1 / sampleSize + (xi - meanX) ** 2 / sumSqX);
-      return yHat[i] + t * se;
-    });
-    const ciLower = x.map((xi, i) => {
-      const se = sigmaHat * Math.sqrt(1 / sampleSize + (xi - meanX) ** 2 / sumSqX);
-      return yHat[i] - t * se;
-    });
+## Introduction, General Concepts, ChiSquare Method
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setData({ x, y, yHat, residuals, ciUpper, ciLower });
-  }, [noise, sampleSize]);
+* Nov 21: Introduction to course and overview of curriculum. Mean and Standard Deviation. Correlations. Significant digits. Central limit theorem. 
+* Nov 22: Error propagation (which is a science!). Estimate g measurement uncertainties.
+* Nov 25: ChiSquare method, evaluation, and test. Formation of Project groups.
 
-  const residualTraces = data.x.map((xi, i) => ({
-    x: [xi, xi],
-    y: [data.y[i], data.yHat[i]],
-    type: 'scatter' as const,
-    mode: 'lines' as const,
-    line: { color: 'red', width: 1 },
-    showlegend: i === 0,
-    name: 'Residuals'
-  }));
+### Mean
+Mean is a metric telling us about bulk magnitude-tendency of data.
 
-  const plotData = [
-    {
-      x: data.x,
-      y: data.y,
-      type: 'scatter' as const,
-      mode: 'markers' as const,
-      name: 'Data Points',
-      marker: { color: 'blue' }
-    },
-    {
-      x: data.x,
-      y: data.yHat,
-      type: 'scatter' as const,
-      mode: 'lines' as const,
-      name: 'Fitted Line',
-      line: { color: 'green' }
-    },
-    {
-      x: data.x,
-      y: data.ciUpper,
-      type: 'scatter' as const,
-      mode: 'lines' as const,
-      line: { color: 'gray' },
-      showlegend: false
-    },
-    {
-      x: data.x,
-      y: data.ciLower,
-      type: 'scatter' as const,
-      mode: 'lines' as const,
-      fill: 'tonexty',
-      fillcolor: 'rgba(128,128,128,0.2)',
-      line: { color: 'gray' },
-      name: '95% CI'
-    },
-    ...residualTraces
-  ];
+#### Geometric mean
+The root of the product;
+$$
+     \bar{x}_\text{geo} = \left( \prod_i^n x_i\right)^{1/n}
+     =
+     \exp\left(\frac{1}{n}\sum_{i}^n\ln x_i \right)
+$$
+*is equivalent to the arithmetic mean in logscale*
 
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Linear Regression Demo</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="mb-4">
-          <p className="text-sm text-gray-600">
-            This demo generates random data from a linear model y = 2 + 1.5x + ε, where ε ~ N(0, σ²).
-            Adjust noise (σ) and sample size to see how they affect the fit, residuals, and confidence intervals.
-          </p>
-        </div>
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <div>
-            <label>Data Noise (σ): {noise.toFixed(1)}</label>
-            <input
-              type="range"
-              min={0.1}
-              max={5}
-              step={0.1}
-              value={noise}
-              onChange={(e) => setNoise(parseFloat(e.target.value))}
-              className="w-full"
-            />
-          </div>
-          <div>
-            <label>Sample Size: {sampleSize}</label>
-            <input
-              type="range"
-              min={10}
-              max={100}
-              step={5}
-              value={sampleSize}
-              onChange={(e) => setSampleSize(parseInt(e.target.value))}
-              className="w-full"
-            />
-          </div>
-        </div>
-        <Plotly
-          data={plotData}
-          layout={{
-            title: { text: 'Linear Regression: Data, Fit, Residuals, and CI' },
-            xaxis: { title: { text: 'x' } },
-            yaxis: { title: { text: 'y' } },
-            height: 500
-          }}
-          config={{ displayModeBar: false }}
-        />
-      </CardContent>
-    </Card>
-  );
-}
+#### Arithmetic mean
+The equal-weight center,
+$$
+     \hat{\mu} = \bar{x} = \left< x \right> = \frac{1}{N}\sum_i^N x_i.
+$$
+
+#### Median
+The counting center of the data
+
+#### Mode
+The most typical data point
+
+### STD
+
+Standard deviation is a measure of how much datapoint deviates from the dataset mean, \`np.std(x)\`.
+
+$$
+     \hat{\sigma} = \sqrt{\frac{1}{N}\sum_i^N ( \left< x \right> -x_i)^2}
+$$
+
+In estimating this, we assume that we know the real mean. But in reality we dont really know this so we use:
+
+$$
+     \hat{\sigma} \approx \tilde{\sigma} = \sqrt{
+     \frac{1}{N-1}\sum_i(x_i-\bar{x})^2
+     }
+$$
+we subtract 1, because something something degrees of freedom...
+
+### Normal Distribution
+
+The normal (Gaussian) distribution is fundamental in statistics.
+
+[[simulation applied-stats-sim-2]]
+
+### Weighted mean
+
+How to average data which has different uncertainties and what is the uncertainty on the average?
+
+$$
+    \begin{align*}
+        \hat{\mu} = \frac{\sum x_i / \sigma_i^2}{\sum 1 / \sigma_i^2}
+        , &&
+        \hat{\sigma_\mu} = \sqrt{\frac{1}{\sum 1/\sigma_i^2}}
+    \end{align*}
+$$
+Uncertainty descreases with the squares of the number of sampels;
+$$
+    \hat{\sigma_\mu} = \hat{\mu}/\sqrt{N}.
+$$
+
+### Correlation
+Correlation speaks to whether a feature varies in concordance with another.
+
+Normalizing by the widths gives the Pearson's (linear) correlation coefficient:
+
+$$
+\begin{align*}
+     \rho_{xy} = \frac{V_{xy}}{\sigma_x\sigma_y} , && \text{i.e., } -1 < \rho_{xy} < 1 
+\end{align*}
+$$
+
+Do bare in mind that we may get zero, but this just tells us that the correlation is not linear, so remember to plot 😉
+
+### Linear Regression
+
+Linear regression is a statistical method for modeling the relationship between a dependent variable and one or more independent variables.
+
+The simple linear regression model is:
+
+$$
+y = \beta_0 + \beta_1 x + \epsilon
+$$
+
+Where $\beta_0$ is the intercept, $\beta_1$ is the slope, and $\epsilon$ is the error term.
+
+[[simulation applied-stats-sim-1]]
+
+### Central limit theorem intro
+*The law of large numbers*
+
+The central limit theorem answers the question: *why do statistics in the limit of large N tend toward a Gaussian?* 
+
+If we roll sufficiently many dice; they will naturally find a mean around 3.5;
+
+### Central limit theorem
+
+The mean of many such extravagent rolls, will often tend towards a gaussian. In fact, *The distribution of numbers samples from a variety of distributions, is Gaussian given that they share variance and mean.*
+
+[[simulation applied-stats-sim-3]]
+
+### Error propagation
+If we have a function $y(x_i)$ and we know the uncertainty on $\sigma(x_i)$, how do we find $\sigma(y(x_i))$?. Well obviously it depends on the gradient of $y$ with respect to $x$.
+
+### ChiSquare method, evaluation, and test
+
+Your typical least squares algorithm does **not** include uncertainties, the chi-square does.
+
+$$
+     \chi^2(\theta) = \sum_i^N \frac{(y_i - f(x_i,\theta))^2}{\sigma_i^2}
+$$
+
+## Probability Density Functions
+
+### Binomial
+N trials, p chance of succes, how many successes should you expect
+
+### Poisson
+if $N\\rightarrow \\infty$ and $p\\rightarrow 0$, but $Np\\rightarrow\\lambda$ i.e., some finite number. Then a binomioal approaches a Poisson.
+
+### Gaussian
+The normal normal distribution.
+
+## Hypothesis Testing and Limits
+
+### Hypothesis testing
+*We can either one- or two-tailed test.*
+
+#### Students t test
+t-tests are more relaxed as they assume an exact uncertainty level.
+
+A Student's t-test is a statistical test that is used to determine if there is a significant difference between the means of two groups. It is commonly used to compare the means of a sample to a known or hypothesized population mean.
+
+There are two types of t-tests:
+
+A one-sample t-test, which compares the mean of a single sample to a known population mean.
+A two-sample t-test, which compares the means of two independent samples.
+The t-test assumes that the data being analyzed is approximately normally distributed, and that the variances of the two groups being compared are equal (this assumption is known as the "equal variances assumption").
+
+The test statistic is calculated as the difference between the sample mean and the population mean, divided by the standard error of the mean. The resulting value is then compared to a t-distribution with the appropriate degrees of freedom.
+
+[[simulation applied-stats-sim-4]]
+
+### Kolmogorov
+The Kolmogorov-Smirnov test (K-S test) is a non-parametric statistical test that compares a sample with a reference probability distribution (one-sample K-S test), or to compare two samples (two-sample K-S test).
+
+### confidence intervals
+A confidence interval is a range of values, derived from a sample of data, that is used to estimate an unknown population parameter.
+
+## Simulation and More Fitting
+
+### Producing random numbers
+
+For producing random number, we have to main approacheds: the *transformation method* and the *accept-reject method*.
+
+## Machine Learning and Data Analysis
+
+Machine learning algorithms can be split into two types, *supervised* and *unsupervised*. We may solve three tasks: clustering, classification & regression.
+
+## Advanced Fitting and Calibration
+
+* Jan 9: Advanced fitting with both functions and models.
+* Jan 10: Calibration and use of control channels.
+`;
 
 export default function AppliedStatisticsPage() {
   return (
-    <div className="container mx-auto px-4 py-8 space-y-8">
-      <h1 className="text-3xl font-bold text-center mb-8">Applied Statistics</h1>
-
-      <LinearRegressionDemo />
-      <NormalDistributionDemo />
-      <CentralLimitTheoremDemo />
-      <HypothesisTestingDemo />
+    <div className="min-h-screen bg-[#0a0a15] text-white">
+      <div className="container mx-auto px-4 py-8">
+        <MarkdownContent content={content} />
+      </div>
     </div>
-  );
-}
-
-function NormalDistributionDemo() {
-  const [mean, setMean] = useState(0);
-  const [sd, setSd] = useState(1);
-
-  const x = math.range(-5, 5, 0.1).toArray();
-  const y = x.map(xi => (1 / (sd * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * ((xi - mean) / sd) ** 2));
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Normal Distribution</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <div>
-            <label>Mean: {mean.toFixed(1)}</label>
-            <input
-              type="range"
-              min={-2}
-              max={2}
-              step={0.1}
-              value={mean}
-              onChange={(e) => setMean(parseFloat(e.target.value))}
-              className="w-full"
-            />
-          </div>
-          <div>
-            <label>SD: {sd.toFixed(1)}</label>
-            <input
-              type="range"
-              min={0.1}
-              max={3}
-              step={0.1}
-              value={sd}
-              onChange={(e) => setSd(parseFloat(e.target.value))}
-              className="w-full"
-            />
-          </div>
-        </div>
-        <Plotly
-          data={[{
-            x,
-            y,
-            type: 'scatter' as const,
-            mode: 'lines' as const,
-            name: `N(${mean}, ${sd}²)`
-          }]}
-          layout={{
-            title: { text: 'Normal Distribution' },
-            xaxis: { title: { text: 'x' } },
-            yaxis: { title: { text: 'Density' } },
-            height: 400
-          }}
-          config={{ displayModeBar: false }}
-        />
-      </CardContent>
-    </Card>
-  );
-}
-
-function CentralLimitTheoremDemo() {
-  const [sampleSize, setSampleSize] = useState(10);
-  const [numSamples, setNumSamples] = useState(500);
-  const [data, setData] = useState<number[]>([]);
-
-  useEffect(() => {
-    const samples = [];
-    for (let i = 0; i < numSamples; i++) {
-      const sample = [];
-      for (let j = 0; j < sampleSize; j++) {
-        sample.push(math.random(0, 1)); // uniform [0,1]
-      }
-      const mean = math.mean(sample);
-      samples.push(mean);
-    }
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setData(samples);
-  }, [sampleSize, numSamples]);
-
-  const histData = data.length > 0 ? data : [];
-  const hist = histData.length > 0 ? {
-    x: histData,
-    type: 'histogram',
-    nbinsx: 50,
-    name: 'Sample Means'
-  } : null;
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Central Limit Theorem</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <div>
-            <label>Sample Size: {sampleSize}</label>
-            <input
-              type="range"
-              min={1}
-              max={100}
-              step={1}
-              value={sampleSize}
-              onChange={(e) => setSampleSize(parseInt(e.target.value))}
-              className="w-full"
-            />
-          </div>
-          <div>
-            <label>Number of Samples: {numSamples}</label>
-            <input
-              type="range"
-              min={100}
-              max={1000}
-              step={50}
-              value={numSamples}
-              onChange={(e) => setNumSamples(parseInt(e.target.value))}
-              className="w-full"
-            />
-          </div>
-        </div>
-        <Plotly
-          data={hist ? [hist] : []}
-          layout={{
-            title: { text: `Distribution of Sample Means (n=${sampleSize})` },
-            xaxis: { title: { text: 'Sample Mean' } },
-            yaxis: { title: { text: 'Frequency' } },
-            height: 400
-          }}
-          config={{ displayModeBar: false }}
-        />
-      </CardContent>
-    </Card>
-  );
-}
-
-function HypothesisTestingDemo() {
-  const [group1, setGroup1] = useState('1,2,3,4,5');
-  const [group2, setGroup2] = useState('2,3,4,5,6');
-  const [tStat, setTStat] = useState(0);
-  const [meanDiff, setMeanDiff] = useState(0);
-
-  useEffect(() => {
-    try {
-      const g1 = group1.split(',').map(Number);
-      const g2 = group2.split(',').map(Number);
-      if (g1.some(isNaN) || g2.some(isNaN)) return;
-
-      const mean1 = math.mean(g1);
-      const mean2 = math.mean(g2);
-      const var1 = math.number(math.variance(g1));
-      const var2 = math.number(math.variance(g2));
-      const n1 = g1.length;
-      const n2 = g2.length;
-
-      const pooledVar = ((n1 - 1) * var1 + (n2 - 1) * var2) / (n1 + n2 - 2);
-      const se = Math.sqrt(pooledVar * (1/n1 + 1/n2));
-      const t = (mean1 - mean2) / se;
-
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setTStat(t);
-      setMeanDiff(mean1 - mean2);
-    } catch (e) {
-      console.error(e);
-    }
-  }, [group1, group2]);
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Hypothesis Testing (Two-Sample t-Test)</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <div>
-            <label>Group 1 (comma-separated):</label>
-            <input
-              type="text"
-              value={group1}
-              onChange={(e) => setGroup1(e.target.value)}
-              className="w-full p-2 border rounded"
-            />
-          </div>
-          <div>
-            <label>Group 2 (comma-separated):</label>
-            <input
-              type="text"
-              value={group2}
-              onChange={(e) => setGroup2(e.target.value)}
-              className="w-full p-2 border rounded"
-            />
-          </div>
-        </div>
-        <div className="mb-4">
-          <p>t-statistic: {tStat.toFixed(3)}</p>
-          <p>Mean difference: {meanDiff.toFixed(3)}</p>
-          <p>Note: For significance, |t| &gt; 2 suggests difference (approx.)</p>
-        </div>
-      </CardContent>
-    </Card>
   );
 }

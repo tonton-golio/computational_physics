@@ -139,8 +139,8 @@ const NonlinearEquationsPage: React.FC = () => {
   const generateTimeData = () => {
     const validHistory = fullHistory.slice(0, currentIndex + 1).filter(p => p.x !== undefined && p.y !== undefined);
     const timeX = validHistory.map(p => p.t);
-    const xY = validHistory.map(p => p.x);
-    const yY = validHistory.map(p => p.y);
+    const xY = validHistory.map(p => p.x!) as number[];
+    const yY = validHistory.map(p => p.y!) as number[];
     const data: Data[] = [
       { type: 'scatter', x: timeX, y: xY, mode: 'lines', name: 'x', line: { color: 'blue' } }
     ];

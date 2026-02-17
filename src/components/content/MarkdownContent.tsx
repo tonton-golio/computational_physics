@@ -7,6 +7,7 @@ import { COMPLEX_SIMULATIONS } from "../visualization/ComplexPhysicsSimulations"
 import { APPLIED_STATS_SIMULATIONS } from "../visualization/AppliedStatsSimulations";
 import { CONTINUUM_MECHANICS_SIMULATIONS } from "../visualization/ContinuumMechanicsSimulations";
 import { INVERSE_PROBLEMS_SIMULATIONS } from "../visualization/InverseProblemsSimulations";
+import { CodeEditor } from "../ui/code-editor";
 
 interface MarkdownContentProps {
   content: string;
@@ -94,7 +95,7 @@ function renderPlaceholder(type: string, id: string): React.ReactNode {
     // Default: try to render as interactive graph
     return <InteractiveGraph type={id} />;
   }
-  
+
   if (type === "figure") {
     // Figures are static images or diagrams
     // For now, render a placeholder with the figure ID
@@ -108,7 +109,20 @@ function renderPlaceholder(type: string, id: string): React.ReactNode {
       </div>
     );
   }
-  
+
+  if (type === "code-editor") {
+    // Parse the id for parameters: initialCode|expectedOutput|solution
+    const [initialCode, expectedOutput, solution] = id.split('|').map(s => s.trim());
+    return (
+      <CodeEditor
+        initialCode={initialCode || ""}
+        expectedOutput={expectedOutput}
+        solution={solution}
+        isExercise={!!expectedOutput}
+      />
+    );
+  }
+
   return <SimulationError id={id} type={type} />;
 }
 
@@ -133,7 +147,7 @@ export function MarkdownContent({ content, className = "" }: MarkdownContentProp
     // Extract and replace placeholders with temporary markers
     let placeholderIndex = 0;
 
-    processed = processed.replace(/\[\[(simulation|figure)\s+([^\]]+)\]\]/g, (match, type, id) => {
+    processed = processed.replace(/\[\[(simulation|figure|code-editor)\s+([^\]]+)\]\]/g, (match, type, id) => {
       const marker = `__PLACEHOLDER_${placeholderIndex}__`;
       placeholders.push({ type, id: id.trim(), index: placeholderIndex });
       placeholderIndex++;

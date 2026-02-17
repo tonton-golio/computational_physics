@@ -1,4 +1,5 @@
 import { MarkdownContent } from '@/components/content/MarkdownContent';
+import { LotkaVolterraSim } from '@/components/visualization/dynamical-models/LotkaVolterraSim';
 
 const content = `# Dynamical Models
 
@@ -26,6 +27,10 @@ export default function DynamicalModelsPage() {
     <div className="min-h-screen bg-[#0a0a15] text-white">
       <div className="container mx-auto px-4 py-8">
         <MarkdownContent content={content} />
+        <div className="mt-12">
+          <h2 className="text-2xl font-bold mb-6">Interactive Simulations</h2>
+          <LotkaVolterraSim />
+        </div>
       </div>
     </div>
   );

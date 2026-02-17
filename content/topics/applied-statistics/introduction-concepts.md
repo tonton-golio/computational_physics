@@ -108,6 +108,12 @@ $$
 $$
 we subtract 1, because something something degrees of freedom...
 
+# Normal Distribution
+
+The normal (Gaussian) distribution is fundamental in statistics.
+
+[[simulation applied-stats-sim-2]]
+
 # Weighted mean
 
 ###### Weighted mean
@@ -173,6 +179,20 @@ $$
 
 *see wikipedia*
 
+# Linear Regression
+
+Linear regression is a statistical method for modeling the relationship between a dependent variable and one or more independent variables.
+
+The simple linear regression model is:
+
+$$
+y = \beta_0 + \beta_1 x + \epsilon
+$$
+
+Where $\beta_0$ is the intercept, $\beta_1$ is the slope, and $\epsilon$ is the error term.
+
+[[simulation applied-stats-sim-1]]
+
 
 # Central limit theorem intro
 ##### *law of large numbers*
@@ -185,7 +205,7 @@ If we roll sufficiently many dice; they will naturally find a mean around 3.5;
 
 The mean of many such extravagent rolls, will often tend towards a gaussian. In fact, *The distribution of numbers samples from a variety of distributions, is Gaussian given that they share variance and mean.*
 
-{{graph:gaussian}}
+[[simulation applied-stats-sim-3]]
 
 # Central limit theorem 2
 ###### Combining samples from different distributions

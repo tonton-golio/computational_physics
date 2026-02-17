@@ -1,13 +1,11 @@
 import type { NextConfig } from "next";
 import createMDX from "@next/mdx";
+const remarkMath = require("remark-math");
+const rehypeKatex = require("rehype-katex");
 
 const withMDX = createMDX({
   // Add markdown plugins here as needed
   extension: /\.mdx?$/,
-  options: {
-    remarkPlugins: [],
-    rehypePlugins: [],
-  },
 });
 
 const nextConfig: NextConfig = {

@@ -41,6 +41,8 @@ The t-test assumes that the data being analyzed is approximately normally distri
 
 The test statistic is calculated as the difference between the sample mean and the population mean, divided by the standard error of the mean. The resulting value is then compared to a t-distribution with the appropriate degrees of freedom.
 
+[[simulation applied-stats-sim-4]]
+
 
 #### Kolmogorov
 The Kolmogorov-Smirnov test (K-S test) is a non-parametric statistical test that compares a sample with a reference probability distribution (one-sample K-S test), or to compare two samples (two-sample K-S test). It can be used to determine whether two samples are drawn from the same distribution. The test returns a p-value.

@@ -4,6 +4,12 @@
 
 A network is a set of nodes connected by edges. **Networks are everywhere**, examples include:
 
+## Scale-Free Network Generation
+
+Many real-world networks follow a scale-free degree distribution. The Barabási-Albert model generates such networks through preferential attachment.
+
+[[simulation scale-free-network]]
+
 ### Social-networks
 Nodes represent bots and individuals, and edges mark connection. Edges may carry weight dependent on the frequency of interaction. Some persons are typically central in their network, and these networks tend to have high cliqueishness. These networks are scale-free, some indivs. have all the friends.
 
