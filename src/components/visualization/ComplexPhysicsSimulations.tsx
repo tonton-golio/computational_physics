@@ -145,6 +145,7 @@ export function PercolationSimulation({}: SimulationProps) {
   }, [p, size, generateGrid, findClusters]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     updateVisualization();
   }, [updateVisualization]);
 
@@ -290,8 +291,11 @@ export function IsingModel({}: SimulationProps) {
   useEffect(() => {
     if (spins.length === 0) {
       const initialSpins = initializeSpins(size);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSpins(initialSpins);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setEnergy(calculateEnergy(initialSpins));
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setMagnetization(calculateMagnetization(initialSpins));
     }
   }, [size, initializeSpins, calculateEnergy, calculateMagnetization]);
@@ -378,7 +382,7 @@ export function IsingModel({}: SimulationProps) {
 export function ScaleFreeNetwork({}: SimulationProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [nodes, setNodes] = useState(50);
-  const [network, setNetwork] = useState<{ nodes: any[], links: any[] }>({ nodes: [], links: [] });
+  const [network, setNetwork] = useState<{ nodes: unknown[], links: unknown[] }>({ nodes: [], links: [] });
 
   const generateScaleFreeNetwork = useCallback((n: number) => {
     const nodeList = [];
@@ -444,6 +448,7 @@ export function ScaleFreeNetwork({}: SimulationProps) {
 
   useEffect(() => {
     const net = generateScaleFreeNetwork(nodes);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setNetwork(net);
 
     const container = containerRef.current;

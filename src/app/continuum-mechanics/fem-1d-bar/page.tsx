@@ -101,6 +101,7 @@ export default function Fem1dBar() {
   }, [ne, L, A, E, P]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     computeFEM();
   }, [computeFEM]);
 

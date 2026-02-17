@@ -23,6 +23,7 @@ function AppliedStatsSim2({ id }: AppliedStatsSim2Props) {
   // Generate samples when parameters change
   useEffect(() => {
     const newSamples = Array.from({ length: numSamples }, () => mean + stdDev * boxMuller());
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSamples(newSamples);
   }, [mean, stdDev, numSamples]);
 

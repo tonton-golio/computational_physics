@@ -54,6 +54,7 @@ export default function AppliedStatsSim1({ id }: SimulationProps) { // eslint-di
       return yHat[i] - t * se;
     });
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setData({ x, y, yHat, residuals, ciUpper, ciLower, rSquared, chiSquare, beta0, beta1 });
   }, [noise, sampleSize]);
 

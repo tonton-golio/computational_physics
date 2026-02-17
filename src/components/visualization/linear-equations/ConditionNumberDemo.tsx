@@ -35,9 +35,11 @@ const ConditionNumberDemo: React.FC<Props> = () => {
       const invA = math.inv(Am);
       const normA = math.norm(Am, 'inf');
       const normInvA = math.norm(invA, 'inf');
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCond(normA * normInvA);
 
       const xSol = math.multiply(invA, b);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setX([xSol.get([0,0]), xSol.get([1,0])]);
 
       // Perturb

@@ -29,6 +29,7 @@ const AdvancedDeepLearningPage: React.FC = () => {
       const label = (x1 + x2 > 0) ? 1 : 0; // simple linear separation
       data.push({x: x1, y: x2, label});
     }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTrainingData(data);
   }, []);
 
