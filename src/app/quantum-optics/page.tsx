@@ -52,21 +52,19 @@ export default function QuantumOptics() {
     const y = [];
     for (let t = 0; t < 2 * Math.PI; t += 0.1) {
       const phase = math.exp(math.multiply(math.i, -t));
-      // @ts-ignore
-      const Ex = math.re(math.multiply(J[0], phase));
-      // @ts-ignore
-      const Ey = math.re(math.multiply(J[1], phase));
+      const Ex = (math.multiply(J[0], phase) as Complex).re;
+      const Ey = (math.multiply(J[1], phase) as Complex).re;
       x.push(Ex);
       y.push(Ey);
     }
     return { x, y };
   };
 
-  // @ts-ignore
+  // @ts-expect-error
   const ellipse1 = generateEllipse(J1Norm);
-  // @ts-ignore
+  // @ts-expect-error
   const ellipse2 = generateEllipse(J2Norm);
-  // @ts-ignore
+  // @ts-expect-error
   const ellipseTotal = generateEllipse(JTotalNorm);
 
   // Data for plots
@@ -74,8 +72,8 @@ export default function QuantumOptics() {
     {
       x: ellipse1.x,
       y: ellipse1.y,
-      type: 'scatter',
-      mode: 'lines',
+      type: 'scatter' as const,
+      mode: 'lines' as const,
       name: 'Beam 1',
       line: { color: 'blue' },
     },
@@ -85,8 +83,8 @@ export default function QuantumOptics() {
     {
       x: ellipse2.x,
       y: ellipse2.y,
-      type: 'scatter',
-      mode: 'lines',
+      type: 'scatter' as const,
+      mode: 'lines' as const,
       name: 'Beam 2',
       line: { color: 'red' },
     },
@@ -96,8 +94,8 @@ export default function QuantumOptics() {
     {
       x: ellipseTotal.x,
       y: ellipseTotal.y,
-      type: 'scatter',
-      mode: 'lines',
+      type: 'scatter' as const,
+      mode: 'lines' as const,
       name: 'Total',
       line: { color: 'green' },
     },
@@ -157,7 +155,7 @@ export default function QuantumOptics() {
               className="w-full"
             />
           </div>
-          // @ts-ignore
+          {/* @ts-expect-error */}
           <p>Jones Vector: [{(J1Norm[0] as Complex).re.toFixed(2)} + {(J1Norm[0] as Complex).im.toFixed(2)}i, {(J1Norm[1] as Complex).re.toFixed(2)} + {(J1Norm[1] as Complex).im.toFixed(2)}i]</p>
         </div>
 
@@ -217,7 +215,7 @@ export default function QuantumOptics() {
             />
           </div>
           <p>Total Jones Vector: [{(JTotalNorm[0] as Complex).re.toFixed(2)} + {(JTotalNorm[0] as Complex).im.toFixed(2)}i, {(JTotalNorm[1] as Complex).re.toFixed(2)} + {(JTotalNorm[1] as Complex).im.toFixed(2)}i]</p>
-          <p>Intensity: {(normTotal ** 2).toFixed(2)}</p>
+          <p>Intensity: {Number(math.pow(normTotal, 2)).toFixed(2)}</p>
         </div>
       </div>
 
@@ -225,21 +223,21 @@ export default function QuantumOptics() {
         <div>
           <Plot
             data={data1}
-            layout={{ ...layout, title: 'Beam 1 Polarization' }}
+            layout={{ ...layout, title: 'Beam 1 Polarization' } as unknown}
             style={{ width: '100%', height: '400px' }}
           />
         </div>
         <div>
           <Plot
             data={data2}
-            layout={{ ...layout, title: 'Beam 2 Polarization' }}
+            layout={{ ...layout, title: 'Beam 2 Polarization' } as unknown}
             style={{ width: '100%', height: '400px' }}
           />
         </div>
         <div>
           <Plot
             data={dataTotal}
-            layout={{ ...layout, title: 'Total Polarization (Interference)' }}
+            layout={{ ...layout, title: 'Total Polarization (Interference)' } as unknown}
             style={{ width: '100%', height: '400px' }}
           />
         </div>

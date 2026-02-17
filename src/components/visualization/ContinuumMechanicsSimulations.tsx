@@ -88,7 +88,7 @@ function StressStrainSim({ id }: SimulationProps) {
       <h3 className="text-xl font-semibold mb-4 text-white">Stress-Strain Simulation</h3>
       <div className="grid grid-cols-2 gap-4 mb-4">
         <div>
-          <label className="text-white">Young's Modulus (E) [GPa]: {params.E}</label>
+          <label className="text-white">Young&apos;s Modulus (E) [GPa]: {params.E}</label>
           <input
             type="range"
             min={50}
@@ -142,7 +142,7 @@ function StressStrainSim({ id }: SimulationProps) {
         config={{ displayModeBar: false }}
       />
       <div className="mt-4 text-sm text-gray-300">
-        <p>The linear curve follows Hooke's law: σ = Eε</p>
+        <p>The linear curve follows Hooke&apos;s law: σ = Eε</p>
         <p>The nonlinear curve uses the Ramberg-Osgood model: ε = σ/E + α(σ/E)^n</p>
       </div>
     </div>
@@ -338,7 +338,7 @@ function FEM1DBarSim({ id }: SimulationProps) {
           />
         </div>
         <div>
-          <label className="text-white">Young's E: {E}</label>
+          <label className="text-white">Young&apos;s E: {E}</label>
           <input
             type="range"
             min="1"

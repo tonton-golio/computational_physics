@@ -18,9 +18,9 @@ export default function Fem1dBar() {
 
   useEffect(() => {
     computeFEM();
-  }, [ne, L, A, E, P]);
+  }, [computeFEM]);
 
-  function computeFEM() {
+  const computeFEM = useCallback(() => {
     const n = ne + 1;
     const le = L / ne;
     const k_factor = A * E / le;
@@ -29,7 +29,7 @@ export default function Fem1dBar() {
       [-k_factor, k_factor]
     ];
 
-    let K = Array.from({ length: n }, () => Array(n).fill(0));
+    const K = Array.from({ length: n }, () => Array(n).fill(0));
 
     for (let e = 0; e < ne; e++) {
       for (let i = 0; i < 2; i++) {
@@ -46,7 +46,7 @@ export default function Fem1dBar() {
     }
     K[0][0] = 1;
 
-    let f = Array(n).fill(0);
+    const f = Array(n).fill(0);
     f[n - 1] = P;
 
     // Solve K * u = f using Gaussian elimination
@@ -64,7 +64,7 @@ export default function Fem1dBar() {
       eps.push((U[e + 1] - U[e]) / le);
     }
     setStrains(eps);
-  }
+  }, [ne, L, A, E, P]);
 
   function gaussElimination(A: number[][], b: number[]): number[] {
     const n = A.length;
@@ -164,7 +164,7 @@ export default function Fem1dBar() {
         <label>Force P: {P} <input type="range" min="0" max="10" step="0.1" value={P} onChange={e => setP(Number(e.target.value))} /></label><br />
         <label>Deformation Exaggeration: {exag} <input type="range" min="1" max="100" value={exag} onChange={e => setExag(Number(e.target.value))} /></label>
       </div>
-      <Plot data={meshData} layout={{ title: {text: 'Original and Deformed Mesh'}, xaxis: { title: {text: 'Position x'} }, yaxis: { title: {text: 'y (always 0)'}, range: [-0.1, 0.1] } }} />
+      <Plot data={meshData} layout={{ title: {text: "Original and Deformed Mesh"}, xaxis: { title: {text: "Position x"} }, yaxis: { title: {text: "y (always 0)"}, range: [-0.1, 0.1] } }} />
       <Plot data={dispData} layout={{ title: {text: 'Displacement u(x)'}, xaxis: { title: {text: 'Position x'} }, yaxis: { title: {text: 'Displacement u'} } }} />
       <Plot data={strainData} layout={{ title: {text: 'Strain per Element'}, xaxis: { title: {text: 'Element'}, tickvals: strains.map((_, i) => i), ticktext: strains.map((_, i) => `E${i+1}`) }, yaxis: { title: {text: 'Strain ε'} } }} />
     </div>

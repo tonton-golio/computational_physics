@@ -1,27 +1,20 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import * as math from 'mathjs';
 import Plotly from 'react-plotly.js';
+import AppliedStatsSim2 from './applied-statistics/AppliedStatsSim2';
+import AppliedStatsSim1 from './applied-statistics/AppliedStatsSim1';
 
 interface SimulationProps {
   id: string;
 }
 
 // Linear Regression Simulation
-function LinearRegressionSim({ id }: SimulationProps) {
+function LinearRegressionSim() {
   const [noise, setNoise] = useState(1);
   const [sampleSize, setSampleSize] = useState(20);
-  const [data, setData] = useState<{x: number[], y: number[], yHat: number[], residuals: number[], ciUpper: number[], ciLower: number[]}>({
-    x: [],
-    y: [],
-    yHat: [],
-    residuals: [],
-    ciUpper: [],
-    ciLower: []
-  });
-
-  useEffect(() => {
+  const data = useMemo<{x: number[], y: number[], yHat: number[], residuals: number[], ciUpper: number[], ciLower: number[]}>(() => {
     const beta0 = 2;
     const beta1 = 1.5;
     const x = Array.from({length: sampleSize}, () => math.random(0, 10));
@@ -47,7 +40,7 @@ function LinearRegressionSim({ id }: SimulationProps) {
       return yHat[i] - t * se;
     });
 
-    setData({ x, y, yHat, residuals, ciUpper, ciLower });
+    return { x, y, yHat, residuals, ciUpper, ciLower };
   }, [noise, sampleSize]);
 
   const residualTraces = data.x.map((xi, i) => ({
@@ -151,7 +144,7 @@ function LinearRegressionSim({ id }: SimulationProps) {
 }
 
 // Normal Distribution Simulation
-function NormalDistributionSim({ id }: SimulationProps) {
+function NormalDistributionSim() {
   const [mean, setMean] = useState(0);
   const [sd, setSd] = useState(1);
 
@@ -211,12 +204,10 @@ function NormalDistributionSim({ id }: SimulationProps) {
 }
 
 // Central Limit Theorem Simulation
-function CentralLimitTheoremSim({ id }: SimulationProps) {
+function CentralLimitTheoremSim() {
   const [sampleSize, setSampleSize] = useState(10);
   const [numSamples, setNumSamples] = useState(500);
-  const [data, setData] = useState<number[]>([]);
-
-  useEffect(() => {
+  const data = useMemo<number[]>(() => {
     const samples = [];
     for (let i = 0; i < numSamples; i++) {
       const sample = [];
@@ -226,7 +217,7 @@ function CentralLimitTheoremSim({ id }: SimulationProps) {
       const mean = math.mean(sample);
       samples.push(mean);
     }
-    setData(samples);
+    return samples;
   }, [sampleSize, numSamples]);
 
   const histData = data.length > 0 ? data : [];
@@ -284,13 +275,10 @@ function CentralLimitTheoremSim({ id }: SimulationProps) {
 }
 
 // Hypothesis Testing Simulation
-function HypothesisTestingSim({ id }: SimulationProps) {
+function HypothesisTestingSim() {
   const [group1, setGroup1] = useState('1,2,3,4,5');
   const [group2, setGroup2] = useState('2,3,4,5,6');
-  const [tStat, setTStat] = useState(0);
-  const [meanDiff, setMeanDiff] = useState(0);
-
-  useEffect(() => {
+  const { tStat, meanDiff } = useMemo(() => {
     try {
       const g1 = group1.split(',').map(Number);
       const g2 = group2.split(',').map(Number);
@@ -307,10 +295,10 @@ function HypothesisTestingSim({ id }: SimulationProps) {
       const se = Math.sqrt(pooledVar * (1/n1 + 1/n2));
       const t = (mean1 - mean2) / se;
 
-      setTStat(t);
-      setMeanDiff(mean1 - mean2);
+      return { tStat: t, meanDiff: mean1 - mean2 };
     } catch (e) {
       console.error(e);
+      return { tStat: 0, meanDiff: 0 };
     }
   }, [group1, group2]);
 
@@ -347,7 +335,7 @@ function HypothesisTestingSim({ id }: SimulationProps) {
 }
 
 export const APPLIED_STATS_SIMULATIONS: Record<string, React.ComponentType<SimulationProps>> = {
-  'applied-stats-sim-1': LinearRegressionSim,
+  'applied-stats-sim-1': AppliedStatsSim1,
   'applied-stats-sim-2': NormalDistributionSim,
   'applied-stats-sim-3': CentralLimitTheoremSim,
   'applied-stats-sim-4': HypothesisTestingSim,

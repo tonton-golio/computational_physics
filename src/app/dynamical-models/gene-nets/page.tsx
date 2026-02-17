@@ -21,12 +21,9 @@ const GeneNetsPage: React.FC = () => {
     dt: 0.05,
     gridSize: 15
   });
-  const [fullHistory, setFullHistory] = useState<HistoryPoint[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
-  const rafRef = useRef<number>(0);
-
-  const integrate = useCallback(() => {
+  const fullHistory = useMemo(() => {
     const { alpha, beta, delta, gamma, x0, y0, tMax, dt } = params;
     let x = x0;
     let y = y0;
@@ -40,13 +37,15 @@ const GeneNetsPage: React.FC = () => {
       t += dt;
       history.push({ t, x, y });
     }
-    setFullHistory(history);
-    setCurrentIndex(0);
-    setPlaying(false);
+    return history;
   }, [params]);
 
   const togglePlay = () => {
-    setPlaying(!playing);
+    if (currentIndex >= fullHistory.length - 1) {
+      setPlaying(false);
+    } else {
+      setPlaying(!playing);
+    }
   };
 
   const reset = () => {
@@ -55,17 +54,11 @@ const GeneNetsPage: React.FC = () => {
   };
 
   useEffect(() => {
-    integrate();
-  }, [integrate]);
-
-  useEffect(() => {
     let frameId: number;
     if (playing && currentIndex < fullHistory.length - 1) {
       frameId = requestAnimationFrame(() => {
         setCurrentIndex((prev) => Math.min(prev + 10, fullHistory.length - 1)); // speed
       });
-    } else if (playing) {
-      setPlaying(false);
     }
     return () => cancelAnimationFrame(frameId);
   }, [playing, currentIndex, fullHistory.length]);

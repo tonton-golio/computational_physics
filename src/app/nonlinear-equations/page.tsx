@@ -9,8 +9,6 @@ interface Point {
   y?: number;
 }
 
-type ValidPoint = Point & { y: number };
-
 const NonlinearEquationsPage: React.FC = () => {
   const [system, setSystem] = useState<'lotka' | 'logistic'>('lotka');
   const [params, setParams] = useState({
@@ -19,12 +17,10 @@ const NonlinearEquationsPage: React.FC = () => {
     r: 2.0, K: 1.0, // Logistic
     bifurcationRMin: 0.1, bifurcationRMax: 4.0
   });
-  const [fullHistory, setFullHistory] = useState<Point[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
-  const rafRef = useRef<number>(0);
 
-  const integrate = useCallback(() => {
+  const fullHistory = useMemo(() => {
     const { x0, y0, tMax, dt } = params;
     let x = x0;
     let y = y0 || 0;
@@ -46,14 +42,8 @@ const NonlinearEquationsPage: React.FC = () => {
       t += dt;
       history.push({ t, x, y });
     }
-    setFullHistory(history);
-    setCurrentIndex(0);
-    setPlaying(false);
-  }, [params, system]);
-
-  useEffect(() => {
-    integrate();
-  }, [integrate]);
+    return history;
+  }, [system, params]);
 
   useEffect(() => {
     let frameId: number;
@@ -61,8 +51,6 @@ const NonlinearEquationsPage: React.FC = () => {
       frameId = requestAnimationFrame(() => {
         setCurrentIndex((prev) => Math.min(prev + 10, fullHistory.length - 1));
       });
-    } else if (playing) {
-      setPlaying(false);
     }
     return () => cancelAnimationFrame(frameId);
   }, [playing, currentIndex, fullHistory.length]);
@@ -200,7 +188,13 @@ const NonlinearEquationsPage: React.FC = () => {
     setParams({ ...params, [key]: parseFloat(e.target.value) });
   };
 
-  const togglePlay = () => setPlaying(!playing);
+  const togglePlay = () => {
+    if (currentIndex >= fullHistory.length - 1) {
+      setPlaying(false);
+    } else {
+      setPlaying(!playing);
+    }
+  };
   const reset = () => { setPlaying(false); setCurrentIndex(0); };
 
   return (

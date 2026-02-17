@@ -1,17 +1,6 @@
 import type { NextConfig } from "next";
-import createMDX from "@next/mdx";
-const remarkMath = require("remark-math");
-const rehypeKatex = require("rehype-katex");
-
-const withMDX = createMDX({
-  // Add markdown plugins here as needed
-  extension: /\.mdx?$/,
-});
 
 const nextConfig: NextConfig = {
-  // Enable MDX file support
-  pageExtensions: ["js", "jsx", "ts", "tsx", "md", "mdx"],
-  
   // Image optimization
   images: {
     remotePatterns: [
@@ -21,11 +10,11 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  
+
   // Experimental features
   experimental: {
-    optimizePackageImports: ["katex", "@mdx-js/react"],
+    optimizePackageImports: ["katex"],
   },
 };
 
-export default withMDX(nextConfig);
+export default nextConfig;

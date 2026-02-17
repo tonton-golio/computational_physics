@@ -117,7 +117,7 @@ const GANDemo: React.FC = () => {
     setGenLossHistory(prev => [...prev, genLoss / currentFakeData.length]);
 
     setEpoch(prev => prev + 1);
-  }, [training, realData, generateFakeData, discriminator]);
+  }, [training, realData, generateFakeData, discriminator, discriminatorWeights]);
 
   useEffect(() => {
     if (training) {

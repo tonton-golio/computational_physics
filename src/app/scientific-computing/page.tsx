@@ -10,7 +10,7 @@ export default function ScientificComputing() {
   const [a, setA] = useState(-2);
   const [b, setB] = useState(2);
   const [c, setC] = useState(1);
-  const f = (x) => x * x - c;
+  const f = (x: number) => x * x - c;
 
   const bisection = useCallback((a, b, tol = 1e-6, maxIter = 20) => {
     const steps = [];
@@ -30,9 +30,9 @@ export default function ScientificComputing() {
       }
     }
     return steps;
-  }, [c]);
+  }, [c, f]);
 
-  const iterations = useMemo(() => bisection(a, b), [a, b, bisection]);
+  const iterations = useMemo(() => bisection(a, b), [a, b, bisection, f]);
 
   const xMin = Math.min(a, b) - 1;
   const xMax = Math.max(a, b) + 1;

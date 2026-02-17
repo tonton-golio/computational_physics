@@ -41,11 +41,9 @@ export function LorenzAttractor() {
   const [rho, setRho] = useState([28]);
   const [beta, setBeta] = useState([8/3]);
 
-  const [data, setData] = useState<any>(null);
-
-  useEffect(() => {
+  const data = useMemo(() => {
     const trajectory = computeLorenz(sigma[0], rho[0], beta[0]);
-    setData([
+    return [
       {
         x: trajectory.x,
         y: trajectory.y,
@@ -54,7 +52,7 @@ export function LorenzAttractor() {
         type: 'scatter3d',
         line: { color: 'blue', width: 1 },
       },
-    ]);
+    ];
   }, [sigma, rho, beta]);
 
   return (

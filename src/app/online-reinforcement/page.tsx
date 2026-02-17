@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import Plot from 'react-plotly.js';
 
 const gridSize = 4;
-const actions = ['up', 'down', 'left', 'right'];
 const actionDeltas = [
   [0, -1], // up
   [0, 1],  // down
@@ -116,10 +115,10 @@ export default function OnlineReinforcementPage() {
       }, 500);
       return () => clearInterval(interval);
     }
-  }, [isRunning, currentState, Q, alpha, gamma, epsilon]);
+  }, [isRunning, currentState, Q, alpha, gamma, epsilon, step]);
 
   const z = Q.map((row) => row.map((stateQ) => Math.max(...stateQ)));
-  const annotations: any[] = [];
+  const annotations: unknown[] = [];
   for (let i = 0; i < gridSize; i++) {
     for (let j = 0; j < gridSize; j++) {
       let text = '';
@@ -228,7 +227,7 @@ export default function OnlineReinforcementPage() {
       <div className="mt-4">
         <h2 className="text-xl font-semibold">How it works</h2>
         <p>
-          Q-learning updates Q-values using: Q(s,a) ← Q(s,a) + α [r + γ max Q(s',a') - Q(s,a)].
+          Q-learning updates Q-values using: Q(s,a) ← Q(s,a) + α [r + γ max Q(s&apos;,a&apos;) - Q(s,a)].
           The heatmap shows the maximum Q-value per state. Policy arrows indicate the best action.
         </p>
       </div>

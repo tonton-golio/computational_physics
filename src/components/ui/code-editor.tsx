@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "./button";
 
 interface CodeEditorProps {
@@ -28,15 +28,15 @@ export function CodeEditor({
   const mockInterpreter = (code: string): string => {
     // Simple mock interpreter for basic Python-like code
     const lines = code.split('\n').map(line => line.trim()).filter(line => line && !line.startsWith('#'));
-    let variables: Record<string, any> = {};
-    let functions: Record<string, { params: string[], body: string[] }> = {};
-    let outputLines: string[] = [];
+    const variables: Record<string, unknown> = {};
+    const functions: Record<string, { params: string[], body: string[] }> = {};
+    const outputLines: string[] = [];
     let indentLevel = 0;
     let inFunction = false;
     let currentFunction = '';
     let skipLines = 0;
 
-    const evaluateExpression = (expr: string): any => {
+    const evaluateExpression = (expr: string): unknown => {
       // Very basic expression evaluator
       expr = expr.trim();
 
@@ -151,7 +151,7 @@ export function CodeEditor({
           if (!result) {
             // Skip until else/elif or end of block
             let j = i + 1;
-            let blockIndent = indent + 4;
+            const blockIndent = indent + 4;
             while (j < lines.length) {
               const nextLine = lines[j];
               const nextIndent = nextLine.length - nextLine.trimLeft().length;
@@ -171,7 +171,7 @@ export function CodeEditor({
           const condition = match[1];
           const bodyLines = [];
           let j = i + 1;
-          let blockIndent = indent + 4;
+          const blockIndent = indent + 4;
           while (j < lines.length) {
             const nextLine = lines[j];
             const nextIndent = nextLine.length - nextLine.trimLeft().length;
@@ -206,7 +206,7 @@ export function CodeEditor({
             // For loop over array or string
             const bodyLines = [];
             let j = i + 1;
-            let blockIndent = indent + 4;
+            const blockIndent = indent + 4;
             while (j < lines.length) {
               const nextLine = lines[j];
               const nextIndent = nextLine.length - nextLine.trimLeft().length;

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import Plot from 'react-plotly.js';
 
 const AdvancedDeepLearningPage: React.FC = () => {
@@ -12,7 +12,6 @@ const AdvancedDeepLearningPage: React.FC = () => {
   });
 
   // Training demo
-  const [trainingData, setTrainingData] = useState<{x: number, y: number, label: number}[]>([]);
   const [weights, setWeights] = useState([0.1, 0.1]);
   const [biasTrain, setBiasTrain] = useState(0.0);
   const [epoch, setEpoch] = useState(0);
@@ -20,7 +19,7 @@ const AdvancedDeepLearningPage: React.FC = () => {
   const [training, setTraining] = useState(false);
 
   // Generate training data for classification
-  useEffect(() => {
+  const trainingData = useMemo(() => {
     const data = [];
     for (let i = 0; i < 20; i++) {
       const x1 = Math.random() * 2 - 1;
@@ -28,7 +27,7 @@ const AdvancedDeepLearningPage: React.FC = () => {
       const label = (x1 + x2 > 0) ? 1 : 0; // simple linear separation
       data.push({x: x1, y: x2, label});
     }
-    setTrainingData(data);
+    return data;
   }, []);
 
   // Perceptron decision function
@@ -123,7 +122,7 @@ const AdvancedDeepLearningPage: React.FC = () => {
   // Training demo
   const trainStep = useCallback(() => {
     if (!training) return;
-    let newWeights = [...weights];
+    const newWeights = [...weights];
     let newBias = biasTrain;
     let totalLoss = 0;
     for (const point of trainingData) {

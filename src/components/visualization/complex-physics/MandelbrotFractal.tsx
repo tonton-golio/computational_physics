@@ -23,11 +23,10 @@ function mandelbrot(c: { re: number; im: number }): number {
 }
 
 export function MandelbrotFractal() {
-  const [data, setData] = useState<any>(null);
   const [xRange, setXRange] = useState([-2, 1]);
   const [yRange, setYRange] = useState([-1.5, 1.5]);
 
-  useEffect(() => {
+  const data = useMemo(() => {
     const xMin = xRange[0];
     const xMax = xRange[1];
     const yMin = yRange[0];
@@ -49,14 +48,14 @@ export function MandelbrotFractal() {
       z.push(row);
     }
 
-    setData([
+    return [
       {
         z,
         type: 'heatmap',
         colorscale: 'Viridis',
         showscale: false,
       },
-    ]);
+    ];
   }, [xRange, yRange]);
 
   const handleRelayout = (event: any) => {
