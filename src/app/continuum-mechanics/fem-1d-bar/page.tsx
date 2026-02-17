@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -15,10 +15,6 @@ export default function Fem1dBar() {
   const [u, setU] = useState<number[]>([]);
   const [x, setX] = useState<number[]>([]);
   const [strains, setStrains] = useState<number[]>([]);
-
-  useEffect(() => {
-    computeFEM();
-  }, [computeFEM]);
 
   const computeFEM = useCallback(() => {
     const n = ne + 1;
@@ -65,6 +61,10 @@ export default function Fem1dBar() {
     }
     setStrains(eps);
   }, [ne, L, A, E, P]);
+
+  useEffect(() => {
+    computeFEM();
+  }, [computeFEM]);
 
   function gaussElimination(A: number[][], b: number[]): number[] {
     const n = A.length;

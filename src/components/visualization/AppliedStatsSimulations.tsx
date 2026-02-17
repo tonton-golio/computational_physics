@@ -143,65 +143,7 @@ function LinearRegressionSim() {
   );
 }
 
-// Normal Distribution Simulation
-function NormalDistributionSim() {
-  const [mean, setMean] = useState(0);
-  const [sd, setSd] = useState(1);
-
-  const x = math.range(-5, 5, 0.1).toArray();
-  const y = x.map(xi => (1 / (sd * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * ((xi - mean) / sd) ** 2));
-
-  return (
-    <div className="w-full bg-[#151525] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-white">Normal Distribution</h3>
-      <div className="grid grid-cols-2 gap-4 mb-4">
-        <div>
-          <label className="text-white">Mean: {mean.toFixed(1)}</label>
-          <input
-            type="range"
-            min={-2}
-            max={2}
-            step={0.1}
-            value={mean}
-            onChange={(e) => setMean(parseFloat(e.target.value))}
-            className="w-full"
-          />
-        </div>
-        <div>
-          <label className="text-white">SD: {sd.toFixed(1)}</label>
-          <input
-            type="range"
-            min={0.1}
-            max={3}
-            step={0.1}
-            value={sd}
-            onChange={(e) => setSd(parseFloat(e.target.value))}
-            className="w-full"
-          />
-        </div>
-      </div>
-      <Plotly
-        data={[{
-          x,
-          y,
-          type: 'scatter' as const,
-          mode: 'lines' as const,
-          name: `N(${mean}, ${sd}²)`
-        }]}
-        layout={{
-          title: { text: 'Normal Distribution' },
-          xaxis: { title: { text: 'x' } },
-          yaxis: { title: { text: 'Density' } },
-          height: 400,
-          paper_bgcolor: 'rgba(0,0,0,0)',
-          plot_bgcolor: 'rgba(15,15,25,1)',
-          font: { color: '#9ca3af' }
-        }}
-        config={{ displayModeBar: false }}
-      />
-    </div>
-  );
-}
+// Normal Distribution Simulation is now in AppliedStatsSim2
 
 // Central Limit Theorem Simulation
 function CentralLimitTheoremSim() {
@@ -336,7 +278,7 @@ function HypothesisTestingSim() {
 
 export const APPLIED_STATS_SIMULATIONS: Record<string, React.ComponentType<SimulationProps>> = {
   'applied-stats-sim-1': AppliedStatsSim1,
-  'applied-stats-sim-2': NormalDistributionSim,
+  'applied-stats-sim-2': AppliedStatsSim2,
   'applied-stats-sim-3': CentralLimitTheoremSim,
   'applied-stats-sim-4': HypothesisTestingSim,
 };

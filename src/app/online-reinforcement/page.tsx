@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Plot from 'react-plotly.js';
+import { Layout } from 'plotly.js';
 
 const gridSize = 4;
 const actionDeltas = [
@@ -118,7 +119,7 @@ export default function OnlineReinforcementPage() {
   }, [isRunning, currentState, Q, alpha, gamma, epsilon, step]);
 
   const z = Q.map((row) => row.map((stateQ) => Math.max(...stateQ)));
-  const annotations: unknown[] = [];
+  const annotations: any[] = [];
   for (let i = 0; i < gridSize; i++) {
     for (let j = 0; j < gridSize; j++) {
       let text = '';

@@ -155,7 +155,6 @@ export default function QuantumOptics() {
               className="w-full"
             />
           </div>
-          {/* @ts-expect-error */}
           <p>Jones Vector: [{(J1Norm[0] as Complex).re.toFixed(2)} + {(J1Norm[0] as Complex).im.toFixed(2)}i, {(J1Norm[1] as Complex).re.toFixed(2)} + {(J1Norm[1] as Complex).im.toFixed(2)}i]</p>
         </div>
 
