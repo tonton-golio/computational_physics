@@ -1,119 +1,90 @@
 # Introduction to Inverse Problems
 
-# Header 1
-
-*Analysis of indirect physical measurements.* I.e., what generates the observed data.
+An **inverse problem** starts from measurements and asks for the hidden parameters that produced them.
 
 $$
-	\begin{align*}
-		\text{data} &= \text{function}(\text{parameters})\\
-		d &= g(m)
-	\end{align*}
+\mathbf{d} = g(\mathbf{m})
 $$
 
-we know $d$ and usually we know $g$. If the generating function, $g$, were invertible, we could simply take $m = g^{-1}(m)$, but this is rarely the case.
+- $\mathbf{d}$: observed data
+- $\mathbf{m}$: unknown model parameters
+- $g$: forward model (physics + measurement process)
 
-# Header 2
-Problems arise in trying to solve an inverse problem:
-* solution may not exist $\rightarrow$ *look for **almost** solution*.
-* Solution may not be unique $\rightarrow$ *consider physical permissability*.
-* Solution does not depend continously on $d$, i.e., instability $\Rightarrow$ think phase-transitions.
+In practice, we know $\mathbf{d}$ and we can evaluate $g$, but computing $g^{-1}$ is usually impossible or unstable.
 
+---
 
-# Examples
-#### Examples
-##### Lunar tomography
-*What does the inside of the moon look like?*
+## Why Inverse Problems Are Hard
 
-Moon-quakes measured at different points gives us different arrival times. Density variations in the bulk of the moon, affect wave-speeds. Thus we may predict characteristics of the internal structure of the moon.
+Following Hadamard, an inverse problem can fail to be well-posed in three ways:
 
-##### Acoustice Waveform inversion
-$$
-	\frac{1}{\kappa(x)}\frac{\partial^2p}{\partial t^2}(x,t) - \nabla\cdot\left(
-	\frac{1}{\rho(x)}\nabla p(x,t)
-	\right)
-	=
-	S(x,t)
-$$
+1. **No exact solution** exists
+2. **Multiple solutions** fit the data
+3. **Instability**: small data noise causes large model changes
 
-$$
-	\begin{align*}
-		\text{Source:}&&  p(x_0,t)\\
-		\text{Boundaray:}&&  p(x,t)=0\\
-		\text{Data:}&&  p(x_n,t)& \text{ for } n=1, \ldots, N
-	\end{align*}
-$$
+That is why regularization, priors, and uncertainty quantification are central to this field.
 
-**Inverse problem**:
-Find acceptable $\kappa(x)$ and $\rho(x)$ such the wave equation satisfies initial and boundary conditions and reproduces the data. This could answer questions suchs as:
-*How does sound in a concert hall bounce off the walls?* or 
-*How does the internal body look (ultrasound scanning)?*
+---
 
+## Canonical Examples
 
+### Medical and geophysical imaging
 
-#### Can one hear the shape of a drum? 🧐
+We infer hidden structure from indirect signals:
 
-answer: yes, but is it unique? --> can two differently shaped drums make the same sound?
+- MRI and SPECT infer tissue properties from measured responses
+- Seismic tomography infers subsurface velocity/slowness from travel times
 
-(insert pic of non-trivial drum)
+[[figure mri-scan]]
 
-Membrane is fixed at the boundary, i.e,. $u_\text{boundary}=0$
+[[figure spect-scan]]
 
-data = eigen frequencies 
-unknown = shape of drum, i.e. $\delta D$
+[[figure seismic-tomography]]
 
-OMG, the answer is no!!! This was proben by Gordon Webb and Wolpert in 1991. They showed that two different shapes have the same eigenfrequencies.
+### Waveform inversion
 
-
-So What can we hear??
-Area, circumference and number of holes...
-
-
-
-#### Earth's Eigenfreqs.
-Big earthquakes make the earth wobble in manner similar to that of a baseball
-(insert baseball gif.)
-
-
-
-#### Hadamard Heat-flow
-Hadamard worked on a heat-flow problem (2d). Use diffusion:
+A simplified acoustic model is:
 
 $$
-	\begin{align*}
-		T(x,0) &= 0\\
-		\frac{\partial T}{\partial y} &= \frac{1}{n}\sin(nx)\\
-		\nabla^2 &= 0
-	\end{align*}
+\frac{1}{\kappa(x)}\frac{\partial^2 p}{\partial t^2}(x,t) - \nabla\cdot\left(\frac{1}{\rho(x)}\nabla p(x,t)\right)=S(x,t)
 $$
 
-Yields the solution:
+Given source and boundary conditions, we measure $p(x_n,t)$ at sensors and infer acceptable $\kappa(x)$ and $\rho(x)$.
+
+---
+
+## A Quick Instability Example (Hadamard)
+
+For a 2D heat-flow setup, one obtains
+
 $$
-	T(x,y) = \frac{1}{n^2}\sin(nx)\sinh(nx)
+T(x,y)=\frac{1}{n^2}\sin(nx)\sinh(nx).
 $$
 
-let's explore the limits:
+- At $y=0$, the boundary data can remain bounded
+- At $y>0$, $\sup |T(x,y)|$ can blow up as $n\to\infty$
 
-for $y=0$,  $\frac{\partial T}{\partial y} \rightarrow 0$ for $n\rightarrow\infty$ so no problem
+So tiny perturbations at the boundary can produce huge changes in the interior solution: a textbook unstable inverse setting.
 
-for $y>0$,  $\text{sup}|T(x,y)| \rightarrow \infty$ for $n\rightarrow\infty$ so big problem. 
+---
 
-When you go deep (with Kassem G) we have a divergence! OMG this is problem number 3 i.e., instability.
+## Bayesian Viewpoint
 
+Regularization can be interpreted probabilistically.
+A common form is:
 
-**Hadamard called this an ill-posed problem.**
-
-
-# Header 3
-
-Inserting the prior on a plot (d versus m) and then inserting the function $d=g(m)$, the insertion of the function and the prior yields the posterior.
-
-
-the posterior probability density of $\sigma(m)$:
 $$
-	\sigma(m) = \rho_m(m) L(m)
+\sigma(\mathbf{m}) = \rho_m(\mathbf{m})\,L(\mathbf{m}), \qquad L(\mathbf{m}) = \rho_d(g(\mathbf{m}))
 $$
-where, $L(m) = \rho_d(g(m))$
 
+Here, prior knowledge $\rho_m$ and data likelihood $L$ combine into a posterior over models.
+In high dimensions, we often sample this posterior with Monte Carlo methods.
 
-If we have a high dimenisonal probability manifold, we may sample this manifold using Monte-Carlo.
+---
+
+## What Comes Next
+
+- [Week 1](./week1): information, entropy, and uncertainty
+- [Week 2](./week2): least squares and Tikhonov regularization
+- [Week 3](./week3): linear tomography pipeline
+- [Week 4](./week4): nonlinear inversion and Monte Carlo

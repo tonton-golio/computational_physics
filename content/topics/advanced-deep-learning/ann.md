@@ -1,26 +1,26 @@
 # Artificial Neural Networks
 
+## Introduction
 
+To get started with artificial neural networks, we work with the **MNIST dataset**. This dataset contains 28x28 grayscale images of handwritten digits (0-9), each labeled with the digit it represents.
 
-KEY: intro
-To get started with artificial neural networks, we'll work with the MNIST dataset. This dataset contains images (28x28) of handwritten digits, each of which is labeled with the digit it represents.
+[[simulation adl-activation-functions]]
 
+## Multilayer Perceptron Model
 
-KEY: multilayer perceptron model
-We load data with
+We load data with:
 ```python
-train_data = datasets.MNIST(root=filepath_assets+'data', 
-                            train=True, download=True, 
+train_data = datasets.MNIST(root=filepath_assets+'data',
+                            train=True, download=True,
                             transform=transforms.ToTensor())
 ```
 
-We then pass it into our data loader, which makes it ready for the model to digest.
+We then pass it into a data loader, which batches and shuffles the data for training:
 ```python
 train_loader = torch.utils.data.DataLoader(train_data, batch_size=100, shuffle=True)
 ```
 
-
-The multilayer perceptron model is a feedforward neural network. It consists of an input layer, one or more hidden layers, and an output layer.
+The **multilayer perceptron** (MLP) is a feedforward neural network consisting of an input layer, one or more hidden layers, and an output layer:
 ```python
 class MultilayerPerceptron(nn.Module):
     def __init__(self, in_sz=784, out_sz=10, layers=[120, 84]):
@@ -28,7 +28,7 @@ class MultilayerPerceptron(nn.Module):
         self.fc1 = nn.Linear(in_sz, layers[0])
         self.fc2 = nn.Linear(layers[0], layers[1])
         self.out = nn.Linear(layers[1], out_sz)
-    
+
     def forward(self, x):
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
@@ -36,17 +36,13 @@ class MultilayerPerceptron(nn.Module):
         return F.log_softmax(x, dim=1)
 ```
 
-We then instanciate our model, define our criterion and optimizer;
+We then instantiate the model, define the loss function and optimizer:
 ```python
 model = MultilayerPerceptron()
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 ```
 
+## Training and Evaluation
 
-KEY: training
-We then train our model. Below is a visualization of the process, with loss and accuracy being displayed.
-
-
-KEY: evaluation
-
+We train the model by iterating over batches, computing the loss, and updating parameters via backpropagation. The training loop tracks loss and accuracy over epochs.

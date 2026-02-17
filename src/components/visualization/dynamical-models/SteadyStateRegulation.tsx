@@ -1,0 +1,146 @@
+'use client';
+
+import React, { useState, useMemo } from 'react';
+import dynamic from 'next/dynamic';
+
+const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
+
+/**
+ * Steady-state concentration for positive and negative regulation.
+ *
+ * Positive regulation:
+ *   dP/dt = P^H / (1 + P^H) - Gamma_P * P
+ *   Steady states are intersections of y = P^H/(1+P^H) and y = Gamma_P * P
+ *
+ * Negative regulation:
+ *   dP/dt = 1 / (1 + P^H) - Gamma_P * P
+ *   Steady states are intersections of y = 1/(1+P^H) and y = Gamma_P * P
+ */
+export default function SteadyStateRegulation() {
+  const [H, setH] = useState(1);
+  const [gammaP, setGammaP] = useState(0.5);
+
+  const { xVals, yPosHill, yNegHill, yLinear } = useMemo(() => {
+    const n = 500;
+    const xMax = 4.0;
+    const xVals: number[] = [];
+    const yPosHill: number[] = [];
+    const yNegHill: number[] = [];
+    const yLinear: number[] = [];
+
+    for (let i = 0; i <= n; i++) {
+      const x = (i / n) * xMax;
+      xVals.push(x);
+      const xH = Math.pow(x, H);
+      yPosHill.push(xH / (1 + xH));
+      yNegHill.push(1.0 / (1 + xH));
+      yLinear.push(gammaP * x);
+    }
+
+    return { xVals, yPosHill, yNegHill, yLinear };
+  }, [H, gammaP]);
+
+  const commonLayout = {
+    height: 380,
+    paper_bgcolor: 'rgba(0,0,0,0)',
+    plot_bgcolor: 'rgba(15,15,25,1)',
+    font: { color: '#9ca3af' },
+    margin: { t: 40, b: 50, l: 50, r: 20 },
+    xaxis: {
+      title: { text: 'Protein concentration P' },
+      range: [0, 4],
+      gridcolor: 'rgba(75,75,100,0.3)',
+      zerolinecolor: 'rgba(75,75,100,0.5)',
+    },
+    yaxis: {
+      title: { text: 'y' },
+      range: [0, 1.05],
+      gridcolor: 'rgba(75,75,100,0.3)',
+      zerolinecolor: 'rgba(75,75,100,0.5)',
+    },
+  };
+
+  return (
+    <div className="w-full bg-[#151525] rounded-lg p-6 mb-8">
+      <h3 className="text-xl font-semibold mb-4 text-white">Steady-State Concentration: Positive vs. Negative Regulation</h3>
+
+      <div className="grid grid-cols-2 gap-6 mb-4">
+        <div>
+          <label className="text-white text-sm">Hill coefficient H: {H}</label>
+          <input type="range" min={1} max={10} step={1} value={H}
+            onChange={(e) => setH(parseInt(e.target.value))} className="w-full" />
+        </div>
+        <div>
+          <label className="text-white text-sm">Degradation rate Gamma_P: {gammaP.toFixed(2)}</label>
+          <input type="range" min={0.05} max={1.0} step={0.05} value={gammaP}
+            onChange={(e) => setGammaP(parseFloat(e.target.value))} className="w-full" />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <Plot
+            data={[
+              {
+                x: xVals, y: yPosHill, type: 'scatter', mode: 'lines',
+                line: { color: '#3b82f6', width: 2.5 },
+                name: 'P^H / (1+P^H)',
+              },
+              {
+                x: xVals, y: yLinear, type: 'scatter', mode: 'lines',
+                line: { color: '#f97316', width: 2, dash: 'dash' },
+                name: 'Gamma_P * P',
+              },
+            ] as any}
+            layout={{
+              ...commonLayout,
+              title: {
+                text: 'Positive regulation',
+                font: { color: '#9ca3af', size: 14 },
+              },
+              legend: { x: 0.5, y: 0.3, bgcolor: 'rgba(0,0,0,0.3)', font: { color: '#9ca3af' } },
+            }}
+            config={{ displayModeBar: false }}
+            style={{ width: '100%' }}
+          />
+        </div>
+        <div>
+          <Plot
+            data={[
+              {
+                x: xVals, y: yNegHill, type: 'scatter', mode: 'lines',
+                line: { color: '#22c55e', width: 2.5 },
+                name: '1 / (1+P^H)',
+              },
+              {
+                x: xVals, y: yLinear, type: 'scatter', mode: 'lines',
+                line: { color: '#f97316', width: 2, dash: 'dash' },
+                name: 'Gamma_P * P',
+              },
+            ] as any}
+            layout={{
+              ...commonLayout,
+              title: {
+                text: 'Negative regulation',
+                font: { color: '#9ca3af', size: 14 },
+              },
+              legend: { x: 0.5, y: 0.95, bgcolor: 'rgba(0,0,0,0.3)', font: { color: '#9ca3af' } },
+            }}
+            config={{ displayModeBar: false }}
+            style={{ width: '100%' }}
+          />
+        </div>
+      </div>
+
+      <div className="mt-4 text-sm text-gray-400">
+        <p>
+          The <strong className="text-gray-300">steady-state concentrations</strong> are found at the intersections
+          of the production curve and the degradation line. For <em>positive regulation</em>,
+          when the Hill coefficient H is large enough, the sigmoid production curve can intersect
+          the linear degradation line at multiple points, creating <strong className="text-gray-300">bistability</strong>.
+          For <em>negative regulation</em>, there is always a unique steady state.
+        </p>
+      </div>
+    </div>
+  );
+}

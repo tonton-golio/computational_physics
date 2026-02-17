@@ -1,0 +1,55 @@
+'use client';
+
+import React, { useMemo, useState } from 'react';
+import dynamic from 'next/dynamic';
+
+const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
+
+interface SimulationProps { id: string }
+
+export default function ContextualBanditExp4({ id }: SimulationProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+  const [rounds, setRounds] = useState(400);
+  const contexts = useMemo(() => Array.from({ length: rounds }, (_, t) => (Math.sin(t / 18) > 0 ? 1 : 0)), [rounds]);
+  const oracle = useMemo(() => contexts.map((c) => (c === 1 ? 1 : 0)), [contexts]);
+  const exp4Choice = useMemo(
+    () =>
+      contexts.map((c, t) => {
+        const pseudo = Math.sin((t + 1) * 91.177) * 43758.5453;
+        const u = pseudo - Math.floor(pseudo);
+        const exploreProb = Math.max(0.08, 0.5 * Math.exp(-t / 150));
+        return u < exploreProb ? 1 - c : c;
+      }),
+    [contexts]
+  );
+  const rewardOracle = useMemo(() => oracle.map(() => 1), [oracle]);
+  const rewardExp4 = useMemo(() => exp4Choice.map((a, t) => (a === oracle[t] ? 1 : 0)), [exp4Choice, oracle]);
+  const cumOracle = useMemo(() => rewardOracle.map((_, i) => i + 1), [rewardOracle]);
+  const cumExp4 = useMemo(() => rewardExp4.reduce<number[]>((acc, v, i) => { acc.push((acc[i - 1] ?? 0) + v); return acc; }, []), [rewardExp4]);
+  const regret = useMemo(() => cumOracle.map((v, i) => v - cumExp4[i]), [cumOracle, cumExp4]);
+  const x = Array.from({ length: rounds }, (_, i) => i + 1);
+
+  return (
+    <div className="w-full rounded-lg bg-[#151525] p-6 mb-8">
+      <h3 className="text-xl font-semibold mb-3 text-white">Contextual Bandit (EXP4-style)</h3>
+      <label className="text-xs text-gray-300">Rounds: {rounds}<input className="w-full mb-4" type="range" min={100} max={1000} step={25} value={rounds} onChange={(e) => setRounds(parseInt(e.target.value))} /></label>
+      <Plot
+        data={[
+          { x, y: cumExp4, type: 'scatter', mode: 'lines', name: 'Learner cumulative reward', line: { color: '#60a5fa', width: 2 } },
+          { x, y: cumOracle, type: 'scatter', mode: 'lines', name: 'Best contextual policy', line: { color: '#4ade80', width: 2 } },
+          { x, y: regret, type: 'scatter', mode: 'lines', name: 'Regret', line: { color: '#f87171', width: 2, dash: 'dot' } },
+        ]}
+        layout={{
+          title: { text: 'Context-dependent actions reduce regret' },
+          xaxis: { title: { text: 'round' }, color: '#9ca3af' },
+          yaxis: { title: { text: 'cumulative reward' }, color: '#9ca3af' },
+          height: 420,
+          paper_bgcolor: 'rgba(0,0,0,0)',
+          plot_bgcolor: 'rgba(15,15,25,1)',
+          font: { color: '#9ca3af' },
+        }}
+        config={{ displayModeBar: false }}
+        style={{ width: '100%' }}
+      />
+    </div>
+  );
+}

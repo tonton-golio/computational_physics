@@ -3,12 +3,15 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import Plotly from 'react-plotly.js';
 import { Data, Layout } from 'plotly.js';
+import StressStrainCurve from './continuum-mechanics/StressStrainCurve';
+import StressTensor from './continuum-mechanics/StressTensor';
+import ElasticWave from './continuum-mechanics/ElasticWave';
 
 interface SimulationProps {
   id: string;
 }
 
-// Stress-Strain Simulation
+// Stress-Strain Simulation (legacy, kept for backward compatibility)
 function StressStrainSim({ }: SimulationProps) {
   const [params, setParams] = useState({
     E: 200, // Young's modulus, GPa
@@ -71,9 +74,9 @@ function StressStrainSim({ }: SimulationProps) {
     ];
 
     const layout: Partial<Layout> = {
-      title: 'Stress-Strain Curve',
-      xaxis: { title: 'Strain (ε)' },
-      yaxis: { title: 'Stress (σ) [GPa]' },
+      title: { text: 'Stress-Strain Curve' },
+      xaxis: { title: { text: 'Strain (\u03b5)' } },
+      yaxis: { title: { text: 'Stress (\u03c3) [GPa]' } },
       height: 500,
       paper_bgcolor: 'rgba(0,0,0,0)',
       plot_bgcolor: 'rgba(15,15,25,1)',
@@ -100,7 +103,7 @@ function StressStrainSim({ }: SimulationProps) {
           />
         </div>
         <div>
-          <label className="text-white">Hardening Coefficient (α): {params.alpha.toFixed(3)}</label>
+          <label className="text-white">Hardening Coefficient (&alpha;): {params.alpha.toFixed(3)}</label>
           <input
             type="range"
             min={0.001}
@@ -142,8 +145,8 @@ function StressStrainSim({ }: SimulationProps) {
         config={{ displayModeBar: false }}
       />
       <div className="mt-4 text-sm text-gray-300">
-        <p>The linear curve follows Hooke&apos;s law: σ = Eε</p>
-        <p>The nonlinear curve uses the Ramberg-Osgood model: ε = σ/E + α(σ/E)^n</p>
+        <p>The linear curve follows Hooke&apos;s law: &sigma; = E&epsilon;</p>
+        <p>The nonlinear curve uses the Ramberg-Osgood model: &epsilon; = &sigma;/E + &alpha;(&sigma;/E)^n</p>
       </div>
     </div>
   );
@@ -378,8 +381,8 @@ function FEM1DBarSim({ }: SimulationProps) {
             data={meshData}
             layout={{
               title: { text: 'Deformed Shape', font: { color: '#9ca3af' } },
-              xaxis: { title: { text: 'Position x', color: '#9ca3af' }, color: '#9ca3af' },
-              yaxis: { title: { text: 'y', color: '#9ca3af' }, range: [-0.1, 0.1], color: '#9ca3af' },
+              xaxis: { title: { text: 'Position x', font: { color: '#9ca3af' } }, color: '#9ca3af' },
+              yaxis: { title: { text: 'y', font: { color: '#9ca3af' } }, range: [-0.1, 0.1], color: '#9ca3af' },
               height: 300,
               paper_bgcolor: 'rgba(0,0,0,0)',
               plot_bgcolor: 'rgba(15,15,25,1)',
@@ -393,8 +396,8 @@ function FEM1DBarSim({ }: SimulationProps) {
             data={dispData}
             layout={{
               title: { text: 'Displacement vs Exact', font: { color: '#9ca3af' } },
-              xaxis: { title: { text: 'Position x', color: '#9ca3af' }, color: '#9ca3af' },
-              yaxis: { title: { text: 'Displacement u', color: '#9ca3af' }, color: '#9ca3af' },
+              xaxis: { title: { text: 'Position x', font: { color: '#9ca3af' } }, color: '#9ca3af' },
+              yaxis: { title: { text: 'Displacement u', font: { color: '#9ca3af' } }, color: '#9ca3af' },
               height: 300,
               paper_bgcolor: 'rgba(0,0,0,0)',
               plot_bgcolor: 'rgba(15,15,25,1)',
@@ -408,8 +411,8 @@ function FEM1DBarSim({ }: SimulationProps) {
             data={strainData}
             layout={{
               title: { text: 'Strain per Element', font: { color: '#9ca3af' } },
-              xaxis: { title: { text: 'Element', color: '#9ca3af' }, tickvals: strains.map((_, i) => i), ticktext: strains.map((_, i) => `E${i+1}`), color: '#9ca3af' },
-              yaxis: { title: { text: 'Strain ε', color: '#9ca3af' }, color: '#9ca3af' },
+              xaxis: { title: { text: 'Element', font: { color: '#9ca3af' } }, tickvals: strains.map((_, i) => i), ticktext: strains.map((_, i) => `E${i+1}`), color: '#9ca3af' },
+              yaxis: { title: { text: 'Strain \u03b5', font: { color: '#9ca3af' } }, color: '#9ca3af' },
               height: 300,
               paper_bgcolor: 'rgba(0,0,0,0)',
               plot_bgcolor: 'rgba(15,15,25,1)',
@@ -426,4 +429,7 @@ function FEM1DBarSim({ }: SimulationProps) {
 export const CONTINUUM_MECHANICS_SIMULATIONS: Record<string, React.ComponentType<SimulationProps>> = {
   'stress-strain-sim': StressStrainSim,
   'fem-1d-bar-sim': FEM1DBarSim,
+  'stress-strain-curve': StressStrainCurve,
+  'mohr-circle': StressTensor,
+  'elastic-wave': ElasticWave,
 };

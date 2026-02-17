@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 
 // Dynamically import Plot to avoid SSR issues
@@ -51,7 +51,7 @@ export function MandelbrotFractal() {
     return [
       {
         z,
-        type: 'heatmap',
+        type: 'heatmap' as const,
         colorscale: 'Viridis',
         showscale: false,
       },
@@ -60,10 +60,10 @@ export function MandelbrotFractal() {
 
   const handleRelayout = (event: Record<string, unknown>) => {
     if (event['xaxis.range[0]'] && event['xaxis.range[1]']) {
-      setXRange([event['xaxis.range[0]'], event['xaxis.range[1]']]);
+      setXRange([event['xaxis.range[0]'] as number, event['xaxis.range[1]'] as number]);
     }
     if (event['yaxis.range[0]'] && event['yaxis.range[1]']) {
-      setYRange([event['yaxis.range[0]'], event['yaxis.range[1]']]);
+      setYRange([event['yaxis.range[0]'] as number, event['yaxis.range[1]'] as number]);
     }
   };
 

@@ -1,23 +1,18 @@
 # Variational Autoencoders
 
+## Introduction
 
+**Variational autoencoders** (VAEs) are symmetric encoder-decoder neural networks used for data compression, dimensionality reduction, image generation, and intrinsic dimensionality estimation.
 
-KEY: intro
-Variation auto encoders are symmetric encoder decoder neural networks. They can be used for data compression, dimensionality reduction, and image generation, intrinsic dimensionality estimation, and probably other things.
+A standard autoencoder maps input data to a fixed-dimensional latent space through an encoder and reconstructs the input from the latent representation through a decoder. The objective is to minimize the reconstruction loss.
 
-<div style="display: flex; justify-content: center; align-items: center;">
-    <img src="https://miro.medium.com/v2/resize:fit:1100/format:webp/1*UdOybs9wOe3zW8vDAfj9VA@2x.png" width=500>
-</div>
+A VAE extends this by adding a **probabilistic layer** to the encoder that models the probability distribution of the latent space. This regularization ensures the latent space is smooth and continuous, enabling meaningful interpolation and generation.
 
-A normal autoencoder learns to map the input data to a fixed-dimensional latent space through an encoder network and then reconstructs the input data from the latent space through a decoder network. The objective of a normal autoencoder is to minimize the reconstruction loss between the input data and the reconstructed data.
+[[simulation adl-pca-demo]]
+[[simulation adl-latent-interpolation]]
 
-In contrast, a VAE extends this by adding a probabilistic layer to the encoder that models the probability distribution of the latent space.
+## VAE Model (Fully Connected)
 
-
-    
-
-KEY: VAE model
-### The model
 ```python
 class VAE(nn.Module):
     def __init__(self):
@@ -28,32 +23,31 @@ class VAE(nn.Module):
         self.fc4 = nn.Linear(400, 784)
         self.relu = nn.ReLU()
         self.sigmoid = nn.Sigmoid()
-
         self.fc__ = nn.Linear(400, 400)
-    
+
     def encode(self, x):
         h1 = self.relu(self.fc1(x))
         h1 = self.relu(self.fc__(h1))
         return self.fc2(h1)
-    
+
     def reparameterize(self, mu):
         std = torch.exp(0.5*mu)
         eps = torch.randn_like(std)
         return mu + eps*std
-    
+
     def decode(self, z):
         h3 = self.relu(self.fc3(z))
         h3 = self.relu(self.fc__(h3))
         return self.sigmoid(self.fc4(h3))
-    
+
     def forward(self, x):
         mu = self.encode(x.view(-1, 784))
         z = self.reparameterize(mu)
         return self.decode(z), mu
 ```
 
-KEY: VAE conv model
-### The model
+## VAE with Convolutional Layers
+
 ```python
 class VAE_with_conv2d(nn.Module):
     def __init__(self):
@@ -74,7 +68,6 @@ class VAE_with_conv2d(nn.Module):
         self.relu = nn.ReLU()
         self.sigmoid = nn.Sigmoid()
 
-
     def encode(self, x):
         h1 = self.relu(self.conv1(x))
         h1 = self.relu(self.conv2(h1))
@@ -85,32 +78,27 @@ class VAE_with_conv2d(nn.Module):
         h1 = self.relu(self.fc2(h1))
         h1 = self.relu(self.fc3(h1))
         return self.fc4(h1)
-    
-    
+
     def reparameterize(self, mu_std):
         std = mu_std[:, 2:]
         mu = mu_std[:, :2]
         eps = torch.randn_like(std)
         return mu + eps*std
-    
+
     def decode(self, z):
-        #st.write(z.shape)
         h3 = self.relu(self.fc4_(z))
         h3 = self.relu(self.fc3_(h3))
         h3 = self.relu(self.fc2_(h3))
         h3 = self.fc1_(h3)
         h3 = h3.view(-1, 1, 28, 28)
         return self.sigmoid(h3)
-    
+
     def forward(self, x):
         mu_std = self.encode(x)
         z = self.reparameterize(mu_std)
         return self.decode(z), mu_std
 ```
 
+## Latent Space Visualization
 
-
-
-KEY: latent space
-### The latent space
-We take a single batch, encode all the images. Look where they fall in the latent space -> we then map this latent space to 2d with PCA. Selecting a point on this 2d map, we can then decode it to an image.
+We take a single batch, encode all images, and examine where they fall in the latent space. By mapping the latent space to 2D using PCA, we can visualize how different digits cluster. Selecting a point on this 2D map and decoding it produces a generated image, demonstrating the smooth interpolation property of the VAE latent space.

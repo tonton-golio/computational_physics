@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
-import { PlotData } from 'plotly.js';
+// PlotData type import removed - using inferred types
 import { Slider } from '@/components/ui/slider';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
@@ -91,7 +91,7 @@ export function FEMSim() {
   const [E, setE] = useState([200e9]);
   const [P, setP] = useState([1000]);
 
-  const meshData = useMemo<PlotData[]>(() => {
+  const meshData = useMemo(() => {
     const { nodes, deformed } = solveFEM(ne[0], L[0], A[0], E[0], P[0]);
     return [
       {
@@ -113,7 +113,7 @@ export function FEMSim() {
     ];
   }, [ne, L, A, E, P]);
 
-  const displacementData = useMemo<PlotData[]>(() => {
+  const displacementData = useMemo(() => {
     const { nodes, u } = solveFEM(ne[0], L[0], A[0], E[0], P[0]);
     return [
       {
@@ -143,8 +143,8 @@ export function FEMSim() {
                   layout={{
                     width: 500,
                     height: 300,
-                    xaxis: { title: 'Position x' },
-                    yaxis: { title: 'Deformation (exaggerated)' },
+                    xaxis: { title: { text: 'Position x' } },
+                    yaxis: { title: { text: 'Deformation (exaggerated)' } },
                     margin: { t: 20, b: 40, l: 60, r: 20 },
                   }}
                   config={{ displayModeBar: false }}
@@ -159,8 +159,8 @@ export function FEMSim() {
                   layout={{
                     width: 500,
                     height: 300,
-                    xaxis: { title: 'Position x' },
-                    yaxis: { title: 'Displacement u' },
+                    xaxis: { title: { text: 'Position x' } },
+                    yaxis: { title: { text: 'Displacement u' } },
                     margin: { t: 20, b: 40, l: 60, r: 20 },
                   }}
                   config={{ displayModeBar: false }}

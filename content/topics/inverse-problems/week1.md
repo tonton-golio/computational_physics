@@ -1,60 +1,60 @@
-# Density Variations Exercise
+# Week 1 - Information, Entropy, and Uncertainty
 
-# Ex 1
-### Density variations (Tikonov)
-Determine density variations near the earth's surface, from a series of measurements of the horizontal component of the gravitational gradient at the surface.
+Inverse problems are not only about fitting curves.
+They are about deciding which model parameters are actually supported by the data.
 
+---
 
-# Ex 2
-Density at each measuring location is described by;
+## Information as Uncertainty Reduction
+
+If $X$ is a random variable with probabilities $p_i$, the **Shannon entropy** is
+
 $$
-	d_j = \frac{∂g}{∂x} (x_j) =∫^∞_0 \frac{2G_\text{const.}z}{x_j^2 + z^2} ∆ρ(z) dz.
+H(X)=-\sum_i p_i\log p_i.
 $$
 
-The first step in solving this inverse problem is discretizing the integral. An initial idea is to replace the integration with a summation;
-$$
-    d_j = \sum_i^n \frac{2G_\text{const.}z_i}{x_j^2 + z_i^2} ∆ρ(z_i),
-$$
-but such a method yields no progress. Insted we do the integration manually:
-$$
-	\begin{align*}
-	    d_j^i = G_\text{const.}\log
-	        \left(
-	            \frac{z^{i2}_\text{base} + x_j^2}{z^{i2}_\text{top} + x_j^2}
-	        \right)
-	        \delta\rho_i
-	    &&\Rightarrow&&
-	    d_j = \sum_i G_\text{const.}\log
-	        \left(
-	            \frac{z^{i2}_\text{base} + x_j^2}{z^{i2}_\text{top} + x_j^2}
-	        \right)
-	        \delta\rho_i
-	\end{align*}
-$$
-# Ex 3
-in which the summed-over term (excl. density variation) is;
-$$
-	\begin{align*}
-	    G_{j,i} = G_\text{const.}\log
-	        \left(
-	            \frac{z^{i2}_\text{base} + x_j^2}{z^{i2}_\text{top} + x_j^2}
-	        \right).
-	\end{align*}
-$$
-By calculating $G$ for each of our $x$-positions as well as a range of depths, $z$, we obtain the plot shown on the right.
+High entropy means high uncertainty.
+Low entropy means observations are informative and concentrated.
 
+[[figure claude-shannon]]
 
-# Ex 4
-Now we have G, we can move on to the next step: **determine the parameters!**
+[[simulation entropy-demo]]
+
+---
+
+## Comparing Candidate Distributions
+
+When we compare two probability models $P$ and $Q$, a standard choice is the **Kullback-Leibler divergence**:
+
 $$
-    \bar{m} = [G^TG + \epsilon^2I]^{-1} G^T d_\text{obs}
+D_{\mathrm{KL}}(P\|Q)=\sum_i P(i)\log\frac{P(i)}{Q(i)}.
 $$
-this comes from minimizing: some regularized loss function, (see image on phone). The epsilon must be estimated, so lets just try a range, and plot an imshow of the stacked $\bar{m}$ vectors.
 
+Interpretation:
 
-# Ex 5
-##### Final mimization
-Something something about what we are finding on the right...
+- $D_{\mathrm{KL}}=0$ only when the distributions match
+- Larger values indicate larger mismatch
+- It is asymmetric, so direction matters
 
+[[simulation kl-divergence]]
 
+---
 
+## Why This Matters for Inversion
+
+In inversion, we often compare:
+
+- observed data distribution vs model-predicted distribution
+- prior parameter belief vs posterior parameter belief
+
+These comparisons guide model selection and regularization strength.
+
+A practical takeaway is simple: **fit quality is not enough**.
+You also want a model that is informative, stable, and physically plausible.
+
+---
+
+## Week 1 Takeaway
+
+Information-theoretic tools quantify whether your model explains data efficiently.
+In later weeks, we combine this idea with regularized optimization and uncertainty-aware inference.

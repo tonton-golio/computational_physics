@@ -1,1 +1,13 @@
-npm run lint
+#!/usr/bin/env sh
+
+set -eu
+
+staged_files="$(git diff --cached --name-only --diff-filter=ACMR -- '*.js' '*.jsx' '*.ts' '*.tsx')"
+
+if [ -z "$staged_files" ]; then
+  echo "pre-commit: no staged JS/TS files to lint"
+  exit 0
+fi
+
+echo "pre-commit: linting staged JS/TS files"
+npx eslint $staged_files

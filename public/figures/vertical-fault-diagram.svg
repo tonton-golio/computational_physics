@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420">
+  <rect x="0" y="0" width="900" height="420" fill="#0f172a"/>
+  <rect x="0" y="0" width="900" height="80" fill="#1e293b"/>
+  <text x="24" y="50" fill="#e2e8f0" font-family="Arial, sans-serif" font-size="28">Vertical Fault Geometry</text>
+  <line x1="80" y1="80" x2="80" y2="380" stroke="#334155" stroke-width="2"/>
+  <line x1="80" y1="380" x2="820" y2="380" stroke="#334155" stroke-width="2"/>
+  <line x1="450" y1="80" x2="450" y2="380" stroke="#ef4444" stroke-width="4" stroke-dasharray="10 8"/>
+  <text x="462" y="112" fill="#fecaca" font-family="Arial, sans-serif" font-size="18">fault plane</text>
+
+  <rect x="110" y="120" width="300" height="220" fill="#1d4ed8" fill-opacity="0.22" stroke="#60a5fa" stroke-width="2"/>
+  <rect x="490" y="120" width="300" height="220" fill="#f97316" fill-opacity="0.2" stroke="#fdba74" stroke-width="2"/>
+  <text x="140" y="150" fill="#bfdbfe" font-family="Arial, sans-serif" font-size="18">left slab region</text>
+  <text x="520" y="150" fill="#fed7aa" font-family="Arial, sans-serif" font-size="18">right slab region</text>
+
+  <circle cx="560" cy="60" r="7" fill="#22d3ee"/>
+  <circle cx="620" cy="60" r="7" fill="#22d3ee"/>
+  <circle cx="680" cy="60" r="7" fill="#22d3ee"/>
+  <circle cx="740" cy="60" r="7" fill="#22d3ee"/>
+  <text x="520" y="35" fill="#67e8f9" font-family="Arial, sans-serif" font-size="16">surface measurement points</text>
+
+  <line x1="560" y1="60" x2="450" y2="140" stroke="#22d3ee" stroke-opacity="0.5"/>
+  <line x1="620" y1="60" x2="450" y2="190" stroke="#22d3ee" stroke-opacity="0.5"/>
+  <line x1="680" y1="60" x2="450" y2="240" stroke="#22d3ee" stroke-opacity="0.5"/>
+  <line x1="740" y1="60" x2="450" y2="290" stroke="#22d3ee" stroke-opacity="0.5"/>
+
+  <text x="95" y="405" fill="#94a3b8" font-family="Arial, sans-serif" font-size="16">x</text>
+  <text x="50" y="96" fill="#94a3b8" font-family="Arial, sans-serif" font-size="16">z</text>
+</svg>

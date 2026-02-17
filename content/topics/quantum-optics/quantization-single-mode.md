@@ -6,17 +6,17 @@
 - Number state
 - Field fluctuations
 
-# __Readings__
+# Readings
 Ch. 2.1-3
 
-# __Why do we need to quantize?__
+# Why do we need to quantize?
 - So far, we learned that electron in high-energy state decays back to ground state with the emission of light.
 - However, according to the Schrödinger equation $$\hat{H} \Ket{\psi_m} = E_m \Ket{\psi_m}$$, electron is stable in excited state i.e. *electron stays in high energy state*.
 - How do the decay? Something goes wrong. Why does spontaneous emission happen?
 - The answer is **fluctuations**. 
 - The new question is *what kind of fluctuations do they have*?
 
-# __Can classical electromagnetic describe this fluctuations?__
+# Can classical electromagnetic describe this fluctuations?
 In classical electromagnetic, energy of electron in electric field $E(t)$ is 
 $$ e \cdot E(t) $$
 Thus, when there is no light, there is no fluctuation.
@@ -24,7 +24,7 @@ However, it is known that even without light, there is a fluctuation i.e. quantu
 mechanical fluctuation.
 We need to use quantum mechanics.
 
-# __2.1 Quantization of Single Mode Field__
+# 2.1 Quantization of Single Mode Field
 #### Motivation
 Let's start our quantization of electromagnetic waves.
 What are we gonna quantize? Of course, as you know, it is **energy**.
@@ -121,7 +121,7 @@ Here, we introduced $p(t)=\dot{q}(t)$. Again we gonna see why we use symbol $p$.
 #### Finally, let's calculate energy!
 We have electric field and magnetic field so we can calculate energy.
 
-{{graph:harmonic-motion}}
+[[simulation wigner-number-state]]
 
 However, as you can see the difficulty is $\int \mathrm{d} V$. 
 How do we process this?
@@ -526,148 +526,3 @@ $$
 #### Properties of eigenstate of number state
 - Orthogonal $\Braket{n|n^\prime} = \delta_{nn^\prime}$
 - Complete $\sum_{n=0}^\infty\Ket{n}\Bra{n} = 1$
-
-# __2.2 Quantum fluctuations__
-Time average of electric field is 
-$$
-\begin{aligned}
-    \left<
-        \hat{\vec{E}}
-    \right>
-    &=
-    \Braket{n|\hat{\vec{E}}|n}
-    \\&=
-    \sqrt{
-        \frac{\hbar \omega}{\epsilon_0 V}
-    }
-    \sin (kz) 
-    \Braket{n|\left(\hat{a}+\hat{a}^\dag\right)|n}
-    \\&=
-    0
-\end{aligned}
-$$
-I see. How about variance?
-$$
-\begin{aligned}
-    \left<
-        \hat{\vec{E}}^2
-    \right>
-    &=
-    \Braket{n|\hat{\vec{E}}^2|n}
-    \\&=
-    \frac{\hbar \omega}{\epsilon_0 V}
-    \sin^2 (kz) 
-    \Braket{
-        n|
-        \left(
-        \hat{a}^2 + {\hat{a}^\dag}^2 + \hat{a}\hat{a}^\dag + \hat{a}^\dag\hat{a}
-        \right)
-        |n
-    }
-    \\&=
-    \frac{\hbar \omega}{\epsilon_0 V}
-    \sin^2 (kz) 
-    \left(
-        n+\frac{1}{2}
-    \right)
-\end{aligned}
-$$
-Wow! Even in the vacuum state ($n=0$), electric field fluctuates!!
-
-# __2.3 Quadrature Operators__
-Similar to $\hat{q}$ and $\hat{p}$ operators, we introduce quadrature operators
-$\hat{X_1}$ and $\hat{X_2}$..
-$$
-    \hat{X_1}
-    =
-    \frac{\hat{a} + \hat{a}^\dag}{2} 
-    \propto
-    \hat{q}(t)
-$$
-$$
-    \hat{X_2}
-    =
-    -i
-    \frac{\hat{a} - \hat{a}^\dag}{2} 
-    \propto
-    \hat{p}(t)
-$$
-$$
-    \left[
-        \hat{X_1}, \hat{X_2}
-    \right]
-    =
-    \frac{1}{2}
-$$
-Notice that quadrature operators are observable and homodyne technique is used for
-that.
-And these operators does not commute. This is because Heisenberg's uncertainty.
-
-We can rewrite electric field with quadrature operators.
-$$
-\begin{aligned}
-    \hat{E_x}
-    &=
-    \mathcal{E}_0
-    \left[
-        \hat{a}e^{-i\omega t}
-        +
-        \hat{a}^\dag e^{i\omega t}
-    \right]
-    \sin (kz)
-    \\&=
-    \mathcal{E}_0
-    \sin (kz)
-    \left[
-        \left(
-            \hat{a}
-            +
-            \hat{a}^\dag
-        \right)
-        \cos \omega t
-        -
-        i
-        \left(
-            \hat{a}
-            -
-            \hat{a}^\dag
-        \right)
-        \sin \omega t
-    \right]
-    \\&=
-    2
-    \mathcal{E}_0
-    \sin (kz)
-    \left[
-        \hat{X_1}
-        \cos \omega t
-        +
-        \hat{X_2}
-        \sin \omega t
-    \right]
-\end{aligned}
-$$
-Important staff of quadrature operators is their uncertainty.
-$$
-    \left<
-        \left(
-            \Delta \hat{X}_1
-        \right)^2
-    \right>
-    \left<
-        \left(
-            \Delta \hat{X}_2
-        \right)^2
-    \right>
-    \ge
-    \frac{1}{4}
-    \left|
-        \left<
-            \left[
-                \hat{X}_1, \hat{X}_2
-            \right]
-        \right>
-    \right|^2
-    \ge
-    \frac{1}{16}
-$$

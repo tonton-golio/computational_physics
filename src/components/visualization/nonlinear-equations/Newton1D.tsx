@@ -137,9 +137,9 @@ const Newton1D: React.FC = () => {
   }, [f, path, currentStep]);
 
   const layout = {
-    title: `${functions[selectedFunc].name} - Newton's Method Cobweb`,
-    xaxis: {title: 'x'},
-    yaxis: {title: 'y'},
+    title: { text: `${functions[selectedFunc].name} - Newton's Method Cobweb` },
+    xaxis: {title: { text: 'x' }},
+    yaxis: {title: { text: 'y' }},
     width: 800,
     height: 600,
   };

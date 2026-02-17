@@ -1,0 +1,169 @@
+'use client';
+
+import React, { useState, useMemo } from 'react';
+import dynamic from 'next/dynamic';
+
+const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
+
+function runBetHedging(
+  p: number,
+  noise: number,
+  investPerRound: number,
+  nsteps: number,
+  winMultiplier: number,
+  lossMultiplier: number,
+  numAgents: number
+): number[][] {
+  const allCapitals: number[][] = [];
+
+  for (let a = 0; a < numAgents; a++) {
+    const capital: number[] = [1];
+    for (let i = 0; i < nsteps; i++) {
+      const probLoss = 1 / (2 * (1 - p)) + (Math.random() * 2 - 1) * noise;
+      const invested = capital[i] * investPerRound;
+      const kept = capital[i] - invested;
+      if (Math.random() > probLoss) {
+        capital.push(kept + invested * winMultiplier);
+      } else {
+        capital.push(kept + invested * lossMultiplier);
+      }
+    }
+    allCapitals.push(capital);
+  }
+
+  return allCapitals;
+}
+
+export function BetHedging() {
+  const [p, setP] = useState(0.05);
+  const [noise, setNoise] = useState(1.0);
+  const [investPerRound, setInvestPerRound] = useState(0.5);
+  const [nsteps, setNsteps] = useState(500);
+  const [winMultiplier, setWinMultiplier] = useState(1.5);
+  const [lossMultiplier, setLossMultiplier] = useState(0.5);
+  const [seed, setSeed] = useState(0);
+
+  const numAgents = 5;
+
+  const results = useMemo(() => {
+    return runBetHedging(p, noise, investPerRound, nsteps, winMultiplier, lossMultiplier, numAgents);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [p, noise, investPerRound, nsteps, winMultiplier, lossMultiplier, seed]);
+
+  const colors = ['#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
+
+  const darkLayout = {
+    paper_bgcolor: 'rgba(0,0,0,0)',
+    plot_bgcolor: 'rgba(15,15,25,1)',
+    font: { color: '#9ca3af' },
+    margin: { t: 40, r: 20, b: 50, l: 60 },
+    xaxis: { gridcolor: '#1e1e2e' },
+    yaxis: { gridcolor: '#1e1e2e' },
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div>
+          <label className="text-sm text-gray-400 block mb-1">Fear probability p: {p.toFixed(2)}</label>
+          <input
+            type="range"
+            min={0}
+            max={0.3}
+            step={0.01}
+            value={p}
+            onChange={e => setP(Number(e.target.value))}
+            className="w-full"
+          />
+        </div>
+        <div>
+          <label className="text-sm text-gray-400 block mb-1">Noise: {noise.toFixed(1)}</label>
+          <input
+            type="range"
+            min={0}
+            max={3}
+            step={0.1}
+            value={noise}
+            onChange={e => setNoise(Number(e.target.value))}
+            className="w-full"
+          />
+        </div>
+        <div>
+          <label className="text-sm text-gray-400 block mb-1">Invest fraction: {investPerRound.toFixed(2)}</label>
+          <input
+            type="range"
+            min={0.01}
+            max={1}
+            step={0.01}
+            value={investPerRound}
+            onChange={e => setInvestPerRound(Number(e.target.value))}
+            className="w-full"
+          />
+        </div>
+        <div>
+          <label className="text-sm text-gray-400 block mb-1">Win multiplier: {winMultiplier.toFixed(1)}</label>
+          <input
+            type="range"
+            min={1}
+            max={4}
+            step={0.1}
+            value={winMultiplier}
+            onChange={e => setWinMultiplier(Number(e.target.value))}
+            className="w-full"
+          />
+        </div>
+        <div>
+          <label className="text-sm text-gray-400 block mb-1">Loss multiplier: {lossMultiplier.toFixed(2)}</label>
+          <input
+            type="range"
+            min={0}
+            max={1}
+            step={0.05}
+            value={lossMultiplier}
+            onChange={e => setLossMultiplier(Number(e.target.value))}
+            className="w-full"
+          />
+        </div>
+        <div>
+          <label className="text-sm text-gray-400 block mb-1">Steps: {nsteps}</label>
+          <input
+            type="range"
+            min={50}
+            max={3000}
+            step={50}
+            value={nsteps}
+            onChange={e => setNsteps(Number(e.target.value))}
+            className="w-full"
+          />
+        </div>
+      </div>
+
+      <button
+        onClick={() => setSeed(s => s + 1)}
+        className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded text-sm"
+      >
+        Re-run
+      </button>
+
+      <Plot
+        data={results.map((capital, idx) => ({
+          y: capital,
+          type: 'scatter' as const,
+          mode: 'lines' as const,
+          line: { color: colors[idx % colors.length], width: 1.5 },
+          name: `Agent ${idx + 1}`,
+        }))}
+        layout={{
+          ...darkLayout,
+          title: { text: 'Bet Hedging: Capital Over Time', font: { size: 14, color: '#9ca3af' } },
+          xaxis: { ...darkLayout.xaxis, title: { text: 'Timestep' } },
+          yaxis: { ...darkLayout.yaxis, title: { text: 'Capital' }, type: 'log' },
+          showlegend: true,
+          legend: { font: { color: '#9ca3af' } },
+        }}
+        config={{ responsive: true, displayModeBar: false }}
+        style={{ width: '100%', height: 400 }}
+      />
+    </div>
+  );
+}

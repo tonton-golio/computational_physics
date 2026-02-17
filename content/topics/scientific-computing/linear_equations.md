@@ -2,10 +2,10 @@
 
 
 
-## Header 1
+## Why Linear Systems Matter
 Linear systems are special: It's something we can solve really well, and it covers an enormous amount of problems. Even when you've got a non-linear system, you can isolate the linearity and solve that, and treat the non-linearity in another way.
 
-## Header 2
+## From Abstract Linear Systems to Matrices
 #### Going from abstract linear systems to matrices
 
 A **linear function** is anything that behaves in the way we call linear. They exist in vector spaces: A mapping $F: X \rightarrow Y$ (abstract, eg: wave functions) is linear if $F(ax + bx') = aF(x) + bF(x')$. 
@@ -36,7 +36,7 @@ Find all $x \in X$ such that $F(x) = y$ (some known $y\in Y$)
 3. Solve matrix equation $Fx=y$, where $F$ and $y$ are known
 4. Dot result $x$ with $e$ basis to get the result in the problem domain $x=x_1e_1+\dots+x_ne_n$
 
-## Can we solve
+## Existence of Solutions
 #### Can we solve $F(x)=y$?
 Yes, when solutions exist!
 
@@ -155,7 +155,7 @@ def solve_lin_eq(M,z):
     y = forward_substitute(L,z)
     return backward_substitute(U,y)
 
-## Header 3
+## Conditioning and Error Analysis
 Consider the matrix equation $Ax=b$
 For i in I, $m: a_{11}x_1 + a_{12}x_2 + \dots + a_{in}x_n \equiv A_i^T x=b_i$. A hypersphere
 

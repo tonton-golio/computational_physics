@@ -2,10 +2,10 @@
 
 
 
-## __Introduction__
+## Introduction
 Beyond the usual Matplotlib, NumPy and SciPy packages, here are a few recommendations that may help in problem solving.
 
-## __Shapely__
+## Shapely
 Shapely provides a way to conduct easy geometric calculations and representation.
 
 [Shapely Documentation](https://shapely.readthedocs.io/en/stable/manual.html)
@@ -14,21 +14,21 @@ Shapely provides a way to conduct easy geometric calculations and representation
 
 Highlighted functions: polygon, clip_by_rect,
 
-## __SymPy__
+## SymPy
 SymPy allows maple/wolframalpha-like calculus analysis inside Python, it is very convenient for automating tensor calculations. Example functions for various tensors are given below.
 
 [SymPy Documentation](https://docs.sympy.org/latest/index.html)
 
 Highlighted functions: lambdify, symbols
 
-## __Plotly__
+## Plotly
 Greatly extends the functionality of interactive 3D graphics compared to matplotlib.
 
 [Plotly Documentation](https://plotly.com/graphing-libraries/)
 
 Highlighted functions: graph_objects
 
-## __Rasterio__
+## Rasterio
 
 Geographic information systems use GeoTIFF and other formats to organize and store gridded raster datasets such as satellite imagery and terrain models. Rasterio reads and writes these formats and provides a Python API based on Numpy N-dimensional arrays and GeoJSON.
 
@@ -36,7 +36,7 @@ Geographic information systems use GeoTIFF and other formats to organize and sto
 
 Highlighted functions: 
 
-## __Fenics__
+## Fenics
 For solving FEM systems. Brace yourself and memorize all the preculiarities of this package.
 
 1D:
@@ -69,11 +69,11 @@ bc1 = DirichletBC(V, Constant(0), bottom_boundary) # u_z = 0 (no displacement) a
 bcs = \[bc1\]
 *From Nicholas Notebook*
 
-## __Gridap__
+## Gridap
 Another FEM package for Julia - For illustration it can be helpful to see, that the syntax and procedure is somewhat similar
 
 gripap.github.io
 
-## __Gmsh__
+## Gmsh
 Not exactly a python package, but a tool to build custom meshes for Fenics to solve.
 https://gmsh.info/

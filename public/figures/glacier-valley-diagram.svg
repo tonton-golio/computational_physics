@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420">
+  <rect x="0" y="0" width="900" height="420" fill="#0f172a"/>
+  <rect x="0" y="0" width="900" height="80" fill="#1e293b"/>
+  <text x="24" y="50" fill="#e2e8f0" font-family="Arial, sans-serif" font-size="28">Glacier Valley Inversion Geometry</text>
+
+  <path d="M60,360 Q200,180 450,260 Q700,180 840,360 L60,360 Z" fill="#0c4a6e" stroke="#38bdf8" stroke-width="3"/>
+  <path d="M120,360 Q250,230 450,290 Q650,230 780,360 L120,360 Z" fill="#67e8f9" fill-opacity="0.35" stroke="#67e8f9" stroke-width="2"/>
+
+  <text x="680" y="345" fill="#bae6fd" font-family="Arial, sans-serif" font-size="18">ice thickness h(x)</text>
+  <text x="680" y="372" fill="#7dd3fc" font-family="Arial, sans-serif" font-size="16">inferred from anomaly data</text>
+
+  <line x1="130" y1="130" x2="770" y2="130" stroke="#334155" stroke-width="2"/>
+  <text x="95" y="134" fill="#94a3b8" font-family="Arial, sans-serif" font-size="16">surface</text>
+
+  <circle cx="170" cy="130" r="5" fill="#fbbf24"/>
+  <circle cx="230" cy="130" r="5" fill="#fbbf24"/>
+  <circle cx="290" cy="130" r="5" fill="#fbbf24"/>
+  <circle cx="350" cy="130" r="5" fill="#fbbf24"/>
+  <circle cx="410" cy="130" r="5" fill="#fbbf24"/>
+  <circle cx="470" cy="130" r="5" fill="#fbbf24"/>
+  <circle cx="530" cy="130" r="5" fill="#fbbf24"/>
+  <circle cx="590" cy="130" r="5" fill="#fbbf24"/>
+  <circle cx="650" cy="130" r="5" fill="#fbbf24"/>
+  <circle cx="710" cy="130" r="5" fill="#fbbf24"/>
+  <text x="520" y="104" fill="#fde68a" font-family="Arial, sans-serif" font-size="16">measurement stations</text>
+
+  <line x1="450" y1="130" x2="450" y2="300" stroke="#fb7185" stroke-dasharray="8 6" stroke-width="3"/>
+  <text x="462" y="220" fill="#fecdd3" font-family="Arial, sans-serif" font-size="16">depth</text>
+
+  <line x1="80" y1="390" x2="820" y2="390" stroke="#334155" stroke-width="2"/>
+  <text x="88" y="410" fill="#94a3b8" font-family="Arial, sans-serif" font-size="16">distance x</text>
+</svg>

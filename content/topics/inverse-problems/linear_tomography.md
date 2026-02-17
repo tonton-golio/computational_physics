@@ -1,56 +1,82 @@
 # Linear Tomography
 
-# intro
-Linear tomography is a mathematical technique used to reconstruct an image from a set of projection data. In this case, we apply this technique to determine a map of density variations under the earth's surface using data from a series of seismographs that record the arrival times of signals from two earthquakes. Denser regions will cause faster wave propagation, resulting in an anomaly in the arrival time.
+Linear tomography reconstructs hidden structure from line-integral measurements.
+In geophysics, that means inferring subsurface slowness or density anomalies from travel-time data.
 
-##### Expressing the time anomaly
-The time anomaly $t_\gamma$ corresponding to a single ray can be expressed by the integral of the relative slowness along the ray:
+---
+
+## Forward Model
+
+For a ray path $\gamma$, the travel-time anomaly is
+
 $$
-t_\gamma = \int_\gamma s(u) du
+t_\gamma=\int_\gamma s(u)\,du,
 $$
 
-This integral can be approximated using a discrete sum, as follows:
+where $s(u)$ is slowness anomaly.
+After discretization on a grid:
+
 $$
-t_\gamma = \sum_{i=1}^{N-1} s(u_i) (u_{i+1} - u_i)
+\mathbf{d}=\mathbf{Gm}.
 $$
-where $s(u)$ is the relative slowness at position $u$, $N$ is the total number of points along the ray, and $u_i$ is the position of the $i$-th point along the ray.
 
-##### Defining the inverse problem
-The matrix $G$ contains the paths traced by rays for each detector. If we let the slowness anomaly of each square of earth be the vector $m$, we can use $G$ to element-wise pick each passed square. This results in a linear system, so the expected observations are given by the matrix product:
-$$d_{obs} = Gm$$
+- $\mathbf{m}$: cell-wise model parameters (slowness/density anomaly)
+- $\mathbf{d}$: measured travel-time anomalies
+- $\mathbf{G}$: ray-path sensitivity matrix
 
+---
 
-To see what the data looks like, I have made a demo:
+## Building the Sensitivity Matrix
 
-# Generating data
-To see what the data looks like, we can generate some sample data. We will constrain ourselves to a square setup with side length N and number of seismographs $n = N - 2$. This causes rays to hug the diagonal of an entered cell, so we don't need finer spacing on our rays. 
+Each row of $\mathbf{G}$ corresponds to one ray.
+Each column corresponds to one grid cell.
+Entries represent ray length inside the cell (or a scaled approximation).
 
-The constructed matrix $G$, summed over detectors and earthquakes and reshaped, allows us to verify that we have set up the matrix appropriately. The colors indicate how many rays enter each square. We add noise to the product of $G$ and m for more realistic data.
-
-# G code
+```python
 def make_G(N=13):
-    G_right = [np.eye(N,k=1+i).flatten() for i in range(N-2)]
-    G_left = [np.flip(np.eye(N,k=-(1+i)), axis=0).flatten() for i in range(N-2)]
-    
-    z = np.zeros((1,N**2))
-    G = np.concatenate([z, G_left[::-1],z, z, G_right,z])
+    G_right = [np.eye(N, k=1 + i).flatten() for i in range(N - 2)]
+    G_left = [np.flip(np.eye(N, k=-(1 + i)), axis=0).flatten() for i in range(N - 2)]
+    z = np.zeros((1, N**2))
+    G = np.concatenate([z, G_left[::-1], z, z, G_right, z])
+    return G * (2**0.5) * 1000
+```
 
-    G *= 2**.5 * 1000
-    return G
+---
 
+## Inversion Step
 
-# Predicting m
-We have an underdetermined problem with 20 samples and 143 free parameters, yielding multiple solutions. However, significant noise makes it impossible for any solution to fit exactly, making it a mixed-determined problem. This makes the problem ill-posed and we apply Tikhonov regularization to predict $m$.
+Tomographic systems are typically noisy and underdetermined.
+We therefore solve a regularized inverse problem:
 
 $$
-\begin{align*}
-    \bar{m} &= [G^TG + \epsilon^2\mathbf{I}]^{-1} G^T d_\text{obs}\\ 
-    \rightarrow & ||\mathbf{d}_\text{obs} - \mathbf{G\hat{m}}||^2\approx N\sigma^2.
-\end{align*}
+\hat{\mathbf{m}}=(\mathbf{G}^T\mathbf{G}+\epsilon^2\mathbf{I})^{-1}\mathbf{G}^T\mathbf{d}_{\text{obs}}.
 $$
-We move all terms to one side, and minimize as function of $\epsilon$.
 
+The target is a model that:
 
-# A delta function
-##### A delta function
-When applying our method to a true parameter vector shaped like a delta function, we obtain result great results if the square is traced by rays from both earthquakes, else we obtain large uncertainty along the single traced ray. The difference between the predicted $m$ and the true $m$ is the uncertainty. To fix this, we should try to minimize the number of entries in $m$.
+- fits the data within uncertainty
+- remains stable under noise
+- avoids unrealistic spatial oscillations
+
+[[simulation linear-tomography]]
+
+---
+
+## Interpreting Resolution
+
+If a region is crossed by many rays from multiple directions, resolution is good.
+If a region is weakly sampled, uncertainty increases and artifacts can appear.
+
+A useful stress test is a delta-like true model:
+
+- well-covered cells reconstruct sharply
+- poorly covered cells smear along acquisition geometry
+
+This links acquisition design directly to inverse quality.
+
+---
+
+## Takeaway
+
+Linear tomography turns geometry plus physics into a matrix inverse problem.
+The quality of reconstruction depends as much on ray coverage and regularization as on numerical solvers.

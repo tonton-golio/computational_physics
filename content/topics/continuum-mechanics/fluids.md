@@ -2,7 +2,7 @@
 
 
 
-## __Introduction__
+## Introduction
 In physics, a fluid is a liquid, gas, or other material
 that continuously deforms (flows) under an applied shear
 stress, or external force. They have zero shear modulus,
@@ -40,13 +40,13 @@ diffuse.
 
 From wikipedia.
 
-## __Pressure__
+## Pressure
 pressure
 
-## __Equation of State__
+## Equation of State
 Van de Waals
 
-## __Buoyancy and Stability__
+## Buoyancy and Stability
 A body will exhibit the phenomena of weight, if placed in a gravitational field. This force is given as
 $$
 \mathbf{F}_G = \int_V \rho_{body} \mathbf{g}\hspace{0.2cm}dV
@@ -89,5 +89,5 @@ $$
 $$
 
 
-## __sample headline__
+## sample headline
 sample text

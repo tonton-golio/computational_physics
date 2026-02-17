@@ -1,8 +1,21 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(:root[data-theme="dark"], :root[data-theme="dark"] *));
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f4f7ff;
+  --foreground: #101a2b;
+  --surface-1: #ffffff;
+  --surface-2: #ecf2ff;
+  --surface-3: #dfe8fb;
+  --border-strong: #c5d4ef;
+  --text-muted: #42536f;
+  --text-soft: #60708a;
+  --text-strong: #101a2b;
+  --accent: #2458c9;
+  --accent-strong: #173f93;
+  --danger-surface: #fff1f3;
+  --danger-border: #efb6c2;
 }
 
 @theme inline {
@@ -14,13 +27,102 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #070b14;
+    --foreground: #e8edf8;
+    --surface-1: #0d1322;
+    --surface-2: #101a2d;
+    --surface-3: #14233f;
+    --border-strong: #2c4166;
+    --text-muted: #a5b5d0;
+    --text-soft: #7f94b6;
+    --text-strong: #f4f7ff;
+    --accent: #7bb0ff;
+    --accent-strong: #9dc2ff;
+    --danger-surface: #1a1122;
+    --danger-border: #55314b;
   }
+}
+
+:root[data-theme="light"] {
+  --background: #f4f7ff;
+  --foreground: #101a2b;
+  --surface-1: #ffffff;
+  --surface-2: #ecf2ff;
+  --surface-3: #dfe8fb;
+  --border-strong: #c5d4ef;
+  --text-muted: #42536f;
+  --text-soft: #60708a;
+  --text-strong: #101a2b;
+  --accent: #2458c9;
+  --accent-strong: #173f93;
+  --danger-surface: #fff1f3;
+  --danger-border: #efb6c2;
+}
+
+:root[data-theme="dark"] {
+  --background: #070b14;
+  --foreground: #e8edf8;
+  --surface-1: #0d1322;
+  --surface-2: #101a2d;
+  --surface-3: #14233f;
+  --border-strong: #2c4166;
+  --text-muted: #a5b5d0;
+  --text-soft: #7f94b6;
+  --text-strong: #f4f7ff;
+  --accent: #7bb0ff;
+  --accent-strong: #9dc2ff;
+  --danger-surface: #1a1122;
+  --danger-border: #55314b;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Inter, system-ui, -apple-system, sans-serif;
+}
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3 {
+  color: var(--text-strong);
+}
+
+.markdown-content p,
+.markdown-content li {
+  color: var(--text-muted);
+}
+
+.markdown-content a {
+  color: var(--accent);
+}
+
+.markdown-content pre {
+  background: var(--surface-2) !important;
+  color: var(--foreground) !important;
+  border: 1px solid var(--border-strong);
+}
+
+.markdown-content code {
+  color: var(--accent-strong);
+}
+
+.markdown-content table {
+  background: var(--surface-2) !important;
+  border-color: var(--border-strong);
+}
+
+.markdown-content th,
+.markdown-content td {
+  border-color: var(--border-strong) !important;
+  color: var(--text-muted) !important;
+}
+
+/* Keep Plotly backgrounds theme-aware across all simulations. */
+.js-plotly-plot .plotly .bg {
+  fill: var(--surface-1) !important;
+}
+
+.js-plotly-plot .plotly .legend rect.bg {
+  fill: var(--surface-1) !important;
+  stroke: var(--border-strong) !important;
 }

@@ -190,7 +190,7 @@ const Himmelblau2D: React.FC = () => {
       y: ygrid,
       z: zbasin,
       colorscale: 'RdYlBu',
-      colorbar: {title: 'Basin'},
+      colorbar: {title: { text: 'Basin' }},
       name: 'Basins of attraction',
       opacity: 0.6,
     }];
@@ -199,9 +199,9 @@ const Himmelblau2D: React.FC = () => {
   const data = [...contourData, pathTrace, ...basinData];
 
   const layout = {
-    title: `Himmelblau Function - ${method.toUpperCase()} Descent & Basins`,
-    xaxis: {title: 'x'},
-    yaxis: {title: 'y'},
+    title: { text: `Himmelblau Function - ${method.toUpperCase()} Descent & Basins` },
+    xaxis: {title: { text: 'x' }},
+    yaxis: {title: { text: 'y' }},
     width: 800,
     height: 700,
   };

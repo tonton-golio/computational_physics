@@ -2,9 +2,9 @@
 
 
 
-## __FEM Weak Stokes__
+## FEM Weak Stokes
 
 
-## __Cauchy Momentum Balance
+## Cauchy Momentum Balance
 For 
 

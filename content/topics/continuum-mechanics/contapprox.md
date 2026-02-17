@@ -2,7 +2,7 @@
 
 
 
-## __Introduction__
+## Introduction
 The physics of continuum mechanics, requires that a mass of particles can be 
 modelled as continuous matter where the particles are infinitesimal. 
 This approximation depends on the degree of precision required, as Benny puts it;
@@ -22,7 +22,7 @@ From Physics of Continuous Matter 2nd edition by Benny Lautrup
 
 
 
-## __Density Fluctuations__
+## Density Fluctuations
 The density of a pure gas is given as;
 $$
 \rho = \frac{N m}{V}
@@ -42,7 +42,7 @@ L_{molecule} =\left( \frac{V}{N} \right)^{1/3} = \left( \frac{M_{molecule}}{\rho
 $$
 Where $L_{micro}^*$ is the sidelength of the cubic cell that satisfies the precision condition, $M_{molecule}$ is the molar mass of the substance.
 
-## __Macroscopic Smoothness__
+## Macroscopic Smoothness
 Another criteria for the continuum approximation is the Macroscopic Smoothness. 
 We require the relative change in density between cells to be less than the 
 precision $\epsilon$ along any direction.
@@ -53,7 +53,7 @@ $$
 if the above is fulfilled, the change in density can be assumed to vary smooth, and the continuum approximation holds. However, the thickness of interfaces between macroscopic bodies are typically on the order of $L_{molecule}$ and not $L_{macro}$, we instead represent these as *surface discontinuities*.
 
 
-## __Velocity Fluctuations__
+## Velocity Fluctuations
 For gases (and in general fluids), we may devide movement into two categories, *bulk motion* of a volume like the winds or *molecular motion* like thermal energy. In continuum mechanics we are often interested in the bulk motion of the continuum and in order to assume the gas as a continuum, we require that the molecular speeds do not dominate the fluctuations.
 The average root-mean-square speed of particles in a gas will be
 $$
@@ -66,5 +66,5 @@ $$
 L_{micro}^*=\left( \frac{v_{mol}}{v} \right)^{2/3}L_{micro}
 $$
 So if we require $\epsilon=10^{-3}$ precision in velocity, the minimum sidelength of the volume becomes $L_{micro}^*=100L_{micro}$ for air at room temperature.
-## __Mean-Free-Path__
+## Mean-Free-Path
 To be written.

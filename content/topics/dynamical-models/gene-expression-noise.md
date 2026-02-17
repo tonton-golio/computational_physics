@@ -1,225 +1,109 @@
-# Quantifying Noise of Gene Expression
+# Quantifying Noise in Gene Expression
 
-# Week 1 description
-- Nov 21: How to characterize noise in gene expression
+## Cellular identity and the central dogma
 
-# Cellular identity
-In multicellular organism, all cells have same DNA. 
-Then why they are so diverse?
-The answer is gene expression.
-Depending on cell type, expressed genes are different.
+In multicellular organisms, all cells carry the same DNA yet display enormous diversity. The answer lies in **gene expression**: depending on cell type, different genes are transcribed and translated into proteins.
 
-# What is gene expression?
-When we say genes are expressed, it means there are protein from that gene.
-The idea of gene expression is formulated as the Central Dogma.
-## The Central Dogma
-The central dogma is the idea of genetic information flow. 
-The information of DNA are transcribed to RNA and then the information of RNA will
-be translated to protein.
-## What do we need to express the gene?
-Gene expression is controlled by enzyme.
-- RNA polymerase: transcribe DNA to RNA 
-- Robisome: translate RNA to protein
-
-# Transcriptional regulation
-There are two type of promotor which is part of DNA. 
-Promotor attract protein which regulate gene expression such as RNA polymerase, 
-repressor, activator and so on.
-- Strong promotor: it attarcts RNA polymerase strongly, so without repressor the gene is always on.
-- Weak promotor: it attracts RNA polymerase weakly, so without activator the gene is always off.
-- Exmaple of promotor - *lac* promotor.
-
-# How to measure gene expression?
-To measure gene expression, we can fuse reporter protein such as GFP to target DNA 
-region. 
-We can visualize the gene expression by fluorescent protein!
-
-# Two way of measuring gene expression - single cell and bulk
-Easiest way to measure gene expression is measuring light intensity of sum of 
-10.000.000.000 cells in test tube.
-Recent single-cell measurement technology revealed that gene expression is NOISY.
-
-# Why is the gene expression noisy?
-Low copy numbers such as transcription factors and genes cause the noisy gene 
-expression.
-Noise in gene expression leads to different cell-fates in a genetically homogeneous
-population.
-Examples are below.
-- Bistability in *comK* expression
-- bacterial persister cells
-
-# Molecules in the cell move via diffusion
-From FRAP and single-molecule measurement, it was revealed that molecule inside of
-the cell has Brownian motion.
-Thus the chemical reactions inside of the cell have stochasticity.
-Each cell's gene expression is depending on ramdom event of molecule's reactions, 
-but by focusing on the distribution of the cell, we can quantify the noise.
-
-# Definition of the total noise
-We define the total nosie as 
-$$
-\eta(t) 
-= 
-\frac{\text{standard deviation}}{\text{average}}
-= 
-\frac{\sqrt{\text{variace}}}{\text{average}}
-$$
-Here average and variace of number of protein $N(t)$ is 
-$$
-\left< N(t) \right>
-=
-\frac{1}{n} \sum_{j=1}^n N_j(t)
-$$
-$$
-\left< (N(t) - \left<N(t)\right> )^2 \right>
-=
-\frac{1}{n} \sum_{j=1}^n (N_j(t) - \left<N(t)\right> )^2 
-$$
-$j$ is index of cell.
-From this the total noise is mathematically
-$$
-\eta(t) 
-=
-\frac
-{\sqrt{\left< (N(t) - \left<N(t)\right> )^2 \right>}}
-{\left< N(t) \right>}
-$$
-Mathematically this total nosie can be decomposed into two type of noise i.e.
-extrinsic noise and intrinsic noise.
-
-# Extrinsic noise
-If the two noise are correlated e.g. two gene expressions in the same cell
-are correlated, covariance become nonzero.
-By defining $N_j^{(i)}$ of number of protein $i$ in the cell $j$,  covariance is
-$$
-\left< 
-\left( N^{(1)}(t) - \left<N^{(1)}(t)\right> \right)
-\left( N^{(2)}(t) - \left<N^{(2)}(t)\right> \right)
-\right>
-\\=
-\left< N^{(1)}(t)N^{(2)}(t) \right>
--
-\left< N^{(1)}(t) \right>
-\left< N^{(2)}(t) \right>
-$$
-Thus, extrinsic noise is defined as
-$$
-\eta_\mathrm{E} (t)
-=
-\frac
-{
-    \sqrt{
-        \left< N^{(1)}(t)N^{(2)}(t) \right>
-        -
-        \left< N^{(1)}(t) \right>
-        \left< N^{(2)}(t) \right>
-    }
-}
-{
-    \sqrt{
-        \left< N^{(1)}(t) \right>
-        \left< N^{(2)}(t) \right>
-    }
-
-}
-$$
-Here denominator means devided by average.
-
-# Intrinsic noise
-We can measure non-correlated noise by quantifying the gap between two gene 
-expression.
-$$
- N^{(1)}(t) - N^{(2)}(t) 
-$$
-Intrinsic noise would be
-$$
-\eta_\mathrm{I} (t)
-=
-\frac
-{
-    \sqrt{
-        \left< \left(N^{(1)}(t)-N^{(2)}(t) \right)^2 \right>
-    }
-}
-{
-    \sqrt{
-        2
-        \left< N^{(1)}(t) \right>
-        \left< N^{(2)}(t) \right>
-    }
-
-}
-$$
-Again denominator is division by average and extra 2 will make sense later.
-
-# Decomposing total noise into intrinsic noise and extrinsic noise
-By summing up square of extrinsic noise and intrinsic noise, we obtain total noise.
-$$
-\begin{align*}
-
-&\eta_\mathrm{E}(t)^2  + \eta_\mathrm{I}(t)^2 
-\\&= 
-\frac
-{
-    \left< N^{(1)}(t)N^{(2)}(t) \right>
-    -
-    \left< N^{(1)}(t) \right>
-    \left< N^{(2)}(t) \right>
-    +
-    \frac{1}{2}
-    \left< \left(N^{(1)}(t)-N^{(2)}(t) \right)^2 \right>
-}
-{
-    \left< N^{(1)}(t) \right>
-    \left< N^{(2)}(t) \right>
-
-}
-\\&=
-\frac
-{
-    \left< N^{(1)}(t)N^{(2)}(t) \right>
-    -
-    \left< N^{(1)}(t) \right>
-    \left< N^{(2)}(t) \right>
-    +
-    \frac{1}{2}
-    \left(
-    \left< N^{(1)}(t)^2 \right>
-    +
-    \left< N^{(2)}(t)^2 \right>
-    \right)
-    -
-    \left< N^{(1)}(t)N^{(2)}(t) \right>
-}
-{
-    \left< N^{(1)}(t) \right>
-    \left< N^{(2)}(t) \right>
-
-}
-\\&=
-\frac
-{
-    \frac{1}{2}
-    \left(
-    \left< N^{(1)}(t)^2 \right>
-    +
-    \left< N^{(2)}(t)^2 \right>
-    \right)
-    -
-    \left< N^{(1)}(t) \right>
-    \left< N^{(2)}(t) \right>
-}
-{
-    \left< N^{(1)}(t) \right>
-    \left< N^{(2)}(t) \right>
-
-}
-
-\end{align*}
+The **central dogma** describes the flow of genetic information:
 
 $$
-If $N^{(1)}(t) = N^{(2)}(t) = N(t)$, this is same as total noise.
+\text{DNA} \xrightarrow{\text{transcription}} \text{mRNA} \xrightarrow{\text{translation}} \text{Protein}
+$$
 
+Two key molecular machines drive this process:
 
+- **RNA polymerase**: transcribes DNA into mRNA.
+- **Ribosome**: translates mRNA into protein.
 
+## Transcriptional regulation
 
+Gene expression is controlled at the promoter, a region of DNA upstream of the gene:
+
+- **Strong promoter**: attracts RNA polymerase efficiently; the gene is on by default unless a repressor binds.
+- **Weak promoter**: attracts RNA polymerase poorly; the gene is off by default unless an activator recruits polymerase.
+- Classic example: the *lac* promoter in *E. coli*, which is repressed by LacI and activated by CAP.
+
+## Measuring gene expression
+
+To measure expression, a **reporter protein** such as GFP is fused to the target gene. Fluorescence intensity then reports protein abundance.
+
+- **Bulk measurement**: total fluorescence from billions of cells in a tube gives the population average.
+- **Single-cell measurement**: flow cytometry or microscopy reveals the full distribution, showing that gene expression is inherently noisy.
+
+## Why is gene expression noisy?
+
+Low copy numbers of key molecules, particularly transcription factors and gene copies, make reactions stochastic. Chemical reactions inside the cell are driven by **diffusion** (confirmed by FRAP and single-molecule tracking), so each molecular encounter is a random event.
+
+Noise in gene expression has biological consequences:
+
+- **Bistability** in *comK* expression drives competence in *B. subtilis*.
+- **Persister cells** in bacterial populations survive antibiotic treatment through stochastic switching.
+
+## Defining total noise
+
+The **coefficient of variation** (CV) quantifies noise as the ratio of standard deviation to mean:
+
+$$
+\eta(t) = \frac{\sqrt{\langle (N(t) - \langle N(t) \rangle)^2 \rangle}}{\langle N(t) \rangle}
+$$
+
+where $N_j(t)$ is the protein copy number in cell $j$, the population mean is
+
+$$
+\langle N(t) \rangle = \frac{1}{n} \sum_{j=1}^{n} N_j(t),
+$$
+
+and the variance is
+
+$$
+\text{Var}[N(t)] = \frac{1}{n} \sum_{j=1}^{n} \bigl(N_j(t) - \langle N(t) \rangle\bigr)^2.
+$$
+
+## Decomposing noise: intrinsic and extrinsic
+
+Following the landmark experiment of Elowitz et al. (2002), total noise can be decomposed by expressing two distinguishable reporters (e.g., CFP and YFP) from identical promoters in the same cell.
+
+**Extrinsic noise** captures correlated fluctuations (shared upstream factors):
+
+$$
+\eta_{\mathrm{ext}}^2 = \frac{\langle N^{(1)} N^{(2)} \rangle - \langle N^{(1)} \rangle \langle N^{(2)} \rangle}{\langle N^{(1)} \rangle \langle N^{(2)} \rangle}.
+$$
+
+**Intrinsic noise** captures uncorrelated fluctuations (independent birth-death events):
+
+$$
+\eta_{\mathrm{int}}^2 = \frac{\langle (N^{(1)} - N^{(2)})^2 \rangle}{2\,\langle N^{(1)} \rangle \langle N^{(2)} \rangle}.
+$$
+
+The total noise decomposes exactly:
+
+$$
+\eta_{\mathrm{total}}^2 = \eta_{\mathrm{int}}^2 + \eta_{\mathrm{ext}}^2.
+$$
+
+When both reporters are identically distributed ($N^{(1)} \stackrel{d}{=} N^{(2)}$), this reduces to the standard CV squared.
+
+[[simulation gene-expression-noise]]
+
+## The Fano factor
+
+An alternative noise measure is the **Fano factor**:
+
+$$
+F = \frac{\text{Var}[N]}{\langle N \rangle}.
+$$
+
+- For a Poisson process, $F = 1$.
+- $F > 1$ indicates super-Poissonian (bursty) noise, common in gene expression due to transcriptional bursting.
+- $F < 1$ indicates sub-Poissonian noise, which can arise from negative autoregulation.
+
+## Stochastic simulation
+
+The **Gillespie algorithm** (stochastic simulation algorithm) provides exact trajectories of the chemical master equation. At each step:
+
+1. Compute all reaction propensities $a_i$.
+2. Draw the time to next reaction from an exponential distribution with rate $a_0 = \sum_i a_i$.
+3. Choose which reaction fires with probability $a_i / a_0$.
+4. Update molecule counts and repeat.
+
+This algorithm is the computational workhorse for studying noise in gene expression at the single-cell level.

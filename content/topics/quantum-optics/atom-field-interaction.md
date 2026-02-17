@@ -4,10 +4,10 @@ __Topic 12 keywords__
 - Rabi oscillations
 - Jaynes-Cummings model
 
-# __Readings__
+# Readings
 Ch. 4.3-5 
 
-# __4.3 Interaction of an atom with a quantized field__
+# 4.3 Interaction of an atom with a quantized field
 #### Dipole approximation
 Imagine a situation with electromagnetic field act on one atom.
 
@@ -119,6 +119,6 @@ $e^{-i E_a t/\hbar}$ is time evolution of atom,
 and $e^{-i n \omega t}$ is time evolution of photon.
 
 
-# __4.4 The Rabi model__
+# 4.4 The Rabi model
 
-# __4.5 Fully quantum-mechanical model; the Jaynes-Cummings model__
+# 4.5 Fully quantum-mechanical model; the Jaynes-Cummings model

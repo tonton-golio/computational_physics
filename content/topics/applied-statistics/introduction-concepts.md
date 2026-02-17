@@ -1,367 +1,162 @@
-# Introduction, General Concepts, ChiSquare Method
+# Introduction and General Concepts
 
-# description
-##### Introduction, General Concepts, ChiSquare Method
+## Measures of Central Tendency
 
-* Nov 21: Introduction to course and overview of curriculum. Mean and Standard Deviation. Correlations. Significant digits. Central limit theorem. 
-* Nov 22: Error propagation (which is a science!). Estimate g measurement uncertainties.
-* Nov 25: ChiSquare method, evaluation, and test. Formation of Project groups.
+### Mean
 
+The mean tells us about the bulk magnitude-tendency of data.
 
-# Header 1
+### Geometric Mean
 
+The $n$-th root of the product:
 
-# Mean
-Mean is a metric telling us about bulk magnitude-tendency of data. 
-
-# Geometric mean
-The root of the product;
 $$
-     \bar{x}_\text{geo} = \left( \prod_i^n x_i\right)^{1/n}
-     =
-     \exp\left(\frac{1}{n}\sum_{i}^n\ln x_i \right)
+\bar{x}_\text{geo} = \left( \prod_i^n x_i\right)^{1/n} = \exp\left(\frac{1}{n}\sum_{i}^n\ln x_i \right)
 $$
-*is equivalent to the arithmetic mean in logscale*
-# Geometric mean code
+
+This is equivalent to the arithmetic mean in log-scale.
+
 ```python
 def geometric(arr):
-     return np.prod(arr)**(1/n)
+    return np.prod(arr)**(1/len(arr))
 
 def geometric(arr):
-     # a sum of logs is less prone to 
-     # under-/over-flow than a product.
-     return np.exp(1/n * np.sum(np.log(x)))
+    # A sum of logs is less prone to
+    # under-/over-flow than a product.
+    return np.exp(np.mean(np.log(arr)))
 ```
 
-# Arithmetic mean
-The equal-weight center,
+### Arithmetic Mean
+
+The equal-weight center:
+
 $$
-     \hat{\mu} = \bar{x} = \left< x \right> = \frac{1}{N}\sum_i^N x_i.
+\hat{\mu} = \bar{x} = \langle x \rangle = \frac{1}{N}\sum_i^N x_i
 $$
 
-# Arithmetic mean code
 ```python
-def arithmetic():
-     return np.sum(arr) / n
-
-def arithmetic():
-     return np.mean(arr)
+def arithmetic(arr):
+    return np.sum(arr) / len(arr)
+    # or equivalently: np.mean(arr)
 ```
 
-# Median
-The counting center of the data
-# Median code
+### Median
+
+The counting center of the data (the middle value when sorted).
+
 ```python
-def median():
-     return arr[n/2] if n%2==0 else arr[n//2+1]
+def median(arr):
+    n = len(arr)
+    return arr[n//2] if n % 2 == 0 else arr[n//2]
 ```
 
-# Mode
-The most typical data point
-# Mode code
-```python
-def mode():
-     v2c = value_counts = {}
-     for i in arr:
-          v2c[i] = v2c[i] + 1 if i in v2c else 1
-     
-     c2v = dict((val, key) for (key, val) in dict.items())
-     return c2v[max(c2v.keys())]
-```
+### Mode
 
-# Harmonic
+The most typical data point (the value that occurs most frequently).
+
+### Harmonic Mean
+
 $$
-     \text{Harmony} = \left[\frac{1}{n}\left(\sum_i^n \frac{1}{x_i}\right)\right]^{-1}
+\bar{x}_\text{harm} = \left[\frac{1}{n}\sum_i^n \frac{1}{x_i}\right]^{-1}
 $$
 
-# Harmonic code
 ```python
 def harmonic(x):
-     return (np.sum( x**(-1) ) / N)**(-1)
+    return (np.sum(x**(-1)) / len(x))**(-1)
 ```
 
-# Truncated
-Arithmetic mean of the data with its tails cut off.
-# Truncated code
+### Truncated Mean
+
+The arithmetic mean of the data with its tails cut off:
+
 ```python
-def truncated():
-     arr = arr[truncate:-truncate]
-     return arithmetic(arr)
+def truncated(arr, k):
+    arr_sorted = np.sort(arr)
+    return np.mean(arr_sorted[k:-k])
 ```
 
+## Standard Deviation
 
-
-# STD
-
-Standard deviation is a measure of how much datapoint deviates from the dataset mean, ``np.std(x)``.
+Standard deviation measures how much data points deviate from the dataset mean:
 
 $$
-     \hat{\sigma} = \sqrt{\frac{1}{N}\sum_i^N ( \left< x \right> -x_i)^2}
+\hat{\sigma} = \sqrt{\frac{1}{N}\sum_i^N (x_i - \mu)^2}
 $$
 
-In estimating this, we assume that we know the real mean. But in reality we dont really know this so we use:
+In estimating this, we assume we know the true mean. In practice we use the sample mean $\bar{x}$, which requires **Bessel's correction** (dividing by $N-1$ instead of $N$ to account for the lost degree of freedom):
 
 $$
-     \hat{\sigma} \approx \tilde{\sigma} = \sqrt{
-     \frac{1}{N-1}\sum_i(x_i-\bar{x})^2
-     }
+\tilde{\sigma} = \sqrt{\frac{1}{N-1}\sum_i(x_i-\bar{x})^2}
 $$
-we subtract 1, because something something degrees of freedom...
 
-# Normal Distribution
+## Normal Distribution
 
 The normal (Gaussian) distribution is fundamental in statistics.
 
 [[simulation applied-stats-sim-2]]
 
-# Weighted mean
+## Weighted Mean
 
-###### Weighted mean
-How to average data which has different uncertainties and what is the uncertainty on the average?
-
-$$
-    \begin{align*}
-        \hat{\mu} = \frac{\sum x_i / \sigma_i^2}{\sum 1 / \sigma_i^2}
-        , &&
-        \hat{\sigma_\mu} = \sqrt{\frac{1}{\sum 1/\sigma_i^2}}
-    \end{align*}
-$$
-Uncertainty descreases with the squares of the number of sampels;
-$$
-    \hat{\sigma_\mu} = \hat{\mu}/\sqrt{N}.
-$$
-
-
-# Correlation
-Correlation speaks to whether a feature varies in concordance with another.
-
-From the variance we can obtain the covariance; 
-$$
-     \begin{align*}
-     V = \sigma^2 &= \frac{1}{N}\sum_i^N(x_i-\mu)^2 = E[(x-\mu)^2] = E[x^2] - \mu^2\\
-     &\Rightarrow \\ 
-     V_{xy} &= E[(x_i-\mu_x)(y_i-\mu_y)]=
-     \begin{bmatrix}
-          \sigma_{11}^2 & \sigma_{12}^2 & \ldots\\
-          \sigma_{21}^2 & \ldots & \ldots
-     \end{bmatrix}
-     \end{align*}
-$$
-
-Normalizing by the widths gives the Pearson's (linear) correlation coefficient:
+How to average data with different uncertainties and what is the uncertainty on the average?
 
 $$
-\begin{align*}
-     \rho_{xy} = \frac{V_{xy}}{\sigma_x\sigma_y} , && \text{i.e., } -1 < \rho_{xy} < 1 
-\end{align*}
+\hat{\mu} = \frac{\sum x_i / \sigma_i^2}{\sum 1 / \sigma_i^2}, \qquad \hat{\sigma}_\mu = \sqrt{\frac{1}{\sum 1/\sigma_i^2}}
 $$
 
-Do bare in mind that we may get zero, but this just tells us that the correlation is not linear, so remember to plot 😉
-
-##### Rank correlation
-**Test for non-linear correlation.**
-
-Rank correlation compares the ranking between two sets, i.e., 
-if the lowest x is also the lowest y, and so on, we get a rank-correlation of 1 😁 *Spearman’s $\rho$* and *Kendall’s $\tau$* are the most typical rank correlations.
+The uncertainty decreases with the square root of the number of samples:
 
 $$
-     \rho = 1 - 6\sum_i \frac{(r_i - s_i)^2}{n^3-n}
+\hat{\sigma}_\mu = \hat{\sigma}/\sqrt{N}.
 $$
 
-*Kendall’s $\tau$* compares the number of concorant pairs to discoratant pair of data-points [[wiki]](https://en.wikipedia.org/wiki/Kendall_rank_correlation_coefficient).
+## Correlation
 
+Correlation measures whether a feature varies in concordance with another. From the variance we obtain the **covariance**:
 
-##### Non-linear correlation-measures include
+$$
+\begin{aligned}
+V = \sigma^2 &= \frac{1}{N}\sum_i^N(x_i-\mu)^2 = E[(x-\mu)^2] = E[x^2] - \mu^2 \\
+V_{xy} &= E[(x_i-\mu_x)(y_i-\mu_y)] =
+\begin{bmatrix}
+\sigma_{11}^2 & \sigma_{12}^2 & \ldots\\
+\sigma_{21}^2 & \ldots & \ldots
+\end{bmatrix}
+\end{aligned}
+$$
 
-* Maximal Information Coefficient (MIC)
-* Mutual Information (MI)
-* Distance Correlation (DC)
+Normalizing by the widths gives **Pearson's (linear) correlation coefficient**:
 
-*see wikipedia*
+$$
+\rho_{xy} = \frac{V_{xy}}{\sigma_x\sigma_y}, \qquad -1 \leq \rho_{xy} \leq 1
+$$
 
-# Linear Regression
+Note that $\rho_{xy} = 0$ only indicates the absence of *linear* correlation. Always plot the data to check for non-linear relationships.
 
-Linear regression is a statistical method for modeling the relationship between a dependent variable and one or more independent variables.
+### Rank Correlation
 
-The simple linear regression model is:
+**Rank correlation** tests for non-linear monotonic relationships. It compares the ranking between two sets. **Spearman's $\rho$** and **Kendall's $\tau$** are the most common:
+
+$$
+\rho_S = 1 - \frac{6\sum_i (r_i - s_i)^2}{n^3-n}
+$$
+
+Kendall's $\tau$ compares the number of concordant pairs to discordant pairs.
+
+### Other Non-Linear Correlation Measures
+
+- Maximal Information Coefficient (MIC)
+- Mutual Information (MI)
+- Distance Correlation (DC)
+
+## Linear Regression
+
+Linear regression models the relationship between a dependent variable and one or more independent variables. The simple linear regression model is:
 
 $$
 y = \beta_0 + \beta_1 x + \epsilon
 $$
 
-Where $\beta_0$ is the intercept, $\beta_1$ is the slope, and $\epsilon$ is the error term.
+where $\beta_0$ is the intercept, $\beta_1$ is the slope, and $\epsilon$ is the error term.
 
 [[simulation applied-stats-sim-1]]
-
-
-# Central limit theorem intro
-##### *law of large numbers*
-
-The central limit theorem answers the question: *why do statistics in the limit of large N tend toward a Gaussian?* 
-
-If we roll sufficiently many dice; they will naturally find a mean around 3.5;
-
-# Central limit theorem
-
-The mean of many such extravagent rolls, will often tend towards a gaussian. In fact, *The distribution of numbers samples from a variety of distributions, is Gaussian given that they share variance and mean.*
-
-[[simulation applied-stats-sim-3]]
-
-# Central limit theorem 2
-###### Combining samples from different distributions
-if we concatenate data from different distributions, the mean will be Gaussian.
-
-# Central limit theorem 3
-For this to work, the std of the different distributions must be similar. Thus we have to scale the uniform by a factor $\sqrt{12}$, and we have to truncate the very large values in the chauchy distribution.
-
-In summary: **The central limit theorem ensures that uncertanties are gaussian 🔥**
-
-
-# Error propagation
-### Error propagation
-If we have a function $y(x_i)$ and we know the uncertainty on $\sigma(x_i)$, how do we find $\sigma(y(x_i))$?. Well obviously it depends on the gradient of $y$ with respect to $x$.
-
-A simple way of doing this:
-$$
-    \sigma(y(x_i)) = \frac{\partial y}{\partial x}\sigma(x_i)
-$$
-If the function $y$ is smooth around $x_i$, this is fine, but if we have a crazy looking function, we should be careful. (The slope should be relatively constant over the uncertainty in $x_i$.)
-
-
-If we Taylor expand:
-$$
-    y(\bar{x}) = \ldots\\
-$$
-
-something something, this lets us expand to further dimensions:
-
-$$
-     \sigma_y^2 = \sum^n_{i,j}\left[
-     \frac{\partial y}{\partial x_i}
-     \frac{\partial y}{\partial x_j}
-     \right]_{x=y}V_{i,j}
-$$
-if there are no correlations, only the diagonal (individual erros) enter!
-This lets us choose wisely which parameter we should work hard to minimize error on.
-
-# Error propagation add
-###### Addition
-
-$$
-    y = x_1 + x_2\\
-    \sigma_y^2 = \sigma_{x1}^2 + \sigma_{x2}^2 + 2V_{x1, x2}
-$$
-
-# Error propagation mul
-###### Multiplication
-
-$$
-    y = x_1x_2\\
-    \sigma_y^2 = (x_2\sigma_{x1})^2 + (x_1\sigma_{x2})^2 + 2x_1x_2V_{x1, x2}
-$$
-
-
-divide by $x^2$ to get the relative terms... 
-
-By using negative error correlations, we can cancel out errors, think: Harrisons girdiron pendulum, and the prediction of Neptune!
-
-
-
-
-
-# Demo
-#####  Simulating error propagation
-Choose random input, $x_i$, and record output, $y$. If $y(x)$ is not smooth, this will not yield Gaussian distributed $y$, even with gaussian error in $x_i$.
-
-
-How do we quantify the error stemming from limited random sampling? -- *don't worry about it.*
-
-
-
-# Error propagation 2
-##### Analytical solution
-... sympy
-
-# Estimating uncertainties
-### Estimating uncertainties
-
-
-# ChiSquare method, evaluation, and test
-### ChiSquare method, evaluation, and test
-
-Your typical least squares algorithm does **not** include uncertainties, the
-chi-square does.
-
-$$
-     \chi^2(\theta) = \sum_i^N \frac{(y_i - f(x_i,\theta))^2}{\sigma_i^2}
-$$
-
-*Why don't we normalize by the number of samples, $N$?*
-
-> Well, normalization is uneccessary for comparison. To compare chi-square fits, we need the number of degrees of freedom, $N_\text{dof}$,
-$$
-     N_\text{Dof} = N_\text{samples} - N_\text{fit parameters}.
-$$
-We can compute the probability of data ($p$-value), given that we know the $\chi^2$-value as well as $N_\text{Dof}$;
-$$
-     \text{Prob}(\chi^2 = 65.7, Ndof=42) = 0.011
-$$
-
-If errors are large, different models yields fits of similar quality. With small errors, there is a huge discrepancy in the fit-quality. *Notice: the weighted mean is just a special case of chi-squared, i.e., the value of a fit with just a constant.*
-
-
-
-If we plot the distribution of the errors as $\frac{y_i-f(x_i, \theta)}{\sigma_i}$, they should be Gaussian. This give us a way to evaluate our uncertainty-estimates.
-
-
-```python
-chi2_prob = stats.chi2.sf(chi2_calue, N_dof)
-```
-
-
-##### Chi2 for binned data
-Based on Poisson statistics,
-$$
-     \chi^2 = \int
-$$
-but if if have a whole lot of points this can get expensive. So instead, we can bin our data first;
-
-$$
-     \chi^2 = \sum_{i\in \text{bin}} \frac{(O_i-E_i)^2}{E_i}
-$$
-
-*But then what about empty bins?* !(ahh)! $\Rightarrow$ chuck 'em out. **We lose fedility**. (iminuit does all of this.)
-
-
-##### Why the chi2 is (near) magic
-
-
-
-Stable fits have parabolic minima (*The chi2 miracle*). We thus have an easily assessable local gradient - this provides us with confidence regarding our findings.
-
-
-###### Question: How do we deal with uncertainties in $x$?
-Fit without, and then: 
-$$
-     \sigma_{yi}^{new} = \sqrt{\sigma_{yi}^2 + \left( \frac{\partial y}{\partial x}|_{xi} \sigma_{xi} \right)^2}
-$$
-Its iterative, but it converges FaST
-
-
-###### Reporting errors 
-
-do this:
-$$
-    a = (0.24 + 0.05_\text{stat} + 0.07_\text{systematic}) \times 10^4 \text{kg}
-$$
-
-#### Demo
-To get a better understanding of how this works, lets try to try to predict som data generated by 
-$f(x) = ax+b$.
-We have $x$, and we want ot find $a$ and $b$. Let's determine $\chi^2$ usign a grid-search. 
-
-
-# Links
-
-1. [guess the correlation](https://guessthecorrelation.com)
 

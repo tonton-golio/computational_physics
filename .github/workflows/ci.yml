@@ -26,8 +26,17 @@ jobs:
       - name: Run ESLint
         run: npm run lint
 
+      - name: Validate simulation placeholders
+        run: npm run check:simulations
+
+      - name: Run unit tests
+        run: npm test
+
       - name: Build project
         run: npm run build
+
+      - name: Enforce route bundle budgets
+        run: npm run perf:budget
 
       - name: Check build output
         run: ls -la .next

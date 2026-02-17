@@ -1,86 +1,81 @@
 # Gene Regulatory Networks
 
-# Week 5 description
-- Dec 19: How is gene expression is regulated by networks?
+## Types of Regulation
 
-# Type of regulation
-There are two type of regulation. 
-- Positive regulation (gene A activates/increses gene B, symbolized by $A\rightarrow B$
-- Negative regulation (gene A represses/decreases gene B, symbolized by $A\dashv B$
-By combining this simple type of regulation, gene are controlled.
-Often, gene regulatory networks are more complicated than what appears to be 
-necessary at first sight.
+There are two types of regulation:
+- **Positive regulation**: Gene A activates/increases gene B, symbolized by $A \rightarrow B$
+- **Negative regulation**: Gene A represses/decreases gene B, symbolized by $A \dashv B$
 
-# Statistics of regulatory function
+By combining these simple types of regulation, genes are controlled. Often, gene regulatory networks are more complicated than what appears to be necessary at first sight.
+
+## Statistics of Regulatory Functions
+
 As the genome size increases, the percentage of gene regulatory motifs increases.
 
-# Real network and how we understand gene regulation
-Even fruit fly has enourmous complex network.
-What can we know from this networks?
-We focus on subpart i.e. motif of network and investigate how "core"/key dynamics 
-behaves.
-This is a kind of disappoings. You know we can say something about particular 
-example but we never say something general.
+## Real Networks and How We Understand Gene Regulation
 
-# Type of network motif
-Several type of motif are reported.
-- Positive feed back ($A \leftrightarrow B$)
-- Negative feed back ($A \rightarrow B \dashv A$)
-- Feed-forward loops ($A \rightarrow B \rightarrow C, A \rightarrow C$)
-- Single input modules ($A \rightarrow B, A \rightarrow C, A \rightarrow D$)
+Even the fruit fly has an enormously complex network. What can we learn from these networks?
 
-# How can we find positive feedback and negative feedback
-Find closed loop and multiply the type as integer i.e. positive regulation 
-$\rightarrow$ as $+1$, and negative regulation $\dashv$ as $-1$. 
-For example, 
-$$ 
-    A \rightarrow B \rightarrow C \dashv A
+We focus on subparts, i.e., **motifs** of networks, and investigate how "core" key dynamics behave. This is a reductionist approach: we can say something about particular examples but cannot always make general statements.
+
+## Types of Network Motifs
+
+Several types of motifs have been identified:
+- **Positive feedback**: $A \leftrightarrow B$
+- **Negative feedback**: $A \rightarrow B \dashv A$
+- **Feed-forward loops**: $A \rightarrow B \rightarrow C$, $A \rightarrow C$
+- **Single input modules**: $A \rightarrow B$, $A \rightarrow C$, $A \rightarrow D$
+
+## Identifying Positive and Negative Feedback
+
+Find a closed loop and multiply the interaction types as integers: positive regulation ($\rightarrow$) as $+1$, and negative regulation ($\dashv$) as $-1$. For example,
+
 $$
-is negative feedback loop.
+A \rightarrow B \rightarrow C \dashv A
+$$
 
-# Biological example of positive/negative regulation
+gives $(+1)(+1)(-1) = -1$, so this is a **negative feedback loop**.
+
+## Biological Examples of Positive/Negative Regulation
+
 - Phage lambda repressor (CI)
 - Bistability in *comK* expression
-- ppGpp signaling by the robosome
+- ppGpp signaling by the ribosome
 - Cell-to-cell communication
 
-# Biological example of feed-forward loops
-- AND logic. *ara genes* needs two activator, CRP and AraC. The network is $\mathrm{CRP} \rightarrow \mathrm{AraC} \rightarrow ara$, $CRP \leftrightarrow ara$.
-- OR logic. Flagella of bacteria.
+## Biological Examples of Feed-Forward Loops
 
-# Biological example of single input modules
+- **AND logic**: *ara genes* need two activators, CRP and AraC. The network is $\mathrm{CRP} \rightarrow \mathrm{AraC} \rightarrow ara$, $\mathrm{CRP} \rightarrow ara$.
+- **OR logic**: Flagella of bacteria.
+
+## Biological Examples of Single Input Modules
+
 - Flagellar genes
 
-# Simplification of dynamical equation
-Biologically transcription and translation is two independet process. So we need to
-build equation for each. However mathematical viewpoint, it is convenient to 
-approximate transcription process as a part of translation process.
-We can write equation for protein concentration time evolution.
+## Simplification of Dynamical Equations
+
+Biologically, transcription and translation are two independent processes, so we need to build equations for each. However, from a mathematical viewpoint, it is convenient to approximate the transcription process as part of the translation process. We can write an equation for protein concentration time evolution:
+
 $$
-    \frac{\mathrm{d}P}{\mathrm{d}t}
-    =
-    \frac
-    {\alpha_\mathrm{P} \alpha_\mathrm{m} (P/K)^H}
-    {\Gamma_\mathrm{H} (1+(P/K)^H)}
-    - \Gamma_\mathrm{p} P
+\frac{\mathrm{d}P}{\mathrm{d}t} = \frac{\alpha_\mathrm{P} \alpha_\mathrm{m} (P/K)^H}{\Gamma_\mathrm{H} (1+(P/K)^H)} - \Gamma_\mathrm{p} P
 $$
 
-# Obtaining steady state concentration from graph
-To see the parameter-free typical behavior of this equation, we substitute $1$ for 
-most of parameters. The equation become
-$$
-    \frac{\mathrm{d}P}{\mathrm{d}t}
-    =
-    \frac{P^H}{1+P^H} - \Gamma_\mathrm{p}P
-$$
-By plotting $y = \frac{P}{1+P}$ and $y=P$ on the same $yP$ plane, we can visually
-inspect steady state concentration of $P$.
+## Obtaining Steady-State Concentration from a Graph
 
-# How about negative regulation?
-Same can be done on negative regulation!
+To see the parameter-free typical behavior of this equation, we substitute $1$ for most parameters. The equation becomes:
+
 $$
-    \frac{\mathrm{d}P}{\mathrm{d}t}
-    =
-    \frac{1}{1+P^H} - \Gamma_\mathrm{p}P
+\frac{\mathrm{d}P}{\mathrm{d}t} = \frac{P^H}{1+P^H} - \Gamma_\mathrm{p}P
 $$
 
+By plotting $y = P^H/(1+P^H)$ and $y = \Gamma_\mathrm{p}P$ on the same plane, we can visually inspect the steady-state concentration of $P$.
+
+## Negative Regulation
+
+The same analysis applies to negative regulation:
+
+$$
+\frac{\mathrm{d}P}{\mathrm{d}t} = \frac{1}{1+P^H} - \Gamma_\mathrm{p}P
+$$
+
+[[simulation hill-function]]

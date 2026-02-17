@@ -1,18 +1,12 @@
 # U-Net Model
 
-KEY: intro
-U-net is a fully convolutional network for (fast) image segmentation. The network takes in an image, and returns a segmentation mask of the same size as the input image.
+## Introduction
 
-Uses encoder-decoder architecture with skip connections.
+**U-Net** is a fully convolutional network for fast image segmentation. The network takes an image as input and returns a segmentation mask of the same spatial dimensions.
 
-skip connection refers to the concatenation of the output of an earlier layer with the output of a later layer.
+U-Net uses an **encoder-decoder architecture with skip connections**. Skip connections concatenate the output of an encoder layer with the corresponding decoder layer, preserving spatial information that would otherwise be lost during downsampling.
 
-<div style="display: flex; justify-content: center; align-items: center;">
-    <img src="https://www.frontiersin.org/files/Articles/841297/fnagi-14-841297-HTML-r2/image_m/fnagi-14-841297-g001.jpg" width=500>
-</div>
-
-KEY: U-Net model
-### The model
+## The Model
 
 ```python
 class U_Net(nn.Module):
@@ -31,7 +25,7 @@ class U_Net(nn.Module):
         self.drop = nn.Dropout2d(0.2)
         self.relu = nn.ReLU()
         self.softmax = nn.Softmax(dim=1)
-    
+
     def forward(self, x):
         # encoder
         x = self.relu(self.conv1(x))
@@ -48,6 +42,6 @@ class U_Net(nn.Module):
         x = self.relu(self.conv8(x))
         x = self.up(x)
         x = self.softmax(x)
-        
+
         return x
 ```

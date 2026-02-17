@@ -1,106 +1,66 @@
 # Simulation and More Fitting
 
+## Producing Random Numbers
 
-KEY: description
+For producing random numbers from arbitrary distributions, there are two main approaches: the **transformation method** and the **accept-reject method**.
 
-Week 3 (Using Simulation and More Fitting):
-* Dec 5: 8:15 - Group B: Project (for Wednesday the 14th of December) doing experiments in First Lab.
-         9:15 - Group A: Systematic Uncertainties and analysis of "Table Measurement data". Discussion of real data analysis (usual rooms).
-* Dec 6: Producing random numbers and their use in simulations.
-* Dec 9: Summary of curriculum so far. Fitting tips and strategies.
+## Transformation Method
 
+The transformation method proceeds in three steps:
 
-KEY: Intro
-### Producing random numbers
-
-For producing random number, we have to main approacheds: the *transformation method* and the *accept-reject method*.
-
-KEY: Transformation method
-##### Transformation method
-
-The transformation method is executed via the following **steps**:
-$$
-  \text{assert: PDF is normalized}
-  \Rightarrow
-\text{integrate}
-  \Rightarrow
-\text{invert}
-$$
+1. Verify the PDF is normalized.
+2. Compute the cumulative distribution function (CDF).
+3. Invert the CDF.
 
 $$
-    F(x) = \int_{-\infty}^x f(x') dx'
+F(x) = \int_{-\infty}^x f(x') \, dx'
 $$
 
-KEY: Header 4
+### Example: Exponential Distribution
 
-consider the exponential dist.
-$$
-    f(x) = \lambda \exp (-\lambda x), x\in [0,\infty]
-$$
-normalized? yes
-
-integrate:
-$$
-    F(x) = 1 - \exp(-\lambda x)
-$$
-
-invert:
+Consider the exponential distribution:
 
 $$
-    F^{-1}(p) = \frac{\log (1-p)}{\lambda}
+f(x) = \lambda \exp(-\lambda x), \quad x \in [0, \infty)
 $$
 
-KEY: Accept-reject
-#### Accept-reject (aka von Neumann method)
+This is normalized. The CDF is:
 
-The idea is to generate random samples from a known distribution (called the "proposal distribution") and then accept or reject them according to a set of acceptance criteria. 
+$$
+F(x) = 1 - \exp(-\lambda x)
+$$
 
-Here is an example of how the accept-reject method can be used to generate random samples from a uniform distribution:
+Inverting gives:
 
-KEY: Accept-reject code
+$$
+F^{-1}(p) = -\frac{\ln(1-p)}{\lambda}
+$$
+
+To sample, draw $p$ uniformly from $[0,1]$ and compute $x = F^{-1}(p)$.
+
+## Accept-Reject Method
+
+The **accept-reject method** (also called the von Neumann method) generates random samples from a proposal distribution and accepts or rejects them according to acceptance criteria.
+
+The idea: given a target PDF $f(x)$ and a proposal distribution $g(x)$ with $f(x) \leq M \cdot g(x)$ for some constant $M$:
+
+1. Sample $x$ from $g(x)$.
+2. Sample $u$ uniformly from $[0, 1]$.
+3. Accept $x$ if $u \leq f(x) / (M \cdot g(x))$; otherwise reject and repeat.
 
 ```python
-# Sample from the uniform distribution
-# with lower bound a and upper bound b
-def sample_uniform(a, b):
-  return random.uniform(a, b)
-
-# Accept or reject the sample according to the
-# acceptance criteria
-def accept_reject(x, pdf, cdf):
-  # Generate a random number from the uniform distribution
-  u = random.uniform(0, 1)
-
-  # Accept the sample if u <= pdf(x) / cdf(x)
-  # where pdf is the probability density function
-  # of the proposal distribution and cdf is the
-  # cumulative density function of the target distribution
-  if u <= pdf(x) / cdf(x):
-    return x
-  else:
-    return None
-
-# Generate samples from the uniform distribution
-def sample(a, b, num_samples):
-  samples = []
-
-  # Generate samples until we have num_samples
-  while len(samples) < num_samples:
-    # Sample from the uniform distribution
-    x = sample_uniform(a, b)
-
-    # Accept or reject the sample
-    y = accept_reject(x, pdf, cdf)
-    if y is not None:
-      samples.append(y)
-
-  return samples
+def accept_reject_sample(target_pdf, proposal_sample, proposal_pdf, M, num_samples):
+    samples = []
+    while len(samples) < num_samples:
+        x = proposal_sample()
+        u = random.uniform(0, 1)
+        if u <= target_pdf(x) / (M * proposal_pdf(x)):
+            samples.append(x)
+    return samples
 ```
 
+## Comparison of Methods
 
-KEY: Header 7
+**Monte Carlo integration** converges as $1/\sqrt{N}$ regardless of dimensionality, while deterministic numerical methods (e.g., trapezoidal rule) converge as $1/N^{2/d}$, where $d$ is the dimensionality. This means Monte Carlo becomes increasingly competitive for high-dimensional problems.
 
-### How fast are these different methods?
-
-Monte carlo fast: $\frac{1}{\sqrt{N}}$, 
-numerical (eg Trapezoidal) is slower...: $\frac{1}{N^{2/d}}$, in which d is the dimensionality.
+[[simulation applied-stats-sim-3]]

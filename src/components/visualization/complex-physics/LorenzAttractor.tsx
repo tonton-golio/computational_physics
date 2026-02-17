@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import { Slider } from '@/components/ui/slider';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -48,8 +48,8 @@ export function LorenzAttractor() {
         x: trajectory.x,
         y: trajectory.y,
         z: trajectory.z,
-        mode: 'lines',
-        type: 'scatter3d',
+        mode: 'lines' as const,
+        type: 'scatter3d' as const,
         line: { color: 'blue', width: 1 },
       },
     ];
@@ -65,9 +65,9 @@ export function LorenzAttractor() {
               width: 600,
               height: 600,
               scene: {
-                xaxis: { title: 'X' },
-                yaxis: { title: 'Y' },
-                zaxis: { title: 'Z' },
+                xaxis: { title: { text: 'X' } },
+                yaxis: { title: { text: 'Y' } },
+                zaxis: { title: { text: 'Z' } },
               },
               margin: { t: 0, b: 0, l: 0, r: 0 },
             }}

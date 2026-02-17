@@ -1,122 +1,105 @@
 # Probability Density Functions
 
-# description
-* Nov 29: Principle of maximum likelihood and fitting (which is an art!).
-* Dec 2: 8:15 - Group A: Project (for Wednesday the 14th of December) doing experiments in First Lab. 9:15 - Group B: Systematic Uncertainties and analysis of "Table Measurement data" Discussion of real data analysis (usual rooms).
+## Probability Density Functions (PDFs)
 
-
-# Header 1
-### Probability density functions (PDFs)
-*a function of a continuous random variable, whose integral across an interval gives the probability that the value of the variable lies within the same interval.*
+A **probability density function** is a function of a continuous random variable whose integral across an interval gives the probability that the value of the variable lies within that interval:
 
 $$
-     f_X(x) = \frac{1}{\Delta x}\int_{x0}^{x0+\Delta x} f(x) dx
+f_X(x) = \frac{1}{\Delta x}\int_{x_0}^{x_0+\Delta x} f(x) \, dx
 $$
 
-When fitting with PDFs, we should consider the error stemming from the bin-widths 🥸
+When fitting with PDFs, we should consider the error stemming from the bin-widths.
 
-We may also consider the cumulative distribution function: just take the integral from $-\infty$,
+We may also consider the **cumulative distribution function**: the integral from $-\infty$,
+
 $$
-    F_X(x) = \int_{-\infty}^{x0} f(x) dx.
+F_X(x) = \int_{-\infty}^{x} f(x') \, dx'.
 $$
 
+## Distributions
 
-
-
-# Distributions
 ### Binomial
-N trials, p chance of succes, how many successes should you expect
+
+$N$ trials, $p$ chance of success, how many successes should you expect?
+
 $$
-\begin{align*}
-     f(n;N,p) &= \frac{N!}{n!(N-n)!}p^n(1-p)^{N-n}\\
-     \left<f(n;N,p)\right> &= Np \\
-     \sigma^2 &= Np(1-p)
-\end{align*}
+\begin{aligned}
+f(n;N,p) &= \frac{N!}{n!(N-n)!}p^n(1-p)^{N-n}\\
+\langle f(n;N,p)\rangle &= Np \\
+\sigma^2 &= Np(1-p)
+\end{aligned}
 $$
 
+Note that this is a **discrete** distribution.
 
-Holy crap, its discrete 🤯
+[[simulation applied-stats-sim-1]]
 
 ### Poisson
-if $N\rightarrow \infty$ and $p\rightarrow 0$, but $Np\rightarrow\lambda$ i.e., some finite number. Then a binomioal approaches a Poisson:
+
+If $N\rightarrow \infty$ and $p\rightarrow 0$, but $Np\rightarrow\lambda$ (some finite number), then the binomial approaches a **Poisson** distribution:
+
 $$
-     f(n, \lambda) = \frac{\lambda^n}{n!}e^{-\lambda}
+f(n, \lambda) = \frac{\lambda^n}{n!}e^{-\lambda}
 $$
 
-**Exmaple**: A whole lot of danes go into traffic every day ($N\rightarrow\infty$), the possitilibty of being killed in traffic is tiny ($p\rightarrow 0$) --> but some people do get killed in trafic every year $\lambda\neq 0$;(
+**Example**: A large number of people go into traffic every day ($N\rightarrow\infty$), the probability of being killed in traffic is tiny ($p\rightarrow 0$), but some people do get killed in traffic every year ($\lambda\neq 0$).
 
-The Poisson hase mean and variace $\lambda$. The error on a Poisson number is the square-root of that number.
+The Poisson distribution has mean and variance both equal to $\lambda$. The error on a Poisson count is the square root of that count.
 
-**A useful case**: the error to assign a bin in a histogram if there is reasonable statistics ($N \rightarrow 5-20$) in each bin. If there are low statistics in a bin, we cannot make the gaussian approximation!?!?!?
+**A useful case**: The error to assign a bin in a histogram if there are reasonable statistics ($N \approx 5{-}20$) in each bin. If there are low statistics in a bin, we cannot make the Gaussian approximation.
 
+The sum of independent Poissons is a Poisson: $\lambda = \lambda_a + \lambda_b$.
 
-
-The sum of Poisson's is a Poisson: $\lambda = \lambda_a + \lambda_b$
-
-
-If $\lambda \rightarrow \infty$, the Poisson becomes gaussian ($\infty\approx20$) [SHOW THIS PREASE]
-
+If $\lambda \rightarrow \infty$, the Poisson approaches a Gaussian (practically, $\lambda \gtrsim 20$).
 
 ### Gaussian
-The normal normal distribution;
-$$
-     f(x) = \frac{1}{\sigma\sqrt{2\pi}}e^{-\frac{1}{2}\left(\frac{x-\mu}{\sigma}\right)^2}
-$$
-This is awesome, because given large number of samples we usually always observe this and its easy to work with.
 
+The **normal distribution**:
 
-### Student's t-distribution
-Good for low statistics, because it uses the approximations of $\mu$ and $\sigma$. Other than that, it is similar to the Gaussian.
-
-When number of samples $\rightarrow\infty$ this becomes the Gaussian.
 $$
-     \ldots
+f(x) = \frac{1}{\sigma\sqrt{2\pi}}\exp\left[-\frac{1}{2}\left(\frac{x-\mu}{\sigma}\right)^2\right]
 $$
 
-### blank
+Given a large number of samples, we usually observe this distribution (by the central limit theorem), and it is convenient to work with analytically.
 
-# maximum likelihood
-### Maximum likelihood estimation
+### Student's t-Distribution
 
-We are on the look out for the maximum likelihood, $\mathcal{L}$, given the observed data, assuming a normal distribution of the sample.
+Useful for **low statistics**, because it accounts for the uncertainty in the estimated $\mu$ and $\sigma$. When the number of samples $\rightarrow\infty$, the $t$-distribution converges to the Gaussian. Its heavier tails make it more robust for small sample sizes.
+
+## Maximum Likelihood Estimation
+
+We seek the parameters $\theta$ that maximize the **likelihood** $\mathcal{L}$ given the observed data:
+
 $$
-     \mathcal{L}(\theta) = \prod_i f(x_i, \theta) dx_i
-$$
-We are prone to rounding errors when multiplying a bunch of small numebrs together; so lets instead sum the logs. Assuming that things are Gaussian;
-$$
-     \log{\mathcal{L}} = \sum N  \exp\left(
-          \frac{x-\mu}{r}
-     \right)^2 +c\\
-     -2\ln(\mathcal{L}) = \chi^2 + c
+\mathcal{L}(\theta) = \prod_i f(x_i; \theta)
 $$
 
-* It consistent
-* Asymptotically normal (converges with Gaussian errors.)
-* Efficient (reaches the Minimum variance bound (MVB, Cramer-Rao) for large N)
+We are prone to rounding errors when multiplying many small numbers together, so we instead maximize the **log-likelihood**. Assuming Gaussian errors:
 
-
-
-
-The way we figure this out is;
-* take a normal dist, and move the center to where it fits best
-* next up; $\sigma$.
-
-
-
-# maximum likelihood 2
-Notice there are different methods depending on whether we are using individual data-points or the bins and counts obtained from `np.histogram`.
-
-Consider doing the binned approach if we are working with a really large sample (because the likelihood calculation is $O(n^2)$). 
-
-
-**Next up we have to test our fit: sample new number from the Gaussian with the found parameters.**
-
-##### The likelihood ratio test
-if we have two different hypothesis
 $$
-          d 
-          = -2\ln\frac{\mathcal{L}_\text{null}}{\mathcal{L}_\text{alt.}}
-          = -2\ln(\mathcal{L}_\text{null}) + 2\ln(\mathcal{L}_\text{alt.})
+-2\ln(\mathcal{L}) = \chi^2 + \text{const.}
 $$
 
-Consider the DOF for each hypothesis. Greater DOF with nessecarily yield likelihood. 
+Properties of maximum likelihood estimators:
+- **Consistent**: Converges to the true value as $N \to \infty$.
+- **Asymptotically normal**: Errors become Gaussian for large $N$.
+- **Efficient**: Reaches the minimum variance bound (Cramer-Rao bound) for large $N$.
+
+The fitting procedure:
+1. Choose a model and compute the likelihood for the data.
+2. Optimize parameters to maximize $\mathcal{L}$ (or equivalently, minimize $-\ln\mathcal{L}$).
+3. Test the fit by comparing with the data distribution.
+
+Note: There are different methods depending on whether we use individual data points (unbinned) or histogram bins and counts (binned). Consider the binned approach for very large samples since the unbinned likelihood calculation can be expensive.
+
+## The Likelihood Ratio Test
+
+If we have two different hypotheses, the test statistic is
+
+$$
+d = -2\ln\frac{\mathcal{L}_\text{null}}{\mathcal{L}_\text{alt}} = -2\ln(\mathcal{L}_\text{null}) + 2\ln(\mathcal{L}_\text{alt})
+$$
+
+Under the null hypothesis, $d$ follows a $\chi^2$ distribution with degrees of freedom equal to the difference in the number of parameters between the two models. Greater degrees of freedom will necessarily yield a higher likelihood, so the test accounts for model complexity.
+
+[[simulation applied-stats-sim-2]]

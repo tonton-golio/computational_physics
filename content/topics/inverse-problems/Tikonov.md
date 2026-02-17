@@ -1,187 +1,102 @@
 # Tikhonov Regularization
 
-# 1
-## Least-squares - Tikonov regularization
-Least square in the case of inverse problems is quite straight forward:
-minmize the norm of $g(m)-d$, in which $g$ is the function, $m$ are the parameters and $d$ is the observed data.
+Least squares alone is often too optimistic for inverse problems.
+Noise and poor conditioning can make the solution unstable or physically unrealistic.
 
-This simple approach is however prone to overfitting.
+---
 
-We thus have Tikhonov regularization, which for linear regression can be represented by the following cost function:
-$$
-\mathcal{L} = ||d - g(m)||^2 + \epsilon \times ||m||^2
-$$
-Where:
-$\epsilon$ is the regularization parameter, a scalar that determines the strength of the regularization term.
+## From Least Squares to Tikhonov
 
-The cost function is minimized over the parameters in order to obtain the optimal solution of Ridge Regression.
-
-The above cost function can be minimized by solving the following regularized normal equations:
+For a linear forward model
 
 $$
-    m = (X^TX + \epsilon I)^-1 \cdot X^TY
-$$
-Where X is the training data input, Y is the training data output, and I is the identity matrix.
-
-
-
-
-### Least squares and Tikhonov regularization
-If the relation is linear;
-$$
-    \mathbf{d} = g(\mathbf{m}) \Rightarrow
-    \mathbf{d} = \mathbf{G}\mathbf{m},
-$$
-the least squares problem is to minimize 
-$$
-    E(\mathbf{m}) = ||\mathbf{d}-\mathbf{Gm}||^2
+\mathbf{d}=\mathbf{Gm},
 $$
 
-This can be solved analytically, a solution vector $\mathbf{\hat{m}}$ satisfies
-$$
-    \forall j: \frac{\partial E}{\partial \hat{m}_j} = 0
-$$
-
-
-> OMG, look out for noise!!!
+plain least squares minimizes
 
 $$
-    \mathbf{\hat{m}} = \mathbf{G}^T (\mathbf{G}\mathbf{G}^T)^{-1}\mathbf{d}
+E(\mathbf{m})=\|\mathbf{d}-\mathbf{Gm}\|^2.
 $$
 
-
-
-> we may deal with cases which are either under- or over-determined. 
-* **Over determined** -> 1 solution but its not exact
-* **under determined** -> many solutions...
-
-
-To get around this over- or under-determination, *use*:
+Tikhonov regularization adds a penalty on model complexity:
 
 $$
-     E(\mathbf{m}) = ||\mathbf{d}-\mathbf{Gm}||^2 + \epsilon^2||\mathbf{m}||^2
-$$
-which yields a minimum given by:
-$$
-    \mathbf{\hat{m}} = \mathbf{G}^T (\mathbf{G}\mathbf{G}^T + \epsilon^2\mathbf{I})^{-1}\mathbf{d}\\
-    \Rightarrow\\
-    \mathbf{\hat{m}} = (\mathbf{G}\mathbf{G}^T + \epsilon^2\mathbf{I})^{-1}\mathbf{G}^T \mathbf{d}
+E_\epsilon(\mathbf{m})=\|\mathbf{d}-\mathbf{Gm}\|^2+\epsilon^2\|\mathbf{m}\|^2.
 $$
 
-
-
-##### How do we know if we have a mixed-determined problem?
-
-> Overdetermined if we have more samples, $N$, than we have parameters, $m$. i.e., if the matrix rank is smaller than the number of rows.
-
-> Underdetermine if we have less samples, $N$, than we have parameters, $m$. i.e., if the matrix rank is smaller than the number of columns.
-
-
-If the rank is smaller than $N$ and $m$, then we have a mixed-determined system.
-
-
-###### Summary of the key-points
-
-Almost all linear inverse problems we will face are mixed-determined!?!?!?! So we have to use Tikinov's formula ❤️
-
-
-
-# Header 2
-## Lecture notes
-#### Ocean floor magnetization
+The regularized solution is
 
 $$
-    d_i = \int_{-\infty}^\infty g_i(x)m(x)dx\\
+\hat{\mathbf{m}}=(\mathbf{G}^T\mathbf{G}+\epsilon^2\mathbf{I})^{-1}\mathbf{G}^T\mathbf{d}.
 $$
 
-discretize
-$$
-    \mathbf{m} = (m(x_1),m(x_2),\ldots)\\
-    \Rightarrow\\
-    d_i \approx \sum_{k=1}^M g_i(x_k)m_k\Delta x
-$$
-Matrix formulation
-$$
-    G_{ij} = g_i(x_j) \Rightarrow \mathbf{d} = \mathbf{Gm}
-$$
+---
 
+## Choosing the Regularization Strength
 
-Now we just solve ;
-$$
-    ||\mathbf{d}_\text{obs} - \mathbf{G\hat{m}}||^2\approx N\sigma^2.
-$$
+The parameter $\epsilon$ controls the bias-variance trade-off:
 
-(i.e., the difference between the observed data and estimated results should be on the order of the uncertainty in the measurements.)
+- small $\epsilon$: data fit is strong, noise amplification risk is high
+- large $\epsilon$: solution is smoother and more stable, but can underfit
 
-To do so, move all terms on side and minimize 💪
+In practice, you sweep a range of $\epsilon$ values and inspect stability, residuals, and physical plausibility.
 
+[[simulation tikhonov-regularization]]
 
+---
 
-##### Weighting data and model with their standard deviations
+## Optimization View
 
-define
-$$
-    \bar{\mathbf{d}} = \mathbf{Vd}
-$$
-where
-$$
-    \mathbf{V}^T\mathbf{V} = \mathbf{C}_D^{-1}
-$$
-and
-$$
-    \bar{\mathbf{m}} = \mathbf{Wm}
-$$
-where
-$$
-    \mathbf{W}^T\mathbf{W} = \mathbf{C}_M^{-1}
-$$
+The same objective can be optimized iteratively.
+Gradient-based methods are useful for large models and nonlinear extensions.
 
-theis means
+[[simulation steepest-descent]]
+
+For the quadratic objective above, steepest descent converges to the same regularized minimizer when steps are chosen properly.
+
+---
+
+## Why Regularization Is Physically Meaningful
+
+Regularization encodes prior structure:
+
+- smoothness
+- bounded energy
+- sparse or low-complexity models
+
+This mirrors how coarse-grid parameterizations are used in climate and Earth-system models.
+
+[[figure climate-grid]]
+
+A Bayesian interpretation is also common: Tikhonov is equivalent to a Gaussian prior on model parameters.
+
+[[figure gaussian-process]]
+
+---
+
+## Weighted Formulation (Data and Model Covariance)
+
+If data covariance is $\mathbf{C}_D$ and model covariance is $\mathbf{C}_M$, define whitening transforms:
+
 $$
-\begin{align*}
-    \mathbf{d}=\mathbf{Gm} &\rightarrow \mathbf{Vd} = \mathbf{VGm}\\
-                           &\rightarrow \mathbf{Vd} = \mathbf{VGW}^{-1}\mathbf{Wm}\\
-                           &\rightarrow \mathbf{\bar{d}} = \mathbf{VGW}^{-1}
-\end{align*}
-$$
-where
-$$
-    \bar{\mathbf{G}}= \mathbf{VGW}^{-1}
+\mathbf{V}^T\mathbf{V}=\mathbf{C}_D^{-1}, \qquad \mathbf{W}^T\mathbf{W}=\mathbf{C}_M^{-1}.
 $$
 
+Then solve in transformed variables:
 
-Lets put this into the Tikhonov formula:
 $$
-    ...
+\bar{\mathbf{d}}=\mathbf{Vd}, \qquad \bar{\mathbf{m}}=\mathbf{Wm}, \qquad \bar{\mathbf{G}}=\mathbf{VGW}^{-1}.
 $$
 
+This makes uncertainty weighting explicit and improves interpretability.
 
+---
 
-## Transformed problem
-To obtain the transformed problem just use the singular value decomposition (SVD). *Small singular value, give strong noise amplification.*
+## Takeaway
 
-Sorry I didn't listen very well... (but, fear not: I'll be back with the fine grit sandpaper)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Most practical inverse problems are noisy and ill-conditioned.
+Tikhonov regularization is the baseline tool for making inversion stable, interpretable, and computationally tractable.
 
 
 

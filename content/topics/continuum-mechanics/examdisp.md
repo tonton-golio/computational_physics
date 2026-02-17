@@ -3,7 +3,7 @@
 
 Van de Waals Forces and Lennard Jones potential.
 
-## __1. Hydrostatics, Buoyancy__
+## 1. Hydrostatics, Buoyancy
 TO DO:
 Van de Waals Forces and Lennard Jones potential. Cont Approx and field description should be optional.
 __Continuum Approximation__
@@ -56,7 +56,7 @@ $$
 __Examples__
 Ships, Icebergs, How to calculate if Cont Approx is valid.
 
-## __2. Stress & Strain__
+## 2. Stress & Strain
 __Tensor Fundamentals__
 
 __Stress Tensor__
@@ -68,7 +68,7 @@ __Relating to Fluids and Solids__
 __Examples__
 FEM Modelling, glacier valley + crevasses
 
-## __3. Elasticity & Vibrations__
+## 3. Elasticity & Vibrations
 __Stretching regime__
 Where is linear elasticity valid?
 
@@ -86,11 +86,11 @@ P and S waves, roughly derived from Navier-Stokes.
 __Examples__
 Elastic shelf assignment, Cheese
 
-## __4. Continuum Mechanics__
+## 4. Continuum Mechanics
 __Cauchy Equation__
 
 
-## __5. (Nearly) Ideal Flows and the Sverdrup Balance__
+## 5. (Nearly) Ideal Flows and the Sverdrup Balance
 What is an ideal flow?
 
 __Gravity Waves__
@@ -99,7 +99,7 @@ __Vorticity vs. Circulation__
 
 __Sverdrup Balance__
 
-## __6. Viscous Flows__
+## 6. Viscous Flows
 __Newtonian vs Non-newtonian__
 
 __Stress and Strain relation__
@@ -107,7 +107,7 @@ __Stress and Strain relation__
 __Examples__
 Custard, Quicksand, Potatostarch
 
-## __7. Stokes flows and Channels & Pipes__
+## 7. Stokes flows and Channels & Pipes
 __Strong form vs Weak form__
 
 __Boundary Conditions__

@@ -2,11 +2,11 @@
 
 
 
-## __Introduction__
+## Introduction
 The Cauchy stress tensor, Cauchy strain tensor, the stress deviator, gradient tensor and spin tensor are essential concepts in the field of continuum mechanics. The Cauchy stress tensor is a mathematical construct used to describe stress in a material. The Cauchy strain tensor describes the deformation of the material due to stress. The Cauchy strain tensor together with the spin tensor gives the combined gradient tensor. 
 The stress deviator characterizes the state of stress in a material with respect to a reference pressure. Understanding these concepts is crucial for predicting the behavior of materials under different conditions. In this introduction, we will provide an overview of these concepts and their significance in the study of continuum mechnaics.
 
-## __Cauchy Stress Tensor__
+## Cauchy Stress Tensor
 The Cauchy stress tensor is an mathematical object used to describe how forces propagate through a continuum. For 3 dimensions it is a rank 2 tensor, for 2 dimensions a rank 1 tensor and for 1 dimension a rank 0 tensor, these are usually denoted as
 $$
 \sigma_{3D} = \begin{pmatrix}
@@ -29,7 +29,7 @@ For any solids that have forces propagation through them, there exist a basis fo
 Normal and shear stresses are therefore a matter of perspective since they depend on the choosen basis, which is arbitrary. 
 This "normal" basis is the eigenbasis of the Cauchy stress tensor.
 
-## __Stress Deviator and Invariants__
+## Stress Deviator and Invariants
 It is convenient to introduce the *stress deviator* which is defined as the Cauchy stress tensor but removing the normal stresses or equivalently the pressure
 $$
 s=\sigma-p\mathbf{I}\hspace{0.3cm} \text{where}\hspace{0.3cm} p=\frac{1}{3}tr(\sigma)
@@ -74,7 +74,7 @@ $$
 P_{deformation}=\sqrt{3J_2}
 $$
 
-## __Cauchy Strain Tensor__
+## Cauchy Strain Tensor
 Similarily to the forces, displacement in position can also be modeled by a tensor, called the *Cauchy strain tensor*. 
 Consider a vector field describing motion in a continuum
 $$
@@ -102,7 +102,7 @@ $$
 The Cauchy strain tensor describes deformation in a continua. The eigenbasis of the Cauchy strain tensor has eigenvectors pointing in the direction of displacement and eigenvalues corresponding to the rate of displacement.
 It is unitless, and describes relative deformation. To achieve length in units, multiply by or integrate along the corresponding dimension of the object it represents.
 
-## __Velocity Gradient and Spin Tensor__
+## Velocity Gradient and Spin Tensor
 The velocity gradient tensor is given as
 $$
 \nabla\mathbf{v}_{3D}=

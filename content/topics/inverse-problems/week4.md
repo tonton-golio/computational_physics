@@ -1,44 +1,92 @@
-# Non-linear Problems and Monte Carlo
+# Week 4 - Nonlinear Inversion and Monte Carlo
 
-# Header 1
-Sometimes problems are non-linear -  this makes everything ugly and difficult...
+Nonlinear inverse problems rarely admit closed-form solutions.
+Instead, we estimate parameters with stochastic sampling and posterior exploration.
 
-We can use monte carlo sampling for example for find the mean.
+---
 
+## Why Monte Carlo
 
-we want to check samples whihch are taken from the pdf f(x).
+Suppose your posterior over parameters is $p(\mathbf{x}\mid \mathbf{d})$.
+Direct integration is often intractable in high dimensions, so we sample.
 
-
-Then we take a sample, and we use rejection sampling (simple) to choose whether or not to keep it....
-
-$$
-	p_\text{accept} = \frac{p(\mathbf{x}_\text{cand})}{M}
-$$
-in which M is some arbitrary, large value. Ie, $M\geq \text{max}_\mathbf{x}(p(\mathbf{x}))$
-
-# Header 2
-we could make this algorithm more sofiticated (rejection sampling) by adding a term $q$. 
+For basic rejection sampling:
 
 $$
-	p_{accept} = \frac{p(\mathbf{x}_\text{cand})}{M q(\mathbf{x}_\text{cand})}
+p_{\text{accept}}=\frac{p(\mathbf{x}_{\text{cand}})}{M},
+\qquad M\ge \max_{\mathbf{x}} p(\mathbf{x}).
 $$
 
-
-MCMC
-* propose jump chosen from a probability distribution
-
-accept $\mathbf{x}_j$ only with probability
+With proposal density $q$:
 
 $$
-	p_\text{accept} = \text{min}\left( 1, \frac{p(\mathbf{x}_i)}{p(\mathbf{x}_j)}\right)
+p_{\text{accept}}=\frac{p(\mathbf{x}_{\text{cand}})}{M q(\mathbf{x}_{\text{cand}})}.
 $$
-otherwise repeat $\mathbf{x}_j$
 
+[[simulation monte-carlo-integration]]
 
+---
 
+## Markov Chain Monte Carlo (MCMC)
 
-###### Monte Carlo
-> We wanna sample our space, typically using Monte Carlo... This is done to save compute. We will save a point depending on the value evaluated at that specific parameter configuration.
+MCMC avoids independent sampling from a hard posterior.
+It builds a chain that spends more time in high-probability regions.
 
-> If we wanna locate the minimum on an array of size $n=8$, we must sub-divide our space and ask "which contains the extrema". The number of questions meccesitated in obtaining the extrema is $\log_2(n)$.
+A common Metropolis-style acceptance rule is:
+
+$$
+p_{\text{accept}}=\min\left(1,\frac{p(\mathbf{x}_{\text{new}})}{p(\mathbf{x}_{\text{old}})}\right).
+$$
+
+Practical diagnostics to monitor:
+
+- burn-in length
+- acceptance rate
+- chain mixing
+- autocorrelation
+
+---
+
+## Example: Vertical Fault Inversion
+
+Geometry and synthetic setup:
+
+[[figure vertical-fault-diagram]]
+
+Posterior exploration:
+
+[[simulation vertical-fault-mcmc]]
+
+Key insight: multiple parameter combinations can produce similar data, so posterior shape matters more than a single point estimate.
+
+---
+
+## Example: Glacier Thickness Inversion
+
+Forward geometry:
+
+[[figure glacier-valley-diagram]]
+
+Sampling-based inversion:
+
+[[simulation glacier-thickness-mcmc]]
+
+This case highlights the trade-off between fit quality and physically plausible smooth thickness profiles.
+
+---
+
+## Monte Carlo Geometry Intuition
+
+Before full inversion, it helps to build geometric intuition with volume estimation:
+
+[[simulation sphere-in-cube-mc]]
+
+As sample count grows, Monte Carlo error decays roughly as $O(N^{-1/2})$.
+
+---
+
+## Week 4 Takeaway
+
+For nonlinear inverse problems, uncertainty is part of the answer.
+Monte Carlo methods turn inversion from "find one best model" into "characterize a credible family of models."
 

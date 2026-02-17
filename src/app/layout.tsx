@@ -3,7 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "katex/dist/katex.min.css";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
+import { ConditionalFooter } from "@/components/layout/ConditionalFooter";
+import { WebVitalsReporter } from "@/components/performance/WebVitalsReporter";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,12 +17,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Koala-Brain | Computational Physics Learning Platform",
+  title: "Computational Physics | Learning Platform",
   description: "Interactive computational physics education — where precision meets accessibility. Masters-level content on quantum optics, continuum mechanics, and more.",
   keywords: ["computational physics", "quantum optics", "continuum mechanics", "interactive visualizations", "physics education"],
   authors: [{ name: "Anton" }],
   openGraph: {
-    title: "Koala-Brain | Computational Physics Learning Platform",
+    title: "Computational Physics | Learning Platform",
     description: "Interactive computational physics education — where precision meets accessibility.",
     type: "website",
   },
@@ -37,12 +38,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <WebVitalsReporter />
         <div className="flex min-h-screen flex-col">
           <Header />
           <main className="flex-1">
             {children}
           </main>
-          <Footer />
+          <ConditionalFooter />
         </div>
       </body>
     </html>

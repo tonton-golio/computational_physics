@@ -3,11 +3,14 @@ import * as math from 'mathjs';
 import Plotly from 'react-plotly.js';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
 
 type Matrix2 = number[][];
 
 type Props = Record<string, never>;
+
+function Label({ children }: { children: React.ReactNode }) {
+  return <label className="block text-sm text-gray-300">{children}</label>;
+}
 
 const ConditionNumberDemo: React.FC<Props> = () => {
   const [a11, setA11] = useState(1);
@@ -31,8 +34,8 @@ const ConditionNumberDemo: React.FC<Props> = () => {
     try {
       const Am = math.matrix(A);
       const invA = math.inv(Am);
-      const normA = math.norm(Am, 'inf');
-      const normInvA = math.norm(invA, 'inf');
+      const normA = Number(math.norm(Am, 'inf'));
+      const normInvA = Number(math.norm(invA, 'inf'));
       setCond(normA * normInvA);
 
       const xSol = math.multiply(invA, b);
@@ -52,9 +55,9 @@ const ConditionNumberDemo: React.FC<Props> = () => {
       setXPert([xPertSol.get([0,0]), xPertSol.get([1,0])]);
 
       const dx = math.subtract(xPertSol, xSol);
-      const relDx = math.divide(math.norm(dx, 'inf'), math.norm(xSol || math.matrix([1,0]), 'inf'));
+      const relDx = Number(math.divide(math.norm(dx, 'inf'), math.norm(xSol || math.matrix([1,0]), 'inf')));
       const relDb = eps; // approx
-      setRelError(relDx.get([0,0]) / relDb);
+      setRelError(relDx / relDb);
     } catch (e) {
       console.error(e);
     }
@@ -133,7 +136,7 @@ const ConditionNumberDemo: React.FC<Props> = () => {
         <div className="flex-1 min-h-0">
           <Plotly
             data={[line1, line2]}
-            layout={{ width: 400, height: 400, title: 'Equation Lines (x,y plane)', xaxis: {title: 'x1'}, yaxis: {title: 'x2'} }}
+            layout={{ width: 400, height: 400, title: { text: 'Equation Lines (x,y plane)' }, xaxis: {title: { text: 'x1' }}, yaxis: {title: { text: 'x2' }} }}
             config={{ staticPlot: false, displayModeBar: false }}
           />
         </div>

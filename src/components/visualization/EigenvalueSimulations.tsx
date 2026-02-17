@@ -14,6 +14,8 @@ const COLORS = {
   zero: '#2d2d44',
 };
 
+type Matrix2x2 = [[number, number], [number, number]];
+
 const BASE_LAYOUT: Partial<Plotly.Layout> = {
   paper_bgcolor: 'rgba(0,0,0,0)',
   plot_bgcolor: 'rgba(15,15,25,1)',
@@ -85,7 +87,7 @@ interface SimulationProps {
 // 1. Eigenvalue Transformation Demo - Show how eigenvectors stay on their span
 export function EigenTransformation({}: SimulationProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [matrix, setMatrix] = useState([[2, 1], [0, 3]]);
+  const [matrix, setMatrix] = useState<Matrix2x2>([[2, 1], [0, 3]]);
   
   useEffect(() => {
     const container = containerRef.current;
@@ -218,7 +220,7 @@ export function PowerMethodAnimation({}: SimulationProps) {
   const [isRunning, setIsRunning] = useState(false);
   const [iteration, setIteration] = useState(0);
   const [eigenvalueEst, setEigenvalueEst] = useState(0);
-  const [matrix] = useState([[4, 1], [2, 3]]);
+  const [matrix] = useState<Matrix2x2>([[4, 1], [2, 3]]);
   const animationRef = useRef<{ x: number[]; y: number[] }>({ x: [1, 1], y: [1, 1] });
   
   const trueEigenvalue = 5; // Dominant eigenvalue of [[4,1],[2,3]]
@@ -357,10 +359,221 @@ export function PowerMethodAnimation({}: SimulationProps) {
   );
 }
 
+// 3. Hermitian matrix properties demo
+export function HermitianDemo({}: SimulationProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [offDiag, setOffDiag] = useState(0.8);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    // Real symmetric matrix is the Hermitian subset over R.
+    const A: Matrix2x2 = [[2.5, offDiag], [offDiag, 4.0]];
+    const a = A[0][0];
+    const b = A[0][1];
+    const d = A[1][1];
+    const disc = Math.sqrt((a - d) ** 2 + 4 * b * b);
+    const lambda1 = (a + d + disc) / 2;
+    const lambda2 = (a + d - disc) / 2;
+
+    const x = Array.from({ length: 200 }, (_, i) => -5 + (10 * i) / 199);
+    const y1 = x.map((v) => lambda1 * v);
+    const y2 = x.map((v) => lambda2 * v);
+
+    const data: Plotly.Data[] = [
+      {
+        x,
+        y: y1,
+        type: 'scatter',
+        mode: 'lines',
+        line: { color: COLORS.primary, width: 2 },
+        name: `Eigenspace λ1=${lambda1.toFixed(3)}`,
+      },
+      {
+        x,
+        y: y2,
+        type: 'scatter',
+        mode: 'lines',
+        line: { color: COLORS.secondary, width: 2 },
+        name: `Eigenspace λ2=${lambda2.toFixed(3)}`,
+      },
+      {
+        x: [0, 1],
+        y: [0, lambda1],
+        type: 'scatter',
+        mode: 'markers',
+        marker: { size: 9, color: COLORS.tertiary },
+        name: 'Real eigenvalues',
+      },
+      {
+        x: [0, 1],
+        y: [0, lambda2],
+        type: 'scatter',
+        mode: 'markers',
+        marker: { size: 9, color: COLORS.warning },
+        showlegend: false,
+      },
+    ];
+
+    const layout: Partial<Plotly.Layout> = {
+      ...BASE_LAYOUT,
+      title: { text: 'Hermitian Matrix: Real Eigenstructure' },
+      xaxis: { ...BASE_LAYOUT.xaxis, title: { text: 'Basis coordinate x' }, range: [-3, 3] },
+      yaxis: { ...BASE_LAYOUT.yaxis, title: { text: 'Transformed coordinate y' }, range: [-12, 12] },
+      legend: { bgcolor: 'rgba(0,0,0,0)' },
+    };
+
+    Plotly.newPlot(container, data, layout, { responsive: true, displayModeBar: false });
+  }, [offDiag]);
+
+  return (
+    <div className="space-y-4">
+      <div ref={containerRef} className="w-full h-80 bg-[#151525] rounded-lg overflow-hidden" />
+      <div className="space-y-2">
+        <label className="text-sm text-gray-400">Symmetric off-diagonal coupling: {offDiag.toFixed(2)}</label>
+        <input
+          type="range"
+          min="-2"
+          max="2"
+          step="0.05"
+          value={offDiag}
+          onChange={(e) => setOffDiag(parseFloat(e.target.value))}
+          className="w-full"
+        />
+      </div>
+      <p className="text-xs text-gray-500">
+        Hermitian matrices have real eigenvalues and orthogonal eigenvectors, yielding numerically stable eigendecompositions.
+      </p>
+    </div>
+  );
+}
+
+// 4. Inverse iteration with shift
+export function InverseIterationDemo({}: SimulationProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [sigma, setSigma] = useState(2.2);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const A: number[][] = [
+      [4, 1, 0],
+      [1, 3, 1],
+      [0, 1, 2],
+    ];
+
+    const dot = (u: number[], v: number[]) => u.reduce((s, ui, i) => s + ui * v[i], 0);
+    const norm = (v: number[]) => Math.sqrt(dot(v, v));
+
+    const solve3 = (M: number[][], b: number[]): number[] => {
+      const a = M.map((row) => row.slice());
+      const rhs = b.slice();
+      const n = 3;
+      for (let p = 0; p < n; p++) {
+        let pivot = p;
+        for (let i = p + 1; i < n; i++) {
+          if (Math.abs(a[i][p]) > Math.abs(a[pivot][p])) pivot = i;
+        }
+        [a[p], a[pivot]] = [a[pivot], a[p]];
+        [rhs[p], rhs[pivot]] = [rhs[pivot], rhs[p]];
+        const denom = a[p][p] || 1e-12;
+        for (let i = p + 1; i < n; i++) {
+          const m = a[i][p] / denom;
+          for (let j = p; j < n; j++) a[i][j] -= m * a[p][j];
+          rhs[i] -= m * rhs[p];
+        }
+      }
+      const x = [0, 0, 0];
+      for (let i = n - 1; i >= 0; i--) {
+        let s = rhs[i];
+        for (let j = i + 1; j < n; j++) s -= a[i][j] * x[j];
+        x[i] = s / (a[i][i] || 1e-12);
+      }
+      return x;
+    };
+
+    let x = [1, 0.2, -0.4];
+    const estimates: number[] = [];
+    const iters: number[] = [];
+
+    for (let k = 0; k < 14; k++) {
+      const M = [
+        [A[0][0] - sigma, A[0][1], A[0][2]],
+        [A[1][0], A[1][1] - sigma, A[1][2]],
+        [A[2][0], A[2][1], A[2][2] - sigma],
+      ];
+      const y = solve3(M, x);
+      const yn = norm(y) || 1;
+      x = y.map((v) => v / yn);
+      const Ax = [
+        A[0][0] * x[0] + A[0][1] * x[1] + A[0][2] * x[2],
+        A[1][0] * x[0] + A[1][1] * x[1] + A[1][2] * x[2],
+        A[2][0] * x[0] + A[2][1] * x[1] + A[2][2] * x[2],
+      ];
+      const rq = dot(x, Ax);
+      estimates.push(rq);
+      iters.push(k + 1);
+    }
+
+    const data: Plotly.Data[] = [
+      {
+        x: iters,
+        y: estimates,
+        type: 'scatter',
+        mode: 'lines+markers',
+        line: { color: COLORS.primary, width: 2 },
+        marker: { size: 6, color: COLORS.primary },
+        name: 'Rayleigh estimate',
+      },
+      {
+        x: [iters[0], iters[iters.length - 1]],
+        y: [sigma, sigma],
+        type: 'scatter',
+        mode: 'lines',
+        line: { color: COLORS.secondary, width: 2, dash: 'dot' },
+        name: 'Shift σ',
+      },
+    ];
+
+    const layout: Partial<Plotly.Layout> = {
+      ...BASE_LAYOUT,
+      title: { text: 'Inverse Iteration (Shift-and-Invert)' },
+      xaxis: { ...BASE_LAYOUT.xaxis, title: { text: 'Iteration' } },
+      yaxis: { ...BASE_LAYOUT.yaxis, title: { text: 'Estimated eigenvalue' } },
+      legend: { bgcolor: 'rgba(0,0,0,0)' },
+    };
+
+    Plotly.newPlot(container, data, layout, { responsive: true, displayModeBar: false });
+  }, [sigma]);
+
+  return (
+    <div className="space-y-4">
+      <div ref={containerRef} className="w-full h-80 bg-[#151525] rounded-lg overflow-hidden" />
+      <div className="space-y-2">
+        <label className="text-sm text-gray-400">Shift σ: {sigma.toFixed(2)}</label>
+        <input
+          type="range"
+          min="0.5"
+          max="4.5"
+          step="0.05"
+          value={sigma}
+          onChange={(e) => setSigma(parseFloat(e.target.value))}
+          className="w-full"
+        />
+      </div>
+      <p className="text-xs text-gray-500">
+        The iteration converges to the eigenvalue nearest the chosen shift, making interior eigenvalues tractable.
+      </p>
+    </div>
+  );
+}
+
 // 3. Gershgorin Circles
 export function GershgorinCircles({}: SimulationProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [matrix] = useState([[2, 1], [1, 3]]);
+  const [matrix] = useState<Matrix2x2>([[2, 1], [1, 3]]);
   
   useEffect(() => {
     const container = containerRef.current;
@@ -725,7 +938,7 @@ export function RayleighQuotientSurface({}: SimulationProps) {
 // 7. Matrix Exponential Visualization
 export function MatrixExponentialSimulation({}: SimulationProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [matrix, setMatrix] = useState([[1, 0.5], [0, 2]]);
+  const [matrix, setMatrix] = useState<Matrix2x2>([[1, 0.5], [0, 2]]);
   
   useEffect(() => {
     const container = containerRef.current;
@@ -808,7 +1021,7 @@ export function MatrixExponentialSimulation({}: SimulationProps) {
 export function CharacteristicPolynomial({}: SimulationProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState(2);
-  const [matrix, setMatrix] = useState([[2, 1], [0, 3]]);
+  const [matrix, setMatrix] = useState<number[][]>([[2, 1], [0, 3]]);
 
   useEffect(() => {
     if (size === 2) {
@@ -852,7 +1065,7 @@ export function CharacteristicPolynomial({}: SimulationProps) {
       return val;
     });
 
-    let eigenvalues = [];
+    let eigenvalues: number[] = [];
     if (matrix.length === 2) {
       const a = matrix[0][0], b = matrix[0][1], c = matrix[1][0], d = matrix[1][1];
       const disc = (a + d) ** 2 - 4 * (a * d - b * c);
@@ -870,15 +1083,17 @@ export function CharacteristicPolynomial({}: SimulationProps) {
         line: { color: COLORS.primary, width: 2 },
         name: 'p(λ)',
       },
-      ...(eigenvalues.length ? [{
+    ];
+    if (eigenvalues.length) {
+      data.push({
         x: eigenvalues,
         y: eigenvalues.map(() => 0),
         type: 'scatter',
         mode: 'markers',
         marker: { size: 10, color: COLORS.secondary, symbol: 'x', line: { width: 2 } },
         name: 'Roots (eigenvalues)',
-      }] : [])
-    ];
+      });
+    }
 
     const layout: Partial<Plotly.Layout> = {
       ...BASE_LAYOUT,
@@ -955,6 +1170,8 @@ export function CharacteristicPolynomial({}: SimulationProps) {
 export const EIGENVALUE_SIMULATIONS: Record<string, React.ComponentType<SimulationProps>> = {
   'eigen-transformation': EigenTransformation,
   'power-method-animation': PowerMethodAnimation,
+  'hermitian-demo': HermitianDemo,
+  'inverse-iteration': InverseIterationDemo,
   'gershgorin-circles': GershgorinCircles,
   'convergence-comparison': ConvergenceComparison,
   'qr-algorithm-animation': QRAlgorithmAnimation,

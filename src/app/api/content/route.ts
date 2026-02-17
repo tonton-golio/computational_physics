@@ -1,42 +1,95 @@
-import { NextResponse } from 'next/server';
-import { getTopicFile, getTopicSlugs, TOPICS, TopicSlug } from '@/lib/content';
+import { z } from "zod";
+import { NextResponse } from "next/server";
+import { getTopicIndexes, getTopicLesson, getTopicLessons } from "@/features/content/content-gateway";
+import { logRequestMetric } from "@/infra/observability/request-metrics";
+import { AppError, asErrorEnvelope } from "@/shared/errors/app-error";
+
+export const runtime = "nodejs";
+export const revalidate = 3600;
+
+const CACHE_HEADERS = {
+  "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+};
+
+const querySchema = z.object({
+  topic: z.string().optional(),
+  slug: z.string().optional(),
+});
+
+function correlationIdFrom(request: Request): string {
+  return request.headers.get("x-correlation-id") ?? crypto.randomUUID();
+}
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const topic = searchParams.get('topic');
-  const slug = searchParams.get('slug');
-  
-  // Get all topics overview
-  if (!topic) {
-    const topicsOverview = Object.entries(TOPICS).map(([key, value]) => ({
-      id: key,
-      ...value,
-      lessons: getTopicSlugs(key),
-    }));
-    return NextResponse.json({ topics: topicsOverview });
-  }
-  
-  // Get specific content
-  if (topic && slug) {
-    const content = getTopicFile(topic, slug);
-    if (!content) {
-      return NextResponse.json({ error: 'Content not found' }, { status: 404 });
-    }
-    return NextResponse.json({ content });
-  }
-  
-  // Get all content for a topic
-  if (topic) {
-    if (!(topic in TOPICS)) {
-      return NextResponse.json({ error: 'Topic not found' }, { status: 404 });
-    }
-    const slugs = getTopicSlugs(topic);
-    const files = slugs.map(s => getTopicFile(topic, s)).filter(Boolean);
-    return NextResponse.json({ 
-      topic: TOPICS[topic as TopicSlug],
-      lessons: files 
+  const startedAt = performance.now();
+  const correlationId = correlationIdFrom(request);
+
+  try {
+    const { searchParams } = new URL(request.url);
+    const parsed = querySchema.safeParse({
+      topic: searchParams.get("topic") ?? undefined,
+      slug: searchParams.get("slug") ?? undefined,
     });
+
+    if (!parsed.success) {
+      throw new AppError("BAD_REQUEST", "Invalid query parameters.", 400, parsed.error.issues);
+    }
+
+    const { topic, slug } = parsed.data;
+
+    if (!topic) {
+      const topics = await getTopicIndexes();
+      const response = NextResponse.json({ topics }, { headers: CACHE_HEADERS });
+      response.headers.set("x-correlation-id", correlationId);
+      logRequestMetric({
+        route: "/api/content",
+        method: "GET",
+        status: 200,
+        durationMs: performance.now() - startedAt,
+        correlationId,
+      });
+      return response;
+    }
+
+    if (topic && slug) {
+      const content = await getTopicLesson(topic, slug);
+      if (!content) {
+        throw new AppError("NOT_FOUND", "Content not found.", 404, { topic, slug });
+      }
+      const response = NextResponse.json({ content }, { headers: CACHE_HEADERS });
+      response.headers.set("x-correlation-id", correlationId);
+      logRequestMetric({
+        route: "/api/content",
+        method: "GET",
+        status: 200,
+        durationMs: performance.now() - startedAt,
+        correlationId,
+      });
+      return response;
+    }
+
+    const lessonSet = await getTopicLessons(topic);
+    const response = NextResponse.json(lessonSet, { headers: CACHE_HEADERS });
+    response.headers.set("x-correlation-id", correlationId);
+    logRequestMetric({
+      route: "/api/content",
+      method: "GET",
+      status: 200,
+      durationMs: performance.now() - startedAt,
+      correlationId,
+    });
+    return response;
+  } catch (error) {
+    const status = error instanceof AppError ? error.status : 500;
+    const response = NextResponse.json(asErrorEnvelope(error), { status });
+    response.headers.set("x-correlation-id", correlationId);
+    logRequestMetric({
+      route: "/api/content",
+      method: "GET",
+      status,
+      durationMs: performance.now() - startedAt,
+      correlationId,
+    });
+    return response;
   }
-  
-  return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
 }

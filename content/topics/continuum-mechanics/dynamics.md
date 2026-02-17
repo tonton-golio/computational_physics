@@ -2,12 +2,12 @@
 
 
 
-## __Introduction__
+## Introduction
 
 Sample text
 
 
-## __Definitions__
+## Definitions
 Mass definition
 $$
 M = \int_V \rho dV

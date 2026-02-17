@@ -2,7 +2,7 @@
 
 
 
-## Header 1
+## The Least Squares Problem
 With given data and a desired function, determine the paramters of the function to minimize the distance to data points.
 
 
@@ -85,8 +85,8 @@ def reflect_columns(v, A):
 	S = -2 * np.dot(v, A)
 	A -= v[:, NA] * S[NA, :]
 
-## Header 3
-the last line RHS is the same as `np.outer(S,V)`
+## QR Factorization via Householder Reflections
+The last line RHS is the same as `np.outer(S,V)`
 
 This then yields a much better least squares optimizer:
 

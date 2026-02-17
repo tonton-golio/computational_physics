@@ -5,12 +5,16 @@ import * as math from 'mathjs';
 import Plotly from 'react-plotly.js';
 import AppliedStatsSim2 from './applied-statistics/AppliedStatsSim2';
 import AppliedStatsSim1 from './applied-statistics/AppliedStatsSim1';
+import AppliedStatsSim5 from './applied-statistics/AppliedStatsSim5';
+import AppliedStatsSim6 from './applied-statistics/AppliedStatsSim6';
+import AppliedStatsSim7 from './applied-statistics/AppliedStatsSim7';
+import AppliedStatsSim8 from './applied-statistics/AppliedStatsSim8';
 
 interface SimulationProps {
   id: string;
 }
 
-// Linear Regression Simulation
+// Central Limit Theorem Simulation
 function CentralLimitTheoremSim() {
   const [sampleSize, setSampleSize] = useState(10);
   const [numSamples, setNumSamples] = useState(500);
@@ -146,4 +150,8 @@ export const APPLIED_STATS_SIMULATIONS: Record<string, React.ComponentType<Simul
   'applied-stats-sim-2': AppliedStatsSim2,
   'applied-stats-sim-3': CentralLimitTheoremSim,
   'applied-stats-sim-4': HypothesisTestingSim,
+  'applied-stats-sim-5': AppliedStatsSim5,
+  'applied-stats-sim-6': AppliedStatsSim6,
+  'applied-stats-sim-7': AppliedStatsSim7,
+  'applied-stats-sim-8': AppliedStatsSim8,
 };

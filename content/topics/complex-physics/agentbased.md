@@ -1,31 +1,82 @@
-# Agent-Based Models
+# Agent-Based Models and Stochastic Simulation
 
+## From equations to agents
 
+In many systems, the relevant actors are discrete individuals, not continuous fields. **Agent-based models** (ABMs) simulate autonomous agents following local rules, and emergent collective behavior arises from their interactions.
 
-### Game of life
-In this type of model, we consider autonomous agents following a set of rules. The example which immediately springs to mind, is Conway's *Game of Life*. The rules are simple, we consider each site to have 8 nieghbors. 
+ABMs are particularly powerful when:
 
-* If a site is alive it will stay alive iff either 2 or 3 of its neighbors are alive. 
-* If a site is dead, it will spawn iff 3 of its neighbors are alive.
+- The population is **heterogeneous** (agents differ in attributes or behavior).
+- Spatial structure matters (local interactions dominate over global averages).
+- Stochasticity at the individual level drives macroscopic phenomena.
 
-### Game of life 2
-In the figure above, I have initialized a *glider*. a glider is a self-replicating configurations which glides in some direction. For the one shown above, it is self-similar every 4 generations. Other configurations show self-similarity on much greater time-scales. 
+## Cellular automata: the Game of Life
 
-### Stochastic simulation
+**Conway's Game of Life** is the canonical deterministic agent-based model. On a 2D grid, each cell is alive or dead, and its state updates synchronously based on its eight neighbors:
 
-Unlike cellular automata, we may have agent based models which act in a non-deterministic (random) fashion.
+- A live cell **survives** if it has exactly 2 or 3 live neighbors; otherwise it dies.
+- A dead cell **is born** if it has exactly 3 live neighbors.
 
-Let us initialize a square grid as our world, and let's put in 2 foxes and 6 rabbits.
+Despite these simple rules, the Game of Life produces remarkable emergent behavior: gliders that translate across the grid, oscillators with fixed periods, and self-replicating structures. It is Turing-complete, meaning it can in principle simulate any computation.
 
+[[simulation game-of-life]]
 
-### Gillespie algorithm, 
-*Traditional continuous and deterministic biochemical rate equations do not accurately predict cellular reactions since they rely on bulk reactions that require the interactions of millions of molecules. They are typically modeled as a set of coupled ordinary differential equations. In contrast, the Gillespie algorithm allows a discrete and stochastic simulation of a system with few reactants because every reaction is explicitly simulated. A trajectory corresponding to a single Gillespie simulation represents an exact sample from the probability mass function that is the solution of the master equation.*
+## Stochastic simulation and the Gillespie algorithm
 
-### Example of agent based simulation
-* spread in epidemics
-* post spread on social networks
+When reactions involve small numbers of molecules, deterministic rate equations (ODEs) fail to capture the inherent randomness. The **Gillespie algorithm** (stochastic simulation algorithm) provides exact trajectories from the chemical master equation.
 
-### Advantages of agent based models
-If actors in a model have different attirbutes (i.e. a heterogenous population) it makes sense to use an agent-based approach. This allows us to have super spreaders and things like that depending on what we are simulating.
+At each step:
 
-In the opposite case, i.e., that with a homogenous population, we may derive results statistically.
+1. Compute all reaction **propensities** $a_i$ (rate $\times$ number of reactant combinations).
+2. Compute the total propensity $a_0 = \sum_i a_i$.
+3. Draw the **waiting time** to the next reaction: $\Delta t \sim \text{Exp}(a_0)$.
+4. Select **which reaction** fires with probability $a_i / a_0$.
+5. Update the state and repeat.
+
+The algorithm generates sample paths that are statistically exact solutions of the master equation, at the cost of simulating one reaction at a time.
+
+## Predator-prey dynamics
+
+The **Lotka-Volterra model** describes the interaction between predators (foxes) and prey (rabbits). In the agent-based version:
+
+- Rabbits reproduce with some probability at each step.
+- Foxes eat nearby rabbits and reproduce; they die if they go too long without eating.
+- Both species move randomly on a spatial grid.
+
+The ODE (mean-field) version predicts sustained oscillations:
+
+$$
+\frac{dR}{dt} = \alpha R - \beta R F, \qquad \frac{dF}{dt} = \delta R F - \gamma F.
+$$
+
+The agent-based version reveals phenomena invisible to the ODE: spatial clustering, local extinctions, and stochastic fluctuations that can drive one species to global extinction.
+
+## Random walks and diffusion
+
+**Random walks** are the simplest stochastic models. A walker on a lattice takes steps in random directions at each time step.
+
+Key results for an unbiased random walk in $d$ dimensions:
+
+- Mean displacement: $\langle \mathbf{r}(t) \rangle = 0$.
+- Mean-squared displacement: $\langle r^2(t) \rangle = 2d \, D \, t$, where $D$ is the diffusion coefficient.
+- **Recurrence**: the walker returns to the origin with probability 1 in 1D and 2D, but not in 3D and higher (**Polya's theorem**).
+
+The **Langevin equation** provides a continuous-time description:
+
+$$
+\frac{dx}{dt} = -\frac{\partial U}{\partial x} + \sqrt{2D} \, \xi(t),
+$$
+
+where $\xi(t)$ is Gaussian white noise with $\langle \xi(t) \xi(t') \rangle = \delta(t - t')$.
+
+## Applications of agent-based models
+
+- **Epidemics**: SIR models on contact networks, with heterogeneous transmission rates and super-spreaders.
+- **Opinion dynamics**: voter models, bounded-confidence models, and polarization.
+- **Flocking**: Vicsek model, where agents align their velocity with neighbors plus noise, producing collective motion.
+- **Traffic flow**: Nagel-Schreckenberg model for traffic jams as emergent phenomena.
+- **Social networks**: information cascades and the spread of content through heterogeneous networks.
+
+The advantage of agent-based modeling is its flexibility: any mechanism can be incorporated at the individual level, and the macroscopic behavior is observed rather than assumed.
+
+[[simulation lorenz-attractor]]

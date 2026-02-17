@@ -2,7 +2,7 @@
 
 
 
-## __Introduction__
+## Introduction
 MISSING: Weakform description, strongform description, 
 
 The finite element modelling is a way to solve partial differential equations by approximating the *solution* to the differential equation rather than approximating the differential equation as done in the usual finite difference methods.
@@ -13,7 +13,7 @@ It is great for solving boundary value problems and it is easy to mesh complicat
 
 The *finite* part come from the basisfunctions usual finite structure (I.e. its 0 in all places but around a node).
 
-## __Weighted Residuals__
+## Weighted Residuals
 Consider a 1D differential equation written as
 $$
 A(u)=f
@@ -31,7 +31,7 @@ $$
 
 The choice of norm defines the *moment* of the solution and will impact the accuracy and spatial resolution of the solution.
 
-## __Least Squares Method__
+## Least Squares Method
 If we choose the Euclidian norm and define it as
 $$
 \Pi (r^N) := ||r^N||^2 := \int_0^L (r^N(x))^2 dx
@@ -44,7 +44,7 @@ which can be solved in the usual manner (See page on Scientific Computing or App
 
 By increasing the norm, we *punish* larger residuals harder. 
 
-## __Collocation Method__
+## Collocation Method
 The least squares method (and for other moments) punishes spatially equally everywhere. This is not the only way, and a whole range of methods exists, generally called *Method of Weighted Residuals*.
 We may not be interested in minimizing the *average* residual as done with the least squares method, but minimizing it around a general area. This can be done with the *Collocation method*, where we force the residuals to be zero at a number of locations
 $$
@@ -59,7 +59,7 @@ Imagine working at Würth and recieving complaints from customer service, that t
 The job is to determine the minimum amount of steel to be added to reinforce the screw, just below the screwhead. This addition information regarding space of interest, motivates us to choose the collocation method. 
 So that we may precisely determine the minimum amount of steel necessary to strengthen the screw exactly below the screwhead.
 
-## __Galerkin's Method__
+## Galerkin's Method
 The most widely used method, is called *Galerkin\'s Method*. To illustrate, consider the relation shown in the above.
 $$
 u-u^N=e^N \rightarrow u=u^N + e^N
@@ -89,7 +89,7 @@ It is based upon Galerkin’s method, It is computationally systematic and effic
 It is based on reformulations of the differential equation that remove the problems
 of restrictive differentiability requirements.
 
-## __Minimum potential energy principle
+## Minimum potential energy principle
 The weak problem is known as a variational problem, which is related to that of determning U such that the potential energy function W(u) is minimized
 
 $$
