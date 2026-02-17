@@ -158,9 +158,9 @@ export default function OnlineReinforcementPage() {
   ];
 
   const layout = {
-    title: 'Q-Learning Grid World',
-    xaxis: { title: 'X', dtick: 1 },
-    yaxis: { title: 'Y', dtick: 1 },
+    title: { text: 'Q-Learning Grid World' },
+    xaxis: { title: { text: 'X' }, dtick: 1 },
+    yaxis: { title: { text: 'Y' }, dtick: 1 },
     annotations: annotations,
     width: 600,
     height: 600,

@@ -31,8 +31,8 @@ export default function QuantumMechanics() {
     {
       x,
       y: psi,
-      type: 'scatter',
-      mode: 'lines',
+      type: 'scatter' as const,
+      mode: 'lines' as const,
       name: `Wave Function ψ_${n}(x)`,
       line: { color: 'blue' },
     },
@@ -42,25 +42,25 @@ export default function QuantumMechanics() {
     {
       x,
       y: prob,
-      type: 'scatter',
-      mode: 'lines',
+      type: 'scatter' as const,
+      mode: 'lines' as const,
       name: `Probability Density |ψ_${n}(x)|²`,
-      fill: 'tozeroy',
+      fill: 'tozeroy' as const,
       line: { color: 'red' },
     },
   ];
 
   const layoutPsi = {
-    title: 'Wave Function ψ_n(x)',
-    xaxis: { title: 'Position x', range: [0, L] },
-    yaxis: { title: 'ψ_n(x)' },
+    title: { text: 'Wave Function ψ_n(x)' },
+    xaxis: { title: { text: 'Position x' }, range: [0, L] },
+    yaxis: { title: { text: 'ψ_n(x)' } },
     showlegend: true,
   };
 
   const layoutProb = {
-    title: 'Probability Density |ψ_n(x)|²',
-    xaxis: { title: 'Position x', range: [0, L] },
-    yaxis: { title: '|ψ_n(x)|²' },
+    title: { text: 'Probability Density |ψ_n(x)|²' },
+    xaxis: { title: { text: 'Position x' }, range: [0, L] },
+    yaxis: { title: { text: '|ψ_n(x)|²' } },
     showlegend: true,
   };
 

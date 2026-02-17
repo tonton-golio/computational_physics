@@ -107,4 +107,8 @@ That means that we can employ similar methods as when minimizing ordinary functi
 
 
 
+## Interactive FEM 1D Bar Demo
+
+[[simulation fem-1d-bar-sim]]
+
 **For the practical implementation of the finite element modelling, including choice of basisfunction $\phi_i$ and determining $a_i$ using the fenics python package, see the Finite Element Modelling Illustrator and Useful Python Packages topics.**

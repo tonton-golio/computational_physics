@@ -9,6 +9,8 @@ interface Point {
   y?: number;
 }
 
+type ValidPoint = Point & { y: number };
+
 const NonlinearEquationsPage: React.FC = () => {
   const [system, setSystem] = useState<'lotka' | 'logistic'>('lotka');
   const [params, setParams] = useState({
@@ -137,10 +139,10 @@ const NonlinearEquationsPage: React.FC = () => {
   const { data: phaseData, layout: phaseLayout } = generatePhaseData();
 
   const generateTimeData = () => {
-    const validHistory = fullHistory.slice(0, currentIndex + 1).filter(p => p.x !== undefined && p.y !== undefined);
-    const timeX = validHistory.map(p => p.t);
-    const xY = validHistory.map(p => p.x!) as number[];
-    const yY = validHistory.map(p => p.y!) as number[];
+    const validHistory = fullHistory.slice(0, currentIndex + 1).filter(p => typeof p.x === 'number' && typeof p.y === 'number' && typeof p.t === 'number');
+    const timeX = validHistory.map(p => p.t as number);
+    const xY = validHistory.map(p => p.x);
+    const yY = validHistory.map(p => p.y as number);
     const data: Data[] = [
       { type: 'scatter', x: timeX, y: xY, mode: 'lines', name: 'x', line: { color: 'blue' } }
     ];
@@ -210,7 +212,7 @@ const NonlinearEquationsPage: React.FC = () => {
 
       <div className="mb-4">
         <label className="mr-4">System:</label>
-        <select value={system} onChange={(e) => setSystem(e.target.value)} className="border p-2">
+        <select value={system} onChange={(e) => setSystem(e.target.value as 'lotka' | 'logistic')} className="border p-2">
           <option value="lotka">Lotka-Volterra</option>
           <option value="logistic">Logistic</option>
         </select>

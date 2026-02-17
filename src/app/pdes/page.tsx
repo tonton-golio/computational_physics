@@ -32,7 +32,7 @@ function solveHeat1D(initialFunc: (x: number) => number, alpha: number, t: numbe
 export default function PDEs() {
   const [alpha, setAlpha] = useState(1);
   const [t, setT] = useState(0);
-  const [initialType, setInitialType] = useState('sine');
+  const [initialType, setInitialType] = useState<'sine' | 'gaussian' | 'step'>('sine');
 
   const u = useMemo(() => solveHeat1D(initialConditions[initialType], alpha, t), [initialType, alpha, t]);
 
@@ -42,17 +42,17 @@ export default function PDEs() {
     {
       x,
       y: u,
-      type: 'scatter',
-      mode: 'lines',
+      type: 'scatter' as const,
+      mode: 'lines' as const,
       name: `u(x, t=${t.toFixed(3)})`,
       line: { color: 'blue' },
     },
   ];
 
   const layout = {
-    title: '1D Heat Equation Solution',
-    xaxis: { title: 'Position x', range: [0, L] },
-    yaxis: { title: 'Temperature u(x,t)' },
+    title: { text: '1D Heat Equation Solution' },
+    xaxis: { title: { text: 'Position x' }, range: [0, L] },
+    yaxis: { title: { text: 'Temperature u(x,t)' } },
     showlegend: true,
   };
 
@@ -68,7 +68,7 @@ export default function PDEs() {
         <label className="block text-sm font-medium mb-2">Initial Condition</label>
         <select
           value={initialType}
-          onChange={(e) => setInitialType(e.target.value)}
+          onChange={(e) => setInitialType(e.target.value as 'sine' | 'gaussian' | 'step')}
           className="border rounded p-2"
         >
           <option value="sine">Sine Wave</option>
