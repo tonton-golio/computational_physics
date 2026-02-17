@@ -13,9 +13,20 @@ const LUDecompDemo: React.FC = () => {
 
   const A = [[a11, a12], [a21, a22]];
 
-  const [L, setL] = useState([[0,0],[0,0]]);
-  const [U, setU] = useState([[0,0],[0,0]]);
-  const [verify, setVerify] = useState(0);
+  const { L, U, verify } = useMemo(() => {
+    try {
+      const Am = math.matrix(A);
+      const lu = math.lu(Am);
+      const Lp = math.subset(lu.L, math.index(math.range(0,2), math.range(0,2)));
+      const Up = math.subset(lu.U, math.index(math.range(0,2), math.range(0,2)));
+      const LU = math.multiply(math.matrix(Lp), math.matrix(Up));
+      const verify = math.norm(math.subtract(LU, Am), 'frobenius').toNumber();
+      return { L: Lp.toArray(), U: Up.toArray(), verify };
+    } catch (e) {
+      console.error(e);
+      return { L: [[0,0],[0,0]], U: [[0,0],[0,0]], verify: 0 };
+    }
+  }, [a11, a12, a21, a22]);
 
   useEffect(() => {
     try {

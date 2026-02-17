@@ -16,6 +16,44 @@ export default function Fem1dBar() {
   const [x, setX] = useState<number[]>([]);
   const [strains, setStrains] = useState<number[]>([]);
 
+  function gaussElimination(A: number[][], b: number[]): number[] {
+    const n = A.length;
+    const a = A.map(row => [...row]);
+    const bb = [...b];
+
+    // Forward elimination
+    for (let p = 0; p < n; p++) {
+      // Find pivot
+      let max = p;
+      for (let i = p + 1; i < n; i++) {
+        if (Math.abs(a[i][p]) > Math.abs(a[max][p])) max = i;
+      }
+      // Swap rows
+      [a[p], a[max]] = [a[max], a[p]];
+      [bb[p], bb[max]] = [bb[max], bb[p]];
+
+      // Eliminate
+      for (let i = p + 1; i < n; i++) {
+        const alpha = a[i][p] / a[p][p];
+        bb[i] -= alpha * bb[p];
+        for (let j = p; j < n; j++) {
+          a[i][j] -= alpha * a[j][p];
+        }
+      }
+    }
+
+    // Back substitution
+    const x = Array(n).fill(0);
+    for (let i = n - 1; i >= 0; i--) {
+      let sum = 0;
+      for (let j = i + 1; j < n; j++) {
+        sum += a[i][j] * x[j];
+      }
+      x[i] = (bb[i] - sum) / a[i][i];
+    }
+    return x;
+  }
+
   const computeFEM = useCallback(() => {
     const n = ne + 1;
     const le = L / ne;
@@ -65,44 +103,6 @@ export default function Fem1dBar() {
   useEffect(() => {
     computeFEM();
   }, [computeFEM]);
-
-  function gaussElimination(A: number[][], b: number[]): number[] {
-    const n = A.length;
-    const a = A.map(row => [...row]);
-    const bb = [...b];
-
-    // Forward elimination
-    for (let p = 0; p < n; p++) {
-      // Find pivot
-      let max = p;
-      for (let i = p + 1; i < n; i++) {
-        if (Math.abs(a[i][p]) > Math.abs(a[max][p])) max = i;
-      }
-      // Swap rows
-      [a[p], a[max]] = [a[max], a[p]];
-      [bb[p], bb[max]] = [bb[max], bb[p]];
-
-      // Eliminate
-      for (let i = p + 1; i < n; i++) {
-        const alpha = a[i][p] / a[p][p];
-        bb[i] -= alpha * bb[p];
-        for (let j = p; j < n; j++) {
-          a[i][j] -= alpha * a[j][p];
-        }
-      }
-    }
-
-    // Back substitution
-    const x = Array(n).fill(0);
-    for (let i = n - 1; i >= 0; i--) {
-      let sum = 0;
-      for (let j = i + 1; j < n; j++) {
-        sum += a[i][j] * x[j];
-      }
-      x[i] = (bb[i] - sum) / a[i][i];
-    }
-    return x;
-  }
 
   const meshData = [
     {
@@ -160,7 +160,7 @@ export default function Fem1dBar() {
         <label>Number of Elements (ne): {ne} <input type="range" min="1" max="20" value={ne} onChange={e => setNe(Number(e.target.value))} /></label><br />
         <label>Length L: {L} <input type="range" min="0.1" max="10" step="0.1" value={L} onChange={e => setL(Number(e.target.value))} /></label><br />
         <label>Cross-section Area A: {A} <input type="range" min="0.1" max="10" step="0.1" value={A} onChange={e => setA(Number(e.target.value))} /></label><br />
-        <label>Young's Modulus E: {E} <input type="range" min="1" max="100" value={E} onChange={e => setE(Number(e.target.value))} /></label><br />
+        <label>Young&apos;s Modulus E: {E} <input type="range" min="1" max="100" value={E} onChange={e => setE(Number(e.target.value))} /></label><br />
         <label>Force P: {P} <input type="range" min="0" max="10" step="0.1" value={P} onChange={e => setP(Number(e.target.value))} /></label><br />
         <label>Deformation Exaggeration: {exag} <input type="range" min="1" max="100" value={exag} onChange={e => setExag(Number(e.target.value))} /></label>
       </div>

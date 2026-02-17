@@ -14,7 +14,9 @@ interface SimulationProps {
 function LinearRegressionSim() {
   const [noise, setNoise] = useState(1);
   const [sampleSize, setSampleSize] = useState(20);
-  const data = useMemo<{x: number[], y: number[], yHat: number[], residuals: number[], ciUpper: number[], ciLower: number[]}>(() => {
+  const [data, setData] = useState<{x: number[], y: number[], yHat: number[], residuals: number[], ciUpper: number[], ciLower: number[]} | null>(null);
+
+  useEffect(() => {
     const beta0 = 2;
     const beta1 = 1.5;
     const x = Array.from({length: sampleSize}, () => math.random(0, 10));
@@ -40,8 +42,10 @@ function LinearRegressionSim() {
       return yHat[i] - t * se;
     });
 
-    return { x, y, yHat, residuals, ciUpper, ciLower };
+    setData({ x, y, yHat, residuals, ciUpper, ciLower });
   }, [noise, sampleSize]);
+
+  if (!data) return <div>Loading...</div>;
 
   const residualTraces = data.x.map((xi, i) => ({
     x: [xi, xi],

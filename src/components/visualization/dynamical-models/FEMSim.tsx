@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import dynamic from 'next/dynamic';
+import { PlotData } from 'plotly.js';
 import { Slider } from '@/components/ui/slider';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
@@ -90,14 +91,9 @@ export function FEMSim() {
   const [E, setE] = useState([200e9]);
   const [P, setP] = useState([1000]);
 
-  const [meshData, setMeshData] = useState<any>(null);
-  const [displacementData, setDisplacementData] = useState<any>(null);
-
-  useEffect(() => {
+  const meshData = useMemo<PlotData[]>(() => {
     const { nodes, u, deformed } = solveFEM(ne[0], L[0], A[0], E[0], P[0]);
-
-    // Mesh plot: original and deformed at y=0
-    setMeshData([
+    return [
       {
         x: nodes,
         y: nodes.map(() => 0),
@@ -114,10 +110,12 @@ export function FEMSim() {
         line: { color: 'blue' },
         marker: { color: 'blue' },
       },
-    ]);
+    ];
+  }, [ne, L, A, E, P]);
 
-    // Displacement u(x)
-    setDisplacementData([
+  const displacementData = useMemo<PlotData[]>(() => {
+    const { nodes, u } = solveFEM(ne[0], L[0], A[0], E[0], P[0]);
+    return [
       {
         x: nodes,
         y: u,
@@ -126,7 +124,7 @@ export function FEMSim() {
         line: { color: 'red' },
         marker: { color: 'red' },
       },
-    ]);
+    ];
   }, [ne, L, A, E, P]);
 
   return (
@@ -191,7 +189,7 @@ export function FEMSim() {
             <Slider value={A} onValueChange={setA} min={1e-6} max={1e-2} step={1e-6} />
           </div>
           <div>
-            <label className="text-sm font-medium">Young's Modulus E: {E[0].toExponential(0)} Pa</label>
+            <label className="text-sm font-medium">Young&apos;s Modulus E: {E[0].toExponential(0)} Pa</label>
             <Slider value={E} onValueChange={setE} min={1e9} max={1e12} step={1e9} />
           </div>
           <div>

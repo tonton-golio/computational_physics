@@ -417,7 +417,7 @@ export function ScaleFreeNetwork({}: SimulationProps) {
       const targets = new Set<number>();
 
       for (let k = 0; k < m && targets.size < nodeList.length; k++) {
-        let rand = Math.random();
+        const rand = Math.random();
         let cumulative = 0;
         for (let j = 0; j < nodeList.length; j++) {
           cumulative += probabilities[j];

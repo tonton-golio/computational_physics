@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 
 type Matrix2 = number[][];
 
-type Props = {};
+type Props = Record<string, never>;
 
 const ConditionNumberDemo: React.FC<Props> = () => {
   const [a11, setA11] = useState(1);
@@ -28,6 +28,7 @@ const ConditionNumberDemo: React.FC<Props> = () => {
   const [xPert, setXPert] = useState([0, 0]);
   const [relError, setRelError] = useState(0);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
     try {
       const Am = math.matrix(A);
@@ -59,7 +60,7 @@ const ConditionNumberDemo: React.FC<Props> = () => {
     } catch (e) {
       console.error(e);
     }
-  }, [A, b1, b2, eps, perturbType]);
+  }, [a11, a12, a21, a22, b1, b2, eps, perturbType]);
 
   const line1 = {
     x: [-10, 10],

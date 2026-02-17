@@ -58,7 +58,7 @@ export function MandelbrotFractal() {
     ];
   }, [xRange, yRange]);
 
-  const handleRelayout = (event: any) => {
+  const handleRelayout = (event: Record<string, unknown>) => {
     if (event['xaxis.range[0]'] && event['xaxis.range[1]']) {
       setXRange([event['xaxis.range[0]'], event['xaxis.range[1]']]);
     }

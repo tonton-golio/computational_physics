@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import dynamic from 'next/dynamic';
+import { PlotData } from 'plotly.js';
 import { Slider } from '@/components/ui/slider';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
@@ -62,9 +63,82 @@ export function LotkaVolterraSim() {
   const [x0, setX0] = useState([10]);
   const [y0, setY0] = useState([5]);
 
-  const [timeSeriesData, setTimeSeriesData] = useState<any>(null);
-  const [phasePortraitData, setPhasePortraitData] = useState<any>(null);
-  const [bifurcationData, setBifurcationData] = useState<any>(null);
+  const timeSeriesData = useMemo<PlotData[]>(() => {
+    const solution = solveLotkaVolterra(alpha[0], beta[0], gamma[0], delta[0], x0[0], y0[0], 0.01, 2000);
+    return [
+      {
+        x: solution.t,
+        y: solution.x,
+        mode: 'lines',
+        name: 'Prey',
+        line: { color: 'blue' },
+      },
+      {
+        x: solution.t,
+        y: solution.y,
+        mode: 'lines',
+        name: 'Predator',
+        line: { color: 'red' },
+      },
+    ];
+  }, [alpha, beta, gamma, delta, x0, y0]);
+
+  const phasePortraitData = useMemo<PlotData[]>(() => {
+    const solution = solveLotkaVolterra(alpha[0], beta[0], gamma[0], delta[0], x0[0], y0[0], 0.01, 2000);
+    return [
+      {
+        x: solution.x,
+        y: solution.y,
+        mode: 'lines',
+        type: 'scatter',
+        line: { color: 'green' },
+      },
+    ];
+  }, [alpha, beta, gamma, delta, x0, y0]);
+
+  const bifurcationData = useMemo<PlotData[]>(() => {
+    const alphaRange = [];
+    for (let a = 0.1; a <= 3; a += 0.1) {
+      alphaRange.push(a);
+    }
+    const bif = computeBifurcation(beta[0], gamma[0], delta[0], alphaRange, x0[0], y0[0]);
+    return [
+      {
+        x: bif.alpha,
+        y: bif.minX,
+        mode: 'lines',
+        name: 'Min Prey',
+        line: { color: 'lightblue' },
+        showlegend: false,
+      },
+      {
+        x: bif.alpha,
+        y: bif.maxX,
+        mode: 'lines',
+        name: 'Max Prey',
+        line: { color: 'blue' },
+        fill: 'tonexty',
+        fillcolor: 'rgba(0,0,255,0.1)',
+      },
+      {
+        x: bif.alpha,
+        y: bif.minY,
+        mode: 'lines',
+        name: 'Min Predator',
+        line: { color: 'pink' },
+        showlegend: false,
+      },
+      {
+        x: bif.alpha,
+        y: bif.maxY,
+        mode: 'lines',
+        name: 'Max Predator',
+        line: { color: 'red' },
+        fill: 'tonexty',
+        fillcolor: 'rgba(255,0,0,0.1)',
+      },
+    ];
+  }, [beta, gamma, delta, x0, y0]);
 
   useEffect(() => {
     const solution = solveLotkaVolterra(alpha[0], beta[0], gamma[0], delta[0], x0[0], y0[0], 0.01, 2000);

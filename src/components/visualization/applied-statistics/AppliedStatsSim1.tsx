@@ -8,11 +8,11 @@ interface SimulationProps {
   id: string;
 }
 
-export default function AppliedStatsSim1({ id }: SimulationProps) {
+export default function AppliedStatsSim1({ id }: SimulationProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
   const [noise, setNoise] = useState(1);
   const [sampleSize, setSampleSize] = useState(20);
 
-  const data = useMemo<{
+  const [data, setData] = useState<{
     x: number[],
     y: number[],
     yHat: number[],
@@ -23,7 +23,9 @@ export default function AppliedStatsSim1({ id }: SimulationProps) {
     chiSquare: number,
     beta0: number,
     beta1: number
-  }>(() => {
+  } | null>(null);
+
+  useEffect(() => {
     const trueBeta0 = 2;
     const trueBeta1 = 1.5;
     const x = Array.from({length: sampleSize}, () => math.random(0, 10));
@@ -52,8 +54,10 @@ export default function AppliedStatsSim1({ id }: SimulationProps) {
       return yHat[i] - t * se;
     });
 
-    return { x, y, yHat, residuals, ciUpper, ciLower, rSquared, chiSquare, beta0, beta1 };
+    setData({ x, y, yHat, residuals, ciUpper, ciLower, rSquared, chiSquare, beta0, beta1 });
   }, [noise, sampleSize]);
+
+  if (!data) return <div>Loading...</div>;
 
   const residualTraces = data.x.map((xi, i) => ({
     x: [xi, xi],

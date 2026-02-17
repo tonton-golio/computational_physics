@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import Plotly from 'react-plotly.js';
+import { PlotData } from 'plotly.js';
 
 interface Func {
   name: string;
@@ -69,7 +70,7 @@ const Newton1D: React.FC = () => {
     const plotX = [minX - margin, maxX + margin];
     const plotY = [-Math.max(...yGrid.map(Math.abs)) -1, Math.max(...yGrid.map(Math.abs)) +1];
 
-    const traces: any[] = [
+    const traces: PlotData[] = [
       {
         x: xGrid,
         y: yGrid,

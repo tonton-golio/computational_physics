@@ -119,7 +119,7 @@ export default function OnlineReinforcementPage() {
   }, [isRunning, currentState, Q, alpha, gamma, epsilon, step]);
 
   const z = Q.map((row) => row.map((stateQ) => Math.max(...stateQ)));
-  const annotations: any[] = [];
+  const annotations: object[] = [];
   for (let i = 0; i < gridSize; i++) {
     for (let j = 0; j < gridSize; j++) {
       let text = '';

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import Plotly from 'plotly.js-dist';
+import * as math from 'mathjs';
 
 const COLORS = {
   primary: '#3b82f6',
@@ -79,6 +80,37 @@ function computeUnitEllipse(matrix: Matrix2x2): { circleX: number[]; circleY: nu
   }
   
   return { circleX, circleY, ellipseX, ellipseY };
+}
+
+function matrixMultiply(A: Matrix2x2, B: Matrix2x2): Matrix2x2 {
+  return [
+    [A[0][0] * B[0][0] + A[0][1] * B[1][0], A[0][0] * B[0][1] + A[0][1] * B[1][1]],
+    [A[1][0] * B[0][0] + A[1][1] * B[1][0], A[1][0] * B[0][1] + A[1][1] * B[1][1]]
+  ];
+}
+
+function matrixAdd(A: Matrix2x2, B: Matrix2x2): Matrix2x2 {
+  return [
+    [A[0][0] + B[0][0], A[0][1] + B[0][1]],
+    [A[1][0] + B[1][0], A[1][1] + B[1][1]]
+  ];
+}
+
+function matrixScale(A: Matrix2x2, s: number): Matrix2x2 {
+  return [
+    [A[0][0] * s, A[0][1] * s],
+    [A[1][0] * s, A[1][1] * s]
+  ];
+}
+
+function matrixExp(A: Matrix2x2): Matrix2x2 {
+  let result: Matrix2x2 = [[1, 0], [0, 1]]; // I
+  let term: Matrix2x2 = [[1, 0], [0, 1]]; // I
+  for (let k = 1; k <= 15; k++) { // More terms for accuracy
+    term = matrixScale(matrixMultiply(term, A), 1 / k);
+    result = matrixAdd(result, term);
+  }
+  return result;
 }
 
 // ============ EIGENVALUE VISUALIZATIONS ============
@@ -728,6 +760,88 @@ export function RayleighQuotientSurface({}: SimulationProps) {
   );
 }
 
+// 7. Matrix Exponential Visualization
+export function MatrixExponentialSimulation({}: SimulationProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [matrix, setMatrix] = useState([[1, 0.5], [0, 2]]);
+  
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    
+    const expA = matrixExp(matrix);
+    
+    // Compute unit circle transformations
+    const { circleX, circleY, ellipseX: linearX, ellipseY: linearY } = computeUnitEllipse(matrix);
+    const { ellipseX: expX, ellipseY: expY } = computeUnitEllipse(expA);
+    
+    const data: Plotly.Data[] = [
+      // Unit circle
+      { x: circleX, y: circleY, type: 'scatter', mode: 'lines', line: { color: '#444', width: 1 }, name: 'Unit circle', showlegend: false },
+      // Linear transformation (A)
+      { x: linearX, y: linearY, type: 'scatter', mode: 'lines', line: { color: COLORS.primary, width: 2 }, name: 'A • circle' },
+      // Exponential transformation (e^A)
+      { x: expX, y: expY, type: 'scatter', mode: 'lines', line: { color: COLORS.secondary, width: 2 }, name: 'e^A • circle' },
+    ];
+    
+    const layout: Partial<Plotly.Layout> = {
+      ...BASE_LAYOUT,
+      xaxis: { ...BASE_LAYOUT.xaxis, title: { text: 'x' }, range: [-5, 5] },
+      yaxis: { ...BASE_LAYOUT.yaxis, title: { text: 'y' }, range: [-5, 5], scaleanchor: 'x' },
+      title: { text: 'Matrix Exponential: Linear vs Exponential Transformation' },
+      legend: { x: 0, y: 1, bgcolor: 'rgba(0,0,0,0)' },
+    };
+    
+    Plotly.newPlot(container, data, layout, { responsive: true, displayModeBar: false });
+  }, [matrix]);
+  
+  return (
+    <div className="space-y-4">
+      <div ref={containerRef} className="w-full h-80 bg-[#151525] rounded-lg overflow-hidden" />
+      <div className="flex gap-4 items-center flex-wrap">
+        <span className="text-sm text-gray-400">Matrix A:</span>
+        <input
+          type="number"
+          value={matrix[0][0]}
+          onChange={(e) => setMatrix([[parseFloat(e.target.value) || 0, matrix[0][1]], matrix[1]])}
+          className="w-16 px-2 py-1 bg-[#151525] rounded text-white text-center"
+        />
+        <input
+          type="number"
+          value={matrix[0][1]}
+          onChange={(e) => setMatrix([[matrix[0][0], parseFloat(e.target.value) || 0], matrix[1]])}
+          className="w-16 px-2 py-1 bg-[#151525] rounded text-white text-center"
+        />
+        <input
+          type="number"
+          value={matrix[1][0]}
+          onChange={(e) => setMatrix([matrix[0], [parseFloat(e.target.value) || 0, matrix[1][1]]])}
+          className="w-16 px-2 py-1 bg-[#151525] rounded text-white text-center"
+        />
+        <input
+          type="number"
+          value={matrix[1][1]}
+          onChange={(e) => setMatrix([matrix[0], [matrix[1][0], parseFloat(e.target.value) || 0]])}
+          className="w-16 px-2 py-1 bg-[#151525] rounded text-white text-center"
+        />
+        <button
+          onClick={() => setMatrix([[1, 0.5], [0, 2]])}
+          className="px-3 py-1 bg-blue-600 rounded text-sm hover:bg-blue-700"
+        >
+          Reset
+        </button>
+      </div>
+      <div className="text-sm text-gray-400 space-y-1">
+        <div>e^A ≈ [
+          {matrixExp(matrix)[0][0].toFixed(3)}, {matrixExp(matrix)[0][1].toFixed(3)};
+          {matrixExp(matrix)[1][0].toFixed(3)}, {matrixExp(matrix)[1][1].toFixed(3)}
+        ]</div>
+        <div>The exponential smooths linear transformations, preserving positivity and orientation.</div>
+      </div>
+    </div>
+  );
+}
+
 // ============ SIMULATION REGISTRY ============
 
 export const EIGENVALUE_SIMULATIONS: Record<string, React.ComponentType<SimulationProps>> = {
@@ -737,6 +851,7 @@ export const EIGENVALUE_SIMULATIONS: Record<string, React.ComponentType<Simulati
   'convergence-comparison': ConvergenceComparison,
   'qr-algorithm-animation': QRAlgorithmAnimation,
   'rayleigh-convergence': RayleighQuotientSurface,
+  'matrix-exponential': MatrixExponentialSimulation,
 };
 
 export function getEigenvalueSimulation(id: string): React.ComponentType<SimulationProps> | null {

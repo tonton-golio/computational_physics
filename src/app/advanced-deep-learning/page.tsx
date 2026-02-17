@@ -19,7 +19,9 @@ const AdvancedDeepLearningPage: React.FC = () => {
   const [training, setTraining] = useState(false);
 
   // Generate training data for classification
-  const trainingData = useMemo(() => {
+  const [trainingData, setTrainingData] = useState<Array<{x: number, y: number, label: number}>>([]);
+
+  useEffect(() => {
     const data = [];
     for (let i = 0; i < 20; i++) {
       const x1 = Math.random() * 2 - 1;
@@ -27,7 +29,7 @@ const AdvancedDeepLearningPage: React.FC = () => {
       const label = (x1 + x2 > 0) ? 1 : 0; // simple linear separation
       data.push({x: x1, y: x2, label});
     }
-    return data;
+    setTrainingData(data);
   }, []);
 
   // Perceptron decision function

@@ -174,7 +174,7 @@ function FEM1DBarSim({ id }: SimulationProps) {
       [-k_factor, k_factor]
     ];
 
-    let K = Array.from({ length: n }, () => Array(n).fill(0));
+    const K = Array.from({ length: n }, () => Array(n).fill(0));
 
     for (let e = 0; e < ne; e++) {
       for (let i = 0; i < 2; i++) {
@@ -191,7 +191,7 @@ function FEM1DBarSim({ id }: SimulationProps) {
     }
     K[0][0] = 1;
 
-    let f = Array(n).fill(0);
+    const f = Array(n).fill(0);
     f[n - 1] = P;
 
     // Solve K * u = f using Gaussian elimination

@@ -60,11 +60,11 @@ export default function QuantumOptics() {
     return { x, y };
   };
 
-  // @ts-expect-error
+  // @ts-expect-error Type mismatch in generateEllipse
   const ellipse1 = generateEllipse(J1Norm);
-  // @ts-expect-error
+  // @ts-expect-error Type mismatch in generateEllipse
   const ellipse2 = generateEllipse(J2Norm);
-  // @ts-expect-error
+  // @ts-expect-error Type mismatch in generateEllipse
   const ellipseTotal = generateEllipse(JTotalNorm);
 
   // Data for plots
@@ -102,9 +102,9 @@ export default function QuantumOptics() {
   ];
 
   const layout = {
-    title: 'Polarization Ellipse',
-    xaxis: { title: 'E_x', scaleanchor: 'y' },
-    yaxis: { title: 'E_y', scaleanchor: 'x' },
+    title: { text: 'Polarization Ellipse' },
+    xaxis: { title: { text: 'E_x' }, scaleanchor: 'y' as const },
+    yaxis: { title: { text: 'E_y' }, scaleanchor: 'x' as const },
     showlegend: true,
   };
 
@@ -222,21 +222,21 @@ export default function QuantumOptics() {
         <div>
           <Plot
             data={data1}
-            layout={{ ...layout, title: 'Beam 1 Polarization' } as unknown}
+            layout={{ ...layout, title: { text: 'Beam 1 Polarization' } }}
             style={{ width: '100%', height: '400px' }}
           />
         </div>
         <div>
           <Plot
             data={data2}
-            layout={{ ...layout, title: 'Beam 2 Polarization' } as unknown}
+            layout={{ ...layout, title: { text: 'Beam 2 Polarization' } }}
             style={{ width: '100%', height: '400px' }}
           />
         </div>
         <div>
           <Plot
             data={dataTotal}
-            layout={{ ...layout, title: 'Total Polarization (Interference)' } as unknown}
+            layout={{ ...layout, title: { text: 'Total Polarization (Interference)' } }}
             style={{ width: '100%', height: '400px' }}
           />
         </div>
