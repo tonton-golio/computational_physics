@@ -9,7 +9,7 @@ interface SimulationProps {
 }
 
 // Stress-Strain Simulation
-function StressStrainSim({ id }: SimulationProps) {
+function StressStrainSim({ }: SimulationProps) {
   const [params, setParams] = useState({
     E: 200, // Young's modulus, GPa
     alpha: 0.002,
@@ -150,7 +150,7 @@ function StressStrainSim({ id }: SimulationProps) {
 }
 
 // FEM 1D Bar Simulation
-function FEM1DBarSim({ id }: SimulationProps) {
+function FEM1DBarSim({ }: SimulationProps) {
   const [ne, setNe] = useState(5);
   const [L, setL] = useState(1);
   const [A, setA] = useState(1);
@@ -199,7 +199,7 @@ function FEM1DBarSim({ id }: SimulationProps) {
     return x;
   }
 
-  function computeFEM() {
+  const computeFEM = useCallback(() => {
     const n = ne + 1;
     const le = L / ne;
     const k_factor = A * E / le;
@@ -243,12 +243,11 @@ function FEM1DBarSim({ id }: SimulationProps) {
       eps.push((U[e + 1] - U[e]) / le);
     }
     setStrains(eps);
-  }
+  }, [ne, L, A, E, P]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     computeFEM();
-  }, [ne, L, A, E, P]);
+  }, [ne, L, A, E, P, computeFEM]);
 
   const u_exact = x.map(xx => (P / (A * E)) * xx);
 

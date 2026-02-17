@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import Plot from 'react-plotly.js';
 
 const AdvancedDeepLearningPage: React.FC = () => {

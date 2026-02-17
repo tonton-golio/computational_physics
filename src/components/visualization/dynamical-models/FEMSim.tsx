@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import { PlotData } from 'plotly.js';
 import { Slider } from '@/components/ui/slider';
@@ -92,7 +92,7 @@ export function FEMSim() {
   const [P, setP] = useState([1000]);
 
   const meshData = useMemo<PlotData[]>(() => {
-    const { nodes, u, deformed } = solveFEM(ne[0], L[0], A[0], E[0], P[0]);
+    const { nodes, deformed } = solveFEM(ne[0], L[0], A[0], E[0], P[0]);
     return [
       {
         x: nodes,

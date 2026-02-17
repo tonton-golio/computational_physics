@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import Plotly from 'plotly.js-dist';
-import * as math from 'mathjs';
 
 const COLORS = {
   primary: '#3b82f6',
@@ -25,43 +24,6 @@ const BASE_LAYOUT: Partial<Plotly.Layout> = {
 };
 
 // Utils for eigenvalue computations
-type PlotData = Plotly.Data[];
-type PlotLayout = Partial<Plotly.Layout>;
-
-type Matrix2x2 = number[][];
-
-function computeEigen2x2(matrix: Matrix2x2): { evals: [number, number]; evecs: [[number, number], [number, number]] } {
-  const a = matrix[0][0], b = matrix[0][1];
-  const c = matrix[1][0], d = matrix[1][1];
-  
-  const disc = Math.sqrt((a - d) ** 2 + 4 * b * c);
-  const lambda1 = (a + d + disc) / 2;
-  const lambda2 = (a + d - disc) / 2;
-  
-  let v1: [number, number], v2: [number, number];
-  if (Math.abs(b) > 1e-10) {
-    v1 = [1, (lambda1 - a) / b];
-    v2 = [1, (lambda2 - a) / b];
-  } else if (Math.abs(c) > 1e-10) {
-    v1 = [(lambda1 - d) / c, 1];
-    v2 = [(lambda2 - d) / c, 1];
-  } else {
-    v1 = [1, 0];
-    v2 = [0, 1];
-  }
-  
-  const norm1 = Math.sqrt(v1[0] ** 2 + v1[1] ** 2);
-  const norm2 = Math.sqrt(v2[0] ** 2 + v2[1] ** 2);
-  v1 = [v1[0] / norm1, v1[1] / norm1];
-  v2 = [v2[0] / norm2, v2[1] / norm2];
-  
-  const scale = 2;
-  v1 = [v1[0] * scale, v1[1] * scale];
-  v2 = [v2[0] * scale, v2[1] * scale];
-  
-  return { evals: [lambda1, lambda2], evecs: [v1, v2] };
-}
-
 function computeUnitEllipse(matrix: Matrix2x2): { circleX: number[]; circleY: number[]; ellipseX: number[]; ellipseY: number[] } {
   const nPoints = 50;
   const circleX: number[] = [];
@@ -398,7 +360,7 @@ export function PowerMethodAnimation({}: SimulationProps) {
 // 3. Gershgorin Circles
 export function GershgorinCircles({}: SimulationProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [matrix, setMatrix] = useState([[2, 1], [1, 3]]);
+  const [matrix] = useState([[2, 1], [1, 3]]);
   
   useEffect(() => {
     const container = containerRef.current;

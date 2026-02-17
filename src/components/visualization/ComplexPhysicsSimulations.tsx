@@ -36,7 +36,6 @@ export function PercolationSimulation({}: SimulationProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [p, setP] = useState(0.5);
   const [size, setSize] = useState(20);
-  const [grid, setGrid] = useState<number[][]>([]);
 
   const generateGrid = useCallback((probability: number, gridSize: number) => {
     const newGrid = [];
@@ -93,7 +92,7 @@ export function PercolationSimulation({}: SimulationProps) {
     );
 
     // Color by cluster
-    const clusterColors = clusters.map((cluster, idx) => {
+    const clusterColors = clusters.map((cluster) => {
       const size = cluster.length;
       const intensity = Math.min(size / maxClusterSize, 1);
       return `rgba(${Math.floor(100 + 155 * intensity)}, ${Math.floor(100 + 155 * (1 - intensity))}, 255, 0.8)`;
@@ -112,8 +111,8 @@ export function PercolationSimulation({}: SimulationProps) {
 
     // Add cluster boundaries
     clusters.forEach((cluster, idx) => {
-      const x = cluster.map(([i, j]) => j);
-      const y = cluster.map(([i, j]) => i);
+      const x = cluster.map(([, j]) => j);
+      const y = cluster.map(([i]) => i);
       data.push({
         x,
         y,
@@ -145,7 +144,6 @@ export function PercolationSimulation({}: SimulationProps) {
   }, [p, size, generateGrid, findClusters]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     updateVisualization();
   }, [updateVisualization]);
 
@@ -291,14 +289,11 @@ export function IsingModel({}: SimulationProps) {
   useEffect(() => {
     if (spins.length === 0) {
       const initialSpins = initializeSpins(size);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSpins(initialSpins);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setEnergy(calculateEnergy(initialSpins));
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setMagnetization(calculateMagnetization(initialSpins));
     }
-  }, [size, initializeSpins, calculateEnergy, calculateMagnetization]);
+  }, [size, spins.length, initializeSpins, calculateEnergy, calculateMagnetization]);
 
   useEffect(() => {
     if (running) {
@@ -382,7 +377,6 @@ export function IsingModel({}: SimulationProps) {
 export function ScaleFreeNetwork({}: SimulationProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [nodes, setNodes] = useState(50);
-  const [network, setNetwork] = useState<{ nodes: unknown[], links: unknown[] }>({ nodes: [], links: [] });
 
   const generateScaleFreeNetwork = useCallback((n: number) => {
     const nodeList = [];

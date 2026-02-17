@@ -119,12 +119,12 @@ const Himmelblau2D: React.FC = () => {
   }), [path, currentStep]);
 
   // Basins
-  const attractors = [
+  const attractors = useMemo(() => [
     [3.0, 2.0],
     [-2.805, 3.131],
     [-3.779, -3.283],
     [3.584, -1.848],
-  ];
+  ], []);
 
   const basinData = useMemo(() => {
     if (!showBasins) return [];
@@ -194,7 +194,7 @@ const Himmelblau2D: React.FC = () => {
       name: 'Basins of attraction',
       opacity: 0.6,
     }];
-  }, [showBasins, method, gradX, gradY, hessXX, hessXY, hessYY]);
+  }, [showBasins, method, gradX, gradY, hessXX, hessXY, hessYY, attractors]);
 
   const data = [...contourData, pathTrace, ...basinData];
 

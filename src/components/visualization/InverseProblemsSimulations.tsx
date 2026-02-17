@@ -2,14 +2,13 @@
 
 import React, { useState } from 'react';
 import Plotly from 'react-plotly.js';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface SimulationProps {
   id: string;
 }
 
 // Lotka-Volterra Parameter Estimation Simulation
-function LotkaVolterraEstimationSim({ id }: SimulationProps) {
+function LotkaVolterraEstimationSim({ }: SimulationProps) {
   // True parameters for simulated data
   const TRUE_ALPHA = 1.5;
   const TRUE_BETA = 0.1;

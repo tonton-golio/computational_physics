@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import * as math from 'mathjs';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
@@ -24,12 +23,12 @@ const GaussianElimDemo: React.FC = () => {
     updateAug();
   };
 
-  const updateAug = () => {
+  const updateAug = useCallback(() => {
     setCurrentAug([
       [a11, a12, b1],
       [a21, a22, b2]
     ]);
-  };
+  }, [a11, a12, a21, a22, b1, b2]);
 
   const nextStep = () => {
     const aug = [...currentAug];
@@ -54,11 +53,11 @@ const GaussianElimDemo: React.FC = () => {
 
   useEffect(() => {
     updateAug();
-  }, [a11, a12, a21, a22, b1, b2]);
+  }, [a11, a12, a21, a22, b1, b2, updateAug]);
 
   useEffect(() => {
     if (step === 0) updateAug();
-  }, [step]);
+  }, [step, updateAug]);
 
   const formatCell = (val: number, col: number) => {
     return col < 2 ? val.toFixed(2) : '= ' + val.toFixed(2);

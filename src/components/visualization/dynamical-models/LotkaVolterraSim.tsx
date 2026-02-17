@@ -211,7 +211,7 @@ export function LotkaVolterraSim() {
         fillcolor: 'rgba(255,0,0,0.1)',
       },
     ]);
-  }, [beta, gamma, delta, x0, y0]);
+  }, [alpha, beta, gamma, delta, x0, y0]);
 
   return (
     <div className="space-y-8">

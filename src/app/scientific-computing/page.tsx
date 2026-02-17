@@ -1,19 +1,18 @@
 'use client';
 
+import React, { useState, useMemo, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
-
-import { useState, useMemo, useCallback } from 'react';
 
 export default function ScientificComputing() {
   const [a, setA] = useState(-2);
   const [b, setB] = useState(2);
   const [c, setC] = useState(1);
-  const f = (x: number) => x * x - c;
+  const f = useCallback((x: number) => x * x - c, [c]);
 
-  const bisection = useCallback((a, b, tol = 1e-6, maxIter = 20) => {
-    const steps = [];
+  const bisection = useCallback((a: number, b: number, tol = 1e-6, maxIter = 20) => {
+    const steps: Array<{ step: number; a: number; b: number; c: number; fa: number; fb: number; fc: number; }> = [];
     let fa = f(a), fb = f(b);
     if (fa * fb > 0) return steps; // no root
     for (let i = 0; i < maxIter; i++) {
@@ -30,9 +29,9 @@ export default function ScientificComputing() {
       }
     }
     return steps;
-  }, [c, f]);
+  }, [f]);
 
-  const iterations = useMemo(() => bisection(a, b), [a, b, bisection, f]);
+  const iterations = useMemo(() => bisection(a, b), [a, b, bisection]);
 
   const xMin = Math.min(a, b) - 1;
   const xMax = Math.max(a, b) + 1;

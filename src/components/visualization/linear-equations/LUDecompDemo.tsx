@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import * as math from 'mathjs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { Table, TableBody, TableCell, TableHead, TableRow } from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
 
 const LUDecompDemo: React.FC = () => {
   const [a11, setA11] = useState(2);
@@ -11,7 +11,7 @@ const LUDecompDemo: React.FC = () => {
   const [a21, setA21] = useState(1);
   const [a22, setA22] = useState(3);
 
-  const A = [[a11, a12], [a21, a22]];
+  const A = useMemo(() => [[a11, a12], [a21, a22]], [a11, a12, a21, a22]);
 
   const { L, U, verify } = useMemo(() => {
     try {
@@ -26,7 +26,7 @@ const LUDecompDemo: React.FC = () => {
       console.error(e);
       return { L: [[0,0],[0,0]], U: [[0,0],[0,0]], verify: 0 };
     }
-  }, [a11, a12, a21, a22]);
+  }, [A]);
 
   useEffect(() => {
     try {
@@ -42,7 +42,7 @@ const LUDecompDemo: React.FC = () => {
     } catch (e) {
       console.error(e);
     }
-  }, [a11,a12,a21,a22]);
+  }, [A]);
 
   return (
     <Card className="w-full">

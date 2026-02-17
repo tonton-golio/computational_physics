@@ -151,7 +151,6 @@ export function CodeEditor({
           if (!result) {
             // Skip until else/elif or end of block
             let j = i + 1;
-            const blockIndent = indent + 4;
             while (j < lines.length) {
               const nextLine = lines[j];
               const nextIndent = nextLine.length - nextLine.trimLeft().length;
@@ -171,7 +170,6 @@ export function CodeEditor({
           const condition = match[1];
           const bodyLines = [];
           let j = i + 1;
-          const blockIndent = indent + 4;
           while (j < lines.length) {
             const nextLine = lines[j];
             const nextIndent = nextLine.length - nextLine.trimLeft().length;
@@ -206,7 +204,6 @@ export function CodeEditor({
             // For loop over array or string
             const bodyLines = [];
             let j = i + 1;
-            const blockIndent = indent + 4;
             while (j < lines.length) {
               const nextLine = lines[j];
               const nextIndent = nextLine.length - nextLine.trimLeft().length;

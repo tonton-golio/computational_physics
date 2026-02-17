@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo } from 'react';
 import Plotly from 'react-plotly.js';
 import { PlotData } from 'plotly.js';
 
@@ -36,7 +36,6 @@ const Newton1D: React.FC = () => {
   const [x0, setX0] = useState(1.0);
   const [maxSteps, setMaxSteps] = useState(10);
   const [currentStep, setCurrentStep] = useState(0);
-  const [animate, setAnimate] = useState(false);
 
   const f = functions[selectedFunc].f;
   const df = functions[selectedFunc].df;
@@ -68,7 +67,6 @@ const Newton1D: React.FC = () => {
     const maxX = Math.max(...path, xRange[1]);
     const margin = 0.5;
     const plotX = [minX - margin, maxX + margin];
-    const plotY = [-Math.max(...yGrid.map(Math.abs)) -1, Math.max(...yGrid.map(Math.abs)) +1];
 
     const traces: PlotData[] = [
       {

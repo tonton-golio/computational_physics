@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import * as math from 'mathjs';
 import Plotly from 'react-plotly.js';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,28 +18,24 @@ const ConditionNumberDemo: React.FC<Props> = () => {
   const [b2, setB2] = useState(0);
   const [eps, setEps] = useState(0);
   const [perturbType, setPerturbType] = useState<'b' | 'A'>('b');
-  const [randomPerturb, setRandomPerturb] = useState(false);
 
-  const A = [[a11, a12], [a21, a22]] as Matrix2;
-  const b = math.matrix([b1, b2]);
+  const A = useMemo(() => [[a11, a12], [a21, a22]] as Matrix2, [a11, a12, a21, a22]);
+  const b = useMemo(() => math.matrix([b1, b2]), [b1, b2]);
 
   const [x, setX] = useState([0, 0]);
   const [cond, setCond] = useState(1);
   const [xPert, setXPert] = useState([0, 0]);
   const [relError, setRelError] = useState(0);
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
     try {
       const Am = math.matrix(A);
       const invA = math.inv(Am);
       const normA = math.norm(Am, 'inf');
       const normInvA = math.norm(invA, 'inf');
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCond(normA * normInvA);
 
       const xSol = math.multiply(invA, b);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setX([xSol.get([0,0]), xSol.get([1,0])]);
 
       // Perturb
@@ -62,7 +58,7 @@ const ConditionNumberDemo: React.FC<Props> = () => {
     } catch (e) {
       console.error(e);
     }
-  }, [a11, a12, a21, a22, b1, b2, eps, perturbType]);
+  }, [A, b, eps, perturbType]);
 
   const line1 = {
     x: [-10, 10],
@@ -79,14 +75,6 @@ const ConditionNumberDemo: React.FC<Props> = () => {
     name: 'Eq 2',
     line: { color: 'red', width: 3 },
   };
-
-  const line1p = perturbType === 'b' ? {
-    x: [-10, 10],
-    y: [/* compute perturbed */],
-    mode: 'lines',
-    name: 'Eq 1 pert',
-    line: { color: 'blue', width: 2, dash: 'dash' },
-  } : line1;
 
   // Simplified plot, add perturb lines similarly
 

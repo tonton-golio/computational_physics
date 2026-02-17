@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Plot from 'react-plotly.js';
-import { Layout } from 'plotly.js';
 
 const gridSize = 4;
 const actionDeltas = [
@@ -51,7 +50,7 @@ export default function OnlineReinforcementPage() {
     setIsRunning(false);
   };
 
-  const chooseAction = (x: number, y: number): number => {
+  const chooseAction = useCallback((x: number, y: number): number => {
     if (Math.random() < epsilon) {
       return Math.floor(Math.random() * 4);
     } else {
@@ -62,9 +61,9 @@ export default function OnlineReinforcementPage() {
         .filter((i) => i !== -1);
       return ties[Math.floor(Math.random() * ties.length)];
     }
-  };
+  }, [epsilon, Q]);
 
-  const step = () => {
+  const step = useCallback(() => {
     const [x, y] = currentState;
     const actionIdx = chooseAction(x, y);
     const [dx, dy] = actionDeltas[actionIdx];
@@ -104,7 +103,7 @@ export default function OnlineReinforcementPage() {
       }
     }
     setStepCount((prev) => prev + 1);
-  };
+  }, [currentState, chooseAction, Q, alpha, gamma]);
 
   useEffect(() => {
     if (isRunning) {

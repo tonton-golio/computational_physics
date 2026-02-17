@@ -14,7 +14,7 @@ interface AppliedStatsSim2Props {
   id: string;
 }
 
-function AppliedStatsSim2({ id }: AppliedStatsSim2Props) {
+function AppliedStatsSim2({ }: AppliedStatsSim2Props) {
   const [mean, setMean] = useState(0);
   const [stdDev, setStdDev] = useState(1);
   const [numSamples, setNumSamples] = useState(1000);
