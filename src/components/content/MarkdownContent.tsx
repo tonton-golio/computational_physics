@@ -3,6 +3,10 @@
 import { useEffect, useState, Suspense } from "react";
 import { InteractiveGraph, GRAPH_DEFS } from "../visualization/InteractiveGraph";
 import { EIGENVALUE_SIMULATIONS } from "../visualization/EigenvalueSimulations";
+import { COMPLEX_SIMULATIONS } from "../visualization/ComplexPhysicsSimulations";
+import { APPLIED_STATS_SIMULATIONS } from "../visualization/AppliedStatsSimulations";
+import { CONTINUUM_MECHANICS_SIMULATIONS } from "../visualization/ContinuumMechanicsSimulations";
+import { INVERSE_PROBLEMS_SIMULATIONS } from "../visualization/InverseProblemsSimulations";
 
 interface MarkdownContentProps {
   content: string;
@@ -31,6 +35,16 @@ function SimulationError({ id, type }: { id: string; type: string }) {
 // Render simulation based on type and id
 function renderPlaceholder(type: string, id: string): React.ReactNode {
   if (type === "simulation") {
+    // Check if it's an applied stats simulation
+    const AppliedSim = APPLIED_STATS_SIMULATIONS[id];
+    if (AppliedSim) {
+      return (
+        <Suspense fallback={<SimulationLoading />}>
+          <AppliedSim id={id} />
+        </Suspense>
+      );
+    }
+
     // Check if it's an eigenvalue simulation
     const EigenSim = EIGENVALUE_SIMULATIONS[id];
     if (EigenSim) {
@@ -40,13 +54,43 @@ function renderPlaceholder(type: string, id: string): React.ReactNode {
         </Suspense>
       );
     }
-    
+
+    // Check if it's a complex physics simulation
+    const ComplexSim = COMPLEX_SIMULATIONS[id];
+    if (ComplexSim) {
+      return (
+        <Suspense fallback={<SimulationLoading />}>
+          <ComplexSim id={id} />
+        </Suspense>
+      );
+    }
+
+    // Check if it's a continuum mechanics simulation
+    const ContinuumSim = CONTINUUM_MECHANICS_SIMULATIONS[id];
+    if (ContinuumSim) {
+      return (
+        <Suspense fallback={<SimulationLoading />}>
+          <ContinuumSim id={id} />
+        </Suspense>
+      );
+    }
+
+    // Check if it's an inverse problems simulation
+    const InverseSim = INVERSE_PROBLEMS_SIMULATIONS[id];
+    if (InverseSim) {
+      return (
+        <Suspense fallback={<SimulationLoading />}>
+          <InverseSim id={id} />
+        </Suspense>
+      );
+    }
+
     // Check if it's a general graph type
     const graphDef = GRAPH_DEFS[id];
     if (graphDef) {
       return <InteractiveGraph type={id} params={graphDef.params} />;
     }
-    
+
     // Default: try to render as interactive graph
     return <InteractiveGraph type={id} />;
   }
