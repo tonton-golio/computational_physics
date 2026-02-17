@@ -1,5 +1,3 @@
-// TODO: Applied Statistics
-// TODO: Complex Physics
 // TODO: Continuum Mechanics
 // TODO: Dynamical Models
 // TODO: Inverse Problems
