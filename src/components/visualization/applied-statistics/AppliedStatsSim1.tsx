@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as math from 'mathjs';
 import Plotly from 'react-plotly.js';
 
@@ -34,7 +34,7 @@ export default function AppliedStatsSim1({ id }: SimulationProps) { // eslint-di
     const meanY = math.number(math.mean(y));
     const covXY = math.number(math.mean(x.map((xi, i) => (xi - meanX) * (y[i] - meanY))));
     const varX = math.number(math.variance(x));
-    const beta1 = covXY / varX;
+    const beta1 = Number(covXY) / Number(varX);
     const beta0 = meanY - beta1 * meanX;
     const yHat = x.map(xi => beta0 + beta1 * xi);
     const residuals = y.map((yi, i) => yi - yHat[i]);
@@ -149,7 +149,7 @@ export default function AppliedStatsSim1({ id }: SimulationProps) { // eslint-di
         <p>Chi-square: {data.chiSquare.toFixed(3)}</p>
       </div>
       <Plotly
-        data={plotData}
+        data={plotData as any}
         layout={{
           title: { text: 'Linear Regression: Data, Fit, Residuals, and 95% CI' },
           xaxis: { title: { text: 'x' } },

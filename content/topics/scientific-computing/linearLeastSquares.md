@@ -28,7 +28,7 @@ We're almost at our goal, but not there yet. We've found an efficient solution (
 Note that $Im(A)^\perp = Ker(A^T) mplies \mathbb{C}^m=Im(A)plus Ker(A^T)$.
 
 ### Recap
-We decomposed the target space $\mathbb{C}^m$. [todo: google "Chiyo Prison Scool"] 
+We decomposed the target space $\mathbb{C}^m$. (See "Prison School" manga for a fun analogy to decomposition.) 
 
 COND($A^TA$) = COND($A^2$), but COND($Q^TA$) = COND($A$).
 

@@ -65,7 +65,7 @@ function CentralLimitTheoremSim() {
         </div>
       </div>
       <Plotly
-        data={hist ? [hist] : []}
+        data={hist ? [hist as any] : []}
         layout={{
           title: { text: `Distribution of Sample Means (n=${sampleSize})` },
           xaxis: { title: { text: 'Sample Mean' } },
@@ -89,7 +89,7 @@ function HypothesisTestingSim() {
     try {
       const g1 = group1.split(',').map(Number);
       const g2 = group2.split(',').map(Number);
-      if (g1.some(isNaN) || g2.some(isNaN)) return;
+      if (g1.some(isNaN) || g2.some(isNaN)) return { tStat: 0, meanDiff: 0 };
 
       const mean1 = math.mean(g1);
       const mean2 = math.mean(g2);
@@ -98,7 +98,7 @@ function HypothesisTestingSim() {
       const n1 = g1.length;
       const n2 = g2.length;
 
-      const pooledVar = ((n1 - 1) * var1 + (n2 - 1) * var2) / (n1 + n2 - 2);
+      const pooledVar = ((n1 - 1) * Number(var1) + (n2 - 1) * Number(var2)) / (n1 + n2 - 2);
       const se = Math.sqrt(pooledVar * (1/n1 + 1/n2));
       const t = (mean1 - mean2) / se;
 

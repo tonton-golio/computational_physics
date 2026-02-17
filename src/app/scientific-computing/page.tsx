@@ -18,7 +18,7 @@ export default function ScientificComputing() {
     for (let i = 0; i < maxIter; i++) {
       const c_mid = (a + b) / 2;
       const fc = f(c_mid);
-      steps.push({ step: i+1, a, b, c: c_mid, fc });
+      steps.push({ step: i+1, a, b, c: c_mid, fa, fb, fc });
       if (Math.abs(fc) < tol || Math.abs(b - a) < tol) break;
       if (fa * fc < 0) {
         b = c_mid;
@@ -58,7 +58,7 @@ export default function ScientificComputing() {
       mode: 'lines',
       line: {color: 'red', width: 2},
       name: 'a'
-    });
+    } as any);
     data.push({
       x: [last.b, last.b],
       y: [f(last.b), 0],
@@ -66,7 +66,7 @@ export default function ScientificComputing() {
       mode: 'lines',
       line: {color: 'red', width: 2},
       name: 'b'
-    });
+    } as any);
   }
 
   // Add points for all c's
@@ -78,7 +78,7 @@ export default function ScientificComputing() {
       mode: 'markers',
       marker: {color: idx % 2 === 0 ? 'green' : 'blue', size: 6},
       name: `c${idx+1}`
-    });
+    } as any);
   });
 
   const layout = {
@@ -101,7 +101,7 @@ export default function ScientificComputing() {
       <div style={{marginBottom: '20px'}}>
         <label>Interval b: <input type="range" min="0" max="5" step="0.1" value={b} onChange={e => setB(parseFloat(e.target.value))} /> {b.toFixed(1)}</label>
       </div>
-      <Plot data={data} layout={layout} style={{width: '100%', height: '500px'}} />
+      <Plot data={data as any} layout={layout as any} style={{width: '100%', height: '500px'}} />
       <h2>Iterations</h2>
       <table style={{borderCollapse: 'collapse', width: '100%'}}>
         <thead>

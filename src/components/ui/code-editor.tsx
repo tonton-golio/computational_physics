@@ -59,9 +59,9 @@ export function CodeEditor({
       if (expr.startsWith('range(') && expr.endsWith(')')) {
         const args = expr.slice(6, -1).split(',').map(a => evaluateExpression(a.trim()));
         if (args.length === 1) {
-          return Array.from({length: args[0]}, (_, i) => i);
+          return Array.from({length: args[0] as number}, (_, i) => i);
         } else if (args.length === 2) {
-          return Array.from({length: args[1] - args[0]}, (_, i) => i + args[0]);
+          return Array.from({length: (args[1] as number) - (args[0] as number)}, (_, i) => i + (args[0] as number));
         }
       }
 
@@ -77,8 +77,8 @@ export function CodeEditor({
         if (expr.includes(op)) {
           const parts = expr.split(op).map(p => p.trim());
           if (parts.length === 2) {
-            const left = evaluateExpression(parts[0]);
-            const right = evaluateExpression(parts[1]);
+            const left = evaluateExpression(parts[0]) as number;
+            const right = evaluateExpression(parts[1]) as number;
             switch (op) {
               case '+': return left + right;
               case '-': return left - right;
@@ -98,8 +98,8 @@ export function CodeEditor({
         if (expr.includes(comp)) {
           const parts = expr.split(comp).map(p => p.trim());
           if (parts.length === 2) {
-            const left = evaluateExpression(parts[0]);
-            const right = evaluateExpression(parts[1]);
+            const left = evaluateExpression(parts[0]) as number;
+            const right = evaluateExpression(parts[1]) as number;
             switch (comp) {
               case '>': return left > right;
               case '<': return left < right;
@@ -293,7 +293,7 @@ export function CodeEditor({
               onClick={handleRun}
               disabled={isRunning}
               size="sm"
-              variant="default"
+              variant="primary"
             >
               {isRunning ? "Running..." : "Run"}
             </Button>
