@@ -158,9 +158,8 @@ export default function WignerSqueezed({}: SimulationProps) {
               y: pvec,
               type: 'contour',
               colorscale: 'RdBu',
-              zmid: 0,
-              contours: { ncontours: 30 },
-              colorbar: { title: { text: 'W(q, p)' }, titleside: 'right' as const },
+              ncontours: 30,
+              colorbar: { title: { text: 'W(q, p)' } },
             },
           ]}
           layout={{
@@ -192,8 +191,7 @@ export default function WignerSqueezed({}: SimulationProps) {
               y: pvec,
               type: 'surface',
               colorscale: 'RdBu',
-              cmid: 0,
-              colorbar: { title: { text: 'W(q,p)' }, titleside: 'right' as const },
+              colorbar: { title: { text: 'W(q,p)' } },
             },
           ]}
           layout={{

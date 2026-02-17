@@ -42,14 +42,14 @@ const ConditionNumberDemo: React.FC<Props> = () => {
       setX([xSol.get([0,0]), xSol.get([1,0])]);
 
       // Perturb
-      let bPert = b;
-      let APert = Am;
+      let bPert: math.Matrix = b;
+      let APert: math.Matrix = Am;
       if (perturbType === 'b') {
         const db = math.random([2,1], -eps, eps);
-        bPert = math.add(b, db);
+        bPert = math.add(b, db) as math.Matrix;
       } else {
         const dA = math.random([2,2], -eps, eps);
-        APert = math.add(Am, dA);
+        APert = math.add(Am, dA) as math.Matrix;
       }
       const xPertSol = math.lusolve(APert, bPert);
       setXPert([xPertSol.get([0,0]), xPertSol.get([1,0])]);
@@ -121,8 +121,8 @@ const ConditionNumberDemo: React.FC<Props> = () => {
           </div>
         </div>
         <div className="flex gap-2">
-          <Button variant={perturbType === 'b' ? 'default' : 'outline'} onClick={() => setPerturbType('b')}>Perturb b</Button>
-          <Button variant={perturbType === 'A' ? 'default' : 'outline'} onClick={() => setPerturbType('A')}>Perturb A</Button>
+          <Button variant={perturbType === 'b' ? 'primary' : 'outline'} onClick={() => setPerturbType('b')}>Perturb b</Button>
+          <Button variant={perturbType === 'A' ? 'primary' : 'outline'} onClick={() => setPerturbType('A')}>Perturb A</Button>
         </div>
         <div>
           <Label>Eps</Label>

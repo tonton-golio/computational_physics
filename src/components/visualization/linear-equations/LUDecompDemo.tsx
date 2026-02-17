@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import * as math from 'mathjs';
+import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
@@ -14,35 +13,32 @@ const LUDecompDemo: React.FC = () => {
   const A = useMemo(() => [[a11, a12], [a21, a22]], [a11, a12, a21, a22]);
 
   const { L, U, verify } = useMemo(() => {
-    try {
-      const Am = math.matrix(A);
-      const lu = math.lu(Am);
-      const Lp = math.subset(lu.L, math.index(math.range(0,2), math.range(0,2)));
-      const Up = math.subset(lu.U, math.index(math.range(0,2), math.range(0,2)));
-      const LU = math.multiply(math.matrix(Lp), math.matrix(Up));
-      const verify = math.norm(math.subtract(LU, Am), 'frobenius').toNumber();
-      return { L: Lp.toArray(), U: Up.toArray(), verify };
-    } catch (e) {
-      console.error(e);
-      return { L: [[0,0],[0,0]], U: [[0,0],[0,0]], verify: 0 };
+    const tol = 1e-10;
+    if (Math.abs(a11) < tol) {
+      return { L: [[1, 0], [0, 1]], U: [[0, 0], [0, 0]], verify: 0 };
     }
-  }, [A]);
 
-  useEffect(() => {
-    try {
-      const Am = math.matrix(A);
-      const lu = math.lu(Am);
-      const Lp = math.subset(lu.L, math.index(math.range(0,2), math.range(0,2)));
-      const Up = math.subset(lu.U, math.index(math.range(0,2), math.range(0,2)));
-      setL(Lp.toArray());
-      setU(Up.toArray());
+    const u11 = a11;
+    const u12 = a12;
+    const l21 = a21 / u11;
+    const u22 = a22 - l21 * u12;
 
-      const LU = math.multiply(math.matrix(Lp), math.matrix(Up));
-      setVerify(math.norm(math.subtract(LU, Am), 'frobenius').toNumber());
-    } catch (e) {
-      console.error(e);
-    }
-  }, [A]);
+    const L = [[1, 0], [l21, 1]];
+    const U = [[u11, u12], [0, u22]];
+
+    const lu00 = L[0][0] * U[0][0] + L[0][1] * U[1][0];
+    const lu01 = L[0][0] * U[0][1] + L[0][1] * U[1][1];
+    const lu10 = L[1][0] * U[0][0] + L[1][1] * U[1][0];
+    const lu11 = L[1][0] * U[0][1] + L[1][1] * U[1][1];
+
+    const d00 = lu00 - A[0][0];
+    const d01 = lu01 - A[0][1];
+    const d10 = lu10 - A[1][0];
+    const d11 = lu11 - A[1][1];
+    const verify = Math.sqrt(d00 * d00 + d01 * d01 + d10 * d10 + d11 * d11);
+
+    return { L, U, verify };
+  }, [A, a11, a12, a21, a22]);
 
   return (
     <Card className="w-full">

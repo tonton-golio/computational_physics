@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { TOPICS } from "@/lib/content";
 import { TOPIC_ROUTES } from "@/lib/topic-navigation";
 import { getSearchableLessonsForTopic } from "@/lib/topic-navigation.server";
@@ -13,7 +14,15 @@ export default function TopicsPage() {
   return (
     <div className="h-[calc(100vh-4rem)] w-full overflow-hidden bg-[var(--background)]">
       <div className="h-full w-full">
-        <TopicsSearchGrid entries={entries} />
+        <Suspense
+          fallback={
+            <div className="mt-8 rounded-xl border border-[var(--border-strong)] bg-[var(--surface-1)] p-6 text-center text-sm text-[var(--text-muted)]">
+              Loading topic search...
+            </div>
+          }
+        >
+          <TopicsSearchGrid entries={entries} />
+        </Suspense>
       </div>
     </div>
   );

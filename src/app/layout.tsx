@@ -5,6 +5,7 @@ import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { ConditionalFooter } from "@/components/layout/ConditionalFooter";
 import { WebVitalsReporter } from "@/components/performance/WebVitalsReporter";
+import { Analytics } from "@vercel/analytics/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -46,6 +47,7 @@ export default function RootLayout({
           </main>
           <ConditionalFooter />
         </div>
+        <Analytics />
       </body>
     </html>
   );

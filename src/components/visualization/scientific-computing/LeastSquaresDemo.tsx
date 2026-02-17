@@ -372,7 +372,7 @@ export function LeastSquaresDemo({}: SimulationProps) {
       </div>
 
       <p className="text-xs text-gray-500">
-        The fit is computed via the normal equations: solve $A^T A \mathbf{c} = A^T \mathbf{y}$ where $A$ is the Vandermonde matrix.
+        The fit is computed via the normal equations: solve A^T A c = A^T y where A is the Vandermonde matrix.
         Press &quot;Animate GD&quot; to watch gradient descent converge to the linear fit from a random initial guess.
       </p>
     </div>

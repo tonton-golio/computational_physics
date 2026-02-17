@@ -16,64 +16,76 @@ const registryGroups: RegistryGroup[] = [
   {
     topic: "applied-statistics",
     title: "Applied Statistics",
-    load: () => import("@/components/visualization/AppliedStatsSimulations").then((m) => m.APPLIED_STATS_SIMULATIONS),
+    load: () =>
+      import("@/components/visualization/AppliedStatsSimulations").then((m) => m.APPLIED_STATS_SIMULATIONS as SimulationRegistry),
   },
   {
     topic: "complex-physics",
     title: "Complex Physics",
-    load: () => import("@/components/visualization/ComplexPhysicsSimulations").then((m) => m.COMPLEX_SIMULATIONS),
+    load: () => import("@/components/visualization/ComplexPhysicsSimulations").then((m) => m.COMPLEX_SIMULATIONS as SimulationRegistry),
   },
   {
     topic: "continuum-mechanics",
     title: "Continuum Mechanics",
     load: () =>
-      import("@/components/visualization/ContinuumMechanicsSimulations").then((m) => m.CONTINUUM_MECHANICS_SIMULATIONS),
+      import("@/components/visualization/ContinuumMechanicsSimulations").then(
+        (m) => m.CONTINUUM_MECHANICS_SIMULATIONS as SimulationRegistry
+      ),
   },
   {
     topic: "inverse-problems",
     title: "Inverse Problems",
-    load: () => import("@/components/visualization/InverseProblemsSimulations").then((m) => m.INVERSE_PROBLEMS_SIMULATIONS),
+    load: () =>
+      import("@/components/visualization/InverseProblemsSimulations").then((m) => m.INVERSE_PROBLEMS_SIMULATIONS as SimulationRegistry),
   },
   {
     topic: "quantum-optics",
     title: "Quantum Optics",
-    load: () => import("@/components/visualization/QuantumOpticsSimulations").then((m) => m.QUANTUM_OPTICS_SIMULATIONS),
+    load: () =>
+      import("@/components/visualization/QuantumOpticsSimulations").then((m) => m.QUANTUM_OPTICS_SIMULATIONS as SimulationRegistry),
   },
   {
     topic: "dynamical-models",
     title: "Dynamical Models",
-    load: () => import("@/components/visualization/DynamicalModelsSimulations").then((m) => m.DYNAMICAL_MODELS_SIMULATIONS),
+    load: () =>
+      import("@/components/visualization/DynamicalModelsSimulations").then((m) => m.DYNAMICAL_MODELS_SIMULATIONS as SimulationRegistry),
   },
   {
     topic: "advanced-deep-learning",
     title: "Advanced Deep Learning",
     load: () =>
-      import("@/components/visualization/AdvancedDeepLearningSimulations").then((m) => m.ADVANCED_DEEP_LEARNING_SIMULATIONS),
+      import("@/components/visualization/AdvancedDeepLearningSimulations").then(
+        (m) => m.ADVANCED_DEEP_LEARNING_SIMULATIONS as SimulationRegistry
+      ),
   },
   {
     topic: "applied-machine-learning",
     title: "Applied Machine Learning",
     load: () =>
       import("@/components/visualization/AppliedMachineLearningSimulations").then(
-        (m) => m.APPLIED_MACHINE_LEARNING_SIMULATIONS
+        (m) => m.APPLIED_MACHINE_LEARNING_SIMULATIONS as SimulationRegistry
       ),
   },
   {
     topic: "scientific-computing",
     title: "Scientific Computing",
     load: () =>
-      import("@/components/visualization/ScientificComputingSimulations").then((m) => m.SCIENTIFIC_COMPUTING_SIMULATIONS),
+      import("@/components/visualization/ScientificComputingSimulations").then(
+        (m) => m.SCIENTIFIC_COMPUTING_SIMULATIONS as SimulationRegistry
+      ),
   },
   {
     topic: "online-reinforcement-learning",
     title: "Online Reinforcement Learning",
     load: () =>
-      import("@/components/visualization/OnlineReinforcementSimulations").then((m) => m.ONLINE_REINFORCEMENT_SIMULATIONS),
+      import("@/components/visualization/OnlineReinforcementSimulations").then(
+        (m) => m.ONLINE_REINFORCEMENT_SIMULATIONS as SimulationRegistry
+      ),
   },
   {
     topic: "linear-algebra",
     title: "Eigenvalue Visualizations",
-    load: () => import("@/components/visualization/EigenvalueSimulations").then((m) => m.EIGENVALUE_SIMULATIONS),
+    load: () => import("@/components/visualization/EigenvalueSimulations").then((m) => m.EIGENVALUE_SIMULATIONS as SimulationRegistry),
   },
 ];
 

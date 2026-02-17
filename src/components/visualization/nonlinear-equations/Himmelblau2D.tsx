@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import Plotly from 'react-plotly.js';
+import type { Data, Layout } from 'plotly.js';
 
 const Himmelblau2D: React.FC = () => {
   const [method, setMethod] = useState<'gd' | 'newton'>('gd');
@@ -79,7 +80,7 @@ const Himmelblau2D: React.FC = () => {
   }, [x0, y0, method, lr, maxSteps, gradX, gradY, hessXX, hessXY, hessYY]);
 
   // Contour data
-  const contourData = useMemo(() => {
+  const contourData = useMemo<Data[]>(() => {
     const nx = 100;
     const ny = 100;
     const xmin = -6;
@@ -97,7 +98,7 @@ const Himmelblau2D: React.FC = () => {
       z.push(row);
     }
     return [{
-      type: 'contour',
+      type: 'contour' as const,
       x: xgrid,
       y: ygrid,
       z,
@@ -108,11 +109,11 @@ const Himmelblau2D: React.FC = () => {
   }, [f]);
 
   // Path trace
-  const pathTrace = useMemo(() => ({
+  const pathTrace = useMemo<Data>(() => ({
     x: path.slice(0, currentStep + 1).map(p => p[0]),
     y: path.slice(0, currentStep + 1).map(p => p[1]),
-    type: 'scatter',
-    mode: 'lines+markers',
+    type: 'scatter' as const,
+    mode: 'lines+markers' as const,
     line: {color: 'white', width: 4},
     marker: {size: 8, color: 'red'},
     name: 'Descent path',
@@ -126,7 +127,7 @@ const Himmelblau2D: React.FC = () => {
     [3.584, -1.848],
   ], []);
 
-  const basinData = useMemo(() => {
+  const basinData = useMemo<Data[]>(() => {
     if (!showBasins) return [];
     const nx = 40;
     const ny = 40;
@@ -185,7 +186,7 @@ const Himmelblau2D: React.FC = () => {
       zbasin.push(row);
     }
     return [{
-      type: 'heatmap',
+      type: 'heatmap' as const,
       x: xgrid,
       y: ygrid,
       z: zbasin,
@@ -196,9 +197,9 @@ const Himmelblau2D: React.FC = () => {
     }];
   }, [showBasins, method, gradX, gradY, hessXX, hessXY, hessYY, attractors]);
 
-  const data = [...contourData, pathTrace, ...basinData];
+  const data: Data[] = [...contourData, pathTrace, ...basinData];
 
-  const layout = {
+  const layout: Partial<Layout> = {
     title: { text: `Himmelblau Function - ${method.toUpperCase()} Descent & Basins` },
     xaxis: {title: { text: 'x' }},
     yaxis: {title: { text: 'y' }},

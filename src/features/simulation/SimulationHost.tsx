@@ -117,8 +117,8 @@ export function SimulationHost({ id }: { id: string }) {
       const idleId = window.requestIdleCallback(warm, { timeout: 600 });
       return () => window.cancelIdleCallback(idleId);
     }
-    const timeoutId = window.setTimeout(warm, 120);
-    return () => window.clearTimeout(timeoutId);
+    const timeoutId = globalThis.setTimeout(warm, 120);
+    return () => globalThis.clearTimeout(timeoutId);
   }, [id, isNearViewport, Simulation, Graph, hasError]);
 
   useEffect(() => {

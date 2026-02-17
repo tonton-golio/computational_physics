@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import Plotly from 'react-plotly.js';
-import { PlotData } from 'plotly.js';
+import type { Data, Layout } from 'plotly.js';
 
 interface Func {
   name: string;
@@ -68,20 +68,20 @@ const Newton1D: React.FC = () => {
     const margin = 0.5;
     const plotX = [minX - margin, maxX + margin];
 
-    const traces: PlotData[] = [
+    const traces: Data[] = [
       {
         x: xGrid,
         y: yGrid,
-        type: 'scatter',
-        mode: 'lines',
+        type: 'scatter' as const,
+        mode: 'lines' as const,
         name: 'f(x)',
         line: {color: 'blue'},
       },
       {
         x: [plotX[0], plotX[1]],
         y: [plotX[0], plotX[1]],
-        type: 'scatter',
-        mode: 'lines',
+        type: 'scatter' as const,
+        mode: 'lines' as const,
         name: 'y = x',
         line: {color: 'black', dash: 'dash'},
       },
@@ -95,8 +95,8 @@ const Newton1D: React.FC = () => {
       traces.push({
         x: [xi, xi],
         y: [xi, xi1],
-        type: 'scatter',
-        mode: 'lines',
+        type: 'scatter' as const,
+        mode: 'lines' as const,
         line: {color: 'red', width: 3},
         showlegend: false,
       });
@@ -104,8 +104,8 @@ const Newton1D: React.FC = () => {
       traces.push({
         x: [xi, xi1],
         y: [xi1, xi1],
-        type: 'scatter',
-        mode: 'lines',
+        type: 'scatter' as const,
+        mode: 'lines' as const,
         line: {color: 'red', width: 3},
         showlegend: false,
       });
@@ -116,8 +116,8 @@ const Newton1D: React.FC = () => {
       traces.push({
         x: [path[0]],
         y: [path[0]],
-        type: 'scatter',
-        mode: 'markers',
+        type: 'scatter' as const,
+        mode: 'markers' as const,
         marker: {color: 'green', size: 12},
         name: 'Start',
       });
@@ -126,8 +126,8 @@ const Newton1D: React.FC = () => {
       traces.push({
         x: [path[currentStep]],
         y: [path[currentStep]],
-        type: 'scatter',
-        mode: 'markers',
+        type: 'scatter' as const,
+        mode: 'markers' as const,
         marker: {color: 'orange', size: 10},
         name: 'Current',
       });
@@ -136,7 +136,7 @@ const Newton1D: React.FC = () => {
     return traces;
   }, [f, path, currentStep]);
 
-  const layout = {
+  const layout: Partial<Layout> = {
     title: { text: `${functions[selectedFunc].name} - Newton's Method Cobweb` },
     xaxis: {title: { text: 'x' }},
     yaxis: {title: { text: 'y' }},

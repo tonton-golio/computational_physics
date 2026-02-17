@@ -1,10 +1,33 @@
  "use client";
 
+import { Suspense } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
 export function Header() {
+  return (
+    <Suspense
+      fallback={
+        <header className="sticky top-0 z-50 border-b border-[var(--border-strong)] bg-[var(--background)] backdrop-blur-sm">
+          <div className="flex h-16 w-full items-center gap-3 px-6">
+            <Link href="/" className="flex items-center gap-2">
+              <span className="text-xl font-semibold text-[var(--text-strong)]">koala brain</span>
+            </Link>
+            <div className="flex-1" />
+            <nav className="flex items-center shrink-0">
+              <ThemeToggle />
+            </nav>
+          </div>
+        </header>
+      }
+    >
+      <HeaderContent />
+    </Suspense>
+  );
+}
+
+function HeaderContent() {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
