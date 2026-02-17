@@ -804,6 +804,152 @@ export function MatrixExponentialSimulation({}: SimulationProps) {
   );
 }
 
+// 8. Characteristic Polynomial Visualization
+export function CharacteristicPolynomial({}: SimulationProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [size, setSize] = useState(2);
+  const [matrix, setMatrix] = useState([[2, 1], [0, 3]]);
+
+  useEffect(() => {
+    if (size === 2) {
+      setMatrix([[2, 1], [0, 3]]);
+    } else {
+      setMatrix([[2, 1, 0], [0, 3, 1], [1, 0, 2]]);
+    }
+  }, [size]);
+
+  const computeCharPoly = (A: number[][]) => {
+    if (A.length === 2) {
+      const a = A[0][0], b = A[0][1], c = A[1][0], d = A[1][1];
+      const trace = a + d;
+      const det = a * d - b * c;
+      return [1, -trace, det]; // coefficients for λ² - trace λ + det
+    } else {
+      const a = A[0][0], b = A[0][1], c = A[0][2];
+      const d = A[1][0], e = A[1][1], f = A[1][2];
+      const g = A[2][0], h = A[2][1], i = A[2][2];
+      const trace = a + e + i;
+      const det = a * (e * i - f * h) - b * (d * i - f * g) + c * (d * h - e * g);
+      const m11 = e * i - f * h;
+      const m22 = a * i - c * g;
+      const m33 = a * e - b * d;
+      const sumMinors = m11 + m22 + m33;
+      return [-1, trace, -sumMinors, det]; // for -λ³ + trace λ² - sumMinors λ + det
+    }
+  };
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const coeffs = computeCharPoly(matrix);
+    const lambda = Array.from({ length: 200 }, (_, i) => -6 + (12 * i) / 199);
+    const poly = lambda.map(l => {
+      let val = 0;
+      for (let k = 0; k < coeffs.length; k++) {
+        val += coeffs[k] * Math.pow(l, coeffs.length - 1 - k);
+      }
+      return val;
+    });
+
+    let eigenvalues = [];
+    if (matrix.length === 2) {
+      const a = matrix[0][0], b = matrix[0][1], c = matrix[1][0], d = matrix[1][1];
+      const disc = (a + d) ** 2 - 4 * (a * d - b * c);
+      if (disc >= 0) {
+        eigenvalues = [(a + d + Math.sqrt(disc)) / 2, (a + d - Math.sqrt(disc)) / 2];
+      }
+    }
+
+    const data: Plotly.Data[] = [
+      {
+        x: lambda,
+        y: poly,
+        type: 'scatter',
+        mode: 'lines',
+        line: { color: COLORS.primary, width: 2 },
+        name: 'p(λ)',
+      },
+      ...(eigenvalues.length ? [{
+        x: eigenvalues,
+        y: eigenvalues.map(() => 0),
+        type: 'scatter',
+        mode: 'markers',
+        marker: { size: 10, color: COLORS.secondary, symbol: 'x', line: { width: 2 } },
+        name: 'Roots (eigenvalues)',
+      }] : [])
+    ];
+
+    const layout: Partial<Plotly.Layout> = {
+      ...BASE_LAYOUT,
+      xaxis: { ...BASE_LAYOUT.xaxis, title: { text: 'λ' }, range: [-6, 6] },
+      yaxis: { ...BASE_LAYOUT.yaxis, title: { text: 'p(λ)' } },
+      title: { text: `Characteristic Polynomial (${size}x${size} matrix)` },
+      legend: { x: 0, y: 1, bgcolor: 'rgba(0,0,0,0)' },
+    };
+
+    Plotly.newPlot(container, data, layout, { responsive: true, displayModeBar: false });
+  }, [matrix, size]);
+
+  return (
+    <div className="space-y-4">
+      <div ref={containerRef} className="w-full h-80 bg-[#151525] rounded-lg overflow-hidden" />
+      <div className="flex gap-4 items-center flex-wrap">
+        <span className="text-sm text-gray-400">Matrix size:</span>
+        <select
+          value={size}
+          onChange={(e) => setSize(parseInt(e.target.value))}
+          className="bg-[#151525] text-white rounded px-2 py-1"
+        >
+          <option value={2}>2×2</option>
+          <option value={3}>3×3</option>
+        </select>
+      </div>
+      <div className={`grid gap-2 ${size === 2 ? 'grid-cols-2 max-w-xs' : 'grid-cols-3 max-w-md'}`}>
+        {matrix.map((row, i) =>
+          row.map((val, j) => (
+            <input
+              key={`${i}-${j}`}
+              type="number"
+              step="0.1"
+              value={val}
+              onChange={(e) => {
+                const newMatrix = matrix.map(r => [...r]);
+                newMatrix[i][j] = parseFloat(e.target.value) || 0;
+                setMatrix(newMatrix);
+              }}
+              className="w-16 px-2 py-1 bg-[#151525] rounded text-white text-center"
+            />
+          ))
+        )}
+      </div>
+      <div className="flex gap-2">
+        <button
+          onClick={() => {
+            if (size === 2) setMatrix([[1, 0], [0, 1]]);
+            else setMatrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]]);
+          }}
+          className="px-3 py-1 bg-blue-600 rounded text-sm hover:bg-blue-700"
+        >
+          Identity
+        </button>
+        <button
+          onClick={() => {
+            if (size === 2) setMatrix([[0, 0], [0, 0]]);
+            else setMatrix([[0, 0, 0], [0, 0, 0], [0, 0, 0]]);
+          }}
+          className="px-3 py-1 bg-gray-600 rounded text-sm hover:bg-gray-700"
+        >
+          Zero
+        </button>
+      </div>
+      <p className="text-xs text-gray-500">
+        The characteristic polynomial p(λ) = det(A - λI). Roots are the eigenvalues.
+      </p>
+    </div>
+  );
+}
+
 // ============ SIMULATION REGISTRY ============
 
 export const EIGENVALUE_SIMULATIONS: Record<string, React.ComponentType<SimulationProps>> = {
@@ -814,6 +960,7 @@ export const EIGENVALUE_SIMULATIONS: Record<string, React.ComponentType<Simulati
   'qr-algorithm-animation': QRAlgorithmAnimation,
   'rayleigh-convergence': RayleighQuotientSurface,
   'matrix-exponential': MatrixExponentialSimulation,
+  'characteristic-polynomial': CharacteristicPolynomial,
 };
 
 export function getEigenvalueSimulation(id: string): React.ComponentType<SimulationProps> | null {
