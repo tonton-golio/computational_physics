@@ -15,7 +15,7 @@ Provide a concrete directory and module map so autonomous execution can locate t
 - `src/components/`: UI and visualization component registries
 - `src/lib/`: routing and content helper functions
 - `scripts/`: validation and performance utility scripts
-- `.claw/`: autonomous workflow instructions and state artifacts
+- `.claw/`: autonomous workflow instructions and state artifacts 
 
 ## Runtime-Critical Files
 
