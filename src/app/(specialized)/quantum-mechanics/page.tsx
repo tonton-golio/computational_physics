@@ -2,11 +2,14 @@
 
 import dynamic from 'next/dynamic';
 import { useState } from 'react';
+import { Slider } from '@/components/ui/slider';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
 export default function QuantumMechanics() {
   const [n, setN] = useState(1);
+  const { mergeLayout } = usePlotlyTheme();
 
   // Constants (in units where ħ=1, m=1, L=1 for simplicity)
   const L = 1;
@@ -50,19 +53,19 @@ export default function QuantumMechanics() {
     },
   ];
 
-  const layoutPsi = {
+  const layoutPsi = mergeLayout({
     title: { text: 'Wave Function ψ_n(x)' },
     xaxis: { title: { text: 'Position x' }, range: [0, L] },
     yaxis: { title: { text: 'ψ_n(x)' } },
     showlegend: true,
-  };
+  });
 
-  const layoutProb = {
+  const layoutProb = mergeLayout({
     title: { text: 'Probability Density |ψ_n(x)|²' },
     xaxis: { title: { text: 'Position x' }, range: [0, L] },
     yaxis: { title: { text: '|ψ_n(x)|²' } },
     showlegend: true,
-  };
+  });
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
@@ -76,13 +79,11 @@ export default function QuantumMechanics() {
         <label htmlFor="n-slider" className="block text-sm font-medium mb-2">
           Quantum number n: {n}
         </label>
-        <input
-          id="n-slider"
-          type="range"
-          min="1"
-          max="10"
-          value={n}
-          onChange={(e) => setN(Number(e.target.value))}
+        <Slider
+          min={1}
+          max={10}
+          value={[n]}
+          onValueChange={([v]) => setN(v)}
           className="w-full"
         />
       </div>
@@ -91,7 +92,7 @@ export default function QuantumMechanics() {
         <p className="text-lg">
           Energy E_{n} = {E.toFixed(3)} (in units where ħ=1, m=1, L=1)
         </p>
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-[var(--text-soft)]">
           Formula: E_n = (n² π² ħ²) / (2 m L²)
         </p>
       </div>

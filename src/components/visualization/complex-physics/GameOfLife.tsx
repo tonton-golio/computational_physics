@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
 
 // Dynamically import Plot to avoid SSR issues
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
@@ -106,6 +107,7 @@ export function GameOfLife() {
   const [grid, setGrid] = useState(createRandomGrid);
   const [running, setRunning] = useState(false);
   const [selectedPattern, setSelectedPattern] = useState('random');
+  const { mergeLayout } = usePlotlyTheme();
 
   useEffect(() => {
     if (!running) return;
@@ -149,11 +151,11 @@ export function GameOfLife() {
         <Button onClick={reset}>Reset</Button>
       </div>
       <div className="mb-4">
-        <label className="text-white mr-2">Initial Pattern:</label>
+        <label className="text-[var(--text-strong)] mr-2">Initial Pattern:</label>
         <select
           value={selectedPattern}
           onChange={(e) => selectPattern(e.target.value)}
-          className="bg-gray-700 text-white p-2 rounded"
+          className="bg-[var(--surface-3)] text-[var(--text-strong)] p-2 rounded border border-[var(--border-strong)]"
         >
           <option value="random">Random</option>
           <option value="glider">Glider</option>
@@ -173,13 +175,13 @@ export function GameOfLife() {
             showscale: false,
           },
         ]}
-        layout={{
+        layout={mergeLayout({
           width: 600,
           height: 600,
           xaxis: { showticklabels: false },
           yaxis: { showticklabels: false },
           margin: { t: 0, b: 0, l: 0, r: 0 },
-        }}
+        })}
         config={{ displayModeBar: false }}
       />
     </div>

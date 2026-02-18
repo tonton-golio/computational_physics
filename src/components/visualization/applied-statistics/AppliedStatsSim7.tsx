@@ -2,6 +2,8 @@
 
 import React, { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
+import { Slider } from '@/components/ui/slider';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -19,6 +21,7 @@ export default function AppliedStatsSim7({ }: SimulationProps) {
   const [nBinomial, setNBinomial] = useState(100);
   const [pBinomial, setPBinomial] = useState(0.2);
   const [seed, setSeed] = useState(69);
+  const { mergeLayout } = usePlotlyTheme();
 
   const result = useMemo(() => {
     // Seeded pseudo-random
@@ -74,32 +77,32 @@ export default function AppliedStatsSim7({ }: SimulationProps) {
   }, [size, nBinomial, pBinomial, seed]);
 
   return (
-    <div className="w-full bg-[#151525] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-white">Probability Density Functions</h3>
-      <p className="text-sm text-gray-300 mb-4">
+    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
+      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Probability Density Functions</h3>
+      <p className="text-sm text-[var(--text-muted)] mb-4">
         Compare samples drawn from four fundamental distributions: Uniform, Poisson, Binomial, and Gaussian.
         Adjust the number of samples and binomial parameters to see how the histograms change.
       </p>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
         <div>
-          <label className="text-sm text-gray-400">Samples: {size}</label>
-          <input type="range" min={50} max={5000} step={50} value={size}
-            onChange={e => setSize(+e.target.value)} className="w-full" />
+          <label className="text-sm text-[var(--text-muted)]">Samples: {size}</label>
+          <Slider min={50} max={5000} step={50} value={[size]}
+            onValueChange={([v]) => setSize(v)} />
         </div>
         <div>
-          <label className="text-sm text-gray-400">Binomial n: {nBinomial}</label>
-          <input type="range" min={5} max={200} step={5} value={nBinomial}
-            onChange={e => setNBinomial(+e.target.value)} className="w-full" />
+          <label className="text-sm text-[var(--text-muted)]">Binomial n: {nBinomial}</label>
+          <Slider min={5} max={200} step={5} value={[nBinomial]}
+            onValueChange={([v]) => setNBinomial(v)} />
         </div>
         <div>
-          <label className="text-sm text-gray-400">Binomial p: {pBinomial.toFixed(2)}</label>
-          <input type="range" min={0.01} max={0.99} step={0.01} value={pBinomial}
-            onChange={e => setPBinomial(+e.target.value)} className="w-full" />
+          <label className="text-sm text-[var(--text-muted)]">Binomial p: {pBinomial.toFixed(2)}</label>
+          <Slider min={0.01} max={0.99} step={0.01} value={[pBinomial]}
+            onValueChange={([v]) => setPBinomial(v)} />
         </div>
         <div>
-          <label className="text-sm text-gray-400">Seed: {seed}</label>
-          <input type="range" min={1} max={200} step={1} value={seed}
-            onChange={e => setSeed(+e.target.value)} className="w-full" />
+          <label className="text-sm text-[var(--text-muted)]">Seed: {seed}</label>
+          <Slider min={1} max={200} step={1} value={[seed]}
+            onValueChange={([v]) => setSeed(v)} />
         </div>
       </div>
 
@@ -112,16 +115,14 @@ export default function AppliedStatsSim7({ }: SimulationProps) {
             marker: { color: 'rgba(249,115,22,0.7)' },
             name: 'Uniform',
           }]}
-          layout={{
-            title: { text: 'Uniform', font: { color: '#fff', size: 13 } },
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(15,15,25,1)',
-            font: { color: '#9ca3af', size: 10 },
+          layout={mergeLayout({
+            title: { text: 'Uniform', font: { size: 13 } },
+            font: { size: 10 },
             margin: { t: 35, r: 10, b: 30, l: 35 },
-            xaxis: { gridcolor: '#1e1e2e' },
-            yaxis: { gridcolor: '#1e1e2e' },
+            xaxis: {},
+            yaxis: {},
             showlegend: false,
-          }}
+          })}
           config={{ responsive: true, displayModeBar: false }}
           style={{ width: '100%', height: 280 }}
         />
@@ -133,16 +134,14 @@ export default function AppliedStatsSim7({ }: SimulationProps) {
             marker: { color: 'rgba(236,72,153,0.7)' },
             name: 'Poisson',
           }]}
-          layout={{
-            title: { text: `Poisson (lambda=${result.lambda.toFixed(1)})`, font: { color: '#fff', size: 13 } },
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(15,15,25,1)',
-            font: { color: '#9ca3af', size: 10 },
+          layout={mergeLayout({
+            title: { text: `Poisson (lambda=${result.lambda.toFixed(1)})`, font: { size: 13 } },
+            font: { size: 10 },
             margin: { t: 35, r: 10, b: 30, l: 35 },
-            xaxis: { gridcolor: '#1e1e2e' },
-            yaxis: { gridcolor: '#1e1e2e' },
+            xaxis: {},
+            yaxis: {},
             showlegend: false,
-          }}
+          })}
           config={{ responsive: true, displayModeBar: false }}
           style={{ width: '100%', height: 280 }}
         />
@@ -154,16 +153,14 @@ export default function AppliedStatsSim7({ }: SimulationProps) {
             marker: { color: 'rgba(249,115,22,0.7)' },
             name: 'Binomial',
           }]}
-          layout={{
-            title: { text: `Binomial (n=${nBinomial}, p=${pBinomial.toFixed(2)})`, font: { color: '#fff', size: 13 } },
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(15,15,25,1)',
-            font: { color: '#9ca3af', size: 10 },
+          layout={mergeLayout({
+            title: { text: `Binomial (n=${nBinomial}, p=${pBinomial.toFixed(2)})`, font: { size: 13 } },
+            font: { size: 10 },
             margin: { t: 35, r: 10, b: 30, l: 35 },
-            xaxis: { gridcolor: '#1e1e2e' },
-            yaxis: { gridcolor: '#1e1e2e' },
+            xaxis: {},
+            yaxis: {},
             showlegend: false,
-          }}
+          })}
           config={{ responsive: true, displayModeBar: false }}
           style={{ width: '100%', height: 280 }}
         />
@@ -175,16 +172,14 @@ export default function AppliedStatsSim7({ }: SimulationProps) {
             marker: { color: 'rgba(236,72,153,0.7)' },
             name: 'Gaussian',
           }]}
-          layout={{
-            title: { text: 'Gaussian', font: { color: '#fff', size: 13 } },
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(15,15,25,1)',
-            font: { color: '#9ca3af', size: 10 },
+          layout={mergeLayout({
+            title: { text: 'Gaussian', font: { size: 13 } },
+            font: { size: 10 },
             margin: { t: 35, r: 10, b: 30, l: 35 },
-            xaxis: { gridcolor: '#1e1e2e' },
-            yaxis: { gridcolor: '#1e1e2e' },
+            xaxis: {},
+            yaxis: {},
             showlegend: false,
-          }}
+          })}
           config={{ responsive: true, displayModeBar: false }}
           style={{ width: '100%', height: 280 }}
         />

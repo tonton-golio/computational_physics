@@ -54,6 +54,27 @@ npm run test:e2e
 - Release runbook: `docs/runbooks/release-and-rollback.md`
 - SLOs: `docs/operations/slo.md`
 
+## Topic Point Cloud
+
+Generate the 2D point-cloud JSON used by the Topics visualization. This embeds each sub-topic via OpenAI and projects the vectors to 2D with t-SNE.
+
+**Prerequisites:**
+
+- [`uv`](https://docs.astral.sh/uv/) installed (`brew install uv`)
+- `OPENAI_API_KEY` set in `.env` at the project root
+
+```bash
+npm run build:point-cloud
+```
+
+Output: `public/data/topic-point-cloud.json`
+
+Optional flags (pass after `--`):
+
+```bash
+npm run build:point-cloud -- --output path/to/out.json --batch-size 32 --max-chars 4000
+```
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

@@ -2,6 +2,8 @@
 
 import React, { useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { Slider } from '@/components/ui/slider';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -43,6 +45,7 @@ export default function SphereInCubeMC({ id }: SimulationProps) { // eslint-disa
   const [nPointsExp, setNPointsExp] = useState(12);
   const [seed, setSeed] = useState(17);
   const nPoints = Math.pow(2, nPointsExp);
+  const { mergeLayout } = usePlotlyTheme();
 
   const result = useMemo(() => {
     const rng = seededRandom(seed);
@@ -112,25 +115,25 @@ export default function SphereInCubeMC({ id }: SimulationProps) { // eslint-disa
   }, [nDims, nPoints, seed]);
 
   return (
-    <div className="w-full bg-[#151525] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-white">Sphere in Cube (Monte Carlo Accept/Reject)</h3>
-      <p className="text-gray-400 text-sm mb-4">
+    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
+      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Sphere in Cube (Monte Carlo Accept/Reject)</h3>
+      <p className="text-[var(--text-muted)] text-sm mb-4">
         Reproduce the classic accept/reject demo: sample points uniformly in [-1,1]^N and keep only points
         inside the unit sphere. This visualizes why high-dimensional volume estimation is difficult.
       </p>
 
       <div className="grid grid-cols-3 gap-4 mb-4">
         <div>
-          <label className="text-gray-300 text-xs">Dimensions: {nDims}</label>
-          <input type="range" min={2} max={12} step={1} value={nDims} onChange={(e) => setNDims(parseInt(e.target.value))} className="w-full" />
+          <label className="text-[var(--text-muted)] text-xs">Dimensions: {nDims}</label>
+          <Slider min={2} max={12} step={1} value={[nDims]} onValueChange={([v]) => setNDims(v)} />
         </div>
         <div>
-          <label className="text-gray-300 text-xs">Points: 2^{nPointsExp} = {nPoints}</label>
-          <input type="range" min={6} max={16} step={1} value={nPointsExp} onChange={(e) => setNPointsExp(parseInt(e.target.value))} className="w-full" />
+          <label className="text-[var(--text-muted)] text-xs">Points: 2^{nPointsExp} = {nPoints}</label>
+          <Slider min={6} max={16} step={1} value={[nPointsExp]} onValueChange={([v]) => setNPointsExp(v)} />
         </div>
         <div>
-          <label className="text-gray-300 text-xs">Seed: {seed}</label>
-          <input type="range" min={1} max={300} step={1} value={seed} onChange={(e) => setSeed(parseInt(e.target.value))} className="w-full" />
+          <label className="text-[var(--text-muted)] text-xs">Seed: {seed}</label>
+          <Slider min={1} max={300} step={1} value={[seed]} onValueChange={([v]) => setSeed(v)} />
         </div>
       </div>
 
@@ -154,17 +157,13 @@ export default function SphereInCubeMC({ id }: SimulationProps) { // eslint-disa
               marker: { color: 'rgba(248,113,113,0.35)', size: 3 },
             },
           ]}
-          layout={{
+          layout={mergeLayout({
             title: { text: `First 2 coordinates (showing ${result.nPlot} points)` },
-            xaxis: { title: { text: 'x1' }, range: [-1.1, 1.1], color: '#9ca3af', scaleanchor: 'y' },
-            yaxis: { title: { text: 'x2' }, range: [-1.1, 1.1], color: '#9ca3af' },
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(15,15,25,1)',
-            font: { color: '#9ca3af' },
-            legend: { bgcolor: 'rgba(0,0,0,0.3)' },
+            xaxis: { title: { text: 'x1' }, range: [-1.1, 1.1], scaleanchor: 'y' },
+            yaxis: { title: { text: 'x2' }, range: [-1.1, 1.1] },
             height: 380,
             margin: { t: 40, b: 50, l: 50, r: 20 },
-          }}
+          })}
           config={{ displayModeBar: false }}
           style={{ width: '100%' }}
         />
@@ -188,39 +187,35 @@ export default function SphereInCubeMC({ id }: SimulationProps) { // eslint-disa
               name: 'MC estimate',
             },
           ]}
-          layout={{
+          layout={mergeLayout({
             title: { text: 'Accepted Fraction vs Dimension' },
-            xaxis: { title: { text: 'dimension' }, color: '#9ca3af' },
-            yaxis: { title: { text: 'fraction in unit sphere' }, type: 'log', color: '#9ca3af' },
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(15,15,25,1)',
-            font: { color: '#9ca3af' },
-            legend: { bgcolor: 'rgba(0,0,0,0.3)' },
+            xaxis: { title: { text: 'dimension' } },
+            yaxis: { title: { text: 'fraction in unit sphere' }, type: 'log' },
             height: 380,
             margin: { t: 40, b: 50, l: 60, r: 20 },
-          }}
+          })}
           config={{ displayModeBar: false }}
           style={{ width: '100%' }}
         />
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
-        <div className="bg-[#0a0a15] rounded p-3">
-          <div className="text-gray-500">Accepted / total</div>
-          <div className="text-white font-mono">{result.insideCount} / {nPoints}</div>
+        <div className="bg-[var(--surface-1)] rounded p-3 border border-[var(--border-strong)]">
+          <div className="text-[var(--text-soft)]">Accepted / total</div>
+          <div className="text-[var(--text-strong)] font-mono">{result.insideCount} / {nPoints}</div>
         </div>
-        <div className="bg-[#0a0a15] rounded p-3">
-          <div className="text-gray-500">Acceptance fraction</div>
-          <div className="text-white font-mono">{result.frac.toFixed(6)}</div>
+        <div className="bg-[var(--surface-1)] rounded p-3 border border-[var(--border-strong)]">
+          <div className="text-[var(--text-soft)]">Acceptance fraction</div>
+          <div className="text-[var(--text-strong)] font-mono">{result.frac.toFixed(6)}</div>
         </div>
-        <div className="bg-[#0a0a15] rounded p-3">
-          <div className="text-gray-500">Estimated sphere volume</div>
-          <div className="text-white font-mono">{result.estVolume.toFixed(6)}</div>
+        <div className="bg-[var(--surface-1)] rounded p-3 border border-[var(--border-strong)]">
+          <div className="text-[var(--text-soft)]">Estimated sphere volume</div>
+          <div className="text-[var(--text-strong)] font-mono">{result.estVolume.toFixed(6)}</div>
         </div>
         {result.piEstimate !== null && (
-          <div className="bg-[#0a0a15] rounded p-3">
-            <div className="text-gray-500">Pi estimate</div>
-            <div className="text-white font-mono">{result.piEstimate.toFixed(6)}</div>
+          <div className="bg-[var(--surface-1)] rounded p-3 border border-[var(--border-strong)]">
+            <div className="text-[var(--text-soft)]">Pi estimate</div>
+            <div className="text-[var(--text-strong)] font-mono">{result.piEstimate.toFixed(6)}</div>
           </div>
         )}
       </div>

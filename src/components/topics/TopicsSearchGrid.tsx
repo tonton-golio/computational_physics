@@ -5,9 +5,11 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { MouseEvent as ReactMouseEvent, WheelEvent as ReactWheelEvent } from "react";
 import { topicHref } from "@/lib/topic-navigation";
+import { ExportPdfButton } from "@/components/content/ExportPdfButton";
 
 export interface TopicsSearchEntry {
   routeSlug: string;
+  contentId: string;
   meta: {
     title: string;
     description?: string;
@@ -15,6 +17,7 @@ export interface TopicsSearchEntry {
   lessons: Array<{
     slug: string;
     title: string;
+    summary?: string;
     searchableText: string;
   }>;
 }
@@ -113,6 +116,18 @@ export function TopicsSearchGrid({ entries }: TopicsSearchGridProps) {
       active = false;
     };
   }, []);
+
+  const lessonSummaryMap = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const entry of entries) {
+      for (const lesson of entry.lessons) {
+        if (lesson.summary) {
+          map.set(`${entry.routeSlug}:${lesson.slug}`, lesson.summary);
+        }
+      }
+    }
+    return map;
+  }, [entries]);
 
   const filteredEntries = useMemo(() => {
     if (!normalizedQuery) return entries;
@@ -324,11 +339,16 @@ export function TopicsSearchGrid({ entries }: TopicsSearchGridProps) {
                 ))}
                 {hoveredPoint ? (
                   <div
-                    className="pointer-events-none absolute z-30 max-w-[220px] rounded-md border border-[var(--border-strong)] bg-[var(--surface-1)] px-2 py-1.5 text-[11px] shadow-md"
+                    className="pointer-events-none absolute z-30 max-w-[280px] rounded-md border border-[var(--border-strong)] bg-[var(--surface-1)] px-2 py-1.5 text-[11px] shadow-md"
                     style={{ left: hoveredPoint.x, top: hoveredPoint.y, transform: "translateY(-100%)" }}
                   >
                     <p className="truncate text-[var(--text-strong)]">{shortLabel(hoveredPoint.point.lessonTitle, 42)}</p>
                     <p className="truncate text-[10px] text-[var(--text-muted)]">{hoveredPoint.point.topicTitle}</p>
+                    {lessonSummaryMap.get(`${hoveredPoint.point.routeSlug}:${hoveredPoint.point.lessonSlug}`) && (
+                      <p className="mt-1 text-[10px] leading-tight text-[var(--text-soft)]">
+                        {lessonSummaryMap.get(`${hoveredPoint.point.routeSlug}:${hoveredPoint.point.lessonSlug}`)}
+                      </p>
+                    )}
                   </div>
                 ) : null}
               </>
@@ -389,19 +409,25 @@ export function TopicsSearchGrid({ entries }: TopicsSearchGridProps) {
           <div className="grid gap-4 lg:grid-cols-2">
             {filteredEntries.map((entry) => (
               <div key={entry.routeSlug} className="rounded-xl border border-[var(--border-strong)] bg-[var(--surface-1)] p-5">
-                <Link
-                  href={topicHref(entry.routeSlug)}
-                  className="inline-flex rounded-md border border-[var(--border-strong)] bg-[var(--surface-2)] px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[var(--accent)] transition hover:border-[var(--accent)] hover:text-[var(--accent-strong)]"
-                >
-                  {entry.meta.title}
-                </Link>
-                <p className="mt-3 text-sm text-[var(--text-muted)]">{entry.meta.description}</p>
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <Link
+                      href={topicHref(entry.routeSlug)}
+                      className="inline-flex rounded-md border border-[var(--border-strong)] bg-[var(--surface-2)] px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[var(--accent)] transition hover:border-[var(--accent)] hover:text-[var(--accent-strong)]"
+                    >
+                      {entry.meta.title}
+                    </Link>
+                    <p className="mt-3 text-sm text-[var(--text-muted)]">{entry.meta.description}</p>
+                  </div>
+                  <ExportPdfButton topicContentId={entry.contentId} topicTitle={entry.meta.title} variant="compact" />
+                </div>
 
                 <div className="mt-4 flex flex-wrap gap-2">
                   {entry.lessons.map((lesson) => (
                     <Link
                       key={lesson.slug}
                       href={topicHref(entry.routeSlug, lesson.slug)}
+                      title={lesson.summary}
                       className="rounded-full border border-[var(--border-strong)] bg-[var(--surface-2)] px-3 py-1 text-xs text-[var(--text-muted)] transition hover:border-[var(--accent)] hover:bg-[var(--surface-3)] hover:text-[var(--text-strong)]"
                     >
                       {lesson.title}

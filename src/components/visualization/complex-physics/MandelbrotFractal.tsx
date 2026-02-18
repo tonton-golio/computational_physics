@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
 
 // Dynamically import Plot to avoid SSR issues
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
@@ -25,6 +26,7 @@ function mandelbrot(c: { re: number; im: number }): number {
 export function MandelbrotFractal() {
   const [xRange, setXRange] = useState([-2, 1]);
   const [yRange, setYRange] = useState([-1.5, 1.5]);
+  const { mergeLayout } = usePlotlyTheme();
 
   const data = useMemo(() => {
     const xMin = xRange[0];
@@ -72,13 +74,13 @@ export function MandelbrotFractal() {
       {data && (
         <Plot
           data={data}
-          layout={{
+          layout={mergeLayout({
             width: 600,
             height: 600,
             xaxis: { autorange: false, range: xRange },
             yaxis: { autorange: false, range: yRange },
             margin: { t: 0, b: 0, l: 0, r: 0 },
-          }}
+          })}
           config={{ displayModeBar: true }}
           onRelayout={handleRelayout}
         />

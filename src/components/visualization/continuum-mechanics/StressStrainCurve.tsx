@@ -2,6 +2,8 @@
 
 import React, { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { Slider } from '@/components/ui/slider';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -14,6 +16,7 @@ export default function StressStrainCurve({ id }: SimulationProps) { // eslint-d
   const [yieldStress, setYieldStress] = useState(0.25); // GPa
   const [hardeningExp, setHardeningExp] = useState(5);
   const [maxStrain, setMaxStrain] = useState(0.05);
+  const { mergeLayout } = usePlotlyTheme();
 
   const plotData = useMemo(() => {
     const numPoints = 200;
@@ -102,39 +105,29 @@ export default function StressStrainCurve({ id }: SimulationProps) { // eslint-d
           marker: { color: '#f59e0b', size: 10, symbol: 'diamond' },
         },
       ],
-      layout: {
-        title: { text: 'Stress-Strain Curve', font: { color: '#e5e7eb' } },
+      layout: mergeLayout({
+        title: { text: 'Stress-Strain Curve' },
         xaxis: {
-          title: { text: 'Strain \u03b5', font: { color: '#9ca3af' } },
-          color: '#6b7280',
-          gridcolor: 'rgba(75,85,99,0.3)',
-          zerolinecolor: 'rgba(75,85,99,0.5)',
+          title: { text: 'Strain \u03b5' },
         },
         yaxis: {
-          title: { text: 'Stress \u03c3 [GPa]', font: { color: '#9ca3af' } },
-          color: '#6b7280',
-          gridcolor: 'rgba(75,85,99,0.3)',
-          zerolinecolor: 'rgba(75,85,99,0.5)',
+          title: { text: 'Stress \u03c3 [GPa]' },
         },
         height: 500,
-        paper_bgcolor: 'rgba(0,0,0,0)',
-        plot_bgcolor: 'rgba(15,15,25,1)',
-        font: { color: '#9ca3af' },
         legend: {
           bgcolor: 'rgba(0,0,0,0)',
-          font: { color: '#d1d5db' },
         },
         margin: { t: 50, b: 60, l: 70, r: 30 },
-      },
+      }),
     };
-  }, [youngsMod, yieldStress, hardeningExp, maxStrain]);
+  }, [youngsMod, yieldStress, hardeningExp, maxStrain, mergeLayout]);
 
   return (
-    <div className="w-full bg-[#151525] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-white">
+    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
+      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">
         Interactive Stress-Strain Curve
       </h3>
-      <p className="text-gray-400 text-sm mb-4">
+      <p className="text-[var(--text-muted)] text-sm mb-4">
         Compare linear elastic response (Hooke&apos;s law) with nonlinear
         Ramberg-Osgood hardening. Adjust material parameters to see how
         the stress-strain relationship changes.
@@ -142,59 +135,55 @@ export default function StressStrainCurve({ id }: SimulationProps) { // eslint-d
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div>
-          <label className="block text-sm text-gray-300 mb-1">
+          <label className="block text-sm text-[var(--text-muted)] mb-1">
             Young&apos;s Modulus E: {youngsMod} GPa
           </label>
-          <input
-            type="range"
+          <Slider
             min={50}
             max={400}
             step={10}
-            value={youngsMod}
-            onChange={(e) => setYoungsMod(Number(e.target.value))}
-            className="w-full accent-blue-500"
+            value={[youngsMod]}
+            onValueChange={([v]) => setYoungsMod(v)}
+            className="w-full"
           />
         </div>
         <div>
-          <label className="block text-sm text-gray-300 mb-1">
+          <label className="block text-sm text-[var(--text-muted)] mb-1">
             Yield Stress &sigma;<sub>Y</sub>: {yieldStress.toFixed(2)} GPa
           </label>
-          <input
-            type="range"
+          <Slider
             min={0.05}
             max={1.0}
             step={0.01}
-            value={yieldStress}
-            onChange={(e) => setYieldStress(Number(e.target.value))}
-            className="w-full accent-red-500"
+            value={[yieldStress]}
+            onValueChange={([v]) => setYieldStress(v)}
+            className="w-full"
           />
         </div>
         <div>
-          <label className="block text-sm text-gray-300 mb-1">
+          <label className="block text-sm text-[var(--text-muted)] mb-1">
             Hardening Exponent n: {hardeningExp}
           </label>
-          <input
-            type="range"
+          <Slider
             min={2}
             max={20}
             step={1}
-            value={hardeningExp}
-            onChange={(e) => setHardeningExp(Number(e.target.value))}
-            className="w-full accent-yellow-500"
+            value={[hardeningExp]}
+            onValueChange={([v]) => setHardeningExp(v)}
+            className="w-full"
           />
         </div>
         <div>
-          <label className="block text-sm text-gray-300 mb-1">
+          <label className="block text-sm text-[var(--text-muted)] mb-1">
             Max Strain: {(maxStrain * 100).toFixed(1)}%
           </label>
-          <input
-            type="range"
+          <Slider
             min={0.01}
             max={0.15}
             step={0.005}
-            value={maxStrain}
-            onChange={(e) => setMaxStrain(Number(e.target.value))}
-            className="w-full accent-green-500"
+            value={[maxStrain]}
+            onValueChange={([v]) => setMaxStrain(v)}
+            className="w-full"
           />
         </div>
       </div>
@@ -206,10 +195,10 @@ export default function StressStrainCurve({ id }: SimulationProps) { // eslint-d
         style={{ width: '100%' }}
       />
 
-      <div className="mt-4 text-sm text-gray-400 space-y-1">
-        <p><strong className="text-gray-300">Blue line:</strong> Linear elastic response &sigma; = E&epsilon; (Hooke&apos;s law).</p>
-        <p><strong className="text-gray-300">Red curve:</strong> Ramberg-Osgood model &epsilon; = &sigma;/E + 0.002(&sigma;/&sigma;<sub>Y</sub>)<sup>n</sup>. At low stress the two curves coincide; beyond yield the material hardens nonlinearly.</p>
-        <p><strong className="text-gray-300">Diamond:</strong> Conventional yield point defined by the 0.2% offset method.</p>
+      <div className="mt-4 text-sm text-[var(--text-muted)] space-y-1">
+        <p><strong className="text-[var(--text-muted)]">Blue line:</strong> Linear elastic response &sigma; = E&epsilon; (Hooke&apos;s law).</p>
+        <p><strong className="text-[var(--text-muted)]">Red curve:</strong> Ramberg-Osgood model &epsilon; = &sigma;/E + 0.002(&sigma;/&sigma;<sub>Y</sub>)<sup>n</sup>. At low stress the two curves coincide; beyond yield the material hardens nonlinearly.</p>
+        <p><strong className="text-[var(--text-muted)]">Diamond:</strong> Conventional yield point defined by the 0.2% offset method.</p>
       </div>
     </div>
   );

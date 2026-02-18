@@ -2,6 +2,8 @@
 
 import React, { useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { Slider } from '@/components/ui/slider';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -73,6 +75,7 @@ export function RandomWalkFirstReturn() {
   const [trials, setTrials] = useState(700);
   const [pathSteps, setPathSteps] = useState(240);
   const [rerun, setRerun] = useState(0);
+  const { mergeLayout } = usePlotlyTheme();
 
   const { ret1d, ret2d, path } = useMemo(() => {
     const rand = mulberry32((maxSteps * 17 + trials * 23 + pathSteps * 31 + rerun * 101) >>> 0);
@@ -86,59 +89,50 @@ export function RandomWalkFirstReturn() {
   const finite1d = ret1d.filter(v => v < cutoff);
   const finite2d = ret2d.filter(v => v < cutoff);
 
-  const darkLayout = {
-    paper_bgcolor: 'rgba(0,0,0,0)',
-    plot_bgcolor: 'rgba(15,15,25,1)',
-    font: { color: '#9ca3af' },
-    margin: { t: 40, r: 20, b: 50, l: 60 },
-    xaxis: { gridcolor: '#1e1e2e' },
-    yaxis: { gridcolor: '#1e1e2e' },
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap gap-6 items-center">
         <div>
-          <label className="text-sm text-gray-400 block mb-1">Max Steps: {maxSteps}</label>
-          <input type="range" min={200} max={3000} step={100} value={maxSteps} onChange={e => setMaxSteps(Number(e.target.value))} className="w-48" />
+          <label className="mb-1 block text-sm text-[var(--text-muted)]">Max Steps: {maxSteps}</label>
+          <Slider value={[maxSteps]} onValueChange={([v]) => setMaxSteps(v)} min={200} max={3000} step={100} />
         </div>
         <div>
-          <label className="text-sm text-gray-400 block mb-1">Trials: {trials}</label>
-          <input type="range" min={100} max={3000} step={100} value={trials} onChange={e => setTrials(Number(e.target.value))} className="w-48" />
+          <label className="mb-1 block text-sm text-[var(--text-muted)]">Trials: {trials}</label>
+          <Slider value={[trials]} onValueChange={([v]) => setTrials(v)} min={100} max={3000} step={100} />
         </div>
         <div>
-          <label className="text-sm text-gray-400 block mb-1">Path Steps: {pathSteps}</label>
-          <input type="range" min={50} max={1200} step={50} value={pathSteps} onChange={e => setPathSteps(Number(e.target.value))} className="w-48" />
+          <label className="mb-1 block text-sm text-[var(--text-muted)]">Path Steps: {pathSteps}</label>
+          <Slider value={[pathSteps]} onValueChange={([v]) => setPathSteps(v)} min={50} max={1200} step={50} />
         </div>
-        <button onClick={() => setRerun(v => v + 1)} className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded text-sm mt-4">
+        <button onClick={() => setRerun(v => v + 1)} className="px-4 py-2 bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white rounded text-sm mt-4">
           Re-run
         </button>
       </div>
 
-      <div className="text-sm text-gray-300">
+      <div className="text-sm text-[var(--text-muted)]">
         Returned before cutoff: 1D {finite1d.length}/{trials} | 2D {finite2d.length}/{trials}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Plot
           data={[{ x: finite1d, type: 'histogram', marker: { color: '#60a5fa' }, nbinsx: 40 }]}
-          layout={{
-            ...darkLayout,
-            title: { text: 'First Return Distribution (1D)', font: { size: 13, color: '#9ca3af' } },
-            xaxis: { ...darkLayout.xaxis, title: { text: 'Return Step' } },
-            yaxis: { ...darkLayout.yaxis, title: { text: 'Count' } },
-          }}
+          layout={mergeLayout({
+            title: { text: 'First Return Distribution (1D)', font: { size: 13 } },
+            xaxis: { title: { text: 'Return Step' } },
+            yaxis: { title: { text: 'Count' } },
+            margin: { t: 40, r: 20, b: 50, l: 60 },
+          })}
           config={{ responsive: true, displayModeBar: false }}
           style={{ width: '100%', height: 320 }}
         />
         <Plot
           data={[{ x: finite2d, type: 'histogram', marker: { color: '#34d399' }, nbinsx: 40 }]}
-          layout={{
-            ...darkLayout,
-            title: { text: 'First Return Distribution (2D)', font: { size: 13, color: '#9ca3af' } },
-            xaxis: { ...darkLayout.xaxis, title: { text: 'Return Step' } },
-            yaxis: { ...darkLayout.yaxis, title: { text: 'Count' } },
-          }}
+          layout={mergeLayout({
+            title: { text: 'First Return Distribution (2D)', font: { size: 13 } },
+            xaxis: { title: { text: 'Return Step' } },
+            yaxis: { title: { text: 'Count' } },
+            margin: { t: 40, r: 20, b: 50, l: 60 },
+          })}
           config={{ responsive: true, displayModeBar: false }}
           style={{ width: '100%', height: 320 }}
         />
@@ -147,13 +141,13 @@ export function RandomWalkFirstReturn() {
             { x: path.x, y: path.y, type: 'scatter', mode: 'lines', line: { color: '#f59e0b', width: 1.5 } },
             { x: [0], y: [0], type: 'scatter', mode: 'markers', marker: { color: '#ef4444', size: 8 } },
           ]}
-          layout={{
-            ...darkLayout,
-            title: { text: 'Sample 2D Random Walk Path', font: { size: 13, color: '#9ca3af' } },
-            xaxis: { ...darkLayout.xaxis, title: { text: 'x' } },
-            yaxis: { ...darkLayout.yaxis, title: { text: 'y' }, scaleanchor: 'x', scaleratio: 1 },
+          layout={mergeLayout({
+            title: { text: 'Sample 2D Random Walk Path', font: { size: 13 } },
+            xaxis: { title: { text: 'x' } },
+            yaxis: { title: { text: 'y' }, scaleanchor: 'x', scaleratio: 1 },
             showlegend: false,
-          }}
+            margin: { t: 40, r: 20, b: 50, l: 60 },
+          })}
           config={{ responsive: true, displayModeBar: false }}
           style={{ width: '100%', height: 320 }}
         />

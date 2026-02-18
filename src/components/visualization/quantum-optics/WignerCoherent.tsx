@@ -3,6 +3,8 @@
 import dynamic from 'next/dynamic';
 import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { SimulationPanel, SimulationLabel, SimulationToggle } from '@/components/ui/simulation-panel';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -21,6 +23,7 @@ export default function WignerCoherent({}: SimulationProps) {
   const [realAlpha, setRealAlpha] = useState(2.0);
   const [imagAlpha, setImagAlpha] = useState(0.0);
   const [show3D, setShow3D] = useState(false);
+  const { mergeLayout } = usePlotlyTheme();
 
   const { xvec, pvec, W } = useMemo(() => {
     const plotRange = 6;
@@ -49,25 +52,18 @@ export default function WignerCoherent({}: SimulationProps) {
 
   const meanPhotonNumber = realAlpha ** 2 + imagAlpha ** 2;
 
-  const darkLayout = {
-    paper_bgcolor: 'rgba(0,0,0,0)',
-    plot_bgcolor: 'rgba(15,15,25,1)',
-    font: { color: '#9ca3af', family: 'system-ui' },
-    margin: { t: 40, r: 20, b: 50, l: 50 },
-  };
-
   return (
-    <div className="space-y-4 bg-[#151525] rounded-lg p-4 border border-[#2d2d44]">
-      <h3 className="text-lg font-semibold text-white">Coherent State Wigner Function</h3>
-      <p className="text-sm text-gray-400">
+    <SimulationPanel>
+      <h3 className="text-lg font-semibold text-[var(--text-strong)]">Coherent State Wigner Function</h3>
+      <p className="text-sm text-[var(--text-soft)]">
         {"|ψ⟩ = |α⟩ = D(α)|0⟩, where D(α) = exp(α·â† − α*·â). The Wigner function is a simple Gaussian centered at (x₀, p₀) in phase space."}
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="text-sm text-gray-300 mb-1 block">
+          <SimulationLabel>
             Re(alpha): {realAlpha.toFixed(2)}
-          </label>
+          </SimulationLabel>
           <Slider
             value={[realAlpha]}
             onValueChange={(val) => setRealAlpha(val[0])}
@@ -78,9 +74,9 @@ export default function WignerCoherent({}: SimulationProps) {
           />
         </div>
         <div>
-          <label className="text-sm text-gray-300 mb-1 block">
+          <SimulationLabel>
             Im(alpha): {imagAlpha.toFixed(2)}
-          </label>
+          </SimulationLabel>
           <Slider
             value={[imagAlpha]}
             onValueChange={(val) => setImagAlpha(val[0])}
@@ -92,24 +88,18 @@ export default function WignerCoherent({}: SimulationProps) {
         </div>
       </div>
 
-      <div className="text-sm text-gray-400">
+      <div className="text-sm text-[var(--text-muted)]">
         |alpha|^2 = n_bar = {meanPhotonNumber.toFixed(2)}
       </div>
 
-      <div className="flex gap-2">
-        <button
-          onClick={() => setShow3D(false)}
-          className={`px-3 py-1 rounded text-sm ${!show3D ? 'bg-blue-600 text-white' : 'bg-[#1e1e2e] text-gray-400'}`}
-        >
-          2D Contour
-        </button>
-        <button
-          onClick={() => setShow3D(true)}
-          className={`px-3 py-1 rounded text-sm ${show3D ? 'bg-blue-600 text-white' : 'bg-[#1e1e2e] text-gray-400'}`}
-        >
-          3D Surface
-        </button>
-      </div>
+      <SimulationToggle
+        options={[
+          { label: '2D Contour', value: '2d' },
+          { label: '3D Surface', value: '3d' },
+        ]}
+        value={show3D ? '3d' : '2d'}
+        onChange={(v) => setShow3D(v === '3d')}
+      />
 
       {!show3D ? (
         <Plot
@@ -124,23 +114,18 @@ export default function WignerCoherent({}: SimulationProps) {
               colorbar: { title: { text: 'W(q, p)' } },
             },
           ]}
-          layout={{
-            ...darkLayout,
+          layout={mergeLayout({
             title: { text: 'Coherent State W(q, p)' },
             xaxis: {
               title: { text: 'q' },
-              gridcolor: '#1e1e2e',
-              zerolinecolor: '#2d2d44',
             },
             yaxis: {
               title: { text: 'p' },
-              gridcolor: '#1e1e2e',
-              zerolinecolor: '#2d2d44',
               scaleanchor: 'x',
             },
-            width: undefined,
             height: 500,
-          }}
+            margin: { t: 40, r: 20, b: 50, l: 50 },
+          })}
           style={{ width: '100%', height: '500px' }}
           config={{ responsive: true, displayModeBar: false }}
         />
@@ -156,22 +141,20 @@ export default function WignerCoherent({}: SimulationProps) {
               colorbar: { title: { text: 'W(q,p)' } },
             },
           ]}
-          layout={{
-            ...darkLayout,
+          layout={mergeLayout({
             title: { text: 'Coherent State W(q, p) - 3D' },
             scene: {
-              xaxis: { title: { text: 'q' }, gridcolor: '#1e1e2e' },
-              yaxis: { title: { text: 'p' }, gridcolor: '#1e1e2e' },
-              zaxis: { title: { text: 'W(q,p)' }, gridcolor: '#1e1e2e' },
-              bgcolor: 'rgba(15,15,25,1)',
+              xaxis: { title: { text: 'q' } },
+              yaxis: { title: { text: 'p' } },
+              zaxis: { title: { text: 'W(q,p)' } },
             },
-            width: undefined,
             height: 500,
-          }}
+            margin: { t: 40, r: 20, b: 50, l: 50 },
+          })}
           style={{ width: '100%', height: '500px' }}
           config={{ responsive: true, displayModeBar: false }}
         />
       )}
-    </div>
+    </SimulationPanel>
   );
 }

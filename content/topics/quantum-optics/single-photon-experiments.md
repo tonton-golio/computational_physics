@@ -60,5 +60,3 @@ $$
 This demonstrates single-photon interference: the photon interferes with itself as it traverses both paths simultaneously in superposition. The which-path information determines whether interference is observed, illustrating the complementarity principle.
 
 For $N$-photon states or squeezed light inputs, the interferometer can achieve phase sensitivity beyond the **shot-noise limit** $\Delta\phi \sim 1/\sqrt{N}$, approaching the **Heisenberg limit** $\Delta\phi \sim 1/N$.
-
-[[simulation wigner-coherent]]

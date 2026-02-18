@@ -1,136 +1,115 @@
-# Dynamics
+# The Heartbeat Equation — Dynamics of Continua
 
+## One Equation to Rule Them All
 
+Here's something beautiful: whether you're modeling a glacier grinding through a valley, honey dripping off a spoon, or a steel beam vibrating after being struck — the fundamental equation is *the same*. It's the Cauchy momentum equation, and it's the **heartbeat** of continuum mechanics.
 
-## Introduction
+Everything we've done so far — stress tensors, strain tensors, Hooke's law — was building toward this. Now we put it all together.
 
-Sample text
+## The Ingredients — Mass, Momentum, and Forces
 
+Before we get to the big equation, let's make sure we know what we're tracking. For a chunk of material occupying volume $V$:
 
-## Definitions
-Mass definition
+**Mass** — how much stuff is there:
 $$
-M = \int_V \rho dV
-$$
-
-Momentum definition
-$$
-P = \int_V \rho \vec{v} dV
-$$
-where v is the specific momentum density, and combined with $\rho$ gives the momentum density
-
-
-Angular momentum definition
-$$
-L = \int_V \vec{x} \times \rho \vec{v} dV
+M = \int_V \rho \, dV
 $$
 
-Kinetic energy
+**Momentum** — how much "oomph" does it carry:
 $$
-K = \int_V = \frac{1}{2}  \rho v^2 dV
-$$
-
-Conservation of mass
-$$
-\frac{d}{dt} \int_V \rho dV = - \int_S \rho v \cdot n dA 
+\mathbf{P} = \int_V \rho \, \mathbf{v} \, dV
 $$
 
-Using Gauss divergence theorem gives:
-
+**Angular momentum** — how much is it spinning:
 $$
-\frac{\partial \rho}{\partial t} + \nabla \cdot (\rho \vec{v}) dV = 0
-$$
-$$
-= \frac{\partial \rho}{\partial t} + \nabla \cdot (\rho \vec{v})
+\mathbf{L} = \int_V \mathbf{x} \times \rho \, \mathbf{v} \, dV
 $$
 
+**Kinetic energy** — how much energy is in the motion:
+$$
+K = \int_V \frac{1}{2} \rho \, v^2 \, dV
+$$
 
+## Conservation of Mass — Stuff Doesn't Disappear
 
-big D means derivative while travelling along some speed (With respect to a new reference). Named material derivative, comoving derivative. (Not yet defined)
+The simplest conservation law: the mass in a volume $V$ can only change if stuff flows in or out through the surface $S$:
+$$
+\frac{d}{dt} \int_V \rho \, dV = -\oint_S \rho \, \mathbf{v} \cdot \hat{n} \, dA
+$$
+
+Using the divergence theorem to convert the surface integral into a volume integral:
+$$
+\frac{\partial \rho}{\partial t} + \nabla \cdot (\rho \, \mathbf{v}) = 0
+$$
+
+This is the **continuity equation**. It says: the rate at which density changes at a point equals the rate at which mass flows away from that point. Nothing more, nothing less.
+
+## The Material Derivative — Riding the Flow
+
+Here's a subtlety that trips up everyone the first time. There are two ways to watch a flowing river:
+
+- **Stand on the bank** (Eulerian view): you watch the water flow past you. At your fixed location, the velocity changes over time as different parcels of water arrive.
+- **Jump in a boat** (Lagrangian view): you ride along with the water. The velocity you experience changes because you're moving to new locations.
+
+The **material derivative** $D/Dt$ captures the boat-rider's perspective:
+$$
+\frac{Dq}{Dt} = \frac{\partial q}{\partial t} + (\mathbf{v} \cdot \nabla) q
+$$
+
+The first term is the *local* change (what happens at your fixed point). The second term is the *advective* change (what changes because you moved to a new location). Together, they give the total rate of change *experienced by a moving parcel of material*.
+
+Think of it this way: imagine you're in a hot air balloon drifting east. The temperature at your location changes for two reasons: (1) the air around you might be heating up (local change), and (2) you're drifting into a region that was already warmer (advective change).
+
+In the Lagrangian picture, conservation of mass becomes elegantly simple:
 $$
 \frac{DM}{Dt} = 0
 $$
 
+And the material derivative of density:
 $$
-\frac{DP}{Dt} = - \vec{F}
-$$
-
-Q is some macroscopic quantity (Fx. temperature)
-$$
-Q = \int_V \rho q dV
-$$
-where q is the microscopic quantity
-
-$$
-\frac{DQ}{Dt}= int_V \rho \frac{Dq}{Dt}dV
+\frac{D\rho}{Dt} = -\rho (\nabla \cdot \mathbf{v})
 $$
 
+For an incompressible material ($\nabla \cdot \mathbf{v} = 0$), the density of each parcel doesn't change as it moves — which makes sense, since incompressibility means volumes don't change.
+
+## Transport of Any Quantity — The General Recipe
+
+The material derivative works for *any* quantity, not just density. If $q$ is some specific (per-unit-mass) quantity like temperature or chemical concentration, then the total amount in a volume is $Q = \int_V \rho \, q \, dV$, and:
 $$
-= \frac{\partial Q}{\partial t} + \dot{Q}_{Boundary}
+\frac{DQ}{Dt} = \int_V \rho \frac{Dq}{Dt} \, dV
 $$
 
-Imagine a box, with various q's. Imagine the box moving, how much q is lost and how much is gained is given by the boundary.
-
+This is the general transport equation. Imagine a box full of some quantity $q$, drifting with the flow. What enters and leaves through the boundaries changes $Q$:
 $$
-\frac{\partial}{\partial t} \int_V \rho q dV + \int_S \rho q(v\cdot n)dA
-$$
-$$
-=\frac{\partial}{\partial t} \int_V \rho q dV+ \int_V \nabla \cdot (\rho q \vec{v}) dV
-$$
-$$
-\frac{\partial (\rho q)}{\partial t} + \nabla \cdot (\rho q \vec{v})
+\frac{\partial (\rho q)}{\partial t} + \nabla \cdot (\rho q \, \mathbf{v}) = \rho \frac{Dq}{Dt}
 $$
 
-$$
-= q (\frac{\partial \rho}{\partial t} + \nabla (\rho \vec{v})) + \rho (\frac{\partial q}{\partial t}+ (\vec{v}\cdot \nabla)q)
-$$
-The first term becomes zero, because of mass conservation leaving
+This works because the mass conservation terms cancel, leaving only the "ride along" derivative.
 
-$$
-\frac{Dq}{Dt}=\rho (\frac{\partial q}{\partial t}+ (\vec{v}\cdot \nabla)q)
-$$
-The first term defines the local derivative and the second describes the change as the "box" is moving.
-If we imagine flowspeed, the second describes the acceleration
+## Cauchy's Equation — The Heartbeat
 
-The Lagrangian perspective is the moving perspective, the Eularian perspective is the static one.
-
+Now we're ready. Newton's second law says momentum changes equal forces. For a continuum:
 $$
-\frac{Dp}{Dt}=\vec{F}
+\rho \frac{D\mathbf{v}}{Dt} = \mathbf{f} + \nabla \cdot \sigma
 $$
 
-$$
-\int_V \rho \frac{D\vec{v}}{Dt} dV
-$$
+That's it. That's the heartbeat equation. Let's unpack it:
 
-$$
-\frac{D\rho}{Dt}= \frac{\partial \rho}{\partial t} + (\vec{v}\cdot \vec{nabla})\rho
-$$
-$$
-\frac{\partial \rho}{\partial t} +  \nabla \cdot (\rho v)- \rho(\nabla \cdot v)
-$$
+- **Left side**: mass per unit volume times acceleration (in the material derivative sense — following the flow).
+- **$\mathbf{f}$**: body forces, like gravity ($\rho \, \mathbf{g}$).
+- **$\nabla \cdot \sigma$**: the divergence of the stress tensor — the net force per unit volume from all the internal stresses acting on the material.
 
-The first and second term becomes zero because of mass conservation
-giving
+This is **Cauchy's equation**, and it's universal. It doesn't care whether you're dealing with a solid, a liquid, or anything in between. The difference between solids and fluids comes in *later*, when you specify what $\sigma$ looks like:
 
-$$
-\frac{D\rho}{Dt}= - \rho (\nabla \cdot \vec{v})
-$$
+- **For an elastic solid**: $\sigma = \lambda \, \text{tr}(\varepsilon) \, \mathbf{I} + 2\mu \, \varepsilon$ → you get the **Navier-Cauchy equation**.
+- **For a viscous fluid**: $\sigma = -p\,\mathbf{I} + 2\eta \, \dot{\varepsilon}$ → you get the **Navier-Stokes equation**.
 
-$$
-\frac{Dx}{Dt}= (v \cdot \nabla) \vec{x}= v
-$$
+Same heartbeat. Different constitutive law. That's the deep unity of continuum mechanics.
 
-$$
-\vec{v}=\frac{D\vec{u}}{Dt}=\frac{\partial \vec{U}}{\partial} + (\vec{v}\cdot \nabla)\vec{u}
-$$
+## What We Just Learned
 
-## __Cauchy Equation
-$$
-\rho \frac{D\vec{v}}{Dt}=f*
-$$
-Where f* is the body forces plus the divergence of the stress tensor
-writing out the gives
+Conservation of mass gives the continuity equation. The material derivative lets us track quantities while riding along with the flow. Cauchy's equation is Newton's second law for continua — and it's the same equation for both solids and fluids. The only thing that changes is the constitutive relation between stress and strain.
 
-$$
-\rho \frac{\partial}
-$$
+## What's Next
+
+Now we know the general equation of motion. Let's see what happens when we specialize to fluids — starting with fluids that aren't moving at all. Pressure, buoyancy, floating icebergs: fluids at rest.

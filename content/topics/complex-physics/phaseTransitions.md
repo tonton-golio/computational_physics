@@ -1,210 +1,83 @@
 # Phase Transitions
 
+Pick up a refrigerator magnet. It sticks to your fridge because trillions of tiny atomic magnets inside it have collectively decided to point the same direction. Now heat that magnet with a blowtorch. At first nothing much changes. But at a certain temperature — the Curie temperature — the magnet suddenly stops being a magnet. The atomic spins are still there, still interacting, but the thermal jiggling has overwhelmed their desire to align. Above that temperature it is just a lump of iron with no north or south pole. Below it, the whole thing points the same way.
+
+That sudden appearance of a preferred direction is what we call an **order parameter** — a quantity that is zero in the disordered phase and nonzero in the ordered phase. For a magnet, the order parameter is the magnetization $m$. For a liquid-gas transition, it is the density difference. The order parameter is the signature that tells you something dramatic has happened.
+
 ## Ising Model Simulation
 
-The Ising model demonstrates phase transitions in magnetic systems. Watch how the system orders below the critical temperature.
+Watch the Ising model in action. At high temperature, the spins are a random mess — the magnetization is zero on average. As you cool toward $T_c$, domains of aligned spins start forming and growing. At $T_c$ itself, the fluctuations are enormous: the system cannot decide which way to point. Below $T_c$, one direction wins, and the magnetization becomes nonzero. That is the phase transition.
 
 [[simulation ising-model]]
 
+In this simulation, you are watching millions of spins make a collective decision — no leader, no blueprint, just nearest-neighbor interactions. The fact that global order emerges from purely local rules is one of the deepest surprises in physics.
+
 ## Mean-field Hamiltonian
-By approximating the energy acting on a spin in the 1D Ising model, not as the sum of nearest neighbors but instead the mean of the chain, we may simplify interesting terms. We obtain the mean-field Hamiltonian,
 
-$$
-\begin{align*}
-    \mathcal{H}_\mathrm{MF}
-    &=
-    \frac{J N z}{2} m^2
-    - \left( J z m + h \right) \sum_i s_i.
-\end{align*}
-$$
-Here $z$ is number of nearest-neighbor spins and division by 2 is
-for avoiding overlap.
-
-## Mean-field Hamiltonian (derivation)
-#### Hamiltonian
-The Hamiltonian of the Ising model is
+Can we build a simple theory of this transition? The exact Hamiltonian of the Ising model couples every spin to its neighbors:
 $$
     \mathcal{H}
     =
-    -J \sum_{\left<i j\right>} s_i s_j - h \sum_i s_i.
+    -J \sum_{\langle i j \rangle} s_i s_j - h \sum_i s_i.
 $$
 
-We cannot caliculate partition function directly except for
-1D-lattice case and 2D-lattice case.
-However, by approximating Hamiltonian with mean field, we can
-analytically obtain partition function.
-Let's approxiomate Hamiltonian.
-#### Ignoring high-order fluctuation
-First, let's replace $s_i$ with mean $\left< s_i \right>$ and
-fluctuation from mean $\delta s_i = s_i - \left< s_i \right>$.
+The trouble is the $s_i s_j$ coupling — it ties every spin to its neighbors, and those neighbors to *their* neighbors, creating a tangled web of correlations.
+
+The **mean-field approximation** cuts this knot with a beautifully simple idea: instead of feeling the actual fluctuating spins of its neighbors, each spin feels only the *average* field from all of them. Imagine being in a crowd where everyone is trying to face the same direction. You do not look at each individual — you just feel the general pull of the crowd.
+
+## Mean-field Hamiltonian (derivation)
+
+To make the mean-field idea precise, we decompose each spin into its mean and a fluctuation:
 $$
-\begin{align*}
-    s_i
-    &=
-    \left< s_i \right> + \delta s_i
-    \\&=
-    \left< s_i \right>
-    + \left( s_i - \left< s_i \right> \right)
-\end{align*}
+    s_i = \langle s_i \rangle + \delta s_i = m + \delta s_i,
 $$
-Here $\left< s_i \right>$ means
-$$
-    \left< s_i \right>
-    =
-    \frac{1}{Z} \sum_{n=1}^{2^N} s_i \exp \left( -\beta E_n \right).
-$$
-$n$ is index of state
-(total number of all state is $2^N$, $N$ is number of spin).
-Inside of sum of first term of Hamiltonian becomes
+where $m = \langle s_i \rangle$ is the magnetization per spin (all spins are equivalent by symmetry).
+
+The product of two neighboring spins becomes:
 $$
 \begin{align*}
     s_i s_j
     &=
-    \left(
-        \left< s_i \right> + \delta s_i
-    \right)
-    \left(
-        \left< s_j \right> + \delta s_j
-    \right)
+    (m + \delta s_i)(m + \delta s_j)
     \\&=
-    \left< s_i \right> \left< s_j \right>
-    +
-    \left< s_i \right> \delta s_j
-    +
-    \delta s_i \left< s_j \right>
-    +
-    \delta s_i \delta s_j
+    m^2 + m \, \delta s_j + \delta s_i \, m + \delta s_i \, \delta s_j
     \\& \approx
-    \left< s_i \right> \left< s_j \right>
-    +
-    \left< s_i \right> \delta s_j
-    +
-    \delta s_i \left< s_j \right>
+    m^2 + m(s_j - m) + (s_i - m) m
     \\&=
-    \left< s_i \right> \left< s_j \right>
-    +
-    \left< s_i \right>
-    \left(
-        s_j - \left< s_j \right>
-    \right)
-    +
-    \left(
-        s_i - \left< s_i \right>
-    \right)
-    \left< s_i \right>
-    \\&=
-    \left< s_i \right> \left< s_j \right>
-    +
-    \left< s_i \right>
-    \left(
-        s_j - \left< s_j \right>
-    \right)
-    +
-    \left(
-        s_i - \left< s_i \right>
-    \right)
-    \left< s_i \right>
-    \\&=
-    -\left< s_i \right>^2
-    +
-    \left< s_i \right>
-    \left(
-        s_i + s_j
-    \right)
+    -m^2 + m(s_i + s_j).
 \end{align*}
 $$
-We ignore the fluctuation with second order.
-We also used
-$$
-\left< s_1 \right>
-= \left< s_2 \right>
-= \cdots
-= \left< s_i \right>
-= \cdots
-= \left< s_N \right>
-$$
-because all spins are equivalent.
 
-What we need to notice is that magnetization in equilibrium state
-is equivalent to mean of spin $\left< s_i \right>$.
-$$
-\begin{align*}
-    m
-    &=
-    \frac{1}{N} \sum_{i=1}^N \left< s_i \right>
-    \\&=
-    \frac{1}{N} \left< s_i \right> \sum_{i=1}^N
-    \\&=
-    \frac{1}{N} \left< s_i \right> N
-    \\&=
-    \left< s_i \right>
-\end{align*}
-$$
-Thus we can replace $\left< s_i \right>$ with $m$.
-$$
-    s_i s_j
-    \approx
-    - m^2 + m(s_i + s_j)
-$$
-#### Mean-field Hamiltonian
-Then, mean-field Hamiltonian $\mathcal{H}_\mathrm{MF}$ beocomes
-$$
-\begin{align*}
-    \mathcal{H}_\mathrm{MF}
-    &=
-    -J \sum_{\left<i j\right>}
-    \left(- m^2 + m(s_i + s_j) \right)
-    - h \sum_i s_i
-    \\&=
-    J m^2 \sum_{\left<i j\right>}
-    - J \sum_{\left<i j\right>} m(s_i + s_j)
-    - h \sum_i s_i
-\end{align*}
-$$
-Let's think about first term.
-$$
-\begin{align*}
-    J m^2 \sum_{\left<i j\right>}
-    &=
-    J m^2 \frac{1}{2}
-    \sum_{i} \sum_{\left<j\right>}
-    \\&=
-    J m^2 \frac{1}{2}
-    \sum_{i=1}^N z
-    \\&=
-    \frac{J N z}{2} m^2
-\end{align*}
-$$
-Here $z$ is number of nearest-neighbor spins and division by 2 is
-for avoiding overlap.
+We dropped the $\delta s_i \, \delta s_j$ term — this is the mean-field approximation. We are saying that the correlated fluctuations between two spins are small enough to ignore. (This is a good approximation when each spin has many neighbors, and a terrible one in low dimensions — but we will worry about that later.)
 
-Move on to second term.
+Substituting into the Hamiltonian and carefully handling the nearest-neighbor sums (each spin has $z$ neighbors, and each pair is counted once):
+
+**First term:**
 $$
-\begin{align*}
-    - J \sum_{\left<i j\right>} m(s_i + s_j)
-    &=
-    - J m
-    \left(
-        \sum_{\left<i j\right>} s_i + \sum_{\left<i j\right>} s_j
-    \right)
-    \\&=
-    - 2 J m \sum_{\left<i j\right>} s_i
-    \\&=
-    - 2 J m \frac{1}{2} \sum_{i} s_i \sum_{\left<j\right>}
-    \\&=
-    - J z m  \sum_{i} s_i
-\end{align*}
+    J m^2 \sum_{\langle i j \rangle} = \frac{J N z}{2} m^2.
 $$
-Finally, mean-field Hamiltonian becomes
+
+**Second term:**
+$$
+    - J \sum_{\langle i j \rangle} m(s_i + s_j) = - J z m \sum_{i} s_i.
+$$
+
+**Mean-field Hamiltonian:**
 $$
 \begin{align*}
     \mathcal{H}_\mathrm{MF}
     &=
     \frac{J N z}{2} m^2
-    - J z m  \sum_{i} s_i
-    - h \sum_i s_i
-    \\&=
-    \frac{J N z}{2} m^2
-    - \left( J z m + h \right) \sum_i s_i
+    - (Jzm + h) \sum_i s_i.
 \end{align*}
 $$
+
+Look at what happened: the spins have decoupled! Each spin $s_i$ now sees an effective field $(Jzm + h)$ that depends on the *average* magnetization $m$, not on the actual values of its neighbors. This makes the problem exactly solvable — each spin is independent, and we just need to find $m$ self-consistently.
+
+> **Key Intuition.** A phase transition is the moment when a system collectively chooses an ordered state. The order parameter measures the degree of this collective choice. Mean-field theory captures the essential physics by replacing the complicated many-body problem with a simpler one where each particle feels only the average effect of all the others.
+
+> **Challenge.** Here is a thought experiment. Imagine 100 people in a room, each trying to decide whether to stand or sit. If they make the decision independently, roughly half will stand and half will sit. But now add a rule: each person looks at their two nearest neighbors and feels a slight urge to do the same thing. Can you convince yourself that below some "critical level of conformity," the crowd splits 50/50, but above it, nearly everyone stands (or sits)? That is a phase transition in a social system.
+
+---
+
+*We have the mean-field Hamiltonian, and it looks clean and solvable. But what actually comes out of it? What is the critical temperature? What does the free energy look like? And what goes wrong with the stability analysis near the transition? Let us find out in the mean-field results.*

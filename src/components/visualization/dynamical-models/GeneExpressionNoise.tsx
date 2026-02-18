@@ -2,6 +2,8 @@
 
 import React, { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
+import { Slider } from '@/components/ui/slider';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -17,6 +19,7 @@ export default function GeneExpressionNoise() {
   const [gpro, setGpro] = useState(0.1);
   const [nRepressor, setNRepressor] = useState(0);
   const [seed, setSeed] = useState(0);
+  const { mergeLayout } = usePlotlyTheme();
 
   const { tVals, mRNATrace, proteinTrace, repTrace, stats } = useMemo(() => {
     // Seeded pseudo-random number generator (simple LCG)
@@ -161,55 +164,42 @@ export default function GeneExpressionNoise() {
   }, [kmRNA, gmRNA, kpro, gpro, nRepressor, seed]);
 
   const commonLayout = {
-    paper_bgcolor: 'rgba(0,0,0,0)',
-    plot_bgcolor: 'rgba(15,15,25,1)',
-    font: { color: '#9ca3af' },
     margin: { t: 40, b: 50, l: 60, r: 20 },
     xaxis: {
       title: { text: 'Time' },
-      gridcolor: 'rgba(75,75,100,0.3)',
-      zerolinecolor: 'rgba(75,75,100,0.5)',
     },
-    yaxis: {
-      gridcolor: 'rgba(75,75,100,0.3)',
-      zerolinecolor: 'rgba(75,75,100,0.5)',
-    },
+    yaxis: {},
   };
 
   return (
-    <div className="w-full bg-[#151525] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-white">Stochastic Gene Expression (Gillespie Algorithm)</h3>
+    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
+      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Stochastic Gene Expression (Gillespie Algorithm)</h3>
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
         <div>
-          <label className="text-white text-sm">mRNA production rate k_mRNA: {kmRNA.toFixed(1)}</label>
-          <input type="range" min={1} max={50} step={1} value={kmRNA}
-            onChange={(e) => setKmRNA(parseFloat(e.target.value))} className="w-full" />
+          <label className="mb-1 block text-sm text-[var(--text-muted)]">mRNA production rate k_mRNA: {kmRNA.toFixed(1)}</label>
+          <Slider value={[kmRNA]} onValueChange={([v]) => setKmRNA(v)} min={1} max={50} step={1} />
         </div>
         <div>
-          <label className="text-white text-sm">mRNA degradation rate g_mRNA: {gmRNA.toFixed(1)}</label>
-          <input type="range" min={0.1} max={5} step={0.1} value={gmRNA}
-            onChange={(e) => setGmRNA(parseFloat(e.target.value))} className="w-full" />
+          <label className="mb-1 block text-sm text-[var(--text-muted)]">mRNA degradation rate g_mRNA: {gmRNA.toFixed(1)}</label>
+          <Slider value={[gmRNA]} onValueChange={([v]) => setGmRNA(v)} min={0.1} max={5} step={0.1} />
         </div>
         <div>
-          <label className="text-white text-sm">Protein production rate k_pro: {kpro.toFixed(1)}</label>
-          <input type="range" min={0.1} max={5} step={0.1} value={kpro}
-            onChange={(e) => setKpro(parseFloat(e.target.value))} className="w-full" />
+          <label className="mb-1 block text-sm text-[var(--text-muted)]">Protein production rate k_pro: {kpro.toFixed(1)}</label>
+          <Slider value={[kpro]} onValueChange={([v]) => setKpro(v)} min={0.1} max={5} step={0.1} />
         </div>
         <div>
-          <label className="text-white text-sm">Protein degradation rate g_pro: {gpro.toFixed(2)}</label>
-          <input type="range" min={0.01} max={1} step={0.01} value={gpro}
-            onChange={(e) => setGpro(parseFloat(e.target.value))} className="w-full" />
+          <label className="mb-1 block text-sm text-[var(--text-muted)]">Protein degradation rate g_pro: {gpro.toFixed(2)}</label>
+          <Slider value={[gpro]} onValueChange={([v]) => setGpro(v)} min={0.01} max={1} step={0.01} />
         </div>
         <div>
-          <label className="text-white text-sm">Number of Repressors: {nRepressor}</label>
-          <input type="range" min={0} max={50} step={1} value={nRepressor}
-            onChange={(e) => setNRepressor(parseInt(e.target.value))} className="w-full" />
+          <label className="mb-1 block text-sm text-[var(--text-muted)]">Number of Repressors: {nRepressor}</label>
+          <Slider value={[nRepressor]} onValueChange={([v]) => setNRepressor(v)} min={0} max={50} step={1} />
         </div>
         <div>
           <button
             onClick={() => setSeed((s) => s + 1)}
-            className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm"
+            className="mt-4 px-4 py-2 bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white rounded text-sm"
           >
             Re-run simulation
           </button>
@@ -224,12 +214,12 @@ export default function GeneExpressionNoise() {
               line: { color: '#3b82f6', width: 1.5 }, name: 'mRNA',
             },
           ] as any}
-          layout={{
+          layout={mergeLayout({
             ...commonLayout,
             height: 300,
-            title: { text: 'mRNA over time', font: { color: '#9ca3af', size: 14 } },
+            title: { text: 'mRNA over time' },
             yaxis: { ...commonLayout.yaxis, title: { text: 'mRNA count' } },
-          }}
+          })}
           config={{ displayModeBar: false }}
           style={{ width: '100%' }}
         />
@@ -240,12 +230,12 @@ export default function GeneExpressionNoise() {
               line: { color: '#ef4444', width: 1.5 }, name: 'Protein',
             },
           ] as any}
-          layout={{
+          layout={mergeLayout({
             ...commonLayout,
             height: 300,
-            title: { text: 'Protein over time', font: { color: '#9ca3af', size: 14 } },
+            title: { text: 'Protein over time' },
             yaxis: { ...commonLayout.yaxis, title: { text: 'Protein count' } },
-          }}
+          })}
           config={{ displayModeBar: false }}
           style={{ width: '100%' }}
         />
@@ -259,37 +249,37 @@ export default function GeneExpressionNoise() {
               line: { color: '#22c55e', width: 1.5 }, name: 'Free Repressor',
             },
           ] as any}
-          layout={{
+          layout={mergeLayout({
             ...commonLayout,
             height: 250,
-            title: { text: 'Free repressor over time', font: { color: '#9ca3af', size: 14 } },
+            title: { text: 'Free repressor over time' },
             yaxis: { ...commonLayout.yaxis, title: { text: 'Repressor count' } },
-          }}
+          })}
           config={{ displayModeBar: false }}
           style={{ width: '100%' }}
         />
       )}
 
       <div className="mt-4 grid grid-cols-2 md:grid-cols-5 gap-2 text-sm">
-        <div className="bg-[#0a0a15] rounded p-3">
-          <div className="text-gray-500">mRNA avg</div>
-          <div className="text-white font-mono">{stats.mrnaMean}</div>
+        <div className="bg-[var(--surface-1)] border border-[var(--border-strong)] rounded p-3">
+          <div className="text-[var(--text-soft)]">mRNA avg</div>
+          <div className="text-[var(--text-strong)] font-mono">{stats.mrnaMean}</div>
         </div>
-        <div className="bg-[#0a0a15] rounded p-3">
-          <div className="text-gray-500">Protein avg</div>
-          <div className="text-white font-mono">{stats.proMean}</div>
+        <div className="bg-[var(--surface-1)] border border-[var(--border-strong)] rounded p-3">
+          <div className="text-[var(--text-soft)]">Protein avg</div>
+          <div className="text-[var(--text-strong)] font-mono">{stats.proMean}</div>
         </div>
-        <div className="bg-[#0a0a15] rounded p-3">
-          <div className="text-gray-500">Protein var</div>
-          <div className="text-white font-mono">{stats.proVar}</div>
+        <div className="bg-[var(--surface-1)] border border-[var(--border-strong)] rounded p-3">
+          <div className="text-[var(--text-soft)]">Protein var</div>
+          <div className="text-[var(--text-strong)] font-mono">{stats.proVar}</div>
         </div>
-        <div className="bg-[#0a0a15] rounded p-3">
-          <div className="text-gray-500">Protein std</div>
-          <div className="text-white font-mono">{stats.proStd}</div>
+        <div className="bg-[var(--surface-1)] border border-[var(--border-strong)] rounded p-3">
+          <div className="text-[var(--text-soft)]">Protein std</div>
+          <div className="text-[var(--text-strong)] font-mono">{stats.proStd}</div>
         </div>
-        <div className="bg-[#0a0a15] rounded p-3">
-          <div className="text-gray-500">Noise (CV)</div>
-          <div className="text-white font-mono">{stats.proNoise}</div>
+        <div className="bg-[var(--surface-1)] border border-[var(--border-strong)] rounded p-3">
+          <div className="text-[var(--text-soft)]">Noise (CV)</div>
+          <div className="text-[var(--text-strong)] font-mono">{stats.proNoise}</div>
         </div>
       </div>
     </div>

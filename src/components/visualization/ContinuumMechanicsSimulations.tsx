@@ -3,6 +3,8 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import Plotly from 'react-plotly.js';
 import { Data, Layout } from 'plotly.js';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { Slider } from '@/components/ui/slider';
 import StressStrainCurve from './continuum-mechanics/StressStrainCurve';
 import StressTensor from './continuum-mechanics/StressTensor';
 import ElasticWave from './continuum-mechanics/ElasticWave';
@@ -20,6 +22,7 @@ function StressStrainSim({ }: SimulationProps) {
     maxStrain: 0.05, // 5%
     numPoints: 100
   });
+  const { mergeLayout } = usePlotlyTheme();
 
   // Bisection method to solve for sigma given epsilon
   const solveSigma = useCallback((epsilon: number, E: number, alpha: number, n: number): number => {
@@ -73,68 +76,61 @@ function StressStrainSim({ }: SimulationProps) {
       }
     ];
 
-    const layout: Partial<Layout> = {
+    const layout: Partial<Layout> = mergeLayout({
       title: { text: 'Stress-Strain Curve' },
       xaxis: { title: { text: 'Strain (\u03b5)' } },
       yaxis: { title: { text: 'Stress (\u03c3) [GPa]' } },
       height: 500,
-      paper_bgcolor: 'rgba(0,0,0,0)',
-      plot_bgcolor: 'rgba(15,15,25,1)',
-      font: { color: '#9ca3af' }
-    };
+    });
 
     return { data, layout };
-  }, [params, solveSigma]);
+  }, [params, solveSigma, mergeLayout]);
 
   return (
-    <div className="w-full bg-[#151525] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-white">Stress-Strain Simulation</h3>
+    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
+      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Stress-Strain Simulation</h3>
       <div className="grid grid-cols-2 gap-4 mb-4">
         <div>
-          <label className="text-white">Young&apos;s Modulus (E) [GPa]: {params.E}</label>
-          <input
-            type="range"
+          <label className="text-[var(--text-strong)]">Young&apos;s Modulus (E) [GPa]: {params.E}</label>
+          <Slider
             min={50}
             max={500}
             step={10}
-            value={params.E}
-            onChange={(e) => setParams(p => ({ ...p, E: Number(e.target.value) }))}
+            value={[params.E]}
+            onValueChange={([v]) => setParams(p => ({ ...p, E: v }))}
             className="w-full"
           />
         </div>
         <div>
-          <label className="text-white">Hardening Coefficient (&alpha;): {params.alpha.toFixed(3)}</label>
-          <input
-            type="range"
+          <label className="text-[var(--text-strong)]">Hardening Coefficient (&alpha;): {params.alpha.toFixed(3)}</label>
+          <Slider
             min={0.001}
             max={0.01}
             step={0.001}
-            value={params.alpha}
-            onChange={(e) => setParams(p => ({ ...p, alpha: Number(e.target.value) }))}
+            value={[params.alpha]}
+            onValueChange={([v]) => setParams(p => ({ ...p, alpha: v }))}
             className="w-full"
           />
         </div>
         <div>
-          <label className="text-white">Hardening Exponent (n): {params.n}</label>
-          <input
-            type="range"
+          <label className="text-[var(--text-strong)]">Hardening Exponent (n): {params.n}</label>
+          <Slider
             min={1}
             max={10}
             step={0.5}
-            value={params.n}
-            onChange={(e) => setParams(p => ({ ...p, n: Number(e.target.value) }))}
+            value={[params.n]}
+            onValueChange={([v]) => setParams(p => ({ ...p, n: v }))}
             className="w-full"
           />
         </div>
         <div>
-          <label className="text-white">Max Strain: {params.maxStrain.toFixed(3)}</label>
-          <input
-            type="range"
+          <label className="text-[var(--text-strong)]">Max Strain: {params.maxStrain.toFixed(3)}</label>
+          <Slider
             min={0.01}
             max={0.1}
             step={0.005}
-            value={params.maxStrain}
-            onChange={(e) => setParams(p => ({ ...p, maxStrain: Number(e.target.value) }))}
+            value={[params.maxStrain]}
+            onValueChange={([v]) => setParams(p => ({ ...p, maxStrain: v }))}
             className="w-full"
           />
         </div>
@@ -144,7 +140,7 @@ function StressStrainSim({ }: SimulationProps) {
         layout={generateData.layout}
         config={{ displayModeBar: false }}
       />
-      <div className="mt-4 text-sm text-gray-300">
+      <div className="mt-4 text-sm text-[var(--text-muted)]">
         <p>The linear curve follows Hooke&apos;s law: &sigma; = E&epsilon;</p>
         <p>The nonlinear curve uses the Ramberg-Osgood model: &epsilon; = &sigma;/E + &alpha;(&sigma;/E)^n</p>
       </div>
@@ -163,6 +159,7 @@ function FEM1DBarSim({ }: SimulationProps) {
   const [u, setU] = useState<number[]>([]);
   const [x, setX] = useState<number[]>([]);
   const [strains, setStrains] = useState<number[]>([]);
+  const { mergeLayout } = usePlotlyTheme();
 
   function gaussElimination(A: number[][], b: number[]): number[] {
     const n = A.length;
@@ -301,76 +298,70 @@ function FEM1DBarSim({ }: SimulationProps) {
   ];
 
   return (
-    <div className="w-full bg-[#151525] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-white">FEM 1D Bar Simulation</h3>
-      <p className="text-gray-300 mb-4">Simulate a 1D bar fixed at left end, with axial force at right end.</p>
+    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
+      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">FEM 1D Bar Simulation</h3>
+      <p className="text-[var(--text-muted)] mb-4">Simulate a 1D bar fixed at left end, with axial force at right end.</p>
       <div className="grid grid-cols-3 gap-4 mb-4">
         <div>
-          <label className="text-white">Elements (ne): {ne}</label>
-          <input
-            type="range"
-            min="1"
-            max="20"
-            value={ne}
-            onChange={e => setNe(Number(e.target.value))}
+          <label className="text-[var(--text-strong)]">Elements (ne): {ne}</label>
+          <Slider
+            min={1}
+            max={20}
+            value={[ne]}
+            onValueChange={([v]) => setNe(v)}
             className="w-full"
           />
         </div>
         <div>
-          <label className="text-white">Length L: {L}</label>
-          <input
-            type="range"
-            min="0.1"
-            max="10"
-            step="0.1"
-            value={L}
-            onChange={e => setL(Number(e.target.value))}
+          <label className="text-[var(--text-strong)]">Length L: {L}</label>
+          <Slider
+            min={0.1}
+            max={10}
+            step={0.1}
+            value={[L]}
+            onValueChange={([v]) => setL(v)}
             className="w-full"
           />
         </div>
         <div>
-          <label className="text-white">Area A: {A}</label>
-          <input
-            type="range"
-            min="0.1"
-            max="10"
-            step="0.1"
-            value={A}
-            onChange={e => setA(Number(e.target.value))}
+          <label className="text-[var(--text-strong)]">Area A: {A}</label>
+          <Slider
+            min={0.1}
+            max={10}
+            step={0.1}
+            value={[A]}
+            onValueChange={([v]) => setA(v)}
             className="w-full"
           />
         </div>
         <div>
-          <label className="text-white">Young&apos;s E: {E}</label>
-          <input
-            type="range"
-            min="1"
-            max="100"
-            value={E}
-            onChange={e => setE(Number(e.target.value))}
+          <label className="text-[var(--text-strong)]">Young&apos;s E: {E}</label>
+          <Slider
+            min={1}
+            max={100}
+            value={[E]}
+            onValueChange={([v]) => setE(v)}
             className="w-full"
           />
         </div>
         <div>
-          <label className="text-white">Force P: {P}</label>
-          <input
-            type="range"
-            min="0"
-            max="10"
-            step="0.1"
-            value={P}
-            onChange={e => setP(Number(e.target.value))}
+          <label className="text-[var(--text-strong)]">Force P: {P}</label>
+          <Slider
+            min={0}
+            max={10}
+            step={0.1}
+            value={[P]}
+            onValueChange={([v]) => setP(v)}
             className="w-full"
           />
         </div>
         <div>
-          <label className="text-white">Exag: {exag}</label>
-          <input
-            type="range"
-            min="1"
-            max="100"
-            value={exag}
-            onChange={e => setExag(Number(e.target.value))}
+          <label className="text-[var(--text-strong)]">Exag: {exag}</label>
+          <Slider
+            min={1}
+            max={100}
+            value={[exag]}
+            onValueChange={([v]) => setExag(v)}
             className="w-full"
           />
         </div>
@@ -379,45 +370,36 @@ function FEM1DBarSim({ }: SimulationProps) {
         <div>
           <Plotly
             data={meshData}
-            layout={{
-              title: { text: 'Deformed Shape', font: { color: '#9ca3af' } },
-              xaxis: { title: { text: 'Position x', font: { color: '#9ca3af' } }, color: '#9ca3af' },
-              yaxis: { title: { text: 'y', font: { color: '#9ca3af' } }, range: [-0.1, 0.1], color: '#9ca3af' },
+            layout={mergeLayout({
+              title: { text: 'Deformed Shape' },
+              xaxis: { title: { text: 'Position x' } },
+              yaxis: { title: { text: 'y' }, range: [-0.1, 0.1] },
               height: 300,
-              paper_bgcolor: 'rgba(0,0,0,0)',
-              plot_bgcolor: 'rgba(15,15,25,1)',
-              font: { color: '#9ca3af' }
-            }}
+            })}
             config={{ displayModeBar: false }}
           />
         </div>
         <div>
           <Plotly
             data={dispData}
-            layout={{
-              title: { text: 'Displacement vs Exact', font: { color: '#9ca3af' } },
-              xaxis: { title: { text: 'Position x', font: { color: '#9ca3af' } }, color: '#9ca3af' },
-              yaxis: { title: { text: 'Displacement u', font: { color: '#9ca3af' } }, color: '#9ca3af' },
+            layout={mergeLayout({
+              title: { text: 'Displacement vs Exact' },
+              xaxis: { title: { text: 'Position x' } },
+              yaxis: { title: { text: 'Displacement u' } },
               height: 300,
-              paper_bgcolor: 'rgba(0,0,0,0)',
-              plot_bgcolor: 'rgba(15,15,25,1)',
-              font: { color: '#9ca3af' }
-            }}
+            })}
             config={{ displayModeBar: false }}
           />
         </div>
         <div>
           <Plotly
             data={strainData}
-            layout={{
-              title: { text: 'Strain per Element', font: { color: '#9ca3af' } },
-              xaxis: { title: { text: 'Element', font: { color: '#9ca3af' } }, tickvals: strains.map((_, i) => i), ticktext: strains.map((_, i) => `E${i+1}`), color: '#9ca3af' },
-              yaxis: { title: { text: 'Strain \u03b5', font: { color: '#9ca3af' } }, color: '#9ca3af' },
+            layout={mergeLayout({
+              title: { text: 'Strain per Element' },
+              xaxis: { title: { text: 'Element' }, tickvals: strains.map((_, i) => i), ticktext: strains.map((_, i) => `E${i+1}`) },
+              yaxis: { title: { text: 'Strain \u03b5' } },
               height: 300,
-              paper_bgcolor: 'rgba(0,0,0,0)',
-              plot_bgcolor: 'rgba(15,15,25,1)',
-              font: { color: '#9ca3af' }
-            }}
+            })}
             config={{ displayModeBar: false }}
           />
         </div>

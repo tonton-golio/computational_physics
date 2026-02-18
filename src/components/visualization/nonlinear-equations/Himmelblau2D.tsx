@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import Plotly from 'react-plotly.js';
 import type { Data, Layout } from 'plotly.js';
+import { Slider } from '@/components/ui/slider';
 
 const Himmelblau2D: React.FC = () => {
   const [method, setMethod] = useState<'gd' | 'newton'>('gd');
@@ -230,31 +231,27 @@ const Himmelblau2D: React.FC = () => {
           </select>
         </div>
         <div>
-          <label>LR:</label>
-          <input type="range" min={0.001} max={0.1} step={0.001} value={lr} onChange={(e) => setLr(Number(e.target.value))} className="ml-2 w-32" />
-          <span>{lr.toFixed(3)}</span>
+          <label>LR: {lr.toFixed(3)}</label>
+          <Slider min={0.001} max={0.1} step={0.001} value={[lr]} onValueChange={([v]) => setLr(v)} className="ml-2 w-32" />
         </div>
         <div>
-          <label>x₀:</label>
-          <input type="range" min={-5} max={5} step={0.1} value={x0} onChange={(e) => setX0(Number(e.target.value))} className="ml-2" />
-          <span>{x0.toFixed(1)}</span>
+          <label>x₀: {x0.toFixed(1)}</label>
+          <Slider min={-5} max={5} step={0.1} value={[x0]} onValueChange={([v]) => setX0(v)} className="ml-2" />
         </div>
         <div>
-          <label>y₀:</label>
-          <input type="range" min={-5} max={5} step={0.1} value={y0} onChange={(e) => setY0(Number(e.target.value))} className="ml-2" />
-          <span>{y0.toFixed(1)}</span>
+          <label>y₀: {y0.toFixed(1)}</label>
+          <Slider min={-5} max={5} step={0.1} value={[y0]} onValueChange={([v]) => setY0(v)} className="ml-2" />
         </div>
         <div>
-          <label>Steps:</label>
-          <input type="range" min={10} max={50} value={maxSteps} onChange={(e) => setMaxSteps(Number(e.target.value))} className="ml-2" />
-          <span>{maxSteps}</span>
+          <label>Steps: {maxSteps}</label>
+          <Slider min={10} max={50} value={[maxSteps]} onValueChange={([v]) => setMaxSteps(v)} className="ml-2" />
         </div>
         <div className="flex items-center">
           <button onClick={() => setShowBasins(!showBasins)} className="bg-green-500 text-white px-4 py-1 rounded mr-2">
             {showBasins ? 'Hide' : 'Show'} Basins
           </button>
-          <button onClick={handleStep} className="bg-blue-500 text-white px-4 py-1 rounded mr-2">Step</button>
-          <button onClick={handleReset} className="bg-gray-500 text-white px-4 py-1 rounded">Reset</button>
+          <button onClick={handleStep} className="bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white px-4 py-1 rounded mr-2">Step</button>
+          <button onClick={handleReset} className="bg-[var(--surface-3)] hover:bg-[var(--border-strong)] text-[var(--text-strong)] px-4 py-1 rounded">Reset</button>
         </div>
       </div>
       <div>Final: ({path[path.length-1]?.[0]?.toFixed(3) || 0}, {path[path.length-1]?.[1]?.toFixed(3) || 0}), f={f(path[path.length-1]?.[0] || 0, path[path.length-1]?.[1] || 0)?.toFixed(2)}</div>

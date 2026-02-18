@@ -7,6 +7,7 @@ import { TopicsSearchGrid } from "@/components/topics/TopicsSearchGrid";
 export default function TopicsPage() {
   const entries = TOPIC_ROUTES.map((topic) => ({
     routeSlug: topic.routeSlug,
+    contentId: topic.contentId,
     meta: TOPICS[topic.contentId],
     lessons: getSearchableLessonsForTopic(topic.contentId),
   }));

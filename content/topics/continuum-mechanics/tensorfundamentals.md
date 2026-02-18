@@ -1,39 +1,56 @@
 # Tensor Fundamentals
 
+## The Ant on the Rubber Sheet
 
+Imagine you're an ant walking on a rubber sheet. Someone is stretching the sheet — pulling it to the right, squeezing it from above. As you walk, the ground under your feet stretches in one direction and compresses in another. The way the sheet deforms around you depends on *which direction you're facing*. That direction-dependent description of stretching and squeezing — that's a tensor.
 
-## Introduction
-The Cauchy stress tensor, Cauchy strain tensor, the stress deviator, gradient tensor and spin tensor are essential concepts in the field of continuum mechanics. The Cauchy stress tensor is a mathematical construct used to describe stress in a material. The Cauchy strain tensor describes the deformation of the material due to stress. The Cauchy strain tensor together with the spin tensor gives the combined gradient tensor. 
-The stress deviator characterizes the state of stress in a material with respect to a reference pressure. Understanding these concepts is crucial for predicting the behavior of materials under different conditions. In this introduction, we will provide an overview of these concepts and their significance in the study of continuum mechnaics.
+A scalar (like temperature) tells you one number at each point. A vector (like velocity) tells you a magnitude and a direction. A tensor tells you something richer: it tells you how a quantity *changes depending on which direction you look*. In continuum mechanics, we need tensors because the forces inside a material aren't just big or small — they act differently in different directions. A beam might be compressed vertically but stretched horizontally, all at the same point.
 
-## Cauchy Stress Tensor
-The Cauchy stress tensor is an mathematical object used to describe how forces propagate through a continuum. For 3 dimensions it is a rank 2 tensor, for 2 dimensions a rank 1 tensor and for 1 dimension a rank 0 tensor, these are usually denoted as
+Now let's give these ideas precise names so we don't have to wave our hands anymore.
+
+## The Cauchy Stress Tensor — Six Little Hands
+
+Imagine cutting a tiny cube out of the interior of a stressed material. On each face of that cube, the surrounding material is pushing and pulling. It's like having **six little hands** pressing and twisting on every tiny cube inside the material.
+
+The Cauchy stress tensor $\sigma$ captures all of this. In 3D, it's a $3 \times 3$ matrix:
 $$
-\sigma_{3D} = \begin{pmatrix}
+\sigma = \begin{pmatrix}
 \sigma_{11} & \sigma_{12} & \sigma_{13}\\
 \sigma_{21} & \sigma_{22} & \sigma_{23}\\
 \sigma_{31} & \sigma_{32} & \sigma_{33}\\
-\end{pmatrix},
+\end{pmatrix}
+$$
+
+What do the entries mean?
+
+- **Diagonal elements** ($\sigma_{11}$, $\sigma_{22}$, $\sigma_{33}$) are the **normal stresses** — they push or pull straight into each face of the cube. Positive means tension (pulling apart), negative means compression (squeezing together).
+- **Off-diagonal elements** ($\sigma_{12}$, $\sigma_{13}$, etc.) are the **shear stresses** — they slide the faces sideways, like rubbing your hands together.
+
+The columns of $\sigma$ are the **traction vectors**: the force per unit area on each face. Every element has units of Pascal ($\text{N/m}^2$).
+
+For the tensor to be physically consistent (no spontaneously spinning cubes!), angular momentum conservation requires it to be symmetric: $\sigma = \sigma^T$. That means $\sigma_{12} = \sigma_{21}$, and so on — only 6 independent components in 3D, not 9.
+
+In 2D and 1D, the tensor shrinks accordingly:
+$$
 \sigma_{2D} = \begin{pmatrix}
 \sigma_{11} & \sigma_{12}\\
 \sigma_{21} & \sigma_{22}\\
-\end{pmatrix},
+\end{pmatrix}, \qquad
 \sigma_{1D} = \sigma_{11}
 $$
 
-The diagonal elements represent *normal stresses* along the corresponding basis vectors. The off-diagonal elements represent the *shear stresses* that propagate through the continuum. 
-The columns of $\sigma$ are the *traction vectors* of the Cauchy stress tensor. 
-Each element of $\sigma$ has units of Pascal $Nm^{-2}$ and in order for it to be physical, symmetry is enforced as $\sigma=\sigma^T$.
+Here's a key insight: **normal and shear stresses are a matter of perspective**. They depend on which coordinate system you choose, which is arbitrary. There always exists a special basis — the eigenbasis — where the stress tensor is purely diagonal and all the shear stresses vanish. The stresses in that basis are called the **principal stresses**, and they represent the purest description of the stress state at that point.
 
-For any solids that have forces propagation through them, there exist a basis for the Cauchy stress tensor such that only the diagonal element remain and no shear stresses are experienced. 
-Normal and shear stresses are therefore a matter of perspective since they depend on the choosen basis, which is arbitrary. 
-This "normal" basis is the eigenbasis of the Cauchy stress tensor.
+## The Stress Deviator — Relative to What?
 
-## Stress Deviator and Invariants
-It is convenient to introduce the *stress deviator* which is defined as the Cauchy stress tensor but removing the normal stresses or equivalently the pressure
+Sometimes you don't care about the total stress — you care about how the stress *deviates* from uniform pressure. Think about building a house. The materials were tested at atmospheric pressure. The house will stand at atmospheric pressure. So you want to know: how much *extra* stress does the structure experience beyond the background pressure?
+
+The **stress deviator** strips away the uniform pressure part:
 $$
-s=\sigma-p\mathbf{I}\hspace{0.3cm} \text{where}\hspace{0.3cm} p=\frac{1}{3}tr(\sigma)
+s = \sigma - p\,\mathbf{I} \qquad \text{where} \qquad p = \frac{1}{3}\text{tr}(\sigma)
 $$
+
+Written out:
 $$
 \begin{pmatrix}
 s_{11} & s_{12} & s_{13}\\
@@ -43,86 +60,88 @@ s_{31} & s_{32} & s_{33}\\
 =
 \begin{pmatrix}
 \sigma_{11} - p & \sigma_{12} & \sigma_{13}\\
-\sigma_{21} & \sigma_{22}- p & \sigma_{23}\\
-\sigma_{31} & \sigma_{32} & \sigma_{33}- p\\
+\sigma_{21} & \sigma_{22} - p & \sigma_{23}\\
+\sigma_{31} & \sigma_{32} & \sigma_{33} - p\\
 \end{pmatrix}
 $$
-By removing the pressure, the stress deviator allows us to define a new reference pressure. Imagine building a house, modeling how the forces propagate through the building and now having to find suitable materials to carry those forces. Those materials will come with a detailed stress test, but that test has most likely been performed in normal atmospheric conditions and the material was most likely forged in the same. It is also the information that is relevant for the building, as you are not interested in its structural strength in vacuum but at the pressure where it will be build.
 
-Stresses relating to a similar system is therefore usually communicated in terms of the Stress Deviator with some reference pressure. 
-The Cauchy stress tensor ($I$) and the stress deviator ($J$) have 3 invariants that are constant under rotation to any other basis.
+The deviator is what matters for predicting *shape change* and *failure*. Uniform pressure changes volume but doesn't change shape — it's the deviator that warps, bends, and eventually breaks things.
 
+## Invariants — What Doesn't Change When You Rotate
 
-$I_1=\sigma_1 +\sigma_2+\sigma_3$
+The stress tensor looks different in different coordinate systems, but certain quantities remain the same no matter how you rotate your axes. These **invariants** are the truly physical quantities.
 
-$I_2=\sigma_1\sigma_2+\sigma_2\sigma_3+\sigma_3\sigma_1$
+For the Cauchy stress tensor, the three invariants are:
 
-$I_3=\sigma_1\sigma_2\sigma_3$
+$I_1 = \sigma_1 + \sigma_2 + \sigma_3$
 
-$J_1=s_{kk}=0 $
+$I_2 = \sigma_1\sigma_2 + \sigma_2\sigma_3 + \sigma_3\sigma_1$
 
-$J_2=\frac{1}{2}tr(s^2)= \frac{1}{2}\left( tr(\sigma^2)-\frac{1}{3}tr(\sigma)^2\right)$
+$I_3 = \sigma_1\sigma_2\sigma_3$
 
-$J_3=\det(s_{ij}) = \frac{1}{3}\left( tr(\sigma^3)-tr(\sigma^2)tr(\sigma)+\frac{2}{9}tr(\sigma)^3\right)$
+For the stress deviator:
 
-Especially the $J_2$ invariant is relevant, as is it linked to the *von Mises yield criterion*. For materials where the ratio of 
+$J_1 = s_{kk} = 0$ (by construction — we removed the pressure)
+
+$J_2 = \frac{1}{2}\text{tr}(s^2) = \frac{1}{2}\left(\text{tr}(\sigma^2) - \frac{1}{3}\text{tr}(\sigma)^2\right)$
+
+$J_3 = \det(s) = \frac{1}{3}\left(\text{tr}(\sigma^3) - \text{tr}(\sigma^2)\text{tr}(\sigma) + \frac{2}{9}\text{tr}(\sigma)^3\right)$
+
+The $J_2$ invariant is especially important because it connects to the **von Mises yield criterion**: a practical rule for predicting when a material will permanently deform. For many metals, the ratio of shear yield stress to tensile yield stress is:
 $$
-\frac{\sigma_{shear,yielding}}{\sigma_{tensile,yielding}}=\frac{1}{\sqrt{3}}\approx 0.577
-$$
-The von Mises yield criterion can be used to model the failure point of a material when permanent deformation occurs, independent of choice of basis. This is given as
-$$
-P_{deformation}=\sqrt{3J_2}
+\frac{\sigma_{\text{shear,yield}}}{\sigma_{\text{tensile,yield}}} = \frac{1}{\sqrt{3}} \approx 0.577
 $$
 
-## Cauchy Strain Tensor
-Similarily to the forces, displacement in position can also be modeled by a tensor, called the *Cauchy strain tensor*. 
-Consider a vector field describing motion in a continuum
+When this holds, the material will start to permanently deform when:
 $$
-\mathbf{v}(x,y,z)=\begin{pmatrix} v_x(x,y,z)\\ v_y(x,y,z)\\ v_z(x,y,z) \end{pmatrix}
+\sigma_{\text{von Mises}} = \sqrt{3 J_2}
 $$
-The Cauchy Strain Tensor is then given as
+exceeds the yield strength. This works regardless of your choice of coordinates — that's the power of invariants.
+
+## The Cauchy Strain Tensor — Measuring Deformation
+
+So far we've described the *forces* inside a material. But what about the *deformation* itself? If you push on Rosie the Rubber Band, how much does she actually stretch?
+
+Consider a velocity field describing motion in a continuum:
 $$
-\epsilon_{3D}=
-\begin{pmatrix}
-\frac{\partial v_x }{\partial x} & \frac{1}{2}\left( \frac{\partial v_x }{\partial y}+\frac{\partial v_y }{\partial x} \right) & \frac{1}{2}\left( \frac{\partial v_x }{\partial z}+\frac{\partial v_z }{\partial x} \right)\\
-\frac{1}{2}\left( \frac{\partial v_x }{\partial y}+\frac{\partial v_y }{\partial x} \right) & \frac{\partial v_y }{\partial y} & \frac{1}{2}\left( \frac{\partial v_y }{\partial z}+\frac{\partial v_z }{\partial y} \right)\\
-\frac{1}{2}\left( \frac{\partial v_x }{\partial z}+\frac{\partial v_z }{\partial x} \right) & \frac{1}{2}\left( \frac{\partial v_y }{\partial z}+\frac{\partial v_z }{\partial y} \right) & \frac{\partial v_z }{\partial z}\\
+\mathbf{v}(x,y,z) = \begin{pmatrix} v_x(x,y,z)\\ v_y(x,y,z)\\ v_z(x,y,z) \end{pmatrix}
+$$
+
+The **Cauchy strain tensor** (or strain rate tensor) captures how the material deforms:
+$$
+\epsilon = \begin{pmatrix}
+\frac{\partial v_x}{\partial x} & \frac{1}{2}\left(\frac{\partial v_x}{\partial y}+\frac{\partial v_y}{\partial x}\right) & \frac{1}{2}\left(\frac{\partial v_x}{\partial z}+\frac{\partial v_z}{\partial x}\right)\\
+\frac{1}{2}\left(\frac{\partial v_x}{\partial y}+\frac{\partial v_y}{\partial x}\right) & \frac{\partial v_y}{\partial y} & \frac{1}{2}\left(\frac{\partial v_y}{\partial z}+\frac{\partial v_z}{\partial y}\right)\\
+\frac{1}{2}\left(\frac{\partial v_x}{\partial z}+\frac{\partial v_z}{\partial x}\right) & \frac{1}{2}\left(\frac{\partial v_y}{\partial z}+\frac{\partial v_z}{\partial y}\right) & \frac{\partial v_z}{\partial z}
 \end{pmatrix}
 $$
-and for 2 and 1 dimensions
-$$
-\epsilon_{2D}=
-\begin{pmatrix}
-\frac{\partial v_x }{\partial x} & \frac{1}{2}\left( \frac{\partial v_x }{\partial y}+\frac{\partial v_y }{\partial x} \right)\\
-\frac{1}{2}\left( \frac{\partial v_x }{\partial y}+\frac{\partial v_y }{\partial x} \right) & \frac{\partial v_y }{\partial y}\\
-\end{pmatrix},\hspace{3mm}
-\epsilon_{1D}=
-\frac{\partial v_x }{\partial x}
-$$
-The Cauchy strain tensor describes deformation in a continua. The eigenbasis of the Cauchy strain tensor has eigenvectors pointing in the direction of displacement and eigenvalues corresponding to the rate of displacement.
-It is unitless, and describes relative deformation. To achieve length in units, multiply by or integrate along the corresponding dimension of the object it represents.
 
-## Velocity Gradient and Spin Tensor
-The velocity gradient tensor is given as
+Notice the pattern: the diagonal entries measure *stretching* along each axis, and the off-diagonal entries measure *shearing* — the tendency of the material to skew sideways.
+
+The strain tensor is unitless (it describes *relative* deformation). Its eigenvectors point in the directions of principal strain, and the eigenvalues tell you the rate of stretching in those directions. To get actual lengths, multiply by the physical dimensions of the object.
+
+## The Velocity Gradient and Spin Tensor — The Full Picture
+
+The strain tensor only captures *half* of what the velocity gradient is doing. The full **velocity gradient tensor** is:
 $$
-\nabla\mathbf{v}_{3D}=
-\begin{pmatrix}
-\frac{\partial v_x }{\partial x} & \frac{\partial v_x }{\partial y} & \frac{\partial v_x }{\partial z} \\
-\frac{\partial v_y }{\partial x} & \frac{\partial v_y }{\partial y} & \frac{\partial v_y }{\partial z} \\
-\frac{\partial v_z }{\partial x} & \frac{\partial v_z }{\partial y} & \frac{\partial v_z }{\partial z} \\
+\nabla\mathbf{v} = \begin{pmatrix}
+\frac{\partial v_x}{\partial x} & \frac{\partial v_x}{\partial y} & \frac{\partial v_x}{\partial z}\\
+\frac{\partial v_y}{\partial x} & \frac{\partial v_y}{\partial y} & \frac{\partial v_y}{\partial z}\\
+\frac{\partial v_z}{\partial x} & \frac{\partial v_z}{\partial y} & \frac{\partial v_z}{\partial z}
 \end{pmatrix}
 $$
-and for 2 and 1 dimensions
+
+This is just the Jacobian of the velocity field. It can be decomposed into a symmetric part (the strain tensor) and an antisymmetric part (the **spin tensor**):
 $$
-\nabla\mathbf{v}_{2D}=
-\begin{pmatrix}
-\frac{\partial v_x }{\partial x} & \frac{\partial v_x }{\partial y}\\
-\frac{\partial v_y }{\partial x} & \frac{\partial v_y }{\partial y}\\
-\end{pmatrix},\hspace{3mm}
-\nabla\mathbf{v}_{1D}=
-\frac{\partial v_x }{\partial x}
+\nabla\mathbf{v} = \underbrace{\frac{1}{2}\left(\nabla\mathbf{v} + \nabla\mathbf{v}^T\right)}_{\epsilon \text{ (strain)}} + \underbrace{\frac{1}{2}\left(\nabla\mathbf{v} - \nabla\mathbf{v}^T\right)}_{\omega \text{ (spin)}}
 $$
-it gives the full description of the changes in deplacement of a continua and is equilevant to the *Jacobian* with respect to velocity and time. It can be decomposed into the Cauchy strain tensor and a *spin tensor*, corresponding to the symmetric and anti-symmetric component.
-$$
-\nabla\mathbf{v}=\frac{1}{2}\left(  \nabla\mathbf{v} + \nabla\mathbf{v}^T \ \right) + \frac{1}{2}\left(  \nabla\mathbf{v} - \nabla\mathbf{v}^T \ \right) = \epsilon + \mathbf{\omega}
-$$
+
+The strain tensor tells you how the material *deforms*. The spin tensor tells you how it *rotates*. Together, they give the complete first-order picture of motion in a continuum.
+
+## What We Just Learned
+
+Tensors are the language of continuum mechanics. The stress tensor tells you about forces, the strain tensor tells you about deformation, and the spin tensor tells you about rotation. The stress deviator and invariants let you make predictions that don't depend on your arbitrary choice of coordinates. We're now equipped to talk precisely about how materials respond to being pushed and pulled.
+
+## What's Next
+
+We have the language. Now let's use it. In the next section, we'll connect stress and strain through Hooke's law, explore Mohr's circle as a tool for visualizing stress states, and start to see how real materials behave when you push on them.

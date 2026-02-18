@@ -40,8 +40,6 @@ $$
 
 The mean photon number is $\langle n \rangle = \sinh^2 r$, and the photon number distribution is super-Poissonian despite the sub-vacuum noise in one quadrature. The even-photon-number signature is a distinctive feature observable in photon-number-resolving measurements.
 
-[[simulation wigner-squeezed]]
-
 ## Generation by Parametric Down-Conversion
 
 The primary method for generating squeezed light is **optical parametric down-conversion** (PDC). A nonlinear crystal with $\chi^{(2)}$ nonlinearity is pumped by a strong laser at frequency $\omega_p$. The pump photons are converted into pairs of photons (signal and idler) satisfying energy and momentum conservation:

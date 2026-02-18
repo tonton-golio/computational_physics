@@ -2,6 +2,8 @@
 
 import React, { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { Slider } from '@/components/ui/slider';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -13,6 +15,7 @@ export default function StressTensor({ id }: SimulationProps) { // eslint-disabl
   const [sigmaXX, setSigmaXX] = useState(100); // MPa
   const [sigmaYY, setSigmaYY] = useState(-50);
   const [tauXY, setTauXY] = useState(40);
+  const { mergeLayout } = usePlotlyTheme();
 
   const mohrData = useMemo(() => {
     const sx = sigmaXX;
@@ -166,47 +169,37 @@ export default function StressTensor({ id }: SimulationProps) { // eslint-disabl
           marker: { color: '#ec4899', size: 8, symbol: 'triangle-up' },
         },
       ],
-      layout: {
-        title: { text: "Mohr's Circle for 2D Stress State", font: { color: '#e5e7eb' } },
+      layout: mergeLayout({
+        title: { text: "Mohr's Circle for 2D Stress State" },
         xaxis: {
-          title: { text: 'Normal Stress \u03c3 [MPa]', font: { color: '#9ca3af' } },
-          color: '#6b7280',
-          gridcolor: 'rgba(75,85,99,0.3)',
-          zerolinecolor: 'rgba(156,163,175,0.5)',
+          title: { text: 'Normal Stress \u03c3 [MPa]' },
           zerolinewidth: 1,
           range: [axMin, axMax],
           scaleanchor: 'y' as const,
           scaleratio: 1,
         },
         yaxis: {
-          title: { text: 'Shear Stress \u03c4 [MPa]', font: { color: '#9ca3af' } },
-          color: '#6b7280',
-          gridcolor: 'rgba(75,85,99,0.3)',
-          zerolinecolor: 'rgba(156,163,175,0.5)',
+          title: { text: 'Shear Stress \u03c4 [MPa]' },
           zerolinewidth: 1,
           range: [-shearRange, shearRange],
         },
         height: 550,
-        paper_bgcolor: 'rgba(0,0,0,0)',
-        plot_bgcolor: 'rgba(15,15,25,1)',
-        font: { color: '#9ca3af' },
         legend: {
           bgcolor: 'rgba(0,0,0,0)',
-          font: { color: '#d1d5db', size: 11 },
           x: 1.02,
           y: 1,
         },
         margin: { t: 50, b: 60, l: 70, r: 180 },
-      },
+      }),
     };
-  }, [mohrData]);
+  }, [mohrData, mergeLayout]);
 
   return (
-    <div className="w-full bg-[#151525] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-white">
+    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
+      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">
         2D Mohr&apos;s Circle Visualization
       </h3>
-      <p className="text-gray-400 text-sm mb-4">
+      <p className="text-[var(--text-muted)] text-sm mb-4">
         Enter the components of a 2D stress tensor to visualize the
         corresponding Mohr&apos;s circle showing principal stresses, maximum
         shear stress, and the current stress state.
@@ -214,71 +207,68 @@ export default function StressTensor({ id }: SimulationProps) { // eslint-disabl
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <div>
-          <label className="block text-sm text-gray-300 mb-1">
+          <label className="block text-sm text-[var(--text-muted)] mb-1">
             &sigma;<sub>xx</sub>: {sigmaXX} MPa
           </label>
-          <input
-            type="range"
+          <Slider
             min={-200}
             max={200}
             step={5}
-            value={sigmaXX}
-            onChange={(e) => setSigmaXX(Number(e.target.value))}
-            className="w-full accent-blue-500"
+            value={[sigmaXX]}
+            onValueChange={([v]) => setSigmaXX(v)}
+            className="w-full"
           />
         </div>
         <div>
-          <label className="block text-sm text-gray-300 mb-1">
+          <label className="block text-sm text-[var(--text-muted)] mb-1">
             &sigma;<sub>yy</sub>: {sigmaYY} MPa
           </label>
-          <input
-            type="range"
+          <Slider
             min={-200}
             max={200}
             step={5}
-            value={sigmaYY}
-            onChange={(e) => setSigmaYY(Number(e.target.value))}
-            className="w-full accent-yellow-500"
+            value={[sigmaYY]}
+            onValueChange={([v]) => setSigmaYY(v)}
+            className="w-full"
           />
         </div>
         <div>
-          <label className="block text-sm text-gray-300 mb-1">
+          <label className="block text-sm text-[var(--text-muted)] mb-1">
             &tau;<sub>xy</sub>: {tauXY} MPa
           </label>
-          <input
-            type="range"
+          <Slider
             min={-150}
             max={150}
             step={5}
-            value={tauXY}
-            onChange={(e) => setTauXY(Number(e.target.value))}
-            className="w-full accent-red-500"
+            value={[tauXY]}
+            onValueChange={([v]) => setTauXY(v)}
+            className="w-full"
           />
         </div>
       </div>
 
       {/* Results summary */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-        <div className="bg-[#0a0a15] rounded-lg p-3 text-center">
-          <div className="text-xs text-gray-500 mb-1">Principal &sigma;<sub>1</sub></div>
+        <div className="bg-[var(--surface-2)] rounded-lg p-3 text-center">
+          <div className="text-xs text-[var(--text-soft)] mb-1">Principal &sigma;<sub>1</sub></div>
           <div className="text-lg font-mono text-green-400">
             {mohrData.sigma1.toFixed(1)} MPa
           </div>
         </div>
-        <div className="bg-[#0a0a15] rounded-lg p-3 text-center">
-          <div className="text-xs text-gray-500 mb-1">Principal &sigma;<sub>2</sub></div>
+        <div className="bg-[var(--surface-2)] rounded-lg p-3 text-center">
+          <div className="text-xs text-[var(--text-soft)] mb-1">Principal &sigma;<sub>2</sub></div>
           <div className="text-lg font-mono text-green-400">
             {mohrData.sigma2.toFixed(1)} MPa
           </div>
         </div>
-        <div className="bg-[#0a0a15] rounded-lg p-3 text-center">
-          <div className="text-xs text-gray-500 mb-1">Max Shear &tau;<sub>max</sub></div>
+        <div className="bg-[var(--surface-2)] rounded-lg p-3 text-center">
+          <div className="text-xs text-[var(--text-soft)] mb-1">Max Shear &tau;<sub>max</sub></div>
           <div className="text-lg font-mono text-pink-400">
             {mohrData.tauMax.toFixed(1)} MPa
           </div>
         </div>
-        <div className="bg-[#0a0a15] rounded-lg p-3 text-center">
-          <div className="text-xs text-gray-500 mb-1">Principal Angle &theta;<sub>p</sub></div>
+        <div className="bg-[var(--surface-2)] rounded-lg p-3 text-center">
+          <div className="text-xs text-[var(--text-soft)] mb-1">Principal Angle &theta;<sub>p</sub></div>
           <div className="text-lg font-mono text-purple-400">
             {mohrData.theta_p.toFixed(1)}&deg;
           </div>
@@ -292,17 +282,17 @@ export default function StressTensor({ id }: SimulationProps) { // eslint-disabl
         style={{ width: '100%' }}
       />
 
-      <div className="mt-4 text-sm text-gray-400 space-y-1">
+      <div className="mt-4 text-sm text-[var(--text-muted)] space-y-1">
         <p>
-          <strong className="text-gray-300">Point A</strong> represents the stress
+          <strong className="text-[var(--text-muted)]">Point A</strong> represents the stress
           state on the plane with its normal along x: (&sigma;<sub>xx</sub>, &tau;<sub>xy</sub>).
         </p>
         <p>
-          <strong className="text-gray-300">Point B</strong> represents the plane
+          <strong className="text-[var(--text-muted)]">Point B</strong> represents the plane
           with its normal along y: (&sigma;<sub>yy</sub>, &minus;&tau;<sub>xy</sub>).
         </p>
         <p>
-          The <strong className="text-gray-300">green diamonds</strong> mark the
+          The <strong className="text-[var(--text-muted)]">green diamonds</strong> mark the
           principal stresses where shear vanishes. The principal angle &theta;<sub>p</sub> is
           measured from the x-axis to the direction of &sigma;<sub>1</sub>.
         </p>

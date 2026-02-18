@@ -2,6 +2,8 @@
 
 import React, { useState, useMemo, useCallback } from 'react';
 import dynamic from 'next/dynamic';
+import { Slider } from '@/components/ui/slider';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -108,6 +110,7 @@ export default function MultiArmedBandit({ id }: SimulationProps) { // eslint-di
   const [nExperiments, setNExperiments] = useState(20);
   const [epsilon, setEpsilon] = useState(0.1);
   const [seed, setSeed] = useState(42);
+  const { mergeLayout } = usePlotlyTheme();
 
   const probs = useMemo(() => [0.1, 0.15, 0.2, 0.5], []);
   const methods: Method[] = useMemo(
@@ -156,60 +159,57 @@ export default function MultiArmedBandit({ id }: SimulationProps) { // eslint-di
   };
 
   return (
-    <div className="w-full bg-[#151525] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-white">
+    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
+      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">
         Multi-Armed Bandit: Strategy Comparison
       </h3>
-      <p className="text-gray-400 text-sm mb-4">
+      <p className="text-[var(--text-muted)] text-sm mb-4">
         A 4-armed bandit with Bernoulli rewards and win-probabilities [0.1, 0.15, 0.2, 0.5].
         Compare the cumulative reward of Greedy, &epsilon;-Greedy, UCB, and LCB strategies.
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
         <div>
-          <label className="text-white text-sm">Time horizon (T): {T}</label>
-          <input
-            type="range"
+          <label className="text-[var(--text-strong)] text-sm">Time horizon (T): {T}</label>
+          <Slider
             min={100}
             max={2000}
             step={100}
-            value={T}
-            onChange={(e) => setT(parseInt(e.target.value))}
+            value={[T]}
+            onValueChange={([v]) => setT(v)}
             className="w-full"
           />
         </div>
         <div>
-          <label className="text-white text-sm">
+          <label className="text-[var(--text-strong)] text-sm">
             Experiments: {nExperiments}
           </label>
-          <input
-            type="range"
+          <Slider
             min={1}
             max={100}
             step={1}
-            value={nExperiments}
-            onChange={(e) => setNExperiments(parseInt(e.target.value))}
+            value={[nExperiments]}
+            onValueChange={([v]) => setNExperiments(v)}
             className="w-full"
           />
         </div>
         <div>
-          <label className="text-white text-sm">
+          <label className="text-[var(--text-strong)] text-sm">
             Epsilon (&epsilon;): {epsilon.toFixed(2)}
           </label>
-          <input
-            type="range"
+          <Slider
             min={0.01}
             max={0.5}
             step={0.01}
-            value={epsilon}
-            onChange={(e) => setEpsilon(parseFloat(e.target.value))}
+            value={[epsilon]}
+            onValueChange={([v]) => setEpsilon(v)}
             className="w-full"
           />
         </div>
         <div className="flex items-end">
           <button
             onClick={rerun}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors"
+            className="px-4 py-2 bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white rounded text-sm transition-colors"
           >
             Re-run
           </button>
@@ -225,29 +225,25 @@ export default function MultiArmedBandit({ id }: SimulationProps) { // eslint-di
           name: method,
           line: { color: colors[method], width: 2 },
         }))}
-        layout={{
+        layout={mergeLayout({
           title: {
             text: `Average Cumulative Reward (${nExperiments} experiments)`,
           },
-          xaxis: { title: { text: 'Time step' }, color: '#9ca3af' },
+          xaxis: { title: { text: 'Time step' } },
           yaxis: {
             title: { text: 'Cumulative reward' },
-            color: '#9ca3af',
           },
           height: 450,
-          paper_bgcolor: 'rgba(0,0,0,0)',
-          plot_bgcolor: 'rgba(15,15,25,1)',
-          font: { color: '#9ca3af' },
           legend: { x: 0.02, y: 1 },
           margin: { t: 40, b: 60, l: 60, r: 20 },
-        }}
+        })}
         config={{ displayModeBar: false }}
         style={{ width: '100%' }}
       />
 
-      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-400">
+      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-[var(--text-muted)]">
         <div>
-          <strong className="text-white">Arm probabilities:</strong>{' '}
+          <strong className="text-[var(--text-strong)]">Arm probabilities:</strong>{' '}
           {probs.map((p, i) => (
             <span key={i} className="mr-2">
               Arm {i + 1}: {p}
@@ -255,7 +251,7 @@ export default function MultiArmedBandit({ id }: SimulationProps) { // eslint-di
           ))}
         </div>
         <div>
-          <strong className="text-white">Optimal arm:</strong> Arm 4 (p=0.5),
+          <strong className="text-[var(--text-strong)]">Optimal arm:</strong> Arm 4 (p=0.5),
           yielding expected cumulative reward of {(0.5 * T).toFixed(0)} over {T}{' '}
           steps
         </div>

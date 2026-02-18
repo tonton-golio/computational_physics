@@ -2,6 +2,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import type { Data, Layout } from 'plotly.js';
+import { Slider } from '@/components/ui/slider';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -21,6 +23,7 @@ const NonlinearEquationsPage: React.FC = () => {
   });
   const [currentIndex, setCurrentIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
+  const { mergeLayout } = usePlotlyTheme();
 
   const fullHistory = useMemo(() => {
     const { x0, y0, tMax, dt } = params;
@@ -186,8 +189,8 @@ const NonlinearEquationsPage: React.FC = () => {
 
   const { data: bifurcationData, layout: bifurcationLayout } = generateBifurcationData();
 
-  const updateParam = (key: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    setParams({ ...params, [key]: parseFloat(e.target.value) });
+  const updateParam = (key: string, value: number) => {
+    setParams({ ...params, [key]: value });
   };
 
   const togglePlay = () => {
@@ -216,62 +219,62 @@ const NonlinearEquationsPage: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         <div>
-          <Plot data={phaseData} layout={phaseLayout} config={{displayModeBar: true}} />
+          <Plot data={phaseData} layout={mergeLayout(phaseLayout)} config={{displayModeBar: true}} />
         </div>
         <div>
-          <Plot data={timeData} layout={timeLayout} config={{displayModeBar: true}} />
+          <Plot data={timeData} layout={mergeLayout(timeLayout)} config={{displayModeBar: true}} />
         </div>
       </div>
 
       {system === 'logistic' && (
         <div className="mb-8">
-          <Plot data={bifurcationData} layout={bifurcationLayout} config={{displayModeBar: true}} />
+          <Plot data={bifurcationData} layout={mergeLayout(bifurcationLayout)} config={{displayModeBar: true}} />
         </div>
       )}
 
-      <div className="bg-gray-100 p-6 rounded-lg">
+      <div className="bg-[var(--surface-1)] p-6 rounded-lg">
         <h2 className="text-2xl font-semibold mb-4">Parameters</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-4">
           {system === 'lotka' ? (
             <>
               <div>
-                <label>α: {params.alpha.toFixed(2)}</label>
-                <input type="range" min={0.1} max={3} step={0.1} value={params.alpha} onChange={updateParam('alpha')} className="w-full" />
+                <label className="text-sm text-[var(--text-muted)]">{'\u03B1'}: {params.alpha.toFixed(2)}</label>
+                <Slider min={0.1} max={3} step={0.1} value={[params.alpha]} onValueChange={([v]) => updateParam('alpha', v)} />
               </div>
               <div>
-                <label>β: {params.beta.toFixed(2)}</label>
-                <input type="range" min={0.1} max={2} step={0.1} value={params.beta} onChange={updateParam('beta')} className="w-full" />
+                <label className="text-sm text-[var(--text-muted)]">{'\u03B2'}: {params.beta.toFixed(2)}</label>
+                <Slider min={0.1} max={2} step={0.1} value={[params.beta]} onValueChange={([v]) => updateParam('beta', v)} />
               </div>
               <div>
-                <label>δ: {params.delta.toFixed(2)}</label>
-                <input type="range" min={0.1} max={2} step={0.1} value={params.delta} onChange={updateParam('delta')} className="w-full" />
+                <label className="text-sm text-[var(--text-muted)]">{'\u03B4'}: {params.delta.toFixed(2)}</label>
+                <Slider min={0.1} max={2} step={0.1} value={[params.delta]} onValueChange={([v]) => updateParam('delta', v)} />
               </div>
               <div>
-                <label>γ: {params.gamma.toFixed(2)}</label>
-                <input type="range" min={0.1} max={5} step={0.1} value={params.gamma} onChange={updateParam('gamma')} className="w-full" />
+                <label className="text-sm text-[var(--text-muted)]">{'\u03B3'}: {params.gamma.toFixed(2)}</label>
+                <Slider min={0.1} max={5} step={0.1} value={[params.gamma]} onValueChange={([v]) => updateParam('gamma', v)} />
               </div>
               <div>
-                <label>x0: {params.x0.toFixed(2)}</label>
-                <input type="range" min={0.1} max={5} step={0.1} value={params.x0} onChange={updateParam('x0')} className="w-full" />
+                <label className="text-sm text-[var(--text-muted)]">x0: {params.x0.toFixed(2)}</label>
+                <Slider min={0.1} max={5} step={0.1} value={[params.x0]} onValueChange={([v]) => updateParam('x0', v)} />
               </div>
               <div>
-                <label>y0: {params.y0.toFixed(2)}</label>
-                <input type="range" min={0.1} max={5} step={0.1} value={params.y0} onChange={updateParam('y0')} className="w-full" />
+                <label className="text-sm text-[var(--text-muted)]">y0: {params.y0.toFixed(2)}</label>
+                <Slider min={0.1} max={5} step={0.1} value={[params.y0]} onValueChange={([v]) => updateParam('y0', v)} />
               </div>
             </>
           ) : (
             <>
               <div>
-                <label>r: {params.r.toFixed(2)}</label>
-                <input type="range" min={0.1} max={4} step={0.1} value={params.r} onChange={updateParam('r')} className="w-full" />
+                <label className="text-sm text-[var(--text-muted)]">r: {params.r.toFixed(2)}</label>
+                <Slider min={0.1} max={4} step={0.1} value={[params.r]} onValueChange={([v]) => updateParam('r', v)} />
               </div>
               <div>
-                <label>K: {params.K.toFixed(2)}</label>
-                <input type="range" min={0.5} max={2} step={0.1} value={params.K} onChange={updateParam('K')} className="w-full" />
+                <label className="text-sm text-[var(--text-muted)]">K: {params.K.toFixed(2)}</label>
+                <Slider min={0.5} max={2} step={0.1} value={[params.K]} onValueChange={([v]) => updateParam('K', v)} />
               </div>
               <div>
-                <label>x0: {params.x0.toFixed(2)}</label>
-                <input type="range" min={0.01} max={2} step={0.01} value={params.x0} onChange={updateParam('x0')} className="w-full" />
+                <label className="text-sm text-[var(--text-muted)]">x0: {params.x0.toFixed(2)}</label>
+                <Slider min={0.01} max={2} step={0.01} value={[params.x0]} onValueChange={([v]) => updateParam('x0', v)} />
               </div>
             </>
           )}

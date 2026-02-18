@@ -1,114 +1,91 @@
 # Finite Element Method
 
+## The Rubber Sheet, Revisited — In Triangles
 
+Remember the rubber sheet from the tensor section? Imagine you need to calculate exactly how it deforms under some complicated load. The shape is irregular, the forces are messy, and there's no analytical solution.
 
-## Introduction
-MISSING: Weakform description, strongform description, 
+Here's the idea: instead of solving the whole sheet at once, **cut it into tiny triangles**. On each triangle, assume the solution is simple — maybe linear or quadratic. Then stitch all the triangles together, demanding that the solutions agree at the shared edges. That's the **finite element method** (FEM), and it's how we actually compute the deformation of real glaciers, airplane wings, bridges, and biological tissues.
 
-The finite element modelling is a way to solve partial differential equations by approximating the *solution* to the differential equation rather than approximating the differential equation as done in the usual finite difference methods.
-Its a method that is utilized in many engineering fields, such as structural analysis, heat transfer and fluid flow.
+## The Big Picture — Approximate the Solution, Not the Equation
 
-It works by discretizing the spatial dimensions into smaller subspaces called *finite elements*.
-It is great for solving boundary value problems and it is easy to mesh complicated domains.
+FEM is fundamentally different from finite differences. In finite differences, you approximate the *derivatives* in the equation (replacing $\partial^2 u / \partial x^2$ with $(u_{i+1} - 2u_i + u_{i-1})/h^2$). In FEM, you approximate the *solution itself* as a combination of simple functions, then find the best combination.
 
-The *finite* part come from the basisfunctions usual finite structure (I.e. its 0 in all places but around a node).
-
-## Weighted Residuals
-Consider a 1D differential equation written as
+Consider a differential equation $A(u) = f$. We approximate the solution as:
 $$
-A(u)=f
-$$
-We then choose an approximate solution of the form
-$$
-u^N = \sum_{i=1}^N a_i \phi_i(x)
-$$
-where $\phi_i$ are approximation functions that we may choose and $a_i$ are unknown constants to be determined. 
-
-Putting them together defines the *residual* $r$ of the approximation. The problem is then to choose $a_i$ such that the residual is minimized.
-$$
-r^N(x)=||A(u^N)-f||_{norm}
+u^N(x) = \sum_{i=1}^N a_i \, \phi_i(x)
 $$
 
-The choice of norm defines the *moment* of the solution and will impact the accuracy and spatial resolution of the solution.
+where the $\phi_i$ are **basis functions** (simple, known functions — usually polynomials that are nonzero only near a single mesh node) and the $a_i$ are unknown coefficients we need to find.
 
-## Least Squares Method
-If we choose the Euclidian norm and define it as
+Substituting gives a **residual**:
 $$
-\Pi (r^N) := ||r^N||^2 := \int_0^L (r^N(x))^2 dx
-$$
-The solution becomes a least squares solution. If we differentiate and constrain it to zero, we obtain the elements of the N by N matrix as
-$$
-\frac{\partial \Pi}{\partial a_i} = \int_0^L 2r \frac{\partial r}{\partial a_i} dx = 0
-$$
-which can be solved in the usual manner (See page on Scientific Computing or Applied Statistics).
-
-By increasing the norm, we *punish* larger residuals harder. 
-
-## Collocation Method
-The least squares method (and for other moments) punishes spatially equally everywhere. This is not the only way, and a whole range of methods exists, generally called *Method of Weighted Residuals*.
-We may not be interested in minimizing the *average* residual as done with the least squares method, but minimizing it around a general area. This can be done with the *Collocation method*, where we force the residuals to be zero at a number of locations
-$$
-r^N(x_i)=0
-$$
-or equivalently
-$$
-\int_0^L r^N(x) \delta (x-x_i)dx=0
+r^N(x) = A(u^N) - f
 $$
 
-Imagine working at Würth and recieving complaints from customer service, that the produced screws are constantly breaking around the screwhead.
-The job is to determine the minimum amount of steel to be added to reinforce the screw, just below the screwhead. This addition information regarding space of interest, motivates us to choose the collocation method. 
-So that we may precisely determine the minimum amount of steel necessary to strengthen the screw exactly below the screwhead.
+If $u^N$ were the exact solution, the residual would be zero everywhere. It won't be, so our job is to choose the $a_i$ to make the residual as small as possible.
 
-## Galerkin's Method
-The most widely used method, is called *Galerkin\'s Method*. To illustrate, consider the relation shown in the above.
+## How Small? — The Method of Weighted Residuals
+
+Different choices for "as small as possible" give different methods:
+
+### Least Squares Method
+Minimize the total squared residual:
 $$
-u-u^N=e^N \rightarrow u=u^N + e^N
-$$
-Minimizing the error is now a question of achieving orthogonality, as the error will then be smallest. Unfortunately the error is unknown but we do know the residual. Ofcourse the error and the residual is not identical, but they share enough properties (For example, if one is zero, the other is zero), that we may proceed anyway.
-Thus our problem is forcing $r^N \perp u^N$ by
-$$
-\int_0^L r^N(x)u^N(x)dx = \int_0^L r^N (x) \sum_{i=1}^N a_i \phi_i dx = 0
+\Pi = \int_0^L (r^N)^2 \, dx
 $$
 
-The basic “recipe” for the Galerkin process is as follows:
+Setting $\partial \Pi / \partial a_i = 0$ gives $N$ equations for $N$ unknowns. This is clean and intuitive — you're literally minimizing the error in an $L^2$ sense.
 
-Step 1: Compute the residual: $A(u^N)-f=r^N(x)$
-
-Step 2: Force the residual to be orthogonal to each of the approximation functions: $ \int_0^L r^N (x) \sum_{i=1}^N a_i \phi_i dx = 0$
-
-Step 3: Solve the set of coupled equations. The equations will be linear if the
-differential equation is linear, and nonlinear if the differential equation is nonlinear.
-
-The primary problem with such a general framework is that it provides no systematic
-way of choosing the approximation functions, which is strongly dependent on issues
-of possible nonsmoothness of the true solution. The basic Finite Element Method
-has been designed to embellish and extend the fundamental Galerkin method by
-constructing $\phi_i$ in order to deal with such issues. In particular:
-
-It is based upon Galerkin’s method, It is computationally systematic and efficient and 
-It is based on reformulations of the differential equation that remove the problems
-of restrictive differentiability requirements.
-
-## Minimum potential energy principle
-The weak problem is known as a variational problem, which is related to that of determning U such that the potential energy function W(u) is minimized
-
+### Collocation Method
+Force the residual to be exactly zero at $N$ specific points:
 $$
-W(u)=1/2 \int \epsilon (u) : \sigma(\epsilon(u))dV - \int f \cdot u dV
+r^N(x_i) = 0, \qquad i = 1, \ldots, N
 $$
 
-If u mnimizes W(u) then any variation of u should lead to larger W(u)
+This is useful when you care about accuracy in specific locations. Imagine working at a fastener company and getting complaints that screws keep breaking at the head. You don't need the stress field everywhere — you need it *right below the screwhead*. Collocation lets you concentrate accuracy where it matters.
 
-Instead of varying a scalar, we vary a functino to minize a scalar.
+### Galerkin's Method — The Winner
+The most widely used approach: force the residual to be **orthogonal** to every basis function:
+$$
+\int_0^L r^N(x) \, \phi_i(x) \, dx = 0, \qquad i = 1, \ldots, N
+$$
 
-Because of linearity, the change in some parameter of the function, will cause a linear change in the function W, ie. the original term plus additional terms. 
+The intuition: the error $e = u - u^N$ and the residual $r$ are related (if one is zero, so is the other). Making $r$ orthogonal to the approximation space is the closest we can get to minimizing the error without knowing the true solution.
 
-By doing the math, we see that the variation look like a derivative, but for a functional.
-That means that we can employ similar methods as when minimizing ordinary function. ie. setting the functional derivative to zero and solve. That found function is the true minimizer of the energy.
+The Galerkin recipe:
+1. **Compute the residual**: $r^N = A(u^N) - f$
+2. **Force orthogonality**: $\int r^N \, \phi_i \, dx = 0$ for each $i$
+3. **Solve** the resulting system of equations for the $a_i$
 
+## The "Finite Element" Part — Choosing the Basis Functions
 
+The general Galerkin framework doesn't tell you *how* to choose the $\phi_i$. This is where FEM adds its magic:
+
+1. **Mesh the domain** — divide it into small elements (triangles in 2D, tetrahedra in 3D).
+2. **Define local basis functions** — on each element, the basis functions are simple polynomials (linear, quadratic, etc.). Each $\phi_i$ is nonzero only in the elements surrounding node $i$, and zero everywhere else. This is the "finite" in "finite element" — the basis functions have finite support.
+3. **Assemble** — the integrals over the whole domain become sums of integrals over individual elements. Each element contributes to a small block of the global matrix.
+
+The result: a large but **sparse** linear system $\mathbf{K}\mathbf{a} = \mathbf{f}$, where $\mathbf{K}$ is the stiffness matrix and $\mathbf{f}$ is the load vector. Sparse means most entries are zero (because each basis function only overlaps with its neighbors), which makes the system efficient to solve even for millions of unknowns.
+
+## Minimum Potential Energy — The Variational Perspective
+
+For elastic problems, there's an elegant alternative viewpoint. The true displacement minimizes the **potential energy**:
+$$
+W(u) = \frac{1}{2}\int_\Omega \varepsilon(u) : \sigma(\varepsilon(u)) \, dV - \int_\Omega \mathbf{f} \cdot u \, dV
+$$
+
+Any perturbation from the true solution increases $W$. This is a **variational problem**: instead of solving a differential equation, we minimize a functional. The two formulations are equivalent (for linear problems, the Galerkin equations *are* the optimality conditions for the energy functional), but the variational perspective gives physical insight — nature chooses the configuration that minimizes energy.
+
+The technique: instead of varying a scalar to minimize a function, we vary a *function* to minimize a *functional*. The calculus of variations gives us the tools, and the result is identical to the Galerkin weak form.
 
 ## Interactive FEM 1D Bar Demo
 
 [[simulation fem-1d-bar-sim]]
 
-**For the practical implementation of the finite element modelling, including choice of basisfunction $\phi_i$ and determining $a_i$ using the fenics python package, see the Finite Element Modelling Illustrator and Useful Python Packages topics.**
+## What We Just Learned
+
+The finite element method approximates solutions to differential equations by dividing the domain into small elements with simple local basis functions. Galerkin's method makes the residual orthogonal to the approximation space, producing a sparse linear system. For elastic problems, this is equivalent to minimizing potential energy. FEM handles complex geometries, arbitrary boundary conditions, and heterogeneous materials — making it the workhorse of modern computational mechanics.
+
+## What's Next
+
+We have the theory. Now let's get our hands dirty with actual computation. The next section introduces the Python packages — especially FEniCS — that let you set up and solve FEM problems in remarkably few lines of code.

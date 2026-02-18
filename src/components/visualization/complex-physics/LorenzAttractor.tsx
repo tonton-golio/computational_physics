@@ -4,6 +4,7 @@ import React, { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import { Slider } from '@/components/ui/slider';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
 
 // Dynamically import Plot to avoid SSR issues
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
@@ -40,6 +41,7 @@ export function LorenzAttractor() {
   const [sigma, setSigma] = useState([10]);
   const [rho, setRho] = useState([28]);
   const [beta, setBeta] = useState([8/3]);
+  const { mergeLayout } = usePlotlyTheme();
 
   const data = useMemo(() => {
     const trajectory = computeLorenz(sigma[0], rho[0], beta[0]);
@@ -61,7 +63,7 @@ export function LorenzAttractor() {
         {data && (
           <Plot
             data={data}
-            layout={{
+            layout={mergeLayout({
               width: 600,
               height: 600,
               scene: {
@@ -70,7 +72,7 @@ export function LorenzAttractor() {
                 zaxis: { title: { text: 'Z' } },
               },
               margin: { t: 0, b: 0, l: 0, r: 0 },
-            }}
+            })}
             config={{ displayModeBar: true }}
           />
         )}

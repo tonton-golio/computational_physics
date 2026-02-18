@@ -2,6 +2,8 @@
 
 import React, { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
+import { Slider } from '@/components/ui/slider';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -22,6 +24,7 @@ export default function BernoulliTrials({ id }: SimulationProps) { // eslint-dis
   const [pHeads, setPHeads] = useState(0.5);
   const [nDraws, setNDraws] = useState(20);
   const [nExp, setNExp] = useState(10000);
+  const { mergeLayout } = usePlotlyTheme();
 
   const plotData = useMemo(() => {
     const rng = mulberry32(12345);
@@ -87,55 +90,52 @@ export default function BernoulliTrials({ id }: SimulationProps) { // eslint-dis
   }, [pHeads, nDraws, nExp]);
 
   return (
-    <div className="w-full bg-[#151525] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-white">
+    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
+      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">
         Bernoulli Trials: Bounds Illustration
       </h3>
-      <p className="text-gray-400 text-sm mb-4">
+      <p className="text-[var(--text-muted)] text-sm mb-4">
         Draw {nDraws} Bernoulli random variables {nExp.toLocaleString()} times with bias p.
         Compare empirical tail probability with Markov, Chebyshev, and Hoeffding bounds.
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
         <div>
-          <label className="text-white text-sm">
+          <label className="text-[var(--text-strong)] text-sm">
             Probability of heads (p): {pHeads.toFixed(2)}
           </label>
-          <input
-            type="range"
+          <Slider
             min={0.05}
             max={0.95}
             step={0.05}
-            value={pHeads}
-            onChange={(e) => setPHeads(parseFloat(e.target.value))}
+            value={[pHeads]}
+            onValueChange={([v]) => setPHeads(v)}
             className="w-full"
           />
         </div>
         <div>
-          <label className="text-white text-sm">
+          <label className="text-[var(--text-strong)] text-sm">
             Number of draws (n): {nDraws}
           </label>
-          <input
-            type="range"
+          <Slider
             min={5}
             max={100}
             step={5}
-            value={nDraws}
-            onChange={(e) => setNDraws(parseInt(e.target.value))}
+            value={[nDraws]}
+            onValueChange={([v]) => setNDraws(v)}
             className="w-full"
           />
         </div>
         <div>
-          <label className="text-white text-sm">
+          <label className="text-[var(--text-strong)] text-sm">
             Number of experiments: {nExp.toLocaleString()}
           </label>
-          <input
-            type="range"
+          <Slider
             min={1000}
             max={50000}
             step={1000}
-            value={nExp}
-            onChange={(e) => setNExp(parseInt(e.target.value))}
+            value={[nExp]}
+            onValueChange={([v]) => setNExp(v)}
             className="w-full"
           />
         </div>
@@ -177,28 +177,24 @@ export default function BernoulliTrials({ id }: SimulationProps) { // eslint-dis
             line: { color: '#4ade80', width: 2, dash: 'dashdot' },
           },
         ]}
-        layout={{
+        layout={mergeLayout({
           title: {
             text: `Bernoulli Bounds (p=${pHeads.toFixed(2)}, n=${nDraws})`,
           },
-          xaxis: { title: { text: '&alpha;' }, color: '#9ca3af' },
+          xaxis: { title: { text: '&alpha;' } },
           yaxis: {
             title: { text: 'Probability' },
-            color: '#9ca3af',
             range: [0, 1.1],
           },
           height: 420,
-          paper_bgcolor: 'rgba(0,0,0,0)',
-          plot_bgcolor: 'rgba(15,15,25,1)',
-          font: { color: '#9ca3af' },
           legend: { x: 0.55, y: 1 },
           margin: { t: 40, b: 60, l: 60, r: 20 },
-        }}
+        })}
         config={{ displayModeBar: false }}
         style={{ width: '100%' }}
       />
 
-      <div className="mt-3 text-xs text-gray-500">
+      <div className="mt-3 text-xs text-[var(--text-soft)]">
         <p>
           All bounds are respected: the empirical curve lies below each bound. Chebyshev
           is generally tighter than Markov in the middle range, while Hoeffding becomes

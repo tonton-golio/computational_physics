@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useCallback } from 'react';
 import dynamic from 'next/dynamic';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -25,6 +26,7 @@ export function LUDecomposition({}: SimulationProps) {
   const [rhsInput, setRhsInput] = useState<number[]>([1, 2, 3]);
   const [currentStep, setCurrentStep] = useState(0);
   const [showSolve, setShowSolve] = useState(false);
+  const { mergeLayout } = usePlotlyTheme();
 
   // LU factorization with step tracking
   const luSteps = useMemo(() => {
@@ -181,10 +183,7 @@ export function LUDecomposition({}: SimulationProps) {
           y: Array.from({ length: n }, (_, i) => i),
         },
       ],
-      layout: {
-        paper_bgcolor: 'rgba(0,0,0,0)',
-        plot_bgcolor: 'rgba(15,15,25,1)',
-        font: { color: '#9ca3af', family: 'system-ui' },
+      layout: mergeLayout({
         margin: { t: 35, r: 10, b: 10, l: 10 },
         title: { text: title, font: { size: 14 } },
         xaxis: { showticklabels: false, ticks: '' as const, showgrid: false },
@@ -192,9 +191,9 @@ export function LUDecomposition({}: SimulationProps) {
         annotations,
         width: 220,
         height: 220,
-      },
+      }),
     };
-  }, []);
+  }, [mergeLayout]);
 
   const lHeatmap = useMemo(() => makeHeatmap(step.L, 'L (Lower)', 'Blues'), [step.L, makeHeatmap]);
   const uHeatmap = useMemo(() => makeHeatmap(step.U, 'U (Upper)', 'Reds'), [step.U, makeHeatmap]);
@@ -204,7 +203,7 @@ export function LUDecomposition({}: SimulationProps) {
       {/* Matrix input */}
       <div className="flex flex-wrap gap-6 items-start">
         <div>
-          <div className="text-sm text-gray-400 mb-2">Matrix A:</div>
+          <div className="text-sm text-[var(--text-muted)] mb-2">Matrix A:</div>
           <div className="grid grid-cols-3 gap-1">
             {matrixInput.map((row, i) =>
               row.map((val, j) => (
@@ -220,14 +219,14 @@ export function LUDecomposition({}: SimulationProps) {
                     setCurrentStep(0);
                     setShowSolve(false);
                   }}
-                  className="w-16 px-2 py-1 bg-[#151525] rounded text-white text-center text-sm"
+                  className="w-16 px-2 py-1 bg-[var(--surface-1)] rounded text-[var(--text-strong)] text-center text-sm"
                 />
               ))
             )}
           </div>
         </div>
         <div>
-          <div className="text-sm text-gray-400 mb-2">RHS b:</div>
+          <div className="text-sm text-[var(--text-muted)] mb-2">RHS b:</div>
           <div className="grid grid-cols-1 gap-1">
             {rhsInput.map((val, i) => (
               <input
@@ -241,7 +240,7 @@ export function LUDecomposition({}: SimulationProps) {
                   setRhsInput(newB);
                   setShowSolve(false);
                 }}
-                className="w-16 px-2 py-1 bg-[#151525] rounded text-white text-center text-sm"
+                className="w-16 px-2 py-1 bg-[var(--surface-1)] rounded text-[var(--text-strong)] text-center text-sm"
               />
             ))}
           </div>
@@ -263,11 +262,11 @@ export function LUDecomposition({}: SimulationProps) {
       </div>
 
       {/* Step description */}
-      <div className="bg-[#151525] rounded-lg p-4">
-        <div className="text-sm text-gray-400 mb-1">
+      <div className="bg-[var(--surface-1)] rounded-lg p-4">
+        <div className="text-sm text-[var(--text-muted)] mb-1">
           Step {currentStep + 1} / {luSteps.length}
         </div>
-        <div className="text-white font-mono text-sm">{step.description}</div>
+        <div className="text-[var(--text-strong)] font-mono text-sm">{step.description}</div>
       </div>
 
       {/* Controls */}
@@ -275,14 +274,14 @@ export function LUDecomposition({}: SimulationProps) {
         <button
           onClick={handlePrevStep}
           disabled={currentStep === 0}
-          className="px-4 py-2 bg-gray-600 rounded text-sm hover:bg-gray-700 text-white disabled:opacity-40"
+          className="px-4 py-2 bg-[var(--surface-3)] text-[var(--text-strong)] rounded text-sm hover:bg-[var(--border-strong)] disabled:opacity-40"
         >
           Previous
         </button>
         <button
           onClick={handleNextStep}
           disabled={currentStep >= luSteps.length - 1}
-          className="px-4 py-2 bg-blue-600 rounded text-sm hover:bg-blue-700 text-white disabled:opacity-40"
+          className="px-4 py-2 bg-[var(--accent)] rounded text-sm hover:bg-[var(--accent-strong)] text-white disabled:opacity-40"
         >
           Next Step
         </button>
@@ -300,7 +299,7 @@ export function LUDecomposition({}: SimulationProps) {
         </button>
         <button
           onClick={handleResetMatrix}
-          className="px-4 py-2 bg-gray-600 rounded text-sm hover:bg-gray-700 text-white"
+          className="px-4 py-2 bg-[var(--surface-3)] text-[var(--text-strong)] rounded text-sm hover:bg-[var(--border-strong)]"
         >
           Reset
         </button>
@@ -309,39 +308,39 @@ export function LUDecomposition({}: SimulationProps) {
       {/* Solve result */}
       {solveResult && (
         <div className="space-y-3">
-          <div className="bg-[#0f0f1f] rounded-lg p-4 space-y-2">
-            <div className="text-sm text-gray-400 font-semibold">Forward Substitution (Ly = b):</div>
+          <div className="bg-[var(--surface-2)] rounded-lg p-4 space-y-2">
+            <div className="text-sm text-[var(--text-muted)] font-semibold">Forward Substitution (Ly = b):</div>
             {solveResult.forwardSteps.map((s, i) => (
               <div key={i} className="text-xs font-mono text-blue-300">{s}</div>
             ))}
-            <div className="text-sm text-white mt-2">
+            <div className="text-sm text-[var(--text-strong)] mt-2">
               y = [{solveResult.y.map(v => formatNum(v)).join(', ')}]
             </div>
           </div>
 
-          <div className="bg-[#0f0f1f] rounded-lg p-4 space-y-2">
-            <div className="text-sm text-gray-400 font-semibold">Backward Substitution (Ux = y):</div>
+          <div className="bg-[var(--surface-2)] rounded-lg p-4 space-y-2">
+            <div className="text-sm text-[var(--text-muted)] font-semibold">Backward Substitution (Ux = y):</div>
             {solveResult.backwardSteps.map((s, i) => (
               <div key={i} className="text-xs font-mono text-green-300">{s}</div>
             ))}
-            <div className="text-sm text-white mt-2">
+            <div className="text-sm text-[var(--text-strong)] mt-2">
               x = [{solveResult.x.map(v => formatNum(v)).join(', ')}]
             </div>
           </div>
 
-          <div className="bg-[#0f0f1f] rounded-lg p-4">
-            <div className="text-sm text-gray-400 font-semibold">Verification: Ax = </div>
+          <div className="bg-[var(--surface-2)] rounded-lg p-4">
+            <div className="text-sm text-[var(--text-muted)] font-semibold">Verification: Ax = </div>
             <div className="text-sm text-yellow-300 font-mono">
               [{solveResult.Ax.map(v => formatNum(v)).join(', ')}]
             </div>
-            <div className="text-sm text-gray-400">
+            <div className="text-sm text-[var(--text-muted)]">
               b = [{rhsInput.map(v => formatNum(v)).join(', ')}]
             </div>
           </div>
         </div>
       )}
 
-      <p className="text-xs text-gray-500">
+      <p className="text-xs text-[var(--text-soft)]">
         Step through the LU factorization to see how each elimination creates an entry in L while zeroing
         the corresponding entry in U. Then solve Ax = b via forward substitution (Ly = b) followed
         by backward substitution (Ux = y).

@@ -2,6 +2,8 @@
 
 import React, { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
+import { Slider } from '@/components/ui/slider';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -19,6 +21,7 @@ const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 export default function SteadyStateRegulation() {
   const [H, setH] = useState(1);
   const [gammaP, setGammaP] = useState(0.5);
+  const { mergeLayout } = usePlotlyTheme();
 
   const { xVals, yPosHill, yNegHill, yLinear } = useMemo(() => {
     const n = 500;
@@ -42,38 +45,29 @@ export default function SteadyStateRegulation() {
 
   const commonLayout = {
     height: 380,
-    paper_bgcolor: 'rgba(0,0,0,0)',
-    plot_bgcolor: 'rgba(15,15,25,1)',
-    font: { color: '#9ca3af' },
     margin: { t: 40, b: 50, l: 50, r: 20 },
     xaxis: {
       title: { text: 'Protein concentration P' },
       range: [0, 4],
-      gridcolor: 'rgba(75,75,100,0.3)',
-      zerolinecolor: 'rgba(75,75,100,0.5)',
     },
     yaxis: {
       title: { text: 'y' },
       range: [0, 1.05],
-      gridcolor: 'rgba(75,75,100,0.3)',
-      zerolinecolor: 'rgba(75,75,100,0.5)',
     },
   };
 
   return (
-    <div className="w-full bg-[#151525] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-white">Steady-State Concentration: Positive vs. Negative Regulation</h3>
+    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
+      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Steady-State Concentration: Positive vs. Negative Regulation</h3>
 
       <div className="grid grid-cols-2 gap-6 mb-4">
         <div>
-          <label className="text-white text-sm">Hill coefficient H: {H}</label>
-          <input type="range" min={1} max={10} step={1} value={H}
-            onChange={(e) => setH(parseInt(e.target.value))} className="w-full" />
+          <label className="mb-1 block text-sm text-[var(--text-muted)]">Hill coefficient H: {H}</label>
+          <Slider value={[H]} onValueChange={([v]) => setH(v)} min={1} max={10} step={1} />
         </div>
         <div>
-          <label className="text-white text-sm">Degradation rate Gamma_P: {gammaP.toFixed(2)}</label>
-          <input type="range" min={0.05} max={1.0} step={0.05} value={gammaP}
-            onChange={(e) => setGammaP(parseFloat(e.target.value))} className="w-full" />
+          <label className="mb-1 block text-sm text-[var(--text-muted)]">Degradation rate Gamma_P: {gammaP.toFixed(2)}</label>
+          <Slider value={[gammaP]} onValueChange={([v]) => setGammaP(v)} min={0.05} max={1.0} step={0.05} />
         </div>
       </div>
 
@@ -92,14 +86,13 @@ export default function SteadyStateRegulation() {
                 name: 'Gamma_P * P',
               },
             ] as any}
-            layout={{
+            layout={mergeLayout({
               ...commonLayout,
               title: {
                 text: 'Positive regulation',
-                font: { color: '#9ca3af', size: 14 },
               },
-              legend: { x: 0.5, y: 0.3, bgcolor: 'rgba(0,0,0,0.3)', font: { color: '#9ca3af' } },
-            }}
+              legend: { x: 0.5, y: 0.3, bgcolor: 'rgba(0,0,0,0.3)' },
+            })}
             config={{ displayModeBar: false }}
             style={{ width: '100%' }}
           />
@@ -118,26 +111,25 @@ export default function SteadyStateRegulation() {
                 name: 'Gamma_P * P',
               },
             ] as any}
-            layout={{
+            layout={mergeLayout({
               ...commonLayout,
               title: {
                 text: 'Negative regulation',
-                font: { color: '#9ca3af', size: 14 },
               },
-              legend: { x: 0.5, y: 0.95, bgcolor: 'rgba(0,0,0,0.3)', font: { color: '#9ca3af' } },
-            }}
+              legend: { x: 0.5, y: 0.95, bgcolor: 'rgba(0,0,0,0.3)' },
+            })}
             config={{ displayModeBar: false }}
             style={{ width: '100%' }}
           />
         </div>
       </div>
 
-      <div className="mt-4 text-sm text-gray-400">
+      <div className="mt-4 text-sm text-[var(--text-muted)]">
         <p>
-          The <strong className="text-gray-300">steady-state concentrations</strong> are found at the intersections
+          The <strong className="text-[var(--text-muted)]">steady-state concentrations</strong> are found at the intersections
           of the production curve and the degradation line. For <em>positive regulation</em>,
           when the Hill coefficient H is large enough, the sigmoid production curve can intersect
-          the linear degradation line at multiple points, creating <strong className="text-gray-300">bistability</strong>.
+          the linear degradation line at multiple points, creating <strong className="text-[var(--text-muted)]">bistability</strong>.
           For <em>negative regulation</em>, there is always a unique steady state.
         </p>
       </div>

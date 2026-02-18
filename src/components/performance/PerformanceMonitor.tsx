@@ -112,11 +112,11 @@ export function PerformanceMonitor({ onMetricsUpdate, showDebugInfo = false }: P
       observer?.disconnect();
       window.removeEventListener('simulation-first-render', onSimulationFirstRender as EventListener);
     };
-  }, [onMetricsUpdate]);
+  }, [onMetricsUpdate, metrics.TBT]);
 
   // Performance status indicators
   const getStatusColor = (value: number | undefined, thresholds: { good: number; poor: number }) => {
-    if (value === undefined) return 'text-gray-400';
+    if (value === undefined) return 'text-[var(--text-soft)]';
     if (value <= thresholds.good) return 'text-green-400';
     if (value <= thresholds.poor) return 'text-yellow-400';
     return 'text-red-400';
@@ -132,47 +132,47 @@ export function PerformanceMonitor({ onMetricsUpdate, showDebugInfo = false }: P
   if (!showDebugInfo) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 bg-[#151525] border border-gray-700 rounded-lg p-4 max-w-sm z-50 text-xs font-mono">
-      <h3 className="text-white font-semibold mb-2">Performance Monitor</h3>
+    <div className="fixed bottom-4 right-4 bg-[var(--surface-1)] border border-[var(--border-strong)] rounded-lg p-4 max-w-sm z-50 text-xs font-mono">
+      <h3 className="text-[var(--text-strong)] font-semibold mb-2">Performance Monitor</h3>
 
       <div className="space-y-1">
         <div className="flex justify-between">
-          <span className="text-gray-300">FCP:</span>
+          <span className="text-[var(--text-muted)]">FCP:</span>
           <span className={getStatusColor(metrics.FCP, { good: 1800, poor: 3000 })}>
             {metrics.FCP ? `${metrics.FCP.toFixed(0)}ms` : '---'} ({getStatusText(metrics.FCP, { good: 1800, poor: 3000 })})
           </span>
         </div>
 
         <div className="flex justify-between">
-          <span className="text-gray-300">LCP:</span>
+          <span className="text-[var(--text-muted)]">LCP:</span>
           <span className={getStatusColor(metrics.LCP, { good: 2500, poor: 4000 })}>
             {metrics.LCP ? `${metrics.LCP.toFixed(0)}ms` : '---'} ({getStatusText(metrics.LCP, { good: 2500, poor: 4000 })})
           </span>
         </div>
 
         <div className="flex justify-between">
-          <span className="text-gray-300">FID:</span>
+          <span className="text-[var(--text-muted)]">FID:</span>
           <span className={getStatusColor(metrics.FID, { good: 100, poor: 300 })}>
             {metrics.FID ? `${metrics.FID.toFixed(0)}ms` : '---'} ({getStatusText(metrics.FID, { good: 100, poor: 300 })})
           </span>
         </div>
 
         <div className="flex justify-between">
-          <span className="text-gray-300">CLS:</span>
+          <span className="text-[var(--text-muted)]">CLS:</span>
           <span className={getStatusColor(metrics.CLS, { good: 0.1, poor: 0.25 })}>
             {metrics.CLS ? metrics.CLS.toFixed(3) : '---'} ({getStatusText(metrics.CLS, { good: 0.1, poor: 0.25 })})
           </span>
         </div>
 
         <div className="flex justify-between">
-          <span className="text-gray-300">TBT:</span>
+          <span className="text-[var(--text-muted)]">TBT:</span>
           <span className={getStatusColor(metrics.TBT, { good: 200, poor: 600 })}>
             {metrics.TBT ? `${metrics.TBT.toFixed(0)}ms` : '---'} ({getStatusText(metrics.TBT, { good: 200, poor: 600 })})
           </span>
         </div>
 
         <div className="flex justify-between">
-          <span className="text-gray-300">Sim First Render:</span>
+          <span className="text-[var(--text-muted)]">Sim First Render:</span>
           <span className={getStatusColor(metrics.simulationFirstRenderMs, { good: 350, poor: 800 })}>
             {metrics.simulationFirstRenderMs ? `${metrics.simulationFirstRenderMs.toFixed(0)}ms` : '---'} ({getStatusText(metrics.simulationFirstRenderMs, { good: 350, poor: 800 })})
           </span>
@@ -180,7 +180,7 @@ export function PerformanceMonitor({ onMetricsUpdate, showDebugInfo = false }: P
       </div>
 
       {isLoaded && (
-        <div className="mt-2 pt-2 border-t border-gray-700">
+        <div className="mt-2 pt-2 border-t border-[var(--border-strong)]">
           <div className="text-green-400 text-xs">✅ Web Vitals loaded</div>
         </div>
       )}

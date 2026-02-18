@@ -2,6 +2,8 @@
 
 import React, { useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { Slider } from '@/components/ui/slider';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -82,50 +84,41 @@ export function FractalDimension() {
   const [resolution, setResolution] = useState(128);
   const [maxIter, setMaxIter] = useState(35);
   const [exponent, setExponent] = useState(2.0);
+  const { mergeLayout } = usePlotlyTheme();
 
   const { mask, boxes } = useMemo(() => {
     const m = mandelbrotMask(resolution, maxIter, exponent);
     return { mask: m, boxes: boxCountDimension(m) };
   }, [resolution, maxIter, exponent]);
 
-  const darkLayout = {
-    paper_bgcolor: 'rgba(0,0,0,0)',
-    plot_bgcolor: 'rgba(15,15,25,1)',
-    font: { color: '#9ca3af' },
-    margin: { t: 40, r: 20, b: 50, l: 60 },
-    xaxis: { gridcolor: '#1e1e2e' },
-    yaxis: { gridcolor: '#1e1e2e' },
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap gap-6 items-center">
         <div>
-          <label className="text-sm text-gray-400 block mb-1">Resolution: {resolution}</label>
-          <input type="range" min={64} max={256} step={32} value={resolution} onChange={e => setResolution(Number(e.target.value))} className="w-48" />
+          <label className="mb-1 block text-sm text-[var(--text-muted)]">Resolution: {resolution}</label>
+          <Slider value={[resolution]} onValueChange={([v]) => setResolution(v)} min={64} max={256} step={32} />
         </div>
         <div>
-          <label className="text-sm text-gray-400 block mb-1">Iterations: {maxIter}</label>
-          <input type="range" min={10} max={80} step={1} value={maxIter} onChange={e => setMaxIter(Number(e.target.value))} className="w-48" />
+          <label className="mb-1 block text-sm text-[var(--text-muted)]">Iterations: {maxIter}</label>
+          <Slider value={[maxIter]} onValueChange={([v]) => setMaxIter(v)} min={10} max={80} step={1} />
         </div>
         <div>
-          <label className="text-sm text-gray-400 block mb-1">Exponent a: {exponent.toFixed(1)}</label>
-          <input type="range" min={1.5} max={4.0} step={0.1} value={exponent} onChange={e => setExponent(Number(e.target.value))} className="w-48" />
+          <label className="mb-1 block text-sm text-[var(--text-muted)]">Exponent a: {exponent.toFixed(1)}</label>
+          <Slider value={[exponent]} onValueChange={([v]) => setExponent(v)} min={1.5} max={4.0} step={0.1} />
         </div>
       </div>
 
-      <div className="text-sm text-gray-300">Estimated box-counting fractal dimension D ≈ {boxes.slope.toFixed(3)}</div>
+      <div className="text-sm text-[var(--text-muted)]">Estimated box-counting fractal dimension D ≈ {boxes.slope.toFixed(3)}</div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Plot
           data={[{ z: mask, type: 'heatmap', colorscale: [[0, '#0b1220'], [1, '#22d3ee']], showscale: false }]}
-          layout={{
-            ...darkLayout,
-            title: { text: 'Mandelbrot Membership Mask', font: { size: 13, color: '#9ca3af' } },
-            xaxis: { ...darkLayout.xaxis, visible: false },
-            yaxis: { ...darkLayout.yaxis, visible: false },
+          layout={mergeLayout({
+            title: { text: 'Mandelbrot Membership Mask', font: { size: 13 } },
+            xaxis: { visible: false },
+            yaxis: { visible: false },
             margin: { t: 40, r: 10, b: 10, l: 10 },
-          }}
+          })}
           config={{ responsive: true, displayModeBar: false }}
           style={{ width: '100%', height: 360 }}
         />
@@ -140,13 +133,13 @@ export function FractalDimension() {
               marker: { size: 6 },
             },
           ]}
-          layout={{
-            ...darkLayout,
-            title: { text: 'Box Counting: log(N) vs log(1/epsilon)', font: { size: 13, color: '#9ca3af' } },
-            xaxis: { ...darkLayout.xaxis, title: { text: 'log(1/epsilon)' } },
-            yaxis: { ...darkLayout.yaxis, title: { text: 'log(N)' } },
+          layout={mergeLayout({
+            title: { text: 'Box Counting: log(N) vs log(1/epsilon)', font: { size: 13 } },
+            xaxis: { title: { text: 'log(1/epsilon)' } },
+            yaxis: { title: { text: 'log(N)' } },
             showlegend: false,
-          }}
+            margin: { t: 40, r: 20, b: 50, l: 60 },
+          })}
           config={{ responsive: true, displayModeBar: false }}
           style={{ width: '100%', height: 360 }}
         />

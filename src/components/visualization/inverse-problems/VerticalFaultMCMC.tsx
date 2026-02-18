@@ -2,6 +2,8 @@
 
 import React, { useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { Slider } from '@/components/ui/slider';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -76,6 +78,7 @@ export default function VerticalFaultMCMC({ id }: SimulationProps) { // eslint-d
   const [proposalRho, setProposalRho] = useState(45);
   const [beta, setBeta] = useState(1.0);
   const [seed, setSeed] = useState(42);
+  const { mergeLayout } = usePlotlyTheme();
 
   const result = useMemo(() => {
     const rng = seededRandom(seed);
@@ -158,41 +161,41 @@ export default function VerticalFaultMCMC({ id }: SimulationProps) { // eslint-d
   }, [nWalkers, nSteps, burnIn, proposalH, proposalRho, beta, seed]);
 
   return (
-    <div className="w-full bg-[#151525] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-white">Vertical Fault (MCMC Inversion)</h3>
-      <p className="text-gray-400 text-sm mb-4">
+    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
+      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Vertical Fault (MCMC Inversion)</h3>
+      <p className="text-[var(--text-muted)] text-sm mb-4">
         Infer slab heights and density contrasts from observed gravity-gradient data using Metropolis-Hastings
         sampling. This modernized version preserves the old assignment intent while exposing core MCMC controls.
       </p>
 
       <div className="grid grid-cols-2 lg:grid-cols-7 gap-3 mb-4">
         <div>
-          <label className="text-gray-300 text-xs">Walkers: {nWalkers}</label>
-          <input type="range" min={2} max={24} step={1} value={nWalkers} onChange={(e) => setNWalkers(parseInt(e.target.value))} className="w-full" />
+          <label className="text-[var(--text-muted)] text-xs">Walkers: {nWalkers}</label>
+          <Slider min={2} max={24} step={1} value={[nWalkers]} onValueChange={([v]) => setNWalkers(v)} />
         </div>
         <div>
-          <label className="text-gray-300 text-xs">Steps: {nSteps}</label>
-          <input type="range" min={120} max={1200} step={20} value={nSteps} onChange={(e) => setNSteps(parseInt(e.target.value))} className="w-full" />
+          <label className="text-[var(--text-muted)] text-xs">Steps: {nSteps}</label>
+          <Slider min={120} max={1200} step={20} value={[nSteps]} onValueChange={([v]) => setNSteps(v)} />
         </div>
         <div>
-          <label className="text-gray-300 text-xs">Burn-in: {burnIn}</label>
-          <input type="range" min={20} max={500} step={10} value={burnIn} onChange={(e) => setBurnIn(parseInt(e.target.value))} className="w-full" />
+          <label className="text-[var(--text-muted)] text-xs">Burn-in: {burnIn}</label>
+          <Slider min={20} max={500} step={10} value={[burnIn]} onValueChange={([v]) => setBurnIn(v)} />
         </div>
         <div>
-          <label className="text-gray-300 text-xs">Height step: {proposalH}</label>
-          <input type="range" min={30} max={1200} step={10} value={proposalH} onChange={(e) => setProposalH(parseInt(e.target.value))} className="w-full" />
+          <label className="text-[var(--text-muted)] text-xs">Height step: {proposalH}</label>
+          <Slider min={30} max={1200} step={10} value={[proposalH]} onValueChange={([v]) => setProposalH(v)} />
         </div>
         <div>
-          <label className="text-gray-300 text-xs">Density step: {proposalRho}</label>
-          <input type="range" min={5} max={300} step={5} value={proposalRho} onChange={(e) => setProposalRho(parseInt(e.target.value))} className="w-full" />
+          <label className="text-[var(--text-muted)] text-xs">Density step: {proposalRho}</label>
+          <Slider min={5} max={300} step={5} value={[proposalRho]} onValueChange={([v]) => setProposalRho(v)} />
         </div>
         <div>
-          <label className="text-gray-300 text-xs">Beta: {beta.toFixed(2)}</label>
-          <input type="range" min={0.2} max={2.0} step={0.05} value={beta} onChange={(e) => setBeta(parseFloat(e.target.value))} className="w-full" />
+          <label className="text-[var(--text-muted)] text-xs">Beta: {beta.toFixed(2)}</label>
+          <Slider min={0.2} max={2.0} step={0.05} value={[beta]} onValueChange={([v]) => setBeta(v)} />
         </div>
         <div>
-          <label className="text-gray-300 text-xs">Seed: {seed}</label>
-          <input type="range" min={1} max={300} step={1} value={seed} onChange={(e) => setSeed(parseInt(e.target.value))} className="w-full" />
+          <label className="text-[var(--text-muted)] text-xs">Seed: {seed}</label>
+          <Slider min={1} max={300} step={1} value={[seed]} onValueChange={([v]) => setSeed(v)} />
         </div>
       </div>
 
@@ -207,13 +210,10 @@ export default function VerticalFaultMCMC({ id }: SimulationProps) { // eslint-d
             opacity: 0.5,
             line: { width: 1 },
           }))}
-          layout={{
+          layout={mergeLayout({
             title: { text: 'Loss Traces (all walkers)' },
-            xaxis: { title: { text: 'iteration' }, color: '#9ca3af' },
-            yaxis: { title: { text: 'loss' }, type: 'log', color: '#9ca3af' },
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(15,15,25,1)',
-            font: { color: '#9ca3af' },
+            xaxis: { title: { text: 'iteration' } },
+            yaxis: { title: { text: 'loss' }, type: 'log' },
             height: 320,
             margin: { t: 40, b: 50, l: 60, r: 20 },
             showlegend: false,
@@ -226,7 +226,7 @@ export default function VerticalFaultMCMC({ id }: SimulationProps) { // eslint-d
               yref: 'paper',
               line: { color: '#22d3ee', dash: 'dash' },
             }],
-          }}
+          })}
           config={{ displayModeBar: false }}
           style={{ width: '100%' }}
         />
@@ -240,16 +240,12 @@ export default function VerticalFaultMCMC({ id }: SimulationProps) { // eslint-d
               name: 'acceptance',
             },
           ]}
-          layout={{
+          layout={mergeLayout({
             title: { text: 'Acceptance Rate per Walker' },
-            xaxis: { color: '#9ca3af' },
-            yaxis: { title: { text: 'acceptance fraction' }, range: [0, 1], color: '#9ca3af' },
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(15,15,25,1)',
-            font: { color: '#9ca3af' },
+            yaxis: { title: { text: 'acceptance fraction' }, range: [0, 1] },
             height: 320,
             margin: { t: 40, b: 50, l: 60, r: 20 },
-          }}
+          })}
           config={{ displayModeBar: false }}
           style={{ width: '100%' }}
         />
@@ -276,17 +272,13 @@ export default function VerticalFaultMCMC({ id }: SimulationProps) { // eslint-d
               line: { color: '#22d3ee', width: 2 },
             },
           ]}
-          layout={{
+          layout={mergeLayout({
             title: { text: 'Observed vs Predicted Gravity Gradient' },
-            xaxis: { title: { text: 'x-position' }, color: '#9ca3af' },
-            yaxis: { title: { text: 'd(x)' }, color: '#9ca3af' },
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(15,15,25,1)',
-            font: { color: '#9ca3af' },
-            legend: { bgcolor: 'rgba(0,0,0,0.3)' },
+            xaxis: { title: { text: 'x-position' } },
+            yaxis: { title: { text: 'd(x)' } },
             height: 320,
             margin: { t: 40, b: 50, l: 60, r: 20 },
-          }}
+          })}
           config={{ displayModeBar: false }}
           style={{ width: '100%' }}
         />
@@ -299,36 +291,32 @@ export default function VerticalFaultMCMC({ id }: SimulationProps) { // eslint-d
               type: 'histogram2d' as const,
               colorscale: 'Viridis',
               nbinsx: 30,
-              colorbar: { tickfont: { color: '#9ca3af' } },
             },
           ]}
-          layout={{
+          layout={mergeLayout({
             title: { text: 'Posterior of Slab 1 (height vs density)' },
-            xaxis: { title: { text: 'height_1 (m)' }, color: '#9ca3af' },
-            yaxis: { title: { text: 'rho_1 (kg/m^3)' }, color: '#9ca3af' },
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(15,15,25,1)',
-            font: { color: '#9ca3af' },
+            xaxis: { title: { text: 'height_1 (m)' } },
+            yaxis: { title: { text: 'rho_1 (kg/m^3)' } },
             height: 320,
             margin: { t: 40, b: 50, l: 60, r: 20 },
-          }}
+          })}
           config={{ displayModeBar: false }}
           style={{ width: '100%' }}
         />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 text-sm">
-        <div className="bg-[#0a0a15] rounded p-3">
-          <div className="text-gray-500">Best loss</div>
-          <div className="text-white font-mono">{result.globalBestLoss.toExponential(3)}</div>
+        <div className="bg-[var(--surface-1)] rounded p-3 border border-[var(--border-strong)]">
+          <div className="text-[var(--text-soft)]">Best loss</div>
+          <div className="text-[var(--text-strong)] font-mono">{result.globalBestLoss.toExponential(3)}</div>
         </div>
-        <div className="bg-[#0a0a15] rounded p-3">
-          <div className="text-gray-500">Best slab heights (m)</div>
-          <div className="text-white font-mono">{result.globalBestHeights.map((v) => v.toFixed(0)).join(', ')}</div>
+        <div className="bg-[var(--surface-1)] rounded p-3 border border-[var(--border-strong)]">
+          <div className="text-[var(--text-soft)]">Best slab heights (m)</div>
+          <div className="text-[var(--text-strong)] font-mono">{result.globalBestHeights.map((v) => v.toFixed(0)).join(', ')}</div>
         </div>
-        <div className="bg-[#0a0a15] rounded p-3">
-          <div className="text-gray-500">Best slab densities (kg/m^3)</div>
-          <div className="text-white font-mono">{result.globalBestRhos.map((v) => v.toFixed(0)).join(', ')}</div>
+        <div className="bg-[var(--surface-1)] rounded p-3 border border-[var(--border-strong)]">
+          <div className="text-[var(--text-soft)]">Best slab densities (kg/m^3)</div>
+          <div className="text-[var(--text-strong)] font-mono">{result.globalBestRhos.map((v) => v.toFixed(0)).join(', ')}</div>
         </div>
       </div>
     </div>

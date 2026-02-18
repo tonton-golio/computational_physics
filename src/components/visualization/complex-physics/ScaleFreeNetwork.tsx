@@ -1,7 +1,9 @@
 'use client';
 
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { Slider } from '@/components/ui/slider';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -130,6 +132,7 @@ function layoutNetwork(nodes: NetworkNode[], links: NetworkLink[], iterations: n
 export function ScaleFreeNetwork() {
   const [numNodes, setNumNodes] = useState(50);
   const [seed, setSeed] = useState(0);
+  const { mergeLayout } = usePlotlyTheme();
 
   const network = useMemo(() => {
     const raw = generateScaleFreeNetwork(numNodes);
@@ -137,13 +140,6 @@ export function ScaleFreeNetwork() {
     return { nodes: positioned, links: raw.links };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [numNodes, seed]);
-
-  const darkLayout = {
-    paper_bgcolor: 'rgba(0,0,0,0)',
-    plot_bgcolor: 'rgba(15,15,25,1)',
-    font: { color: '#9ca3af' },
-    margin: { t: 40, r: 20, b: 40, l: 50 },
-  };
 
   const colors = ['#3b82f6', '#ec4899', '#10b981'];
 
@@ -166,20 +162,19 @@ export function ScaleFreeNetwork() {
     <div className="space-y-6">
       <div className="flex flex-wrap gap-6 items-center">
         <div>
-          <label className="text-sm text-gray-400 block mb-1">Nodes: {numNodes}</label>
-          <input
-            type="range"
+          <label className="text-sm text-[var(--text-muted)] block mb-1">Nodes: {numNodes}</label>
+          <Slider
             min={10}
             max={100}
             step={5}
-            value={numNodes}
-            onChange={e => setNumNodes(Number(e.target.value))}
+            value={[numNodes]}
+            onValueChange={([v]) => setNumNodes(v)}
             className="w-48"
           />
         </div>
         <button
           onClick={() => setSeed(s => s + 1)}
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded text-sm mt-4"
+          className="px-4 py-2 bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white rounded text-sm mt-4"
         >
           Regenerate
         </button>
@@ -211,13 +206,12 @@ export function ScaleFreeNetwork() {
               showlegend: false,
             },
           ]}
-          layout={{
-            ...darkLayout,
-            title: { text: `Scale-Free Network (n=${numNodes})`, font: { size: 13, color: '#9ca3af' } },
+          layout={mergeLayout({
+            title: { text: `Scale-Free Network (n=${numNodes})`, font: { size: 13 } },
             xaxis: { showticklabels: false, showgrid: false, zeroline: false },
             yaxis: { showticklabels: false, showgrid: false, zeroline: false, scaleanchor: 'x' },
             margin: { t: 40, r: 10, b: 10, l: 10 },
-          }}
+          })}
           config={{ responsive: true, displayModeBar: false }}
           style={{ width: '100%', height: 400 }}
         />
@@ -227,13 +221,12 @@ export function ScaleFreeNetwork() {
             type: 'histogram',
             marker: { color: '#3b82f6' },
           }]}
-          layout={{
-            ...darkLayout,
-            title: { text: 'Degree Distribution', font: { size: 13, color: '#9ca3af' } },
-            xaxis: { ...darkLayout, title: { text: 'Degree' }, gridcolor: '#1e1e2e' },
-            yaxis: { ...darkLayout, title: { text: 'Frequency' }, gridcolor: '#1e1e2e' },
+          layout={mergeLayout({
+            title: { text: 'Degree Distribution', font: { size: 13 } },
+            xaxis: { title: { text: 'Degree' } },
+            yaxis: { title: { text: 'Frequency' } },
             margin: { t: 40, r: 20, b: 50, l: 60 },
-          }}
+          })}
           config={{ responsive: true, displayModeBar: false }}
           style={{ width: '100%', height: 400 }}
         />

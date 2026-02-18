@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 import { Slider } from '@/components/ui/slider';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { runLotkaVolterraWorker, type LotkaVolterraResult } from '@/features/simulation/simulation-worker.client';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
 
 // Dynamically import Plot to avoid SSR issues
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
@@ -90,6 +91,7 @@ function getCachedBifurcation(
 }
 
 export function LotkaVolterraSim() {
+  const { mergeLayout } = usePlotlyTheme();
   const [alpha, setAlpha] = useState([1.0]);
   const [beta, setBeta] = useState([0.1]);
   const [gamma, setGamma] = useState([1.5]);
@@ -224,13 +226,13 @@ export function LotkaVolterraSim() {
               {timeSeriesData && (
                 <Plot
                   data={timeSeriesData as any}
-                  layout={{
+                  layout={mergeLayout({
                     width: 400,
                     height: 300,
                     xaxis: { title: { text: 'Time' } },
                     yaxis: { title: { text: 'Population' } },
                     margin: { t: 20, b: 40, l: 60, r: 20 },
-                  }}
+                  })}
                   config={{ displayModeBar: false }}
                 />
               )}
@@ -240,13 +242,13 @@ export function LotkaVolterraSim() {
               {phasePortraitData && (
                 <Plot
                   data={phasePortraitData as any}
-                  layout={{
+                  layout={mergeLayout({
                     width: 400,
                     height: 300,
                     xaxis: { title: { text: 'Prey' } },
                     yaxis: { title: { text: 'Predator' } },
                     margin: { t: 20, b: 40, l: 60, r: 20 },
-                  }}
+                  })}
                   config={{ displayModeBar: false }}
                 />
               )}
@@ -256,13 +258,13 @@ export function LotkaVolterraSim() {
               {bifurcationData && (
                 <Plot
                   data={bifurcationData as any}
-                  layout={{
+                  layout={mergeLayout({
                     width: 400,
                     height: 300,
                     xaxis: { title: { text: 'Alpha' } },
                     yaxis: { title: { text: 'Population' } },
                     margin: { t: 20, b: 40, l: 60, r: 20 },
-                  }}
+                  })}
                   config={{ displayModeBar: false }}
                 />
               )}

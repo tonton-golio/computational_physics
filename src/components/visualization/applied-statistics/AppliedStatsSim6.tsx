@@ -2,18 +2,13 @@
 
 import React, { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
+import { Slider } from '@/components/ui/slider';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
 interface SimulationProps {
   id: string;
-}
-
-// Box-Muller transform
-function boxMuller(): number {
-  const u1 = Math.random();
-  const u2 = Math.random();
-  return Math.sqrt(-2 * Math.log(u1 + 1e-10)) * Math.cos(2 * Math.PI * u2);
 }
 
 // Gaussian PDF
@@ -60,6 +55,7 @@ export default function AppliedStatsSim6({ }: SimulationProps) {
   const [sigTrue, setSigTrue] = useState(1);
   const [sampleSize, setSampleSize] = useState(120);
   const [seed, setSeed] = useState(42);
+  const { mergeLayout } = usePlotlyTheme();
 
   const result = useMemo(() => {
     // Seeded random
@@ -141,43 +137,43 @@ export default function AppliedStatsSim6({ }: SimulationProps) {
   }, [muTrue, sigTrue, sampleSize, seed]);
 
   return (
-    <div className="w-full bg-[#151525] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-white">Maximum Likelihood Estimation</h3>
-      <p className="text-sm text-gray-300 mb-4">
+    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
+      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Maximum Likelihood Estimation</h3>
+      <p className="text-sm text-[var(--text-muted)] mb-4">
         Draw samples from a normal distribution, then find the best-fit parameters via maximum likelihood.
         The left plot shows the sample histogram overlaid with the MLE-fitted Gaussian PDF.
         The right plot shows the log-likelihood as a function of the parameter being optimized.
       </p>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
         <div>
-          <label className="text-sm text-gray-400">True mu: {muTrue.toFixed(1)}</label>
-          <input type="range" min={-3} max={3} step={0.1} value={muTrue}
-            onChange={e => setMuTrue(+e.target.value)} className="w-full" />
+          <label className="text-sm text-[var(--text-muted)]">True mu: {muTrue.toFixed(1)}</label>
+          <Slider min={-3} max={3} step={0.1} value={[muTrue]}
+            onValueChange={([v]) => setMuTrue(v)} />
         </div>
         <div>
-          <label className="text-sm text-gray-400">True sigma: {sigTrue.toFixed(1)}</label>
-          <input type="range" min={0.3} max={4} step={0.1} value={sigTrue}
-            onChange={e => setSigTrue(+e.target.value)} className="w-full" />
+          <label className="text-sm text-[var(--text-muted)]">True sigma: {sigTrue.toFixed(1)}</label>
+          <Slider min={0.3} max={4} step={0.1} value={[sigTrue]}
+            onValueChange={([v]) => setSigTrue(v)} />
         </div>
         <div>
-          <label className="text-sm text-gray-400">Sample size: {sampleSize}</label>
-          <input type="range" min={10} max={2000} step={10} value={sampleSize}
-            onChange={e => setSampleSize(+e.target.value)} className="w-full" />
+          <label className="text-sm text-[var(--text-muted)]">Sample size: {sampleSize}</label>
+          <Slider min={10} max={2000} step={10} value={[sampleSize]}
+            onValueChange={([v]) => setSampleSize(v)} />
         </div>
         <div>
-          <label className="text-sm text-gray-400">Seed: {seed}</label>
-          <input type="range" min={1} max={200} step={1} value={seed}
-            onChange={e => setSeed(+e.target.value)} className="w-full" />
+          <label className="text-sm text-[var(--text-muted)]">Seed: {seed}</label>
+          <Slider min={1} max={200} step={1} value={[seed]}
+            onValueChange={([v]) => setSeed(v)} />
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 text-sm text-gray-300 mb-4">
+      <div className="grid grid-cols-2 gap-4 text-sm text-[var(--text-muted)] mb-4">
         <div>
-          <strong className="text-gray-200">Golden-section search:</strong> mu = {result.muBest.toFixed(4)}, sigma = {result.sigBest.toFixed(4)}
+          <strong className="text-[var(--text-strong)]">Golden-section search:</strong> mu = {result.muBest.toFixed(4)}, sigma = {result.sigBest.toFixed(4)}
           <br/>Calls: mu={result.nCallsMu}, sig={result.nCallsSig}
         </div>
         <div>
-          <strong className="text-gray-200">Linear search:</strong> mu = {result.muBestLinear.toFixed(4)}, sigma = {result.sigBestLinear.toFixed(4)}
+          <strong className="text-[var(--text-strong)]">Linear search:</strong> mu = {result.muBestLinear.toFixed(4)}, sigma = {result.sigBestLinear.toFixed(4)}
         </div>
       </div>
 
@@ -201,16 +197,13 @@ export default function AppliedStatsSim6({ }: SimulationProps) {
               name: 'MLE fit',
             },
           ]}
-          layout={{
-            title: { text: 'Sample & MLE Fit', font: { color: '#fff' } },
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(15,15,25,1)',
-            font: { color: '#9ca3af' },
+          layout={mergeLayout({
+            title: { text: 'Sample & MLE Fit' },
             margin: { t: 40, r: 20, b: 50, l: 50 },
-            xaxis: { title: { text: 'Value' }, gridcolor: '#1e1e2e' },
-            yaxis: { title: { text: 'Density' }, gridcolor: '#1e1e2e' },
-            legend: { font: { color: '#9ca3af' } },
-          }}
+            xaxis: { title: { text: 'Value' } },
+            yaxis: { title: { text: 'Density' } },
+            legend: {},
+          })}
           config={{ responsive: true, displayModeBar: false }}
           style={{ width: '100%', height: 400 }}
         />
@@ -233,16 +226,13 @@ export default function AppliedStatsSim6({ }: SimulationProps) {
               name: 'LL(sigma)',
             },
           ]}
-          layout={{
-            title: { text: 'Log-Likelihood Curves', font: { color: '#fff' } },
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(15,15,25,1)',
-            font: { color: '#9ca3af' },
+          layout={mergeLayout({
+            title: { text: 'Log-Likelihood Curves' },
             margin: { t: 40, r: 20, b: 50, l: 50 },
-            xaxis: { title: { text: 'Parameter value' }, gridcolor: '#1e1e2e' },
-            yaxis: { title: { text: 'Log-likelihood' }, gridcolor: '#1e1e2e' },
-            legend: { font: { color: '#9ca3af' } },
-          }}
+            xaxis: { title: { text: 'Parameter value' } },
+            yaxis: { title: { text: 'Log-likelihood' } },
+            legend: {},
+          })}
           config={{ responsive: true, displayModeBar: false }}
           style={{ width: '100%', height: 400 }}
         />

@@ -2,6 +2,8 @@
 
 import React, { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { Slider } from '@/components/ui/slider';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -74,25 +76,17 @@ export function PercolationSim() {
   const [p, setP] = useState(0.45);
   const [size, setSize] = useState(40);
   const [seed, setSeed] = useState(42);
+  const { mergeLayout } = usePlotlyTheme();
 
   const { displayGrid, numClusters } = useMemo(() => {
     const grid = generateGrid(size, seed);
     const { clusterMap, numClusters } = findClusters(grid, p);
-    const colors = clusterColorScale(numClusters);
+    clusterColorScale(numClusters);
 
     // Build display grid: -1 for closed sites, cluster ID for open sites
     const displayGrid: number[][] = clusterMap.map(row => row.map(v => v));
     return { displayGrid, numClusters };
   }, [p, size, seed]);
-
-  const darkLayout = {
-    paper_bgcolor: 'rgba(0,0,0,0)',
-    plot_bgcolor: 'rgba(15,15,25,1)',
-    font: { color: '#9ca3af' },
-    margin: { t: 40, r: 20, b: 40, l: 50 },
-    xaxis: { gridcolor: '#1e1e2e' },
-    yaxis: { gridcolor: '#1e1e2e' },
-  };
 
   // Percolation over many p values
   const npData = useMemo(() => {
@@ -111,44 +105,41 @@ export function PercolationSim() {
     <div className="space-y-6">
       <div className="flex flex-wrap gap-6 items-center">
         <div>
-          <label className="text-sm text-gray-400 block mb-1">p = {p.toFixed(2)}</label>
-          <input
-            type="range"
+          <label className="text-sm text-[var(--text-muted)] block mb-1">p = {p.toFixed(2)}</label>
+          <Slider
             min={0.01}
             max={1.0}
             step={0.01}
-            value={p}
-            onChange={e => setP(Number(e.target.value))}
+            value={[p]}
+            onValueChange={([v]) => setP(v)}
             className="w-48"
           />
         </div>
         <div>
-          <label className="text-sm text-gray-400 block mb-1">Size: {size}</label>
-          <input
-            type="range"
+          <label className="text-sm text-[var(--text-muted)] block mb-1">Size: {size}</label>
+          <Slider
             min={10}
             max={80}
             step={5}
-            value={size}
-            onChange={e => setSize(Number(e.target.value))}
+            value={[size]}
+            onValueChange={([v]) => setSize(v)}
             className="w-48"
           />
         </div>
         <div>
-          <label className="text-sm text-gray-400 block mb-1">Seed: {seed}</label>
-          <input
-            type="range"
+          <label className="text-sm text-[var(--text-muted)] block mb-1">Seed: {seed}</label>
+          <Slider
             min={1}
             max={200}
             step={1}
-            value={seed}
-            onChange={e => setSeed(Number(e.target.value))}
+            value={[seed]}
+            onValueChange={([v]) => setSeed(v)}
             className="w-48"
           />
         </div>
       </div>
 
-      <div className="text-sm text-gray-300">
+      <div className="text-sm text-[var(--text-muted)]">
         N(p={p.toFixed(2)}) = {numClusters} clusters
       </div>
 
@@ -160,13 +151,12 @@ export function PercolationSim() {
             colorscale: 'Portland',
             showscale: false,
           }]}
-          layout={{
-            ...darkLayout,
-            title: { text: `Site Percolation (p=${p.toFixed(2)})`, font: { size: 13, color: '#9ca3af' } },
-            xaxis: { ...darkLayout.xaxis, showticklabels: false },
-            yaxis: { ...darkLayout.yaxis, showticklabels: false },
+          layout={mergeLayout({
+            title: { text: `Site Percolation (p=${p.toFixed(2)})`, font: { size: 13 } },
+            xaxis: { showticklabels: false },
+            yaxis: { showticklabels: false },
             margin: { t: 40, r: 5, b: 5, l: 5 },
-          }}
+          })}
           config={{ responsive: true, displayModeBar: false }}
           style={{ width: '100%', height: 400 }}
         />
@@ -179,13 +169,12 @@ export function PercolationSim() {
             line: { color: '#3b82f6', width: 2 },
             marker: { size: 5 },
           }]}
-          layout={{
-            ...darkLayout,
-            title: { text: 'Number of Clusters N(p)', font: { size: 13, color: '#9ca3af' } },
-            xaxis: { ...darkLayout.xaxis, title: { text: 'p' } },
-            yaxis: { ...darkLayout.yaxis, title: { text: 'N' } },
+          layout={mergeLayout({
+            title: { text: 'Number of Clusters N(p)', font: { size: 13 } },
+            xaxis: { title: { text: 'p' } },
+            yaxis: { title: { text: 'N' } },
             margin: { t: 40, r: 20, b: 50, l: 60 },
-          }}
+          })}
           config={{ responsive: true, displayModeBar: false }}
           style={{ width: '100%', height: 400 }}
         />

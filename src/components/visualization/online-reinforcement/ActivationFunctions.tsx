@@ -2,6 +2,7 @@
 
 import React, { useMemo } from 'react';
 import dynamic from 'next/dynamic';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -11,6 +12,7 @@ interface SimulationProps {
 
 export default function ActivationFunctions({ id }: SimulationProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
   const xs = useMemo(() => Array.from({ length: 241 }, (_, i) => -6 + i * 0.05), []);
+  const { mergeLayout } = usePlotlyTheme();
 
   const relu = useMemo(() => xs.map((x) => Math.max(0, x)), [xs]);
   const sigmoid = useMemo(() => xs.map((x) => 1 / (1 + Math.exp(-x))), [xs]);
@@ -22,9 +24,9 @@ export default function ActivationFunctions({ id }: SimulationProps) { // eslint
   }, [xs]);
 
   return (
-    <div className="w-full rounded-lg bg-[#151525] p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-3 text-white">Activation Functions</h3>
-      <p className="text-sm text-gray-400 mb-4">
+    <div className="w-full rounded-lg bg-[var(--surface-1)] p-6 mb-8">
+      <h3 className="text-xl font-semibold mb-3 text-[var(--text-strong)]">Activation Functions</h3>
+      <p className="text-sm text-[var(--text-muted)] mb-4">
         Comparison of ReLU, Sigmoid, Tanh, and Softmax over a one-dimensional input grid.
       </p>
       <Plot
@@ -34,16 +36,13 @@ export default function ActivationFunctions({ id }: SimulationProps) { // eslint
           { x: xs, y: tanh, type: 'scatter', mode: 'lines', name: 'Tanh', line: { color: '#facc15', width: 2 } },
           { x: xs, y: softmax, type: 'scatter', mode: 'lines', name: 'Softmax (vector-normalized)', line: { color: '#f87171', width: 2 } },
         ]}
-        layout={{
+        layout={mergeLayout({
           title: { text: 'Common nonlinearities' },
-          xaxis: { title: { text: 'x' }, color: '#9ca3af' },
-          yaxis: { title: { text: 'f(x)' }, color: '#9ca3af' },
+          xaxis: { title: { text: 'x' } },
+          yaxis: { title: { text: 'f(x)' } },
           height: 420,
-          paper_bgcolor: 'rgba(0,0,0,0)',
-          plot_bgcolor: 'rgba(15,15,25,1)',
-          font: { color: '#9ca3af' },
           margin: { t: 40, b: 60, l: 60, r: 20 },
-        }}
+        })}
         config={{ displayModeBar: false }}
         style={{ width: '100%' }}
       />

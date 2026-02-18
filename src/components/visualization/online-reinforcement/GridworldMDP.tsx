@@ -2,6 +2,7 @@
 
 import React, { useMemo } from 'react';
 import dynamic from 'next/dynamic';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -9,6 +10,7 @@ interface SimulationProps { id: string }
 
 export default function GridworldMDP({ id }: SimulationProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
   const n = 6;
+  const { mergeLayout } = usePlotlyTheme();
   const values = useMemo(() => {
     const goal = [5, 5];
     const grid: number[][] = [];
@@ -27,22 +29,19 @@ export default function GridworldMDP({ id }: SimulationProps) { // eslint-disabl
   const pathY = [0, 0, 1, 1, 2, 3, 3, 4, 5];
 
   return (
-    <div className="w-full rounded-lg bg-[#151525] p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-3 text-white">Gridworld MDP: Value Heatmap and Rollout</h3>
+    <div className="w-full rounded-lg bg-[var(--surface-1)] p-6 mb-8">
+      <h3 className="text-xl font-semibold mb-3 text-[var(--text-strong)]">Gridworld MDP: Value Heatmap and Rollout</h3>
       <Plot
         data={[
           { z: values, type: 'heatmap', colorscale: 'Viridis', showscale: true },
           { x: pathX, y: pathY, type: 'scatter', mode: 'lines+markers', name: 'Greedy rollout', line: { color: '#f87171', width: 3 }, marker: { size: 6 } },
         ]}
-        layout={{
+        layout={mergeLayout({
           title: { text: 'Higher value near rewarding terminal state' },
-          xaxis: { title: { text: 'column' }, color: '#9ca3af', range: [-0.5, 5.5] },
-          yaxis: { title: { text: 'row' }, color: '#9ca3af', autorange: 'reversed', range: [-0.5, 5.5] },
+          xaxis: { title: { text: 'column' }, range: [-0.5, 5.5] },
+          yaxis: { title: { text: 'row' }, autorange: 'reversed', range: [-0.5, 5.5] },
           height: 430,
-          paper_bgcolor: 'rgba(0,0,0,0)',
-          plot_bgcolor: 'rgba(15,15,25,1)',
-          font: { color: '#9ca3af' },
-        }}
+        })}
         config={{ displayModeBar: false }}
         style={{ width: '100%' }}
       />

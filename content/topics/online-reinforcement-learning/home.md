@@ -1,19 +1,34 @@
 # Online and Reinforcement Learning
 
-## Course overview
+## Why are we even here?
 
-Online learning and reinforcement learning study **sequential decision making**.
-Unlike classical offline machine learning, data are not i.i.d. and the learner can change future data through its actions.
+Picture two weather forecasters. Every single morning, Forecaster A walks to the microphone and says "Rain." Every single morning, Forecaster B says "Sunny." Neither of them looks out the window. Neither of them checks the data. They just repeat themselves, day after day, for a thousand days.
 
-- Offline ML: fixed dataset, i.i.d. assumptions, generalization error.
-- Online/RL: repeated interaction, potentially non-stationary or adversarial feedback, continual adaptation.
+Now here is the question that launches this entire course: at the end of those thousand days, which forecaster was better? You do not know. You *cannot* know until you look at what actually happened. If it rained 900 out of 1000 days, Forecaster A looks like a genius. If the sun shone 900 days, Forecaster B wins.
 
-Core interaction loop:
+But what if *you* could do something smarter? What if, each morning, you looked at the track records of both forecasters — and all their friends — and weighted your prediction toward whoever had been right most often? You would start off clueless, but day by day your cumulative mistakes would grow *slower* than the best single forecaster's mistakes. The gap between your total loss and the best expert's total loss — that gap is called **regret**. And making that gap grow as slowly as possible is the entire game of online learning.
 
-1. Observe state or context.
-2. Choose an action.
-3. Receive feedback (reward/loss, full or partial).
-4. Update the decision rule.
+That is the thread running through everything in this module. We start with regret, we learn algorithms that minimize it, we move from simple expert advice to slot machines where you only see one outcome at a time, and then we enter the full world of reinforcement learning where your actions change the world around you. Every lesson builds on the last. Every idea comes back to this: how do you make good decisions, one at a time, when you do not know what is coming next?
+
+## Map of the course
+
+Think of this module as a journey through four territories, each one richer and harder than the last:
+
+**Online Learning** (Lessons 1–3): You meet regret, you learn about different kinds of feedback, and you build your first algorithm (Hedge) that plays the expert-advice game with provably small regret.
+
+**Bandits** (Lessons 4–5): Now the world gets meaner. You only see the outcome of the action you chose — the other options stay silent. You learn UCB1, EXP3, and EXP4, algorithms that balance exploration with exploitation.
+
+**Full Reinforcement Learning** (Lessons 6–8): The world gains memory. Your actions change future states. You learn MDPs, Monte Carlo methods, TD learning, SARSA, and Q-learning — the core toolkit for sequential decision-making.
+
+**Deep RL and Continuing Tasks** (Lessons 9–10): State spaces explode. You cannot keep a lookup table anymore, so you bring in neural networks. Then you ask: what happens when the game never ends?
+
+```
+Online Learning ──→ Bandits ──→ Full RL ──→ Deep RL & Continuing Tasks
+ (Lessons 1-3)    (Lessons 4-5)  (Lessons 6-8)    (Lessons 9-10)
+  Regret            UCB1          MDPs              DQN
+  Feedback          EXP3          Monte Carlo       Average Reward
+  Hedge             EXP4          TD/SARSA/Q        Online RL
+```
 
 [[figure mdp-agent-environment-loop]]
 
@@ -21,46 +36,36 @@ Core interaction loop:
 
 ## Why this topic matters
 
-- Adversarial games and planning (for example, chess-like settings).
-- Repeated investment and portfolio decisions.
-- Spam filtering and security screening under adaptive opponents.
-- Online advertising and recommendation systems.
-- Routing and control in networks and robotics.
-- Sequential medical decision support.
+Online learning and reinforcement learning are not abstract curiosities. They are the mathematics behind any system that must make repeated decisions under uncertainty.
+
+When a spam filter decides whether to block an email, it is playing this game — the adversary is an attacker who adapts. When a doctor chooses between treatments for a patient, she is facing a contextual bandit — each patient is different, and she only sees the outcome of the treatment she prescribed. When a robot navigates a warehouse, it is solving a Markov decision process — its actions change where it ends up next.
+
+These ideas power online advertising, recommendation engines, adaptive routing in networks, automated trading, and robotics. Wherever you see repeated interaction with an uncertain world, you will find the tools from this course.
 
 ## Key mathematical ideas
 
-- Regret minimization and no-regret learning.
-- Online convex optimization and mirror-style updates.
-- Bandit feedback and exploration-exploitation trade-offs.
-- Markov decision processes and Bellman operators.
+The mathematics in this course revolves around four big themes. First, **regret minimization** — you will see how to define and bound the gap between your performance and the best fixed strategy in hindsight, without any statistical assumptions on the data. Second, **exponential weights and mirror-style updates** — the engine behind algorithms like Hedge that multiply confidence by performance. Third, **exploration-exploitation trade-offs** — the bandit's dilemma, where you must balance trying new actions against sticking with what has worked. Fourth, **Bellman operators and fixed-point reasoning** — the backbone of MDP theory, where the right value is the one that does not change when you apply the update rule.
 
 ## Prerequisites
 
-- Probability and random variables.
-- Linear algebra.
-- Basic optimization and machine learning.
-- Differential and integral calculus.
+You should be comfortable with basic probability and random variables — expectations, variances, conditional probabilities. You will need some linear algebra, mostly matrix-vector products and norms. Basic optimization ideas (gradients, convexity) will help, and some exposure to machine learning concepts will give you context, though we will build everything we need from scratch.
 
 ## Recommended reading
 
-- Sutton and Barto, *Reinforcement Learning: An Introduction* (2nd edition).
-- Cesa-Bianchi and Lugosi, *Prediction, Learning, and Games*.
-- Lattimore and Szepesvari, *Bandit Algorithms*.
-- Hazan, *Introduction to Online Convex Optimization*.
+We recommend four books that complement this course beautifully. Sutton and Barto's *Reinforcement Learning: An Introduction* (2nd edition) is the standard RL textbook and covers the MDP and TD material in great depth. Cesa-Bianchi and Lugosi's *Prediction, Learning, and Games* is the bible for online learning and expert advice. Lattimore and Szepesvari's *Bandit Algorithms* is the modern reference for everything bandits. And Hazan's *Introduction to Online Convex Optimization* gives you the optimization perspective that ties it all together.
 
 ## Learning trajectory
 
 This module is organized from foundational online learning concepts through bandits to full reinforcement learning:
 
-1. **The Notion of Regret** -- the central performance metric for online learning.
-2. **Forms of Feedback and Problem Settings** -- full-information, bandit, and contextual feedback models.
-3. **Follow the Leader and Hedge** -- expert advice algorithms and exponential weights.
-4. **Stochastic and Adversarial Bandits: UCB1 and EXP3** -- core bandit algorithms.
-5. **Contextual Bandits and EXP4** -- bandits with side information.
-6. **MDPs and Dynamic Programming** -- Markov decision processes and planning.
-7. **Monte Carlo Methods for RL** -- model-free value estimation from episodes.
-8. **Temporal-Difference Learning, SARSA, and Q-Learning** -- bootstrapping methods for control.
-9. **Function Approximation and Deep Q-Learning** -- scaling RL with neural networks.
-10. **Online RL in Average-Reward and Discounted Settings** -- continuing tasks and regret in RL.
-11. **Assignments and Project Ideas** -- empirical and theoretical exercises.
+1. **The Notion of Regret** — the central performance metric for online learning, and the hero of our story.
+2. **Forms of Feedback and Problem Settings** — full-information, bandit, and contextual feedback models, and why the kind of feedback you get changes everything.
+3. **Follow the Leader and Hedge** — your first real algorithms, including exponential weights, the workhorse of online learning.
+4. **Stochastic and Adversarial Bandits: UCB1 and EXP3** — the core bandit algorithms for when you can only see one outcome at a time.
+5. **Contextual Bandits and EXP4** — bandits with side information, where context makes you smarter.
+6. **MDPs and Dynamic Programming** — the world gains memory, and we learn to plan with Bellman equations.
+7. **Monte Carlo Methods for RL** — model-free value estimation by playing the game until it ends.
+8. **Temporal-Difference Learning, SARSA, and Q-Learning** — bootstrapping methods that learn from every single step.
+9. **Function Approximation and Deep Q-Learning** — scaling RL to huge state spaces with neural networks.
+10. **Online RL in Average-Reward and Discounted Settings** — what happens when the game never ends.
+11. **Assignments and Project Ideas** — empirical and theoretical exercises to cement everything.

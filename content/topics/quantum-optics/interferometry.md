@@ -72,5 +72,3 @@ $$
 $$
 
 where $A$ is the enclosed area and $\Omega$ is the rotation rate. Fiber-optic gyroscopes and ring laser gyroscopes exploit this principle for navigation and geophysics.
-
-[[simulation wigner-squeezed]]

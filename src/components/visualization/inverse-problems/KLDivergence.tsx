@@ -2,6 +2,8 @@
 
 import React, { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { Slider } from '@/components/ui/slider';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -29,6 +31,7 @@ export default function KLDivergence({ id }: SimulationProps) { // eslint-disabl
   const [scale1, setScale1] = useState(1.0);
   const [loc2, setLoc2] = useState(3);
   const [scale2, setScale2] = useState(1.0);
+  const { mergeLayout } = usePlotlyTheme();
 
   const result = useMemo(() => {
     const rng1 = seededRandom(123);
@@ -102,42 +105,42 @@ export default function KLDivergence({ id }: SimulationProps) { // eslint-disabl
   }, [loc1, scale1, loc2, scale2]);
 
   return (
-    <div className="w-full bg-[#151525] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-white">KL-Divergence Visualization</h3>
-      <p className="text-gray-400 text-sm mb-4">
+    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
+      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">KL-Divergence Visualization</h3>
+      <p className="text-[var(--text-muted)] text-sm mb-4">
         Adjust the parameters of two distributions (P and Q) to see how the KL-divergence changes.
         The KL-divergence measures how much distribution P diverges from distribution Q.
       </p>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
         <div>
           <label className="text-blue-400 text-sm">P mean: {loc1}</label>
-          <input
-            type="range" min={0} max={10} step={1} value={loc1}
-            onChange={(e) => setLoc1(parseInt(e.target.value))}
+          <Slider
+            min={0} max={10} step={1} value={[loc1]}
+            onValueChange={([v]) => setLoc1(v)}
             className="w-full"
           />
         </div>
         <div>
           <label className="text-blue-400 text-sm">P std: {scale1.toFixed(1)}</label>
-          <input
-            type="range" min={0.2} max={5} step={0.1} value={scale1}
-            onChange={(e) => setScale1(parseFloat(e.target.value))}
+          <Slider
+            min={0.2} max={5} step={0.1} value={[scale1]}
+            onValueChange={([v]) => setScale1(v)}
             className="w-full"
           />
         </div>
         <div>
           <label className="text-red-400 text-sm">Q mean: {loc2}</label>
-          <input
-            type="range" min={0} max={10} step={1} value={loc2}
-            onChange={(e) => setLoc2(parseInt(e.target.value))}
+          <Slider
+            min={0} max={10} step={1} value={[loc2]}
+            onValueChange={([v]) => setLoc2(v)}
             className="w-full"
           />
         </div>
         <div>
           <label className="text-red-400 text-sm">Q std: {scale2.toFixed(1)}</label>
-          <input
-            type="range" min={0.2} max={5} step={0.1} value={scale2}
-            onChange={(e) => setScale2(parseFloat(e.target.value))}
+          <Slider
+            min={0.2} max={5} step={0.1} value={[scale2]}
+            onValueChange={([v]) => setScale2(v)}
             className="w-full"
           />
         </div>
@@ -162,25 +165,22 @@ export default function KLDivergence({ id }: SimulationProps) { // eslint-disabl
             width: result.binEdges[1] - result.binEdges[0],
           },
         ]}
-        layout={{
+        layout={mergeLayout({
           title: { text: `D_KL(P || Q) = ${result.klDiv.toFixed(4)} bits` },
           barmode: 'overlay',
-          xaxis: { title: { text: 'Value' }, color: '#9ca3af' },
-          yaxis: { title: { text: 'Count' }, color: '#9ca3af' },
+          xaxis: { title: { text: 'Value' } },
+          yaxis: { title: { text: 'Count' } },
           height: 400,
-          paper_bgcolor: 'rgba(0,0,0,0)',
-          plot_bgcolor: 'rgba(15,15,25,1)',
-          font: { color: '#9ca3af' },
-          legend: { x: 0.02, y: 0.98, bgcolor: 'rgba(0,0,0,0.3)' },
+          legend: { x: 0.02, y: 0.98 },
           margin: { t: 40, b: 50, l: 50, r: 20 },
-        }}
+        })}
         config={{ displayModeBar: false }}
         style={{ width: '100%' }}
       />
       {result.method2 && (
         <p className="text-yellow-500 text-xs mt-2">Used alternate computation method due to zero-probability bins.</p>
       )}
-      <p className="text-gray-500 text-xs mt-2">
+      <p className="text-[var(--text-soft)] text-xs mt-2">
         KL-divergence is non-negative and equals zero if and only if P and Q are identical.
         It is asymmetric: D_KL(P||Q) is generally not equal to D_KL(Q||P).
       </p>

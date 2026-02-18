@@ -2,6 +2,8 @@
 
 import React, { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { Slider } from '@/components/ui/slider';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -22,6 +24,7 @@ export default function MonteCarloIntegration({ id }: SimulationProps) { // esli
   const [nDim, setNDim] = useState(2);
   const [pNorm, setPNorm] = useState(2.0);
   const nPoints = Math.pow(2, nPointsExp);
+  const { mergeLayout } = usePlotlyTheme();
 
   const result = useMemo(() => {
     const rng = seededRandom(42);
@@ -112,35 +115,35 @@ export default function MonteCarloIntegration({ id }: SimulationProps) { // esli
   }, [nPoints, nDim, pNorm]);
 
   return (
-    <div className="w-full bg-[#151525] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-white">Monte Carlo Integration: Hypersphere in Hypercube</h3>
-      <p className="text-gray-400 text-sm mb-4">
+    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
+      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Monte Carlo Integration: Hypersphere in Hypercube</h3>
+      <p className="text-[var(--text-muted)] text-sm mb-4">
         Estimate the volume of a unit hypersphere by random sampling. Points inside the unit
         ball (under the chosen p-norm) are shown in green; points outside are shown in gold.
         In 2D with p=2, this is a classic way to estimate pi.
       </p>
       <div className="grid grid-cols-3 gap-4 mb-4">
         <div>
-          <label className="text-gray-300 text-sm">Points: 2^{nPointsExp} = {nPoints}</label>
-          <input
-            type="range" min={4} max={14} step={1} value={nPointsExp}
-            onChange={(e) => setNPointsExp(parseInt(e.target.value))}
+          <label className="text-[var(--text-muted)] text-sm">Points: 2^{nPointsExp} = {nPoints}</label>
+          <Slider
+            min={4} max={14} step={1} value={[nPointsExp]}
+            onValueChange={([v]) => setNPointsExp(v)}
             className="w-full"
           />
         </div>
         <div>
-          <label className="text-gray-300 text-sm">Dimensions: {nDim}</label>
-          <input
-            type="range" min={2} max={10} step={1} value={nDim}
-            onChange={(e) => setNDim(parseInt(e.target.value))}
+          <label className="text-[var(--text-muted)] text-sm">Dimensions: {nDim}</label>
+          <Slider
+            min={2} max={10} step={1} value={[nDim]}
+            onValueChange={([v]) => setNDim(v)}
             className="w-full"
           />
         </div>
         <div>
-          <label className="text-gray-300 text-sm">p-norm: {pNorm.toFixed(1)}</label>
-          <input
-            type="range" min={0.5} max={8} step={0.1} value={pNorm}
-            onChange={(e) => setPNorm(parseFloat(e.target.value))}
+          <label className="text-[var(--text-muted)] text-sm">p-norm: {pNorm.toFixed(1)}</label>
+          <Slider
+            min={0.5} max={8} step={0.1} value={[pNorm]}
+            onValueChange={([v]) => setPNorm(v)}
             className="w-full"
           />
         </div>
@@ -166,17 +169,14 @@ export default function MonteCarloIntegration({ id }: SimulationProps) { // esli
               name: 'Outside',
             },
           ]}
-          layout={{
+          layout={mergeLayout({
             title: { text: `First 2 Dimensions (showing up to 5000 pts)` },
-            xaxis: { title: { text: 'x_1' }, range: [-1.1, 1.1], color: '#9ca3af', scaleanchor: 'y' },
-            yaxis: { title: { text: 'x_2' }, range: [-1.1, 1.1], color: '#9ca3af' },
+            xaxis: { title: { text: 'x_1' }, range: [-1.1, 1.1], scaleanchor: 'y' },
+            yaxis: { title: { text: 'x_2' }, range: [-1.1, 1.1] },
             height: 450,
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(15,15,25,1)',
-            font: { color: '#9ca3af' },
-            legend: { x: 0.02, y: 0.98, bgcolor: 'rgba(0,0,0,0.3)' },
+            legend: { x: 0.02, y: 0.98 },
             margin: { t: 40, b: 50, l: 50, r: 20 },
-          }}
+          })}
           config={{ displayModeBar: false }}
           style={{ width: '100%' }}
         />
@@ -200,43 +200,40 @@ export default function MonteCarloIntegration({ id }: SimulationProps) { // esli
               name: `MC estimate (d=${nDim})`,
             },
           ]}
-          layout={{
+          layout={mergeLayout({
             title: { text: 'Fraction Inside vs Dimension' },
-            xaxis: { title: { text: 'Number of dimensions' }, color: '#9ca3af' },
-            yaxis: { title: { text: 'Fraction inside unit sphere' }, type: 'log', color: '#9ca3af' },
+            xaxis: { title: { text: 'Number of dimensions' } },
+            yaxis: { title: { text: 'Fraction inside unit sphere' }, type: 'log' },
             height: 450,
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(15,15,25,1)',
-            font: { color: '#9ca3af' },
-            legend: { x: 0.5, y: 0.98, bgcolor: 'rgba(0,0,0,0.3)' },
+            legend: { x: 0.5, y: 0.98 },
             margin: { t: 40, b: 50, l: 60, r: 20 },
-          }}
+          })}
           config={{ displayModeBar: false }}
           style={{ width: '100%' }}
         />
       </div>
 
       <div className="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
-        <div className="bg-[#0a0a15] rounded p-3">
-          <div className="text-gray-500">Inside / Total</div>
-          <div className="text-white font-mono">{result.nInside} / {result.nPoints}</div>
+        <div className="bg-[var(--surface-2)] rounded p-3">
+          <div className="text-[var(--text-soft)]">Inside / Total</div>
+          <div className="text-[var(--text-strong)] font-mono">{result.nInside} / {result.nPoints}</div>
         </div>
-        <div className="bg-[#0a0a15] rounded p-3">
-          <div className="text-gray-500">Fraction inside</div>
-          <div className="text-white font-mono">{result.fraction.toFixed(6)}</div>
+        <div className="bg-[var(--surface-2)] rounded p-3">
+          <div className="text-[var(--text-soft)]">Fraction inside</div>
+          <div className="text-[var(--text-strong)] font-mono">{result.fraction.toFixed(6)}</div>
         </div>
-        <div className="bg-[#0a0a15] rounded p-3">
-          <div className="text-gray-500">Est. sphere volume</div>
-          <div className="text-white font-mono">{result.sphereVolume.toFixed(6)}</div>
+        <div className="bg-[var(--surface-2)] rounded p-3">
+          <div className="text-[var(--text-soft)]">Est. sphere volume</div>
+          <div className="text-[var(--text-strong)] font-mono">{result.sphereVolume.toFixed(6)}</div>
         </div>
         {result.piEstimate !== null && (
-          <div className="bg-[#0a0a15] rounded p-3">
-            <div className="text-gray-500">Pi estimate</div>
-            <div className="text-white font-mono">{result.piEstimate.toFixed(6)}</div>
+          <div className="bg-[var(--surface-2)] rounded p-3">
+            <div className="text-[var(--text-soft)]">Pi estimate</div>
+            <div className="text-[var(--text-strong)] font-mono">{result.piEstimate.toFixed(6)}</div>
           </div>
         )}
       </div>
-      <p className="text-gray-500 text-xs mt-3">
+      <p className="text-[var(--text-soft)] text-xs mt-3">
         As the number of dimensions grows, the volume of the hypersphere shrinks dramatically relative to the cube.
         This is the curse of dimensionality: high-dimensional spaces are mostly empty corners.
       </p>

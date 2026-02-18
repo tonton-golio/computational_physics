@@ -53,17 +53,27 @@ async function loadSimulation(id: string): Promise<LoadResult> {
 
 function SimulationLoading() {
   return (
-    <div className="flex h-80 w-full items-center justify-center rounded-xl border border-[var(--border-strong)] bg-[var(--surface-2)]">
-      <div className="font-mono text-sm text-[var(--text-soft)]">Loading simulation...</div>
+    <div className="relative h-80 w-full overflow-hidden rounded-xl border border-[var(--border-strong)] bg-[var(--surface-2)]">
+      <div className="flex h-full w-full items-center justify-center">
+        <div className="font-mono text-sm text-[var(--text-soft)] animate-pulse">Loading simulation…</div>
+      </div>
+      <div
+        className="pointer-events-none absolute inset-0 -translate-x-full animate-[shimmer_1.8s_ease-in-out_infinite]"
+        style={{
+          background:
+            "linear-gradient(90deg, transparent 0%, var(--surface-3) 50%, transparent 100%)",
+        }}
+      />
     </div>
   );
 }
 
 function SimulationError({ id }: { id: string }) {
   return (
-    <div className="flex h-64 w-full flex-col items-center justify-center rounded-xl border border-[var(--danger-border)] bg-[var(--danger-surface)] text-[var(--text-soft)]">
-      <span className="mb-2 text-[var(--accent-strong)]">Unable to render simulation</span>
-      <span className="text-sm">[[simulation {id}]]</span>
+    <div className="flex h-64 w-full flex-col items-center justify-center gap-2 rounded-xl border border-[var(--danger-border)] bg-[var(--danger-surface)] shadow-inner">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--danger-border)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span className="font-medium text-[var(--text-strong)]">Unable to render simulation</span>
+      <span className="font-mono text-xs text-[var(--text-soft)]">[[simulation {id}]]</span>
     </div>
   );
 }
@@ -172,12 +182,17 @@ export function SimulationHost({ id }: { id: string }) {
   return (
     <div
       ref={containerRef}
-      className="w-full"
+      className="w-full rounded-xl border border-[var(--border-strong)] bg-[var(--surface-1)] py-4 shadow-[inset_0_1px_2px_rgba(0,0,0,0.04)] overflow-hidden"
       onMouseEnter={() => setHasUserIntent(true)}
       onFocus={() => setHasUserIntent(true)}
       onClick={() => setHasUserIntent(true)}
       onTouchStart={() => setHasUserIntent(true)}
     >
+      {/* Accent stripe */}
+      <div
+        className="h-[3px] -mt-4 mb-4"
+        style={{ background: "linear-gradient(90deg, var(--accent), var(--accent-strong))" }}
+      />
       {!isVisible && !hasUserIntent ? (
         <SimulationLoading />
       ) : Simulation ? (

@@ -2,6 +2,8 @@
 
 import React, { useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { Slider } from '@/components/ui/slider';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -78,6 +80,7 @@ export function BetheLatticePercolation() {
   const [degree, setDegree] = useState(3);
   const [p, setP] = useState(0.35);
   const [seed, setSeed] = useState(11);
+  const { mergeLayout } = usePlotlyTheme();
 
   const { percolatedAdj, npCurve, theoreticalPc } = useMemo(() => {
     const adj = generateRandomRegularLike(size, degree, seed);
@@ -92,15 +95,6 @@ export function BetheLatticePercolation() {
     const pc = 1 / Math.max(degree - 1, 1);
     return { percolatedAdj: perc, npCurve: { ps, Ns }, theoreticalPc: pc };
   }, [size, degree, p, seed]);
-
-  const darkLayout = {
-    paper_bgcolor: 'rgba(0,0,0,0)',
-    plot_bgcolor: 'rgba(15,15,25,1)',
-    font: { color: '#9ca3af' },
-    margin: { t: 40, r: 20, b: 50, l: 60 },
-    xaxis: { gridcolor: '#1e1e2e' },
-    yaxis: { gridcolor: '#1e1e2e' },
-  };
 
   const nodeX = Array.from({ length: size }, (_, i) => Math.cos((2 * Math.PI * i) / size));
   const nodeY = Array.from({ length: size }, (_, i) => Math.sin((2 * Math.PI * i) / size));
@@ -121,24 +115,24 @@ export function BetheLatticePercolation() {
     <div className="space-y-6">
       <div className="flex flex-wrap gap-6 items-center">
         <div>
-          <label className="text-sm text-gray-400 block mb-1">Nodes: {size}</label>
-          <input type="range" min={12} max={90} step={2} value={size} onChange={e => setSize(Number(e.target.value))} className="w-48" />
+          <label className="mb-1 block text-sm text-[var(--text-muted)]">Nodes: {size}</label>
+          <Slider value={[size]} onValueChange={([v]) => setSize(v)} min={12} max={90} step={2} />
         </div>
         <div>
-          <label className="text-sm text-gray-400 block mb-1">Degree: {degree}</label>
-          <input type="range" min={2} max={6} step={1} value={degree} onChange={e => setDegree(Number(e.target.value))} className="w-48" />
+          <label className="mb-1 block text-sm text-[var(--text-muted)]">Degree: {degree}</label>
+          <Slider value={[degree]} onValueChange={([v]) => setDegree(v)} min={2} max={6} step={1} />
         </div>
         <div>
-          <label className="text-sm text-gray-400 block mb-1">p: {p.toFixed(2)}</label>
-          <input type="range" min={0.01} max={1} step={0.01} value={p} onChange={e => setP(Number(e.target.value))} className="w-48" />
+          <label className="mb-1 block text-sm text-[var(--text-muted)]">p: {p.toFixed(2)}</label>
+          <Slider value={[p]} onValueChange={([v]) => setP(v)} min={0.01} max={1} step={0.01} />
         </div>
         <div>
-          <label className="text-sm text-gray-400 block mb-1">Seed: {seed}</label>
-          <input type="range" min={1} max={200} step={1} value={seed} onChange={e => setSeed(Number(e.target.value))} className="w-48" />
+          <label className="mb-1 block text-sm text-[var(--text-muted)]">Seed: {seed}</label>
+          <Slider value={[seed]} onValueChange={([v]) => setSeed(v)} min={1} max={200} step={1} />
         </div>
       </div>
 
-      <div className="text-sm text-gray-300">
+      <div className="text-sm text-[var(--text-muted)]">
         Theoretical Bethe threshold: p_c = 1/(z-1) = {theoreticalPc.toFixed(3)} | observed connected components N(p) = {connected}
       </div>
 
@@ -148,14 +142,13 @@ export function BetheLatticePercolation() {
             { x: edgeX, y: edgeY, type: 'scatter', mode: 'lines', line: { color: '#60a5fa', width: 1 }, hoverinfo: 'skip' },
             { x: nodeX, y: nodeY, type: 'scatter', mode: 'markers', marker: { color: '#f59e0b', size: 6 }, hoverinfo: 'skip' },
           ]}
-          layout={{
-            ...darkLayout,
-            title: { text: 'Percolated Bethe-like Graph', font: { size: 13, color: '#9ca3af' } },
-            xaxis: { ...darkLayout.xaxis, visible: false },
-            yaxis: { ...darkLayout.yaxis, visible: false, scaleanchor: 'x', scaleratio: 1 },
+          layout={mergeLayout({
+            title: { text: 'Percolated Bethe-like Graph', font: { size: 13 } },
+            xaxis: { visible: false },
+            yaxis: { visible: false, scaleanchor: 'x', scaleratio: 1 },
             margin: { t: 40, r: 10, b: 10, l: 10 },
             showlegend: false,
-          }}
+          })}
           config={{ responsive: true, displayModeBar: false }}
           style={{ width: '100%', height: 360 }}
         />
@@ -164,13 +157,13 @@ export function BetheLatticePercolation() {
             { x: npCurve.ps, y: npCurve.Ns, type: 'scatter', mode: 'lines+markers', line: { color: '#34d399', width: 2 }, marker: { size: 5 } },
             { x: [theoreticalPc, theoreticalPc], y: [Math.min(...npCurve.Ns), Math.max(...npCurve.Ns)], type: 'scatter', mode: 'lines', line: { color: '#ef4444', dash: 'dash' } },
           ]}
-          layout={{
-            ...darkLayout,
-            title: { text: 'N(p) for Bethe-like Percolation', font: { size: 13, color: '#9ca3af' } },
-            xaxis: { ...darkLayout.xaxis, title: { text: 'p' } },
-            yaxis: { ...darkLayout.yaxis, title: { text: 'Connected Components N' } },
+          layout={mergeLayout({
+            title: { text: 'N(p) for Bethe-like Percolation', font: { size: 13 } },
+            xaxis: { title: { text: 'p' } },
+            yaxis: { title: { text: 'Connected Components N' } },
             showlegend: false,
-          }}
+            margin: { t: 40, r: 20, b: 50, l: 60 },
+          })}
           config={{ responsive: true, displayModeBar: false }}
           style={{ width: '100%', height: 360 }}
         />

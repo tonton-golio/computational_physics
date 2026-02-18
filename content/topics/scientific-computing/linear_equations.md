@@ -1,28 +1,31 @@
 # Linear Equations
+*The one family of problems we can solve perfectly (almost)*
 
-
+> *Remember the condition number from Lesson 01? Watch how it shows up again here — this time deciding whether your linear system's answer is trustworthy or garbage.*
 
 ## Why Linear Systems Matter
-Linear systems are special: It's something we can solve really well, and it covers an enormous amount of problems. Even when you've got a non-linear system, you can isolate the linearity and solve that, and treat the non-linearity in another way.
+Linear systems are special: they're something we can solve really well, and they cover an enormous amount of problems. Even when you've got a non-linear system, you can isolate the linearity and solve that, and treat the non-linearity in another way.
 
 ## From Abstract Linear Systems to Matrices
 #### Going from abstract linear systems to matrices
 
-A **linear function** is anything that behaves in the way we call linear. They exist in vector spaces: A mapping $F: X \rightarrow Y$ (abstract, eg: wave functions) is linear if $F(ax + bx') = aF(x) + bF(x')$. 
+A **linear function** is anything that behaves in the way we call linear. They exist in vector spaces: A mapping $F: X \rightarrow Y$ (abstract, eg: wave functions) is linear if $F(ax + bx') = aF(x) + bF(x')$.
 
-Linear functions and matrices are the same thing!
+*This says: linearity means "scaling and adding inputs does the same thing as scaling and adding outputs." It's the nicest property a function can have.*
+
+Linear functions and matrices are the same thing (in finite dimensions, once bases are chosen)!
 * Let's say you have a basis for $X$, eg: $\{e_{1}, e_2, \dots e_n\}$, then any vector $x \in X$ can be written uniquely as $x = a_1e_1 + \dots + a_n e_n$
 * Let $\{f_{1}, f_2, \dots f_n\}$ form a basis for $Y$, any vector $y \in Y$ can be written as $y = b_1f_1 + \dots + b_m f_m$
 * $$F(e_j)=b_{1j}f_1 + \dots + b_{mj}f_m$$
 	We can write it because of linearity, but you'll notice that it's just matrix multiplication.
 * $$ F(x) = F(a_1e_1 + \dots + a_ne_n) = a_1F(e_1) + \dots + a_nF(e_n) $$
-	$$ = \sum_{j=1}^n a_j \sum_{i=i}^m b_{ij} f_i $$ 
-	$$ = \sum_{i=i}^m f_i \left(\sum_{j=1}^n a_j b_{ij} \right) $$ 
+	$$ = \sum_{j=1}^n a_j \sum_{i=1}^m b_{ij} f_i $$
+	$$ = \sum_{i=1}^m f_i \left(\sum_{j=1}^n a_j b_{ij} \right) $$
 	The thing on the right is nothing more than a matrix product. Think of the total thing as:  Representation of $F$ in $e,f$ basis $*$ (Coordinates of $x$ in $e$ basis) = Coordinates of $y$ in $f$ basis
 
-We've shown how an abstract linear problem can be represented with matrices. 
+We've shown how an abstract linear problem can be represented with matrices.
 
-We're missing one thing: how do you find $b_{ij}$, the components of the matrix? 
+We're missing one thing: how do you find $b_{ij}$, the components of the matrix?
 $$b_{ij} = \left< f_i \vert F e_j \right>$$
 For example, $\int f_i(\alpha)(Fe_j)(\alpha) d\alpha$, if $Y$ is a space of functions $f(\alpha)$
 
@@ -84,13 +87,15 @@ The more orthogonal the matrix is, the lower the condition number. It's ~1 for o
 
 ## How to build the algorithms from scratch
 
-Construct algoithms that transforms $b=Ax$ into $x$ using a modest number of operations that are linear, invertible, and simple to compute.
+Construct algorithms that transform $b=Ax$ into $x$ using a modest number of operations that are linear, invertible, and simple to compute.
 
 **Fundamental Property:** if $M$ is invertible, then $MAx = Mb$ has the same solutions as $Ax=b$
 
+*This says: multiplying both sides of the equation by the same invertible matrix doesn't change the answer. It's like weighing something on a different scale — the object doesn't change.*
+
 What we know:
-1. Our algorithm must have the same effect as multiplying by the inverse (you don't want to actually calculate the inverse and multiply because it introduces a lot of computational error): $A \rightarrowtail I; I \rightarrowtail A; b \rightarrowtail x$
-2. Each step must be linenar, invertible
+1. Our algorithm must have the same effect as multiplying by the inverse. We avoid explicitly computing $A^{-1}$ and multiplying because inverses amplify rounding errors, especially for ill-conditioned matrices: $A \rightarrowtail I; I \rightarrowtail A; b \rightarrowtail x$
+2. Each step must be linear, invertible
 3. We first want $A = LU$ (lower and upper triangular matrices)
 4. Every step, we want to take an $n\times n$ matrix, and reduce the leftmost column to be zero below the first element. Then, we just recursively continue for an $(n-1)\times(n-1)$ matrix
 5. Row scaling (it's linear and invertible)
@@ -98,104 +103,99 @@ What we know:
 
 We can use 5. and 6. together: just scale the rows (if the leading term is nonzero) and subtract
 
-"Sorry Anton, I ain't taking notes on gaussian elimination"
+> **You might be wondering...** "Why not just compute $A^{-1}$ directly?" Because computing an inverse is like photocopying a photocopy — each generation loses quality. With floating-point arithmetic, the rounding errors in computing $A^{-1}$ get amplified when you multiply by it. LU factorization avoids this by never forming the inverse explicitly.
 
 ## lu_factorize
+```python
 def lu_factorize(M):
     """
     Factorize M such that M = LU
-
-    Parameters
-    ----------
-    M : square 2D array
-        the 1st param name `first`
-
-    Returns
-    -------
-    L : A lower triangular matrix
-    U : An upper triangular matrix
+    Split the matrix into a lower triangle and an upper triangle.
     """
     m, U = M.shape[0], M.copy()
-    L = np.eye(M.shape[0]) # make identity 
+    L = np.eye(M.shape[0])  # start with identity
     for j in range(m-1):
-        for i in range(j+1,m):
-            scalar    = U[i, j] / U[j,j]
-            U[i]     -=  scalar*U[j]
-            L[i, j]   = scalar
-            
+        if U[j, j] == 0:
+            raise ValueError(f"Zero pivot at position ({j},{j}). Use partial pivoting for stability.")
+        for i in range(j+1, m):
+            scalar    = U[i, j] / U[j, j]  # how much of row j to subtract
+            U[i]     -= scalar * U[j]       # eliminate the entry below the pivot
+            L[i, j]   = scalar              # remember the multiplier for later
+
     return L, U
+```
 
 ## forward_substitute
-def forward_substitute(L,b):
-    '''
-    Takes a square lower triangular matrix L 
-    and a vector b as input, and returns the 
-    solution vector y to Ly=b.
-    '''
+
+**Back-substitution is like unwrapping a present.** Once you have $LU$, solving $Ly = b$ (forward substitution) is like opening boxes from the outside in. The first equation gives you $y_1$ immediately (one unknown, one equation). Plug that into the second equation and you get $y_2$. Each step peels off one more layer of wrapping until the whole present is unwrapped.
+
+```python
+def forward_substitute(L, b):
+    """
+    Solve Ly = b by peeling off one layer at a time.
+    The first equation has only y[0], the second has y[0] and y[1], etc.
+    """
     y = np.zeros(np.shape(b))
     for i in range(len(b)):
-        y[i] = ( b[i] - L[i] @ y) / L [i,i]
+        y[i] = (b[i] - L[i] @ y) / L[i, i]  # peel off the next layer
     return y
+```
+
 ## backward_substitute
-def backward_substitute(U,y):
-    '''which takes a square upper triangular 
-    matrix U and a vector y as input, and returns
-    the solution vector  x  to  Ux=y.
-    '''
+
+Then $Ux = y$ (backward substitution) goes the other direction — start from the last equation (one unknown) and work backwards, unwrapping from the inside out.
+
+```python
+def backward_substitute(U, y):
+    """
+    Solve Ux = y by working from the bottom up.
+    The last equation has only x[n-1], the second-to-last has x[n-1] and x[n-2], etc.
+    """
     x = np.zeros(np.shape(y))
-
-    for i in range(1,1+len(x)):
-        x[-i] = ( y[-i] - U[-i] @ x )/U[-i,-i]
-
+    for i in range(1, 1 + len(x)):
+        x[-i] = (y[-i] - U[-i] @ x) / U[-i, -i]  # unwrap from the inside out
     return x
+```
 
 ## solve_lin_eq
-def solve_lin_eq(M,z):
-    L,U = lu_factorize(M)
-    y = forward_substitute(L,z)
-    return backward_substitute(U,y)
+```python
+def solve_lin_eq(M, z):
+    """The full solve: factorize, then unwrap twice."""
+    L, U = lu_factorize(M)
+    y = forward_substitute(L, z)
+    return backward_substitute(U, y)
+```
+
+> **Challenge:** Build a 5x5 random matrix in NumPy. Solve $Ax = b$ using your own `solve_lin_eq` and compare with `np.linalg.solve`. How many digits agree? Now make the matrix nearly singular (e.g., make two rows almost identical) and try again. Watch the digits evaporate.
 
 ## Conditioning and Error Analysis
-Consider the matrix equation $Ax=b$
-For i in I, $m: a_{11}x_1 + a_{12}x_2 + \dots + a_{in}x_n \equiv A_i^T x=b_i$. A hypersphere
+Consider the matrix equation $Ax=b$.
+For $i = 1, \dots, m$: $a_{i1}x_1 + a_{i2}x_2 + \dots + a_{in}x_n \equiv A_i^T x=b_i$. Each equation defines a hyperplane in $\mathbb{R}^n$.
 
-If there are 2 unknowns, i.e, n=2,
-$$a_{11}x_1 + a_{12} x_2 = b1$$
-$$a_{21}x_1 + a_{22} x_2 = b2$$
+If there are 2 unknowns, i.e., $n=2$:
+$$a_{11}x_1 + a_{12} x_2 = b_1$$
+$$a_{21}x_1 + a_{22} x_2 = b_2$$
 In two dimensions, these define lines, we can find the slope and y-intercepts. The point of intersection is the solution to the system.
 
-Assume that there's an error or uncertainity in the data, so that $||\Delta b||_\infty < \delta$. You'll have a region of uncertainity around the lines, transforming them into rectangles. Now, your solution can be anywhere in the shape that's made from the intersection of the rectangles. If we had an error in the matrix, we should have a skew (and a shift in slopes) and not a vertical shift like we do if the error is in $b$.
+Assume that there's an error or uncertainty in the data, so that $||\Delta b||_\infty < \delta$. You'll have a region of uncertainity around the lines, transforming them into rectangles. Now, your solution can be anywhere in the shape that's made from the intersection of the rectangles. If we had an error in the matrix, we should have a skew (and a shift in slopes) and not a vertical shift like we do if the error is in $b$.
+
+> **You might be wondering...** "What does this look like geometrically?" Picture two lines crossing at a sharp angle — the intersection point is well-defined, even if the lines wiggle a bit. Now picture two lines that are almost parallel — a tiny wiggle moves the intersection point wildly. That's what a high condition number looks like in 2D.
 
 #### Error bounds:
 
 1. RHS: Assume $A \hat{x} = \hat{b} \implies A(x+\Delta x) = (b+\Delta b)$. That implies:
 	* $||\hat{b}|| = ||A\hat{x}|| \leq ||A||\; ||\hat{x} ||$ and so $||\hat{x}|| \geq \frac{||\hat{b}||}{||A||}$
 	* $|| \Delta x || = || A^{-1} \Delta b || \leq || A^{-1}|| \; ||\Delta b ||$
-	* together, we get $\frac{||\Delta x||}{||\hat{x}||} \geq \frac{||\Delta b||}{||\hat{b}||} \; ||A^{-1}|| \;|| A || = COND(A) \frac{||\Delta b||}{||\hat{b}||}$
+	* together, we get $\frac{||\Delta x||}{||\hat{x}||} \leq ||A^{-1}|| \; ||A|| \; \frac{||\Delta b||}{||\hat{b}||} = \text{COND}(A) \frac{||\Delta b||}{||\hat{b}||}$
+
+*This says: the relative error in your solution is at most COND(A) times the relative error in your data. If COND(A) = 1000 and your data has 0.1% error, your solution could have up to 100% error.*
+
 2. Nothing here depends on matrix $A$ being exact, and we can replace $A$ here with $\hat{A}$ everywhere so we can get a calculation even if it's not exact
 
-#### Overdetermined Systems: m > n:
+> **You might be wondering...** "So how do I know if my answer is any good?" Compute the condition number! In NumPy: `np.linalg.cond(A)`. If it's near 1, relax. If it's $10^{10}$, panic (or at least be very suspicious of your answer).
 
-Large number of equations, small number of unknowns. In general, there are _no exact solutions_.
+---
 
-All the places you can reach are driven by $Im(A)$, the image. There's no $x$ that you can feed in that results in you ending up outside the image.
+**What we just learned in one sentence:** We can solve linear systems exactly by splitting the matrix into triangles (LU), but the condition number decides how much we should trust the answer.
 
-#### How would a least squares approximate solution have to look?
-
-**Write** $\mathbb{C}^m = Im(A) \oplus Im(A)^\perp$
-Any vector space with a subspace can be broken down into the subspace and a space that's orthogonal to the subspace
-**Means** $b \in \mathbb{C}^m$ can be uniquely written $b = \hat{b} + b^\perp$, with $\hat{b} \in Im(A), b^\perp \in Im(A)^\perp$
-**Where** \
-$$Im(A)^\perp = \{x\in \mathbb{C}^m | x^T x' = 0 \;\forall\; x' \in Im(A)\}$$ 
-
-$$=\{x\in \mathbb{C}^m | A^T_ix=0 \text{ for } 1 \leq i \leq m \}$$
-
-This helps us because of pythagoras:
-
-$$||r||^2 = ||b-Ax||^2$$
-$$||\tilde{b} + b^\perp - Ax||^2 = ||(\tilde{b}-Ax)+b^\perp$$
-with Pythagoras (only valid in L2 norm),
-$$ ||\tilde{b}=Ax||^2 + || b^\perp ||^2$$
-The first is in the image, the second is in the perpendicular subspace. We can somehow set the first term to be zero, and the second term is somehow a constant.
-
-**So:** residual of least square is perpendicular to Im(A)
+**What's next and why it matters:** Now that we can solve linear systems perfectly, imagine the data itself is noisy and there are more equations than unknowns — that's where least squares comes in, and it's the same trick astronomers use to find planets from messy telescope data.

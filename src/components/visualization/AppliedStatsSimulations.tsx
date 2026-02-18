@@ -9,6 +9,8 @@ import AppliedStatsSim5 from './applied-statistics/AppliedStatsSim5';
 import AppliedStatsSim6 from './applied-statistics/AppliedStatsSim6';
 import AppliedStatsSim7 from './applied-statistics/AppliedStatsSim7';
 import AppliedStatsSim8 from './applied-statistics/AppliedStatsSim8';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { Slider } from '@/components/ui/slider';
 
 interface SimulationProps {
   id: string;
@@ -18,6 +20,7 @@ interface SimulationProps {
 function CentralLimitTheoremSim() {
   const [sampleSize, setSampleSize] = useState(10);
   const [numSamples, setNumSamples] = useState(500);
+  const { mergeLayout } = usePlotlyTheme();
   const data = useMemo<number[]>(() => {
     const samples = [];
     for (let i = 0; i < numSamples; i++) {
@@ -40,45 +43,40 @@ function CentralLimitTheoremSim() {
   } : null;
 
   return (
-    <div className="w-full bg-[#151525] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-white">Central Limit Theorem</h3>
+    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
+      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Central Limit Theorem</h3>
       <div className="grid grid-cols-2 gap-4 mb-4">
         <div>
-          <label className="text-white">Sample Size: {sampleSize}</label>
-          <input
-            type="range"
+          <label className="text-[var(--text-strong)]">Sample Size: {sampleSize}</label>
+          <Slider
             min={1}
             max={100}
             step={1}
-            value={sampleSize}
-            onChange={(e) => setSampleSize(parseInt(e.target.value))}
+            value={[sampleSize]}
+            onValueChange={([v]) => setSampleSize(v)}
             className="w-full"
           />
         </div>
         <div>
-          <label className="text-white">Number of Samples: {numSamples}</label>
-          <input
-            type="range"
+          <label className="text-[var(--text-strong)]">Number of Samples: {numSamples}</label>
+          <Slider
             min={100}
             max={1000}
             step={50}
-            value={numSamples}
-            onChange={(e) => setNumSamples(parseInt(e.target.value))}
+            value={[numSamples]}
+            onValueChange={([v]) => setNumSamples(v)}
             className="w-full"
           />
         </div>
       </div>
       <Plotly
         data={hist ? [hist as any] : []}
-        layout={{
+        layout={mergeLayout({
           title: { text: `Distribution of Sample Means (n=${sampleSize})` },
           xaxis: { title: { text: 'Sample Mean' } },
           yaxis: { title: { text: 'Frequency' } },
           height: 400,
-          paper_bgcolor: 'rgba(0,0,0,0)',
-          plot_bgcolor: 'rgba(15,15,25,1)',
-          font: { color: '#9ca3af' }
-        }}
+        })}
         config={{ displayModeBar: false }}
       />
     </div>
@@ -114,29 +112,29 @@ function HypothesisTestingSim() {
   }, [group1, group2]);
 
   return (
-    <div className="w-full bg-[#151525] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-white">Hypothesis Testing (Two-Sample t-Test)</h3>
+    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
+      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Hypothesis Testing (Two-Sample t-Test)</h3>
       <div className="grid grid-cols-2 gap-4 mb-4">
         <div>
-          <label className="text-white">Group 1 (comma-separated):</label>
+          <label className="text-[var(--text-strong)]">Group 1 (comma-separated):</label>
           <input
             type="text"
             value={group1}
             onChange={(e) => setGroup1(e.target.value)}
-            className="w-full p-2 bg-[#0a0a15] border border-gray-600 rounded text-white"
+            className="w-full p-2 bg-[var(--surface-2)] border border-[var(--border-strong)] rounded text-[var(--text-strong)]"
           />
         </div>
         <div>
-          <label className="text-white">Group 2 (comma-separated):</label>
+          <label className="text-[var(--text-strong)]">Group 2 (comma-separated):</label>
           <input
             type="text"
             value={group2}
             onChange={(e) => setGroup2(e.target.value)}
-            className="w-full p-2 bg-[#0a0a15] border border-gray-600 rounded text-white"
+            className="w-full p-2 bg-[var(--surface-2)] border border-[var(--border-strong)] rounded text-[var(--text-strong)]"
           />
         </div>
       </div>
-      <div className="mb-4 text-gray-300">
+      <div className="mb-4 text-[var(--text-muted)]">
         <p>t-statistic: {tStat.toFixed(3)}</p>
         <p>Mean difference: {meanDiff.toFixed(3)}</p>
         <p>Note: For significance, |t| {'>'} 2 suggests difference (approx.)</p>

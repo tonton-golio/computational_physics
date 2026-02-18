@@ -2,6 +2,8 @@
 
 import React, { useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { Slider } from '@/components/ui/slider';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -19,6 +21,7 @@ function mulberry32(a: number) {
 export default function MonteCarloConvergence({ id }: SimulationProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
   const [episodes, setEpisodes] = useState(500);
   const [seed, setSeed] = useState(11);
+  const { mergeLayout } = usePlotlyTheme();
   const trueValue = 1.0;
 
   const estimates = useMemo(() => {
@@ -37,26 +40,26 @@ export default function MonteCarloConvergence({ id }: SimulationProps) { // esli
   const truth = x.map(() => trueValue);
 
   return (
-    <div className="w-full rounded-lg bg-[#151525] p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-3 text-white">Monte Carlo Value Estimation Convergence</h3>
+    <div className="w-full rounded-lg bg-[var(--surface-1)] p-6 mb-8">
+      <h3 className="text-xl font-semibold mb-3 text-[var(--text-strong)]">Monte Carlo Value Estimation Convergence</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
-        <label className="text-xs text-gray-300">Episodes: {episodes}<input className="w-full" type="range" min={50} max={2000} step={50} value={episodes} onChange={(e) => setEpisodes(parseInt(e.target.value))} /></label>
-        <button onClick={() => setSeed((s) => s + 1)} className="rounded bg-blue-600 text-white text-sm px-3 py-2">Re-sample trajectories</button>
+        <div>
+          <label className="mb-1 block text-sm text-[var(--text-muted)]">Episodes: {episodes}</label>
+          <Slider value={[episodes]} onValueChange={([v]) => setEpisodes(v)} min={50} max={2000} step={50} />
+        </div>
+        <button onClick={() => setSeed((s) => s + 1)} className="rounded bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white text-sm px-3 py-2">Re-sample trajectories</button>
       </div>
       <Plot
         data={[
           { x, y: estimates, type: 'scatter', mode: 'lines', name: 'MC estimate', line: { color: '#60a5fa', width: 2 } },
           { x, y: truth, type: 'scatter', mode: 'lines', name: 'True value', line: { color: '#4ade80', width: 2, dash: 'dot' } },
         ]}
-        layout={{
+        layout={mergeLayout({
           title: { text: 'Law of large numbers in episodic returns' },
-          xaxis: { title: { text: 'episode' }, color: '#9ca3af' },
-          yaxis: { title: { text: 'V(s) estimate' }, color: '#9ca3af' },
+          xaxis: { title: { text: 'episode' } },
+          yaxis: { title: { text: 'V(s) estimate' } },
           height: 420,
-          paper_bgcolor: 'rgba(0,0,0,0)',
-          plot_bgcolor: 'rgba(15,15,25,1)',
-          font: { color: '#9ca3af' },
-        }}
+        })}
         config={{ displayModeBar: false }}
         style={{ width: '100%' }}
       />

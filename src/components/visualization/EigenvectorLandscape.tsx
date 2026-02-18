@@ -108,18 +108,18 @@ export function EigenvectorLandscape() {
   return (
     <div className="space-y-6">
       <div className="flex gap-4 items-center flex-wrap">
-        <span className="text-white">Quadratic Form:</span>
+        <span className="text-[var(--text-strong)]">Quadratic Form:</span>
         <label>
-          a11: <input type="number" step="0.1" value={a} onChange={(e) => setA(parseFloat(e.target.value) || 0)} className="w-20 px-2 py-1 bg-[#151525] rounded text-white text-center" />
+          a11: <input type="number" step="0.1" value={a} onChange={(e) => setA(parseFloat(e.target.value) || 0)} className="w-20 px-2 py-1 bg-[var(--surface-1)] rounded text-[var(--text-strong)] text-center" />
         </label>
         <label>
-          a12=a21: <input type="number" step="0.1" value={b} onChange={(e) => setB(parseFloat(e.target.value) || 0)} className="w-20 px-2 py-1 bg-[#151525] rounded text-white text-center" />
+          a12=a21: <input type="number" step="0.1" value={b} onChange={(e) => setB(parseFloat(e.target.value) || 0)} className="w-20 px-2 py-1 bg-[var(--surface-1)] rounded text-[var(--text-strong)] text-center" />
         </label>
         <label>
-          a22: <input type="number" step="0.1" value={c} onChange={(e) => setC(parseFloat(e.target.value) || 0)} className="w-20 px-2 py-1 bg-[#151525] rounded text-white text-center" />
+          a22: <input type="number" step="0.1" value={c} onChange={(e) => setC(parseFloat(e.target.value) || 0)} className="w-20 px-2 py-1 bg-[var(--surface-1)] rounded text-[var(--text-strong)] text-center" />
         </label>
-        <span className="text-green-400">λ1={evals[0].toFixed(2)}, λ2={evals[1].toFixed(2)}</span>
-        <button onClick={handleReset} className="px-4 py-1 bg-blue-600 rounded hover:bg-blue-700 ml-auto">
+        <span className="text-green-400">lambda1={evals[0].toFixed(2)}, lambda2={evals[1].toFixed(2)}</span>
+        <button onClick={handleReset} className="px-4 py-1 bg-[var(--accent)] rounded hover:bg-[var(--accent-strong)] text-white ml-auto">
           Reset Ball
         </button>
         <button
@@ -128,7 +128,7 @@ export function EigenvectorLandscape() {
             setB(1);
             setC(2);
           }}
-          className="px-4 py-1 bg-gray-600 rounded hover:bg-gray-700"
+          className="px-4 py-1 bg-[var(--surface-3)] text-[var(--text-strong)] rounded hover:bg-[var(--border-strong)]"
         >
           Reset Matrix
         </button>
@@ -161,8 +161,8 @@ export function EigenvectorLandscape() {
           <OrbitControls />
         </Canvas>
       </div>
-      <p className="text-sm text-gray-400">
-        The landscape is z = ½ xᵀ A x. Ball rolls downhill following gradient descent. Eigenvectors (arrows) are directions of no curvature change (steepest ascent/descent paths).
+      <p className="text-sm text-[var(--text-muted)]">
+        The landscape is z = 1/2 x^T A x. Ball rolls downhill following gradient descent. Eigenvectors (arrows) are directions of no curvature change (steepest ascent/descent paths).
       </p>
     </div>
   );

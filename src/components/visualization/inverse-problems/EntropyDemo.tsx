@@ -2,6 +2,8 @@
 
 import React, { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { Slider } from '@/components/ui/slider';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -34,6 +36,7 @@ export default function EntropyDemo({ id }: SimulationProps) { // eslint-disable
   const [scale, setScale] = useState(3.0);
   const [sizeExp, setSizeExp] = useState(8);
   const size = Math.pow(2, sizeExp);
+  const { mergeLayout } = usePlotlyTheme();
 
   const result = useMemo(() => {
     const rng = seededRandom(42);
@@ -98,30 +101,30 @@ export default function EntropyDemo({ id }: SimulationProps) { // eslint-disable
   }, [loc, scale, size]);
 
   return (
-    <div className="w-full bg-[#151525] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-white">Discrete vs Continuous Entropy</h3>
+    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
+      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Discrete vs Continuous Entropy</h3>
       <div className="grid grid-cols-3 gap-4 mb-4">
         <div>
-          <label className="text-gray-300 text-sm">Location (mean): {loc}</label>
-          <input
-            type="range" min={-20} max={4} step={1} value={loc}
-            onChange={(e) => setLoc(parseInt(e.target.value))}
+          <label className="text-[var(--text-muted)] text-sm">Location (mean): {loc}</label>
+          <Slider
+            min={-20} max={4} step={1} value={[loc]}
+            onValueChange={([v]) => setLoc(v)}
             className="w-full"
           />
         </div>
         <div>
-          <label className="text-gray-300 text-sm">Scale (std): {scale.toFixed(1)}</label>
-          <input
-            type="range" min={0.5} max={10} step={0.1} value={scale}
-            onChange={(e) => setScale(parseFloat(e.target.value))}
+          <label className="text-[var(--text-muted)] text-sm">Scale (std): {scale.toFixed(1)}</label>
+          <Slider
+            min={0.5} max={10} step={0.1} value={[scale]}
+            onValueChange={([v]) => setScale(v)}
             className="w-full"
           />
         </div>
         <div>
-          <label className="text-gray-300 text-sm">Sample size: 2^{sizeExp} = {size}</label>
-          <input
-            type="range" min={4} max={10} step={1} value={sizeExp}
-            onChange={(e) => setSizeExp(parseInt(e.target.value))}
+          <label className="text-[var(--text-muted)] text-sm">Sample size: 2^{sizeExp} = {size}</label>
+          <Slider
+            min={4} max={10} step={1} value={[sizeExp]}
+            onValueChange={([v]) => setSizeExp(v)}
             className="w-full"
           />
         </div>
@@ -137,16 +140,13 @@ export default function EntropyDemo({ id }: SimulationProps) { // eslint-disable
               marker: { color: 'rgba(239,68,68,0.8)' },
               name: 'Discrete samples',
             }]}
-            layout={{
+            layout={mergeLayout({
               title: { text: `Discrete Entropy: H_s = ${result.H_discrete.toFixed(3)} bits` },
-              xaxis: { title: { text: 'Value' }, range: [-40, 40], color: '#9ca3af' },
-              yaxis: { title: { text: 'Count' }, color: '#9ca3af' },
+              xaxis: { title: { text: 'Value' }, range: [-40, 40] },
+              yaxis: { title: { text: 'Count' } },
               height: 320,
-              paper_bgcolor: 'rgba(0,0,0,0)',
-              plot_bgcolor: 'rgba(15,15,25,1)',
-              font: { color: '#9ca3af' },
               margin: { t: 40, b: 50, l: 50, r: 20 },
-            }}
+            })}
             config={{ displayModeBar: false }}
             style={{ width: '100%' }}
           />
@@ -163,22 +163,19 @@ export default function EntropyDemo({ id }: SimulationProps) { // eslint-disable
               line: { color: 'rgba(147,51,234,1)' },
               name: 'Gaussian PDF',
             }]}
-            layout={{
+            layout={mergeLayout({
               title: { text: `Differential Entropy: H_d = ${result.H_continuous.toFixed(3)} bits` },
-              xaxis: { title: { text: 'Value' }, range: [-40, 40], color: '#9ca3af' },
-              yaxis: { title: { text: 'f(x)' }, color: '#9ca3af' },
+              xaxis: { title: { text: 'Value' }, range: [-40, 40] },
+              yaxis: { title: { text: 'f(x)' } },
               height: 320,
-              paper_bgcolor: 'rgba(0,0,0,0)',
-              plot_bgcolor: 'rgba(15,15,25,1)',
-              font: { color: '#9ca3af' },
               margin: { t: 40, b: 50, l: 50, r: 20 },
-            }}
+            })}
             config={{ displayModeBar: false }}
             style={{ width: '100%' }}
           />
         </div>
       </div>
-      <p className="text-gray-500 text-xs mt-3">
+      <p className="text-[var(--text-soft)] text-xs mt-3">
         Discrete Shannon entropy is always non-negative. Differential entropy can be negative and is not a direct measure of information content. Note that differential entropy is translation-invariant.
       </p>
     </div>

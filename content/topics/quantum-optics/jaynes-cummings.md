@@ -72,5 +72,3 @@ $$
 where $d$ is the transition dipole moment. The excited-state population decays exponentially: $P_e(t) = e^{-\Gamma t}$.
 
 In a cavity, spontaneous emission is modified by the density of states. When the cavity is resonant, the enhanced rate is $\Gamma_{\text{cav}} = 4g^2/\kappa$ (where $\kappa$ is the cavity decay rate), leading to the **Purcell effect** discussed in the Cavity QED topic.
-
-[[simulation wigner-cat-state]]

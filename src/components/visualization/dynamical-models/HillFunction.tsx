@@ -2,12 +2,15 @@
 
 import React, { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { Slider } from '@/components/ui/slider';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
 export default function HillFunction() {
   const [K, setK] = useState(1.0);
   const [H, setH] = useState(1);
+  const { mergeLayout } = usePlotlyTheme();
 
   const { xVals, yRepression, yActivation } = useMemo(() => {
     const n = 500;
@@ -29,49 +32,40 @@ export default function HillFunction() {
 
   const commonLayout = {
     height: 380,
-    paper_bgcolor: 'rgba(0,0,0,0)',
-    plot_bgcolor: 'rgba(15,15,25,1)',
-    font: { color: '#9ca3af' },
     margin: { t: 40, b: 50, l: 50, r: 20 },
     xaxis: {
       title: { text: 'Concentration of TF' },
       range: [0, 3],
-      gridcolor: 'rgba(75,75,100,0.3)',
-      zerolinecolor: 'rgba(75,75,100,0.5)',
     },
     yaxis: {
       title: { text: 'Hill function value' },
       range: [0, 1.05],
-      gridcolor: 'rgba(75,75,100,0.3)',
-      zerolinecolor: 'rgba(75,75,100,0.5)',
     },
   };
 
   return (
-    <div className="w-full bg-[#151525] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-white">Hill Function: Repression and Activation</h3>
+    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
+      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Hill Function: Repression and Activation</h3>
       <div className="grid grid-cols-2 gap-4 mb-4">
         <div>
-          <label className="text-white">Dissociation constant K: {K.toFixed(2)}</label>
-          <input
-            type="range"
+          <label className="text-[var(--text-strong)]">Dissociation constant K: {K.toFixed(2)}</label>
+          <Slider
             min={0.1}
             max={2.5}
             step={0.05}
-            value={K}
-            onChange={(e) => setK(parseFloat(e.target.value))}
+            value={[K]}
+            onValueChange={([v]) => setK(v)}
             className="w-full"
           />
         </div>
         <div>
-          <label className="text-white">Hill coefficient H: {H}</label>
-          <input
-            type="range"
+          <label className="text-[var(--text-strong)]">Hill coefficient H: {H}</label>
+          <Slider
             min={1}
             max={10}
             step={1}
-            value={H}
-            onChange={(e) => setH(parseInt(e.target.value))}
+            value={[H]}
+            onValueChange={([v]) => setH(v)}
             className="w-full"
           />
         </div>
@@ -106,10 +100,10 @@ export default function HillFunction() {
                 showlegend: false,
               },
             ] as any}
-            layout={{
+            layout={mergeLayout({
               ...commonLayout,
-              title: { text: 'Repression: K^H / (K^H + x^H)', font: { color: '#9ca3af', size: 14 } },
-            }}
+              title: { text: 'Repression: K^H / (K^H + x^H)', font: { size: 14 } },
+            })}
             config={{ displayModeBar: false }}
             style={{ width: '100%' }}
           />
@@ -142,19 +136,19 @@ export default function HillFunction() {
                 showlegend: false,
               },
             ] as any}
-            layout={{
+            layout={mergeLayout({
               ...commonLayout,
-              title: { text: 'Activation: x^H / (K^H + x^H)', font: { color: '#9ca3af', size: 14 } },
-            }}
+              title: { text: 'Activation: x^H / (K^H + x^H)', font: { size: 14 } },
+            })}
             config={{ displayModeBar: false }}
             style={{ width: '100%' }}
           />
         </div>
       </div>
 
-      <div className="mt-4 text-sm text-gray-400">
+      <div className="mt-4 text-sm text-[var(--text-muted)]">
         <p>
-          The <strong className="text-gray-300">Hill function</strong> models cooperative binding of transcription factors to promoter regions.
+          The <strong className="text-[var(--text-muted)]">Hill function</strong> models cooperative binding of transcription factors to promoter regions.
           The dissociation constant <em>K</em> sets the threshold concentration at which the function reaches half its maximum value.
           The Hill coefficient <em>H</em> controls the steepness of the response: higher values create a more switch-like behavior.
         </p>

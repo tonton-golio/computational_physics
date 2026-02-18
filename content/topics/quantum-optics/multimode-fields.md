@@ -7,8 +7,6 @@ __Topic 2 keywords__
 - Lamb shift
 - Casimir forces
 
-[[simulation wigner-coherent]]
-
 # Readings
 Ch. 2.4-6, App. A.
 

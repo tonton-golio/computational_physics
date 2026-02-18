@@ -2,9 +2,9 @@
 
 import React, { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
-// PlotData type import removed - using inferred types
 import { Slider } from '@/components/ui/slider';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
 
 // Dynamically import Plot to avoid SSR issues
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
@@ -85,6 +85,7 @@ function solveLinearSystem(A: number[][], b: number[]): number[] {
 }
 
 export function FEMSim() {
+  const { mergeLayout } = usePlotlyTheme();
   const [ne, setNe] = useState([10]);
   const [L, setL] = useState([1.0]);
   const [A, setA] = useState([0.01]);
@@ -140,13 +141,13 @@ export function FEMSim() {
               {meshData && (
                 <Plot
                   data={meshData}
-                  layout={{
+                  layout={mergeLayout({
                     width: 500,
                     height: 300,
                     xaxis: { title: { text: 'Position x' } },
                     yaxis: { title: { text: 'Deformation (exaggerated)' } },
                     margin: { t: 20, b: 40, l: 60, r: 20 },
-                  }}
+                  })}
                   config={{ displayModeBar: false }}
                 />
               )}
@@ -156,13 +157,13 @@ export function FEMSim() {
               {displacementData && (
                 <Plot
                   data={displacementData}
-                  layout={{
+                  layout={mergeLayout({
                     width: 500,
                     height: 300,
                     xaxis: { title: { text: 'Position x' } },
                     yaxis: { title: { text: 'Displacement u' } },
                     margin: { t: 20, b: 40, l: 60, r: 20 },
-                  }}
+                  })}
                   config={{ displayModeBar: false }}
                 />
               )}

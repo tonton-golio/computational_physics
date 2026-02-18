@@ -1,104 +1,184 @@
 # Variational Autoencoders
 
-## Introduction
+## Standard autoencoders
 
-**Variational autoencoders** (VAEs) are symmetric encoder-decoder neural networks used for data compression, dimensionality reduction, image generation, and intrinsic dimensionality estimation.
+An **autoencoder** compresses input $\mathbf{x}$ to a low-dimensional latent representation $\mathbf{z}$ through an encoder $f_\phi$, then reconstructs the input through a decoder $g_\theta$:
 
-A standard autoencoder maps input data to a fixed-dimensional latent space through an encoder and reconstructs the input from the latent representation through a decoder. The objective is to minimize the reconstruction loss.
+$$
+\mathbf{z} = f_\phi(\mathbf{x}), \qquad \hat{\mathbf{x}} = g_\theta(\mathbf{z}).
+$$
 
-A VAE extends this by adding a **probabilistic layer** to the encoder that models the probability distribution of the latent space. This regularization ensures the latent space is smooth and continuous, enabling meaningful interpolation and generation.
+Training minimizes reconstruction loss: $\mathcal{L} = \|\mathbf{x} - \hat{\mathbf{x}}\|^2$.
+
+The problem: the latent space of a standard autoencoder is a mess. It is **discontinuous and unstructured** — nearby points in latent space may decode to wildly different outputs, and large regions of the latent space correspond to nothing meaningful at all. If you pick a random point in latent space and try to decode it, you will likely get garbage. The autoencoder learned to compress and decompress, but it did not learn a *map* of all possible outputs.
+
+## The VAE idea
+
+A **variational autoencoder** (VAE) fixes this by changing one thing: instead of mapping each input to a single point in latent space, the encoder outputs the parameters of a probability distribution — a little cloud of uncertainty around where the input *should* be in latent space:
+
+$$
+q_\phi(\mathbf{z} | \mathbf{x}) = \mathcal{N}(\mathbf{z}; \boldsymbol{\mu}_\phi(\mathbf{x}), \text{diag}(\boldsymbol{\sigma}^2_\phi(\mathbf{x}))).
+$$
+
+The decoder then reconstructs from a sample $\mathbf{z} \sim q_\phi(\mathbf{z}|\mathbf{x})$. By forcing these little clouds to stay close to a standard normal prior $p(\mathbf{z}) = \mathcal{N}(\mathbf{0}, \mathbf{I})$, the VAE ensures that the latent space is smooth and well-organized. Every region of latent space decodes to something meaningful, and walking smoothly through latent space produces smooth transformations in the output.
 
 [[simulation adl-pca-demo]]
-[[simulation adl-latent-interpolation]]
 
-## VAE Model (Fully Connected)
+## ELBO derivation
+
+Why does the VAE loss function look the way it does? We want to maximize the marginal log-likelihood $\log p_\theta(\mathbf{x})$ — the probability that our model assigns to the data we actually observe. But computing this directly requires integrating over all possible latent codes $\mathbf{z}$, which is intractable.
+
+The trick is to derive a tractable lower bound. Starting from the log-marginal likelihood and introducing an approximate posterior $q_\phi(\mathbf{z}|\mathbf{x})$:
+
+$$
+\log p_\theta(\mathbf{x}) = \log \int p_\theta(\mathbf{x}|\mathbf{z}) p(\mathbf{z}) \, d\mathbf{z}.
+$$
+
+Applying Jensen's inequality (or equivalently, decomposing the KL divergence):
+
+$$
+\log p_\theta(\mathbf{x}) = \underbrace{\mathbb{E}_{q_\phi}[\log p_\theta(\mathbf{x}|\mathbf{z})] - D_{\text{KL}}(q_\phi(\mathbf{z}|\mathbf{x}) \| p(\mathbf{z}))}_{\text{ELBO}} + D_{\text{KL}}(q_\phi(\mathbf{z}|\mathbf{x}) \| p_\theta(\mathbf{z}|\mathbf{x})).
+$$
+
+Since the last KL term is non-negative, the **Evidence Lower Bound** (ELBO) is a lower bound on the log-likelihood. Maximizing the ELBO simultaneously:
+1. Maximizes the expected reconstruction quality (first term).
+2. Minimizes the gap between the approximate and true posterior (last KL term vanishes when $q_\phi = p_\theta(\mathbf{z}|\mathbf{x})$).
+
+The loss function is therefore:
+
+$$
+\mathcal{L}_{\text{VAE}} = -\mathbb{E}_{q_\phi}[\log p_\theta(\mathbf{x}|\mathbf{z})] + D_{\text{KL}}(q_\phi(\mathbf{z}|\mathbf{x}) \| p(\mathbf{z})).
+$$
+
+The first term says "reconstruct well." The second term says "do not stray too far from the prior." Together they produce a model that generates well and has a smooth latent space.
+
+## The reparameterization trick
+
+This is one of the most beautiful ideas in the entire course. Here is the problem: the encoder outputs a distribution, and the decoder needs a sample from that distribution. But sampling is a random operation — and you cannot backpropagate through randomness. The gradient of "pick a random number" with respect to the distribution parameters is undefined.
+
+The reparameterization trick solves this with a simple, elegant maneuver. Instead of sampling directly from the learned distribution, we sample a "frozen" piece of noise $\boldsymbol{\epsilon}$ from a fixed standard normal, and then *deterministically* transform it using the learned parameters:
+
+$$
+\mathbf{z} = \boldsymbol{\mu} + \boldsymbol{\sigma} \odot \boldsymbol{\epsilon}, \qquad \boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I}).
+$$
+
+Now all the randomness lives in $\boldsymbol{\epsilon}$, which does not depend on any learnable parameters. The gradient flows cleanly through $\boldsymbol{\mu}$ and $\boldsymbol{\sigma}$, and we can train the whole system end-to-end with standard backpropagation. The frozen noise is just a source of randomness that the network reshapes; the shaping is what we optimize.
+
+## KL divergence term
+
+For Gaussian encoder and standard normal prior, the KL divergence has a closed-form solution:
+
+$$
+D_{\text{KL}}(q_\phi \| p) = -\frac{1}{2} \sum_{j=1}^{d} \left(1 + \log \sigma_j^2 - \mu_j^2 - \sigma_j^2\right).
+$$
+
+What is this term actually doing? It is the universe telling the network "do not be too sure of yourself." Without the KL term, the encoder would collapse each input to a single point (zero variance) at some arbitrary location — perfectly memorizing each training example but creating a latent space full of gaps. The KL penalty forces each encoding to be a spread-out cloud that overlaps with the prior, filling the latent space with meaning.
+
+## What if we didn't have the KL term?
+
+Without the KL regularizer, the VAE degenerates into a regular autoencoder. The encoder would learn to place each training example at a unique, precise point in latent space with zero variance. Reconstruction would be perfect, but sampling would be useless — random points in latent space would decode to nothing coherent. The KL term is the price of generativity.
+
+## Reconstruction vs KL tradeoff: Beta-VAE
+
+The standard VAE loss weights reconstruction and KL terms equally. **Beta-VAE** introduces an explicit tradeoff:
+
+$$
+\mathcal{L}_{\beta\text{-VAE}} = \mathbb{E}[-\log p_\theta(\mathbf{x}|\mathbf{z})] + \beta \cdot D_{\text{KL}}(q_\phi \| p).
+$$
+
+- $\beta > 1$: Stronger regularization, encouraging more disentangled latent representations at the cost of reconstruction quality. The network is forced to organize its latent space more carefully.
+- $\beta < 1$: Better reconstruction but a less structured latent space.
+
+## VAE model (fully connected)
 
 ```python
 class VAE(nn.Module):
     def __init__(self):
         super().__init__()
         self.fc1 = nn.Linear(784, 400)
-        self.fc2 = nn.Linear(400, 8)
+        self.fc_mu = nn.Linear(400, 8)
+        self.fc_logvar = nn.Linear(400, 8)
         self.fc3 = nn.Linear(8, 400)
         self.fc4 = nn.Linear(400, 784)
-        self.relu = nn.ReLU()
-        self.sigmoid = nn.Sigmoid()
-        self.fc__ = nn.Linear(400, 400)
 
     def encode(self, x):
-        h1 = self.relu(self.fc1(x))
-        h1 = self.relu(self.fc__(h1))
-        return self.fc2(h1)
+        h = F.relu(self.fc1(x))
+        return self.fc_mu(h), self.fc_logvar(h)
 
-    def reparameterize(self, mu):
-        std = torch.exp(0.5*mu)
+    def reparameterize(self, mu, logvar):
+        std = torch.exp(0.5 * logvar)
         eps = torch.randn_like(std)
-        return mu + eps*std
+        return mu + eps * std
 
     def decode(self, z):
-        h3 = self.relu(self.fc3(z))
-        h3 = self.relu(self.fc__(h3))
-        return self.sigmoid(self.fc4(h3))
+        h = F.relu(self.fc3(z))
+        return torch.sigmoid(self.fc4(h))
 
     def forward(self, x):
-        mu = self.encode(x.view(-1, 784))
-        z = self.reparameterize(mu)
-        return self.decode(z), mu
+        mu, logvar = self.encode(x.view(-1, 784))
+        z = self.reparameterize(mu, logvar)
+        return self.decode(z), mu, logvar
+```
+<!--code-toggle-->
+```pseudocode
+CLASS VAE:
+    INIT():
+        fc1     = LINEAR(784, 400)
+        fc_mu   = LINEAR(400, 8)
+        fc_logvar = LINEAR(400, 8)
+        fc3     = LINEAR(8, 400)
+        fc4     = LINEAR(400, 784)
+
+    ENCODE(x):
+        h = RELU(fc1(x))
+        RETURN fc_mu(h), fc_logvar(h)
+
+    REPARAMETERIZE(mu, logvar):
+        std = EXP(0.5 * logvar)
+        eps = SAMPLE_NORMAL(shape=std.shape)
+        RETURN mu + eps * std
+
+    DECODE(z):
+        h = RELU(fc3(z))
+        RETURN SIGMOID(fc4(h))
+
+    FORWARD(x):
+        mu, logvar = ENCODE(FLATTEN(x))
+        z = REPARAMETERIZE(mu, logvar)
+        RETURN DECODE(z), mu, logvar
 ```
 
-## VAE with Convolutional Layers
+The VAE loss combines reconstruction and KL terms:
 
 ```python
-class VAE_with_conv2d(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.conv1 = nn.Conv2d(1, 16, 3, padding=1)
-        self.conv2 = nn.Conv2d(16, 32, 3, padding=1)
-        self.conv2_ = nn.Conv2d(32, 16, 3, padding=1)
-        self.conv1_ = nn.Conv2d(16, 1, 3, padding=1)
-        self.flatten = nn.Flatten()
-        self.fc1 = nn.Linear(784, 256)
-        self.fc2 = nn.Linear(256, 64)
-        self.fc3 = nn.Linear(64, 16)
-        self.fc4 = nn.Linear(16, 4)
-        self.fc4_ = nn.Linear(2, 16)
-        self.fc3_ = nn.Linear(16, 64)
-        self.fc2_ = nn.Linear(64, 256)
-        self.fc1_ = nn.Linear(256, 784)
-        self.relu = nn.ReLU()
-        self.sigmoid = nn.Sigmoid()
-
-    def encode(self, x):
-        h1 = self.relu(self.conv1(x))
-        h1 = self.relu(self.conv2(h1))
-        h1 = self.relu(self.conv2_(h1))
-        h1 = self.conv1_(h1)
-        h1 = self.flatten(h1)
-        h1 = self.relu(self.fc1(h1))
-        h1 = self.relu(self.fc2(h1))
-        h1 = self.relu(self.fc3(h1))
-        return self.fc4(h1)
-
-    def reparameterize(self, mu_std):
-        std = mu_std[:, 2:]
-        mu = mu_std[:, :2]
-        eps = torch.randn_like(std)
-        return mu + eps*std
-
-    def decode(self, z):
-        h3 = self.relu(self.fc4_(z))
-        h3 = self.relu(self.fc3_(h3))
-        h3 = self.relu(self.fc2_(h3))
-        h3 = self.fc1_(h3)
-        h3 = h3.view(-1, 1, 28, 28)
-        return self.sigmoid(h3)
-
-    def forward(self, x):
-        mu_std = self.encode(x)
-        z = self.reparameterize(mu_std)
-        return self.decode(z), mu_std
+def vae_loss(recon_x, x, mu, logvar):
+    recon_loss = F.binary_cross_entropy(recon_x, x.view(-1, 784), reduction='sum')
+    kl_loss = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
+    return recon_loss + kl_loss
+```
+<!--code-toggle-->
+```pseudocode
+FUNCTION vae_loss(recon_x, x, mu, logvar):
+    recon_loss = BINARY_CROSS_ENTROPY(recon_x, FLATTEN(x), reduction="sum")
+    kl_loss = -0.5 * SUM(1 + logvar - mu^2 - EXP(logvar))
+    RETURN recon_loss + kl_loss
 ```
 
-## Latent Space Visualization
+## Latent space properties
+
+A well-trained VAE exhibits several desirable latent space properties:
+
+- **Smoothness**: Nearby points in latent space decode to similar outputs. Walk from one digit to another and you see a continuous morphing, not a sudden jump.
+- **Completeness**: Every point sampled from the prior $p(\mathbf{z}) = \mathcal{N}(\mathbf{0}, \mathbf{I})$ decodes to a plausible output. There are no dead zones.
+- **Disentanglement**: Individual latent dimensions may correspond to interpretable factors of variation (e.g., digit identity, slant, thickness). Twist one knob and only one thing changes.
+
+[[simulation adl-latent-interpolation]]
+
+## Latent space visualization
 
 We take a single batch, encode all images, and examine where they fall in the latent space. By mapping the latent space to 2D using PCA, we can visualize how different digits cluster. Selecting a point on this 2D map and decoding it produces a generated image, demonstrating the smooth interpolation property of the VAE latent space.
+
+## Further reading
+
+- Kingma, D.P. and Welling, M. (2014). *Auto-Encoding Variational Bayes*. The original VAE paper, deriving the ELBO and the reparameterization trick.
+- Doersch, C. (2016). *Tutorial on Variational Autoencoders*. An accessible walkthrough of VAE theory with clear diagrams and intuitions.

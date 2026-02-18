@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import Plotly from 'react-plotly.js';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { Slider } from '@/components/ui/slider';
 
 // Box-Muller transform for generating normal random variables
 function boxMuller(): number {
@@ -19,11 +21,11 @@ function AppliedStatsSim2({ }: AppliedStatsSim2Props) {
   const [stdDev, setStdDev] = useState(1);
   const [numSamples, setNumSamples] = useState(1000);
   const [samples, setSamples] = useState<number[]>([]);
+  const { mergeLayout } = usePlotlyTheme();
 
   // Generate samples when parameters change
   useEffect(() => {
     const newSamples = Array.from({ length: numSamples }, () => mean + stdDev * boxMuller());
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSamples(newSamples);
   }, [mean, stdDev, numSamples]);
 
@@ -56,84 +58,72 @@ function AppliedStatsSim2({ }: AppliedStatsSim2Props) {
       y: pdfValues,
       type: 'scatter' as const,
       mode: 'lines' as const,
-      name: `Normal PDF (μ=${mean.toFixed(1)}, σ=${stdDev.toFixed(1)})`,
+      name: `Normal PDF (mu=${mean.toFixed(1)}, sigma=${stdDev.toFixed(1)})`,
       line: { color: 'red', width: 2 },
     },
   ];
 
   return (
-    <div className="w-full bg-[#151525] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-white">Interactive Normal Distribution Simulation</h3>
+    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
+      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Interactive Normal Distribution Simulation</h3>
       <div className="mb-4">
-        <p className="text-sm text-gray-300">
+        <p className="text-sm text-[var(--text-muted)]">
           Adjust the mean and standard deviation to see how the theoretical normal distribution (red line) fits the histogram of randomly generated samples.
         </p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
         <div>
-          <label className="text-white block mb-1">Mean (μ): {mean.toFixed(1)}</label>
-          <input
-            type="range"
+          <label className="text-[var(--text-strong)] block mb-1">Mean (mu): {mean.toFixed(1)}</label>
+          <Slider
             min={-3}
             max={3}
             step={0.1}
-            value={mean}
-            onChange={(e) => setMean(parseFloat(e.target.value))}
+            value={[mean]}
+            onValueChange={([v]) => setMean(v)}
             className="w-full"
           />
         </div>
         <div>
-          <label className="text-white block mb-1">Standard Deviation (σ): {stdDev.toFixed(1)}</label>
-          <input
-            type="range"
+          <label className="text-[var(--text-strong)] block mb-1">Standard Deviation (sigma): {stdDev.toFixed(1)}</label>
+          <Slider
             min={0.1}
             max={3}
             step={0.1}
-            value={stdDev}
-            onChange={(e) => setStdDev(parseFloat(e.target.value))}
+            value={[stdDev]}
+            onValueChange={([v]) => setStdDev(v)}
             className="w-full"
           />
         </div>
         <div>
-          <label className="text-white block mb-1">Number of Samples: {numSamples}</label>
-          <input
-            type="range"
+          <label className="text-[var(--text-strong)] block mb-1">Number of Samples: {numSamples}</label>
+          <Slider
             min={100}
             max={5000}
             step={100}
-            value={numSamples}
-            onChange={(e) => setNumSamples(parseInt(e.target.value))}
+            value={[numSamples]}
+            onValueChange={([v]) => setNumSamples(v)}
             className="w-full"
           />
         </div>
       </div>
       <Plotly
         data={plotData}
-        layout={{
+        layout={mergeLayout({
           title: {
             text: 'Normal Distribution: Samples vs Theoretical PDF',
-            font: { color: '#ffffff' }
           },
           xaxis: {
-            title: { text: 'Value', font: { color: '#9ca3af' } },
-            tickfont: { color: '#9ca3af' },
-            gridcolor: '#374151'
+            title: { text: 'Value' },
           },
           yaxis: {
-            title: { text: 'Density', font: { color: '#9ca3af' } },
-            tickfont: { color: '#9ca3af' },
-            gridcolor: '#374151'
+            title: { text: 'Density' },
           },
           height: 500,
-          paper_bgcolor: 'rgba(0,0,0,0)',
-          plot_bgcolor: 'rgba(15,15,25,1)',
-          font: { color: '#9ca3af' },
-          legend: { font: { color: '#9ca3af' } }
-        }}
+        })}
         config={{ displayModeBar: false }}
         style={{ width: '100%' }}
       />
-      <div className="mt-4 text-sm text-gray-400">
+      <div className="mt-4 text-sm text-[var(--text-muted)]">
         <p>The histogram shows the distribution of {numSamples} random samples drawn from a normal distribution.</p>
         <p>The red line represents the theoretical probability density function.</p>
       </div>

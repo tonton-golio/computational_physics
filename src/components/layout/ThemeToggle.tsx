@@ -24,11 +24,17 @@ function resolveInitialTheme(): ThemeMode {
 }
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<ThemeMode>(resolveInitialTheme);
+  const [theme, setTheme] = useState<ThemeMode | null>(null);
 
   useEffect(() => {
-    applyTheme(theme);
+    setTheme(resolveInitialTheme());
+  }, []);
+
+  useEffect(() => {
+    if (theme) applyTheme(theme);
   }, [theme]);
+
+  if (!theme) return null;
 
   return (
     <button

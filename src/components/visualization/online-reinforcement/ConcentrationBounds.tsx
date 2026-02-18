@@ -2,6 +2,8 @@
 
 import React, { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
+import { Slider } from '@/components/ui/slider';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -23,6 +25,7 @@ export default function ConcentrationBounds({ id }: SimulationProps) { // eslint
   const [nExperiments, setNExperiments] = useState(500);
   const [nSamples, setNSamples] = useState(50);
   const [threshold, setThreshold] = useState(0.15);
+  const { mergeLayout } = usePlotlyTheme();
 
   const plotData = useMemo(() => {
     const rng = mulberry32(42);
@@ -95,61 +98,58 @@ export default function ConcentrationBounds({ id }: SimulationProps) { // eslint
   const currentMarkov = currentIdx >= 0 ? plotData.markov[currentIdx] : 0;
 
   return (
-    <div className="w-full bg-[#151525] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-white">
+    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
+      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">
         Concentration Inequalities: Hoeffding, Markov, Chebyshev
       </h3>
-      <p className="text-gray-400 text-sm mb-4">
+      <p className="text-[var(--text-muted)] text-sm mb-4">
         Draw <strong>n</strong> samples from Uniform[0,1] and compute sample means across many experiments.
         Compare the empirical tail probability P(|X&#772; - 0.5| &ge; t) against theoretical bounds.
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
         <div>
-          <label className="text-white text-sm">
+          <label className="text-[var(--text-strong)] text-sm">
             Experiments: {nExperiments}
           </label>
-          <input
-            type="range"
+          <Slider
             min={100}
             max={5000}
             step={100}
-            value={nExperiments}
-            onChange={(e) => setNExperiments(parseInt(e.target.value))}
+            value={[nExperiments]}
+            onValueChange={([v]) => setNExperiments(v)}
             className="w-full"
           />
         </div>
         <div>
-          <label className="text-white text-sm">
+          <label className="text-[var(--text-strong)] text-sm">
             Samples per experiment (n): {nSamples}
           </label>
-          <input
-            type="range"
+          <Slider
             min={5}
             max={500}
             step={5}
-            value={nSamples}
-            onChange={(e) => setNSamples(parseInt(e.target.value))}
+            value={[nSamples]}
+            onValueChange={([v]) => setNSamples(v)}
             className="w-full"
           />
         </div>
         <div>
-          <label className="text-white text-sm">
+          <label className="text-[var(--text-strong)] text-sm">
             Threshold (t): {threshold.toFixed(2)}
           </label>
-          <input
-            type="range"
+          <Slider
             min={0.01}
             max={0.5}
             step={0.01}
-            value={threshold}
-            onChange={(e) => setThreshold(parseFloat(e.target.value))}
+            value={[threshold]}
+            onValueChange={([v]) => setThreshold(v)}
             className="w-full"
           />
         </div>
       </div>
 
-      <div className="mb-4 text-sm text-gray-300 grid grid-cols-2 md:grid-cols-4 gap-2">
+      <div className="mb-4 text-sm text-[var(--text-muted)] grid grid-cols-2 md:grid-cols-4 gap-2">
         <div>
           Empirical: <span className="text-blue-400 font-mono">{currentEmpirical.toFixed(4)}</span>
         </div>
@@ -208,22 +208,18 @@ export default function ConcentrationBounds({ id }: SimulationProps) { // eslint
             showlegend: false,
           },
         ]}
-        layout={{
+        layout={mergeLayout({
           title: { text: 'Concentration Bounds vs Empirical Tail Probability' },
-          xaxis: { title: { text: 'Threshold t' }, color: '#9ca3af' },
+          xaxis: { title: { text: 'Threshold t' } },
           yaxis: {
             title: { text: 'Probability' },
             type: 'log',
             range: [-4, 0],
-            color: '#9ca3af',
           },
           height: 450,
-          paper_bgcolor: 'rgba(0,0,0,0)',
-          plot_bgcolor: 'rgba(15,15,25,1)',
-          font: { color: '#9ca3af' },
           legend: { x: 0.6, y: 1 },
           margin: { t: 40, b: 60, l: 60, r: 20 },
-        }}
+        })}
         config={{ displayModeBar: false }}
         style={{ width: '100%' }}
       />

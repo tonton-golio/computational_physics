@@ -2,6 +2,8 @@
 
 import React, { useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { Slider } from '@/components/ui/slider';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -54,6 +56,7 @@ export function PhaseTransitionIsing1D() {
   const [beta, setBeta] = useState(1.2);
   const [nsteps, setNsteps] = useState(3000);
   const [rerun, setRerun] = useState(0);
+  const { mergeLayout } = usePlotlyTheme();
 
   const mcSeries = useMemo(() => runMonteCarlo1D(size, beta, nsteps, rerun), [size, beta, nsteps, rerun]);
 
@@ -67,31 +70,22 @@ export function PhaseTransitionIsing1D() {
     return { betas, mExact };
   }, []);
 
-  const darkLayout = {
-    paper_bgcolor: 'rgba(0,0,0,0)',
-    plot_bgcolor: 'rgba(15,15,25,1)',
-    font: { color: '#9ca3af' },
-    margin: { t: 40, r: 20, b: 50, l: 60 },
-    xaxis: { gridcolor: '#1e1e2e' },
-    yaxis: { gridcolor: '#1e1e2e' },
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap gap-6 items-center">
         <div>
-          <label className="text-sm text-gray-400 block mb-1">Size: {size}</label>
-          <input type="range" min={20} max={200} step={10} value={size} onChange={e => setSize(Number(e.target.value))} className="w-48" />
+          <label className="mb-1 block text-sm text-[var(--text-muted)]">Size: {size}</label>
+          <Slider value={[size]} onValueChange={([v]) => setSize(v)} min={20} max={200} step={10} />
         </div>
         <div>
-          <label className="text-sm text-gray-400 block mb-1">Beta (1/T): {beta.toFixed(2)}</label>
-          <input type="range" min={0.1} max={3} step={0.05} value={beta} onChange={e => setBeta(Number(e.target.value))} className="w-48" />
+          <label className="mb-1 block text-sm text-[var(--text-muted)]">Beta (1/T): {beta.toFixed(2)}</label>
+          <Slider value={[beta]} onValueChange={([v]) => setBeta(v)} min={0.1} max={3} step={0.05} />
         </div>
         <div>
-          <label className="text-sm text-gray-400 block mb-1">Steps: {nsteps}</label>
-          <input type="range" min={500} max={12000} step={500} value={nsteps} onChange={e => setNsteps(Number(e.target.value))} className="w-48" />
+          <label className="mb-1 block text-sm text-[var(--text-muted)]">Steps: {nsteps}</label>
+          <Slider value={[nsteps]} onValueChange={([v]) => setNsteps(v)} min={500} max={12000} step={500} />
         </div>
-        <button onClick={() => setRerun(v => v + 1)} className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded text-sm mt-4">
+        <button onClick={() => setRerun(v => v + 1)} className="px-4 py-2 bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white rounded text-sm mt-4">
           Re-run
         </button>
       </div>
@@ -101,13 +95,13 @@ export function PhaseTransitionIsing1D() {
           data={[
             { y: mcSeries, type: 'scatter', mode: 'lines', line: { color: '#f59e0b', width: 1.5 }, name: '|m| Monte Carlo' },
           ]}
-          layout={{
-            ...darkLayout,
-            title: { text: '1D Ising Monte Carlo: |m| vs Step', font: { size: 13, color: '#9ca3af' } },
-            xaxis: { ...darkLayout.xaxis, title: { text: 'Step' } },
-            yaxis: { ...darkLayout.yaxis, title: { text: '|m|' } },
+          layout={mergeLayout({
+            title: { text: '1D Ising Monte Carlo: |m| vs Step', font: { size: 13 } },
+            xaxis: { title: { text: 'Step' } },
+            yaxis: { title: { text: '|m|' } },
             showlegend: false,
-          }}
+            margin: { t: 40, r: 20, b: 50, l: 60 },
+          })}
           config={{ responsive: true, displayModeBar: false }}
           style={{ width: '100%', height: 320 }}
         />
@@ -115,13 +109,13 @@ export function PhaseTransitionIsing1D() {
           data={[
             { x: betaSweep.betas, y: betaSweep.mExact, type: 'scatter', mode: 'lines', line: { color: '#3b82f6', width: 2 }, name: 'Transfer matrix (h=0.1)' },
           ]}
-          layout={{
-            ...darkLayout,
-            title: { text: '1D Ising (Transfer Matrix) Magnetization', font: { size: 13, color: '#9ca3af' } },
-            xaxis: { ...darkLayout.xaxis, title: { text: 'Beta (1/T)' } },
-            yaxis: { ...darkLayout.yaxis, title: { text: '|m|' } },
+          layout={mergeLayout({
+            title: { text: '1D Ising (Transfer Matrix) Magnetization', font: { size: 13 } },
+            xaxis: { title: { text: 'Beta (1/T)' } },
+            yaxis: { title: { text: '|m|' } },
             showlegend: false,
-          }}
+            margin: { t: 40, r: 20, b: 50, l: 60 },
+          })}
           config={{ responsive: true, displayModeBar: false }}
           style={{ width: '100%', height: 320 }}
         />

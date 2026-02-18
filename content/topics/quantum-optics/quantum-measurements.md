@@ -48,8 +48,6 @@ $$
 
 Negative values of $W$ indicate non-classical states (e.g., Fock states, cat states).
 
-[[simulation wigner-number-state]]
-
 ## Quantum Non-Demolition Measurements
 
 A **quantum non-demolition** (QND) measurement extracts information about an observable without disturbing it. For photon number, the key requirement is $[\hat{n}, \hat{H}_{\text{int}}] = 0$: the interaction used for measurement commutes with the measured observable.

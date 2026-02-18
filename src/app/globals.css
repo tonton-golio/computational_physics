@@ -126,3 +126,61 @@ body {
   fill: var(--surface-1) !important;
   stroke: var(--border-strong) !important;
 }
+
+/* Plotly colorbar text */
+.js-plotly-plot .plotly .cbtitle text,
+.js-plotly-plot .plotly .cbticks text {
+  fill: var(--text-muted) !important;
+}
+
+/* Plotly container subtle depth */
+.js-plotly-plot {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+}
+
+/* Plotly modebar: subtle by default, opaque on hover */
+.js-plotly-plot .plotly .modebar {
+  opacity: 0.4;
+  transition: opacity 0.25s ease;
+}
+
+.js-plotly-plot:hover .plotly .modebar {
+  opacity: 1;
+}
+
+.js-plotly-plot .plotly .modebar-btn path {
+  fill: var(--text-soft) !important;
+}
+
+.js-plotly-plot .plotly .modebar-btn:hover path {
+  fill: var(--accent) !important;
+}
+
+/* Plotly axis titles and tick labels */
+.js-plotly-plot .plotly .g-xtitle text,
+.js-plotly-plot .plotly .g-ytitle text,
+.js-plotly-plot .plotly .g-ztitle text {
+  fill: var(--text-strong) !important;
+}
+
+.js-plotly-plot .plotly .xtick text,
+.js-plotly-plot .plotly .ytick text,
+.js-plotly-plot .plotly .ztick text {
+  fill: var(--text-muted) !important;
+}
+
+/* Plotly plot title */
+.js-plotly-plot .plotly .g-gtitle text {
+  fill: var(--text-strong) !important;
+}
+
+/* Shimmer animation for loading skeletons */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}

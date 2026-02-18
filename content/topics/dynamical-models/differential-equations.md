@@ -1,106 +1,89 @@
 # Differential Equations in a Nutshell
 
-[[simulation hill-function]]
+## Where we are headed
 
-# Week 2 description
-- Nov 28: Intuitively understanding differential equation for gene regulation 
-(no worries, we do not need to solve difficult differential equation!!).
+This is our first lesson, and we need a language for talking about how things change over time. That language is differential equations. By the end of this lesson you will see that one simple idea — *the rate of change equals what flows in minus what flows out* — is enough to explain how molecules accumulate, decay, and reach a steady state inside a living cell. Everything else in this course builds on top of this.
 
-# Differential equation for creation
-Consider the situation that molecules (such as mRNA) are created with the rate $k$ 
-(molecules/unit time).
-What is the number of molecules after short time $\Delta t$?
-Defining $n(t)$ is number of molecules at time $t$, we see the number of molecules
-after short time $\Delta t$ become
-$$
-    n(t+\Delta t) = n(t) + k \Delta t.
-$$
-Here $k \Delta t$ is number of molecules created in time period $\Delta t$.
-Thus we just get the number of molecules after time $\Delta t$ by just summing
-up the number of molecules at time $t$ and number of molecules created in time 
-period $\Delta t$.
+## The bathtub picture
 
-This equation can mathematically equivalent to 
-$$
-    \frac{n(t+\Delta t) - n(t)}{\Delta t}
-    = 
-    k.
-$$
-In the limit of infinitely small time period $\Delta t \rightarrow 0$, left hand 
-side of this equation would be described by differentiation.
-$$
-    \frac{\mathrm{d} n(t)}{\mathrm{d} t}
-    = 
-    k.
-$$
-Thus this simple molecules creation process can be discribed by differential 
-equation.
+Before we write any symbols, think about a bathtub. Water flows in from the faucet at a constant rate. Water drains out through the plug at a rate that depends on how full the tub is — the more water, the faster it drains. What happens?
 
-[[simulation steady-state-regulation]]
+At first the tub fills up quickly because very little is draining out. As the water level rises, the drain gets faster and faster. Eventually the inflow and the outflow balance perfectly, and the water level stops changing. That final level is the **steady state**.
 
-Solution become
-$$
-    n(t)
-    =
-    n(0) + kt.
-$$
-Therefore $n(t)$ increases linearly with time.
+This is exactly how molecules work inside a cell. mRNA is produced at some rate by the transcription machinery, and it is degraded at a rate proportional to how much is present. The steady-state concentration is simply the ratio of production to degradation. Nature finds this balance automatically.
 
-# Differential equation for degradation
-Next consider the another situation that molecules are degraded with rate $\Gamma$
-(1/unit time).
-Notice the unit of degradation rate is frequency.
-Thus number of molecules degraded in time duration $\Delta t$ would be 
-$$
-\Gamma n(t) \Delta t
-$$
-Using same way of previous section, we get
-$$
-    n(t+\Delta t) = n(t) - \Gamma n(t) \Delta t.
-$$
-$$
-    \frac{n(t+\Delta t) - n(t)}{\Delta t}
-    = 
-    -\Gamma n(t).
-$$
-$$
-    \frac{\mathrm{d} n(t)}{\mathrm{d} t}
-    = 
-    -\Gamma n(t).
-$$
-Solution become
-$$
-    n(t)
-    =
-    n(0) \exp \left(-\Gamma t\right).
-$$
-Therefore $n(t)$ decays exponentially with time.
+## Creation: molecules appearing at a constant rate
 
-# Differential equation for creation and degradation
-Finally we can make differential equation for system with both creation and 
-degradation.
-By combining previous two section we have a equation for how number of molecules 
-evolve with time.
-$$
-    \frac{\mathrm{d} n(t)}{\mathrm{d} t}
-    = 
-    k -\Gamma n(t).
-$$
-Here, as same in the previous two sections, $k$ (molecules/unit time) is 
-creation rate and $\Gamma$ (1/unit time) is degradation rate.
+Suppose molecules (say, mRNA) are created at a constant rate $k$ — the "birth rate" — (molecules per unit time). After a short time $\Delta t$, the number of molecules goes from $n(t)$ to
 
-If we let the system go for sufficiently long time, the system reach steady state
-i.e. number of molecules does not depend on time.
-We can get number of molecules in the steady state by setting 
-$\frac{\mathrm{d} n(t)}{\mathrm{d} t} = 0$.
 $$
-    0
-    = 
-    k -\Gamma n_\mathrm{ss}.
+n(t+\Delta t) = n(t) + k \, \Delta t.
 $$
-Thus, 
+
+> *In words: the new count equals the old count plus however many were made during that interval.*
+
+Rearranging and taking the limit $\Delta t \rightarrow 0$ gives us our first differential equation:
+
 $$
-    n_\mathrm{ss}
-    = 
-    \frac{k}{\Gamma}.
+\frac{\mathrm{d} n(t)}{\mathrm{d} t} = k.
 $$
+
+> *This says: the number of molecules increases at a constant rate, no matter how many are already there.*
+
+The solution is simply $n(t) = n(0) + kt$ — a straight line. Molecules pile up forever. Clearly something is missing.
+
+## Degradation: molecules falling apart
+
+Now suppose molecules are degraded at a rate $\Gamma$ — the "death rate constable" — (per unit time). The number destroyed in a short interval $\Delta t$ is $\Gamma \, n(t) \, \Delta t$ — it depends on how many molecules are present. Following the same logic:
+
+$$
+\frac{\mathrm{d} n(t)}{\mathrm{d} t} = -\Gamma \, n(t).
+$$
+
+> *This says: the more molecules you have, the faster they disappear.*
+
+The solution is $n(t) = n(0) \, e^{-\Gamma t}$ — exponential decay. You can also think of this in terms of the **half-life** $t_{1/2} = \ln 2 / \Gamma$, the time it takes for half the molecules to be gone. Or equivalently, the **time constant** $\tau = 1/\Gamma$, which is the time for the number to drop to about 37% of its starting value.
+
+## The full picture: creation and degradation together
+
+Now combine both processes. This is the bathtub equation:
+
+$$
+\frac{\mathrm{d} n(t)}{\mathrm{d} t} = k - \Gamma \, n(t).
+$$
+
+> *In words: the rate of change equals what's being made minus what's falling apart.*
+
+At **steady state** nothing is changing, so we set the left side to zero:
+
+$$
+0 = k - \Gamma \, n_\mathrm{ss} \quad \Longrightarrow \quad n_\mathrm{ss} = \frac{k}{\Gamma}.
+$$
+
+> *The steady-state number of molecules is just the production rate divided by the degradation rate. That's it. This beautifully simple result shows up everywhere in biology.*
+
+If you start with zero molecules, the system climbs toward $n_\mathrm{ss}$ on a timescale set by $1/\Gamma$ — fast degradation means the system reaches steady state quickly. If you start above $n_\mathrm{ss}$, the excess decays away on the same timescale.
+
+## Why does nature do it this way?
+
+You might ask: why does a cell bother degrading its own mRNA? It costs energy to make it, so why destroy it? The answer is speed. A cell that only produces molecules (no degradation) can never reduce their levels — it is stuck. But a cell that both produces and degrades can change its steady state simply by adjusting the production rate. The faster the degradation, the quicker the response. This is why many mRNAs in bacteria have half-lives of just a few minutes.
+
+## Check your understanding
+
+- If you double the production rate $k$ while keeping $\Gamma$ fixed, what happens to the steady-state level?
+- A certain mRNA has a half-life of 3 minutes. What is its degradation rate $\Gamma$?
+- Why does faster degradation lead to faster response, even though it seems wasteful?
+
+## Challenge
+
+Suppose a gene starts producing mRNA at rate $k = 10$ molecules per minute, starting from zero, with degradation rate $\Gamma = 0.2$ per minute. Without solving the differential equation, try to guess the steady-state level and the approximate time to get there. Then solve $\dot{n} = k - \Gamma n$ and check your guess. How close were you?
+
+## Big ideas
+
+- **The bathtub equation** $\dot{n} = k - \Gamma n$ is the foundation of almost every model in this course.
+- **Steady state** is where production balances degradation: $n_\mathrm{ss} = k / \Gamma$.
+- **The degradation rate $\Gamma$ sets the response time** — fast turnover means the cell can change its mind quickly.
+
+## What comes next
+
+We now have the basic language of change: production, degradation, and the steady state that emerges from their balance. But real cells are noisy — molecules are made and destroyed one at a time, not in smooth continuous flows. In the next lesson, we shake our beautiful deterministic equations and discover that the randomness is not a nuisance but a feature. Get ready: the steady state you just learned to love is about to become a lie.

@@ -2,6 +2,8 @@
 
 import React, { useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { Slider } from '@/components/ui/slider';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -78,6 +80,7 @@ export default function GlacierThicknessMCMC({ id }: SimulationProps) { // eslin
   const [kernelWidth, setKernelWidth] = useState(320);
   const [scale, setScale] = useState(0.16);
   const [seed, setSeed] = useState(12);
+  const { mergeLayout } = usePlotlyTheme();
 
   const result = useMemo(() => {
     const rng = seededRandom(seed);
@@ -167,45 +170,45 @@ export default function GlacierThicknessMCMC({ id }: SimulationProps) { // eslin
   }, [nWalkers, nSteps, burnIn, proposalStd, smoothnessWeight, kernelWidth, scale, seed]);
 
   return (
-    <div className="w-full bg-[#151525] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-white">Glacier Thickness (MCMC Inversion)</h3>
-      <p className="text-gray-400 text-sm mb-4">
+    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
+      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Glacier Thickness (MCMC Inversion)</h3>
+      <p className="text-[var(--text-muted)] text-sm mb-4">
         Estimate a glacier thickness profile from Bouguer-anomaly data using a simplified forward model and
         Metropolis sampling. The posterior gives both a best-fit profile and uncertainty bounds.
       </p>
 
       <div className="grid grid-cols-2 lg:grid-cols-8 gap-3 mb-4">
         <div>
-          <label className="text-gray-300 text-xs">Walkers: {nWalkers}</label>
-          <input type="range" min={2} max={18} step={1} value={nWalkers} onChange={(e) => setNWalkers(parseInt(e.target.value))} className="w-full" />
+          <label className="text-[var(--text-muted)] text-xs">Walkers: {nWalkers}</label>
+          <Slider min={2} max={18} step={1} value={[nWalkers]} onValueChange={([v]) => setNWalkers(v)} />
         </div>
         <div>
-          <label className="text-gray-300 text-xs">Steps: {nSteps}</label>
-          <input type="range" min={160} max={1500} step={20} value={nSteps} onChange={(e) => setNSteps(parseInt(e.target.value))} className="w-full" />
+          <label className="text-[var(--text-muted)] text-xs">Steps: {nSteps}</label>
+          <Slider min={160} max={1500} step={20} value={[nSteps]} onValueChange={([v]) => setNSteps(v)} />
         </div>
         <div>
-          <label className="text-gray-300 text-xs">Burn-in: {burnIn}</label>
-          <input type="range" min={20} max={700} step={10} value={burnIn} onChange={(e) => setBurnIn(parseInt(e.target.value))} className="w-full" />
+          <label className="text-[var(--text-muted)] text-xs">Burn-in: {burnIn}</label>
+          <Slider min={20} max={700} step={10} value={[burnIn]} onValueChange={([v]) => setBurnIn(v)} />
         </div>
         <div>
-          <label className="text-gray-300 text-xs">Proposal: {proposalStd}</label>
-          <input type="range" min={2} max={80} step={1} value={proposalStd} onChange={(e) => setProposalStd(parseInt(e.target.value))} className="w-full" />
+          <label className="text-[var(--text-muted)] text-xs">Proposal: {proposalStd}</label>
+          <Slider min={2} max={80} step={1} value={[proposalStd]} onValueChange={([v]) => setProposalStd(v)} />
         </div>
         <div>
-          <label className="text-gray-300 text-xs">Smoothness: {smoothnessWeight.toFixed(2)}</label>
-          <input type="range" min={0} max={1} step={0.01} value={smoothnessWeight} onChange={(e) => setSmoothnessWeight(parseFloat(e.target.value))} className="w-full" />
+          <label className="text-[var(--text-muted)] text-xs">Smoothness: {smoothnessWeight.toFixed(2)}</label>
+          <Slider min={0} max={1} step={0.01} value={[smoothnessWeight]} onValueChange={([v]) => setSmoothnessWeight(v)} />
         </div>
         <div>
-          <label className="text-gray-300 text-xs">Kernel width: {kernelWidth}</label>
-          <input type="range" min={120} max={700} step={10} value={kernelWidth} onChange={(e) => setKernelWidth(parseInt(e.target.value))} className="w-full" />
+          <label className="text-[var(--text-muted)] text-xs">Kernel width: {kernelWidth}</label>
+          <Slider min={120} max={700} step={10} value={[kernelWidth]} onValueChange={([v]) => setKernelWidth(v)} />
         </div>
         <div>
-          <label className="text-gray-300 text-xs">Scale: {scale.toFixed(2)}</label>
-          <input type="range" min={0.04} max={0.4} step={0.01} value={scale} onChange={(e) => setScale(parseFloat(e.target.value))} className="w-full" />
+          <label className="text-[var(--text-muted)] text-xs">Scale: {scale.toFixed(2)}</label>
+          <Slider min={0.04} max={0.4} step={0.01} value={[scale]} onValueChange={([v]) => setScale(v)} />
         </div>
         <div>
-          <label className="text-gray-300 text-xs">Seed: {seed}</label>
-          <input type="range" min={1} max={200} step={1} value={seed} onChange={(e) => setSeed(parseInt(e.target.value))} className="w-full" />
+          <label className="text-[var(--text-muted)] text-xs">Seed: {seed}</label>
+          <Slider min={1} max={200} step={1} value={[seed]} onValueChange={([v]) => setSeed(v)} />
         </div>
       </div>
 
@@ -220,13 +223,10 @@ export default function GlacierThicknessMCMC({ id }: SimulationProps) { // eslin
             opacity: 0.55,
             line: { width: 1 },
           }))}
-          layout={{
+          layout={mergeLayout({
             title: { text: 'Loss Traces (MCMC Walkers)' },
-            xaxis: { title: { text: 'iteration' }, color: '#9ca3af' },
-            yaxis: { title: { text: 'loss' }, type: 'log', color: '#9ca3af' },
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(15,15,25,1)',
-            font: { color: '#9ca3af' },
+            xaxis: { title: { text: 'iteration' } },
+            yaxis: { title: { text: 'loss' }, type: 'log' },
             height: 320,
             margin: { t: 40, b: 50, l: 60, r: 20 },
             showlegend: false,
@@ -239,7 +239,7 @@ export default function GlacierThicknessMCMC({ id }: SimulationProps) { // eslin
               yref: 'paper',
               line: { color: '#22d3ee', dash: 'dash' },
             }],
-          }}
+          })}
           config={{ displayModeBar: false }}
           style={{ width: '100%' }}
         />
@@ -250,16 +250,12 @@ export default function GlacierThicknessMCMC({ id }: SimulationProps) { // eslin
             type: 'bar' as const,
             marker: { color: 'rgba(167,139,250,0.85)' },
           }]}
-          layout={{
+          layout={mergeLayout({
             title: { text: 'Acceptance Rate per Walker' },
-            xaxis: { color: '#9ca3af' },
-            yaxis: { title: { text: 'acceptance fraction' }, range: [0, 1], color: '#9ca3af' },
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(15,15,25,1)',
-            font: { color: '#9ca3af' },
+            yaxis: { title: { text: 'acceptance fraction' }, range: [0, 1] },
             height: 320,
             margin: { t: 40, b: 50, l: 60, r: 20 },
-          }}
+          })}
           config={{ displayModeBar: false }}
           style={{ width: '100%' }}
         />
@@ -305,17 +301,13 @@ export default function GlacierThicknessMCMC({ id }: SimulationProps) { // eslin
               marker: { size: 4 },
             },
           ]}
-          layout={{
+          layout={mergeLayout({
             title: { text: 'Observed vs Posterior Prediction' },
-            xaxis: { title: { text: 'distance along glacier (m)' }, color: '#9ca3af' },
-            yaxis: { title: { text: 'Bouguer anomaly' }, color: '#9ca3af' },
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(15,15,25,1)',
-            font: { color: '#9ca3af' },
-            legend: { bgcolor: 'rgba(0,0,0,0.3)' },
+            xaxis: { title: { text: 'distance along glacier (m)' } },
+            yaxis: { title: { text: 'Bouguer anomaly' } },
             height: 340,
             margin: { t: 40, b: 55, l: 60, r: 20 },
-          }}
+          })}
           config={{ displayModeBar: false }}
           style={{ width: '100%' }}
         />
@@ -339,25 +331,21 @@ export default function GlacierThicknessMCMC({ id }: SimulationProps) { // eslin
               line: { color: '#a78bfa', width: 1.5, dash: 'dot' },
             },
           ]}
-          layout={{
+          layout={mergeLayout({
             title: { text: 'Inferred Glacier Thickness Profile' },
-            xaxis: { title: { text: 'distance along glacier (m)' }, color: '#9ca3af' },
-            yaxis: { title: { text: 'thickness (m)' }, color: '#9ca3af' },
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(15,15,25,1)',
-            font: { color: '#9ca3af' },
-            legend: { bgcolor: 'rgba(0,0,0,0.3)' },
+            xaxis: { title: { text: 'distance along glacier (m)' } },
+            yaxis: { title: { text: 'thickness (m)' } },
             height: 340,
             margin: { t: 40, b: 55, l: 60, r: 20 },
-          }}
+          })}
           config={{ displayModeBar: false }}
           style={{ width: '100%' }}
         />
       </div>
 
-      <div className="bg-[#0a0a15] rounded p-3 text-sm">
-        <div className="text-gray-500">Best posterior objective</div>
-        <div className="text-white font-mono">{result.bestLoss.toFixed(4)}</div>
+      <div className="bg-[var(--surface-1)] rounded p-3 text-sm border border-[var(--border-strong)]">
+        <div className="text-[var(--text-soft)]">Best posterior objective</div>
+        <div className="text-[var(--text-strong)] font-mono">{result.bestLoss.toFixed(4)}</div>
       </div>
     </div>
   );

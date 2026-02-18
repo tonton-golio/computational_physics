@@ -2,6 +2,8 @@
 
 import React, { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
+import { Slider } from '@/components/ui/slider';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -28,6 +30,7 @@ export default function BinomialDistribution() {
   const [p1, setP1] = useState(0.17);
   const [N2, setN2] = useState(20);
   const [p2, setP2] = useState(0.33);
+  const { mergeLayout } = usePlotlyTheme();
 
   const { kVals, y1, y2 } = useMemo(() => {
     const kMax = Math.max(N1, N2);
@@ -45,25 +48,21 @@ export default function BinomialDistribution() {
   }, [N1, p1, N2, p2]);
 
   return (
-    <div className="w-full bg-[#151525] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-white">Binomial Distribution</h3>
+    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
+      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Binomial Distribution</h3>
 
       <div className="grid grid-cols-2 gap-6 mb-4">
         <div>
-          <label className="text-white text-sm">Distribution 1: N = {N1}</label>
-          <input type="range" min={1} max={50} step={1} value={N1}
-            onChange={(e) => setN1(parseInt(e.target.value))} className="w-full" />
-          <label className="text-white text-sm">p = {p1.toFixed(2)}</label>
-          <input type="range" min={0.01} max={1} step={0.01} value={p1}
-            onChange={(e) => setP1(parseFloat(e.target.value))} className="w-full" />
+          <label className="mb-1 block text-sm text-[var(--text-muted)]">Distribution 1: N = {N1}</label>
+          <Slider value={[N1]} onValueChange={([v]) => setN1(v)} min={1} max={50} step={1} />
+          <label className="mb-1 mt-2 block text-sm text-[var(--text-muted)]">p = {p1.toFixed(2)}</label>
+          <Slider value={[p1]} onValueChange={([v]) => setP1(v)} min={0.01} max={1} step={0.01} />
         </div>
         <div>
-          <label className="text-white text-sm">Distribution 2: N = {N2}</label>
-          <input type="range" min={1} max={50} step={1} value={N2}
-            onChange={(e) => setN2(parseInt(e.target.value))} className="w-full" />
-          <label className="text-white text-sm">p = {p2.toFixed(2)}</label>
-          <input type="range" min={0.01} max={1} step={0.01} value={p2}
-            onChange={(e) => setP2(parseFloat(e.target.value))} className="w-full" />
+          <label className="mb-1 block text-sm text-[var(--text-muted)]">Distribution 2: N = {N2}</label>
+          <Slider value={[N2]} onValueChange={([v]) => setN2(v)} min={1} max={50} step={1} />
+          <label className="mb-1 mt-2 block text-sm text-[var(--text-muted)]">p = {p2.toFixed(2)}</label>
+          <Slider value={[p2]} onValueChange={([v]) => setP2(v)} min={0.01} max={1} step={0.01} />
         </div>
       </div>
 
@@ -82,34 +81,27 @@ export default function BinomialDistribution() {
             name: `N=${N2}, p=${p2.toFixed(2)}`,
           },
         ] as any}
-        layout={{
+        layout={mergeLayout({
           height: 400,
-          paper_bgcolor: 'rgba(0,0,0,0)',
-          plot_bgcolor: 'rgba(15,15,25,1)',
-          font: { color: '#9ca3af' },
           margin: { t: 40, b: 50, l: 60, r: 20 },
-          title: { text: 'Binomial Distribution P_N(k)', font: { color: '#9ca3af', size: 14 } },
+          title: { text: 'Binomial Distribution P_N(k)' },
           xaxis: {
             title: { text: 'k' },
             range: [0, 50],
-            gridcolor: 'rgba(75,75,100,0.3)',
-            zerolinecolor: 'rgba(75,75,100,0.5)',
           },
           yaxis: {
             title: { text: 'P(k)' },
             range: [0, 1],
-            gridcolor: 'rgba(75,75,100,0.3)',
-            zerolinecolor: 'rgba(75,75,100,0.5)',
           },
-          legend: { x: 0.65, y: 0.95, bgcolor: 'rgba(0,0,0,0.3)', font: { color: '#9ca3af' } },
-        }}
+          legend: { x: 0.65, y: 0.95, bgcolor: 'rgba(0,0,0,0.3)' },
+        })}
         config={{ displayModeBar: false }}
         style={{ width: '100%' }}
       />
 
-      <div className="mt-3 text-sm text-gray-400">
+      <div className="mt-3 text-sm text-[var(--text-muted)]">
         <p>
-          The <strong className="text-gray-300">binomial distribution</strong> gives the probability of observing exactly <em>k</em> successes
+          The <strong className="text-[var(--text-muted)]">binomial distribution</strong> gives the probability of observing exactly <em>k</em> successes
           in <em>N</em> independent trials, each with success probability <em>p</em>.
           Mean = Np, Variance = Np(1-p).
         </p>

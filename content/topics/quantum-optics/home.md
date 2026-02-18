@@ -74,9 +74,3 @@ This module is organized from field quantization through non-classical light:
 21. **Recommended Papers** (`papers`) -- Key experimental references.
 
 ## Visual and Simulation Gallery
-
-[[simulation phase-space-states]]
-
-[[simulation wigner-coherent]]
-
-[[simulation wigner-number-state]]

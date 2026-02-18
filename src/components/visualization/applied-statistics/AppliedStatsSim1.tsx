@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import * as math from 'mathjs';
 import Plotly from 'react-plotly.js';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { Slider } from '@/components/ui/slider';
 
 interface SimulationProps {
   id: string;
@@ -11,6 +13,7 @@ interface SimulationProps {
 export default function AppliedStatsSim1({ id }: SimulationProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
   const [noise, setNoise] = useState(1);
   const [sampleSize, setSampleSize] = useState(20);
+  const { mergeLayout } = usePlotlyTheme();
 
   const [data, setData] = useState<{
     x: number[],
@@ -54,7 +57,6 @@ export default function AppliedStatsSim1({ id }: SimulationProps) { // eslint-di
       return yHat[i] - t * se;
     });
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setData({ x, y, yHat, residuals, ciUpper, ciLower, rSquared, chiSquare, beta0, beta1 });
   }, [noise, sampleSize]);
 
@@ -109,56 +111,51 @@ export default function AppliedStatsSim1({ id }: SimulationProps) { // eslint-di
   ];
 
   return (
-    <div className="w-full bg-[#151525] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-white">Interactive Linear Regression Simulation</h3>
+    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
+      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Interactive Linear Regression Simulation</h3>
       <div className="mb-4">
-        <p className="text-sm text-gray-300">
-          Generate noisy data points around a true linear relationship (y = 2 + 1.5x + ε), fit a line using least squares,
+        <p className="text-sm text-[var(--text-muted)]">
+          Generate noisy data points around a true linear relationship (y = 2 + 1.5x + e), fit a line using least squares,
           and visualize the fitted line, residuals, and confidence intervals.
         </p>
       </div>
       <div className="grid grid-cols-2 gap-4 mb-4">
         <div>
-          <label className="text-white">Noise Level (σ): {noise.toFixed(1)}</label>
-          <input
-            type="range"
+          <label className="text-[var(--text-strong)]">Noise Level (sigma): {noise.toFixed(1)}</label>
+          <Slider
             min={0.1}
             max={5}
             step={0.1}
-            value={noise}
-            onChange={(e) => setNoise(parseFloat(e.target.value))}
+            value={[noise]}
+            onValueChange={([v]) => setNoise(v)}
             className="w-full"
           />
         </div>
         <div>
-          <label className="text-white">Sample Size: {sampleSize}</label>
-          <input
-            type="range"
+          <label className="text-[var(--text-strong)]">Sample Size: {sampleSize}</label>
+          <Slider
             min={10}
             max={100}
             step={5}
-            value={sampleSize}
-            onChange={(e) => setSampleSize(parseInt(e.target.value))}
+            value={[sampleSize]}
+            onValueChange={([v]) => setSampleSize(v)}
             className="w-full"
           />
         </div>
       </div>
-      <div className="mb-4 text-gray-300">
+      <div className="mb-4 text-[var(--text-muted)]">
         <p>Fitted Line: y = {data.beta0.toFixed(3)} + {data.beta1.toFixed(3)}x</p>
         <p>R-squared: {data.rSquared.toFixed(3)}</p>
         <p>Chi-square: {data.chiSquare.toFixed(3)}</p>
       </div>
       <Plotly
         data={plotData as any}
-        layout={{
+        layout={mergeLayout({
           title: { text: 'Linear Regression: Data, Fit, Residuals, and 95% CI' },
           xaxis: { title: { text: 'x' } },
           yaxis: { title: { text: 'y' } },
           height: 500,
-          paper_bgcolor: 'rgba(0,0,0,0)',
-          plot_bgcolor: 'rgba(15,15,25,1)',
-          font: { color: '#9ca3af' }
-        }}
+        })}
         config={{ displayModeBar: false }}
       />
     </div>

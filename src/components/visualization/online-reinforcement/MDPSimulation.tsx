@@ -2,10 +2,12 @@
 
 import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { Slider } from '@/components/ui/slider';
 import {
   runMDPSimulationWorker,
   type MDPSimulationResult,
 } from '@/features/simulation/simulation-worker.client';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -93,6 +95,7 @@ export default function MDPSimulation({ id }: SimulationProps) { // eslint-disab
   const [alpha, setAlpha] = useState(0.5);
   const [timeHorizon, setTimeHorizon] = useState(300);
   const [plotData, setPlotData] = useState<MDPSimulationResult | null>(null);
+  const { mergeLayout } = usePlotlyTheme();
 
   useEffect(() => {
     let active = true;
@@ -121,11 +124,11 @@ export default function MDPSimulation({ id }: SimulationProps) { // eslint-disab
   }, [costPerUnfilled, setupCost, maxUnfilled, alpha, timeHorizon]);
 
   return (
-    <div className="w-full bg-[#151525] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-white">
+    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
+      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">
         MDP Example: Order Processing Cost
       </h3>
-      <p className="text-gray-400 text-sm mb-4">
+      <p className="text-[var(--text-muted)] text-sm mb-4">
         Orders arrive with probability &alpha;. We can process all unfilled orders (paying setup cost K)
         or wait (paying holding cost c per unfilled order per period).
         The maximum backlog is n. Explore how the fill probability affects total cost.
@@ -133,79 +136,74 @@ export default function MDPSimulation({ id }: SimulationProps) { // eslint-disab
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
         <div>
-          <label className="text-white text-xs">
+          <label className="text-[var(--text-strong)] text-xs">
             Cost/unfilled (c): {costPerUnfilled.toFixed(2)}
           </label>
-          <input
-            type="range"
+          <Slider
             min={0.01}
             max={1.0}
             step={0.01}
-            value={costPerUnfilled}
-            onChange={(e) => setCostPerUnfilled(parseFloat(e.target.value))}
+            value={[costPerUnfilled]}
+            onValueChange={([v]) => setCostPerUnfilled(v)}
             className="w-full"
           />
         </div>
         <div>
-          <label className="text-white text-xs">
+          <label className="text-[var(--text-strong)] text-xs">
             Setup cost (K): {setupCost.toFixed(2)}
           </label>
-          <input
-            type="range"
+          <Slider
             min={0.1}
             max={5.0}
             step={0.1}
-            value={setupCost}
-            onChange={(e) => setSetupCost(parseFloat(e.target.value))}
+            value={[setupCost]}
+            onValueChange={([v]) => setSetupCost(v)}
             className="w-full"
           />
         </div>
         <div>
-          <label className="text-white text-xs">
+          <label className="text-[var(--text-strong)] text-xs">
             Max unfilled (n): {maxUnfilled}
           </label>
-          <input
-            type="range"
+          <Slider
             min={1}
             max={50}
             step={1}
-            value={maxUnfilled}
-            onChange={(e) => setMaxUnfilled(parseInt(e.target.value))}
+            value={[maxUnfilled]}
+            onValueChange={([v]) => setMaxUnfilled(v)}
             className="w-full"
           />
         </div>
         <div>
-          <label className="text-white text-xs">
+          <label className="text-[var(--text-strong)] text-xs">
             Order prob (&alpha;): {alpha.toFixed(2)}
           </label>
-          <input
-            type="range"
+          <Slider
             min={0.1}
             max={1.0}
             step={0.05}
-            value={alpha}
-            onChange={(e) => setAlpha(parseFloat(e.target.value))}
+            value={[alpha]}
+            onValueChange={([v]) => setAlpha(v)}
             className="w-full"
           />
         </div>
         <div>
-          <label className="text-white text-xs">
+          <label className="text-[var(--text-strong)] text-xs">
             Horizon (T): {timeHorizon}
           </label>
-          <input
-            type="range"
+          <Slider
             min={50}
             max={1000}
             step={50}
-            value={timeHorizon}
-            onChange={(e) => setTimeHorizon(parseInt(e.target.value))}
+            value={[timeHorizon]}
+            onValueChange={([v]) => setTimeHorizon(v)}
             className="w-full"
           />
         </div>
       </div>
 
       {!plotData ? (
-        <div className="flex h-[420px] items-center justify-center rounded border border-gray-700 bg-[#0f0f19] text-sm text-gray-400">
+        <div className="flex h-[420px] items-center justify-center rounded border border-[var(--border-strong)] bg-[var(--surface-2)] text-sm text-[var(--text-muted)]">
           Running simulation...
         </div>
       ) : (
@@ -239,26 +237,22 @@ export default function MDPSimulation({ id }: SimulationProps) { // eslint-disab
               marker: { size: 12, color: '#4ade80', symbol: 'star' },
             },
           ]}
-          layout={{
+          layout={mergeLayout({
             title: { text: 'Total Cost vs Fill Probability' },
             xaxis: {
               title: { text: 'Probability of processing orders' },
-              color: '#9ca3af',
             },
-            yaxis: { title: { text: 'Total cost' }, color: '#9ca3af' },
+            yaxis: { title: { text: 'Total cost' } },
             height: 420,
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(15,15,25,1)',
-            font: { color: '#9ca3af' },
             legend: { x: 0.6, y: 1 },
             margin: { t: 40, b: 60, l: 60, r: 20 },
-          }}
+          })}
           config={{ displayModeBar: false }}
           style={{ width: '100%' }}
         />
       )}
 
-      <div className="mt-3 text-xs text-gray-500">
+      <div className="mt-3 text-xs text-[var(--text-soft)]">
         <p>
           Too low a fill probability accumulates holding costs; too high triggers frequent setup costs.
           The optimal policy balances these two competing costs.

@@ -66,5 +66,3 @@ g^{(n)}(\tau_1, \ldots, \tau_{n-1}) = \frac{\langle (\hat{a}^\dagger)^n \hat{a}^
 $$
 
 For thermal light, $g^{(n)}(0) = n!$, while for coherent light, $g^{(n)}(0) = 1$ for all $n$. These higher-order functions provide increasingly stringent tests of non-classicality and are relevant for multi-photon experiments and quantum information protocols.
-
-[[simulation wigner-number-state]]

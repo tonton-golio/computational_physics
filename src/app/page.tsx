@@ -1,7 +1,14 @@
 import Link from "next/link";
 import Antigravity from "@/components/effects/Antigravity";
+import { TOPIC_ROUTES } from "@/lib/topic-navigation";
+import { getLessonsForTopic } from "@/lib/topic-navigation.server";
 
 export default function HomePage() {
+  const topicCount = TOPIC_ROUTES.length;
+  const subtopicCount = TOPIC_ROUTES.reduce(
+    (sum, route) => sum + getLessonsForTopic(route.contentId).length,
+    0
+  );
   return (
     <div className="relative h-[calc(100vh-4rem)] overflow-hidden bg-[var(--background)]">
       <div className="absolute inset-0 flex justify-center">
@@ -31,7 +38,7 @@ export default function HomePage() {
       <div className="relative z-10 h-full px-[50px] py-8">
         <div className="mx-auto grid h-full max-w-[1200px] content-center grid-cols-1 gap-4 lg:grid-cols-12">
           <section className="lg:col-span-7 flex flex-col justify-center rounded-lg border border-[var(--border-strong)] bg-[var(--surface-1)]/55 p-5 backdrop-blur-sm">
-            <p className="font-mono text-xs uppercase tracking-[0.28em] text-[var(--accent)]">koala brain :: v1</p>
+            <p className="font-mono text-xs uppercase tracking-[0.28em] text-[var(--accent)]">koala brain :: v2</p>
             <p className="mt-3 max-w-2xl text-sm text-[var(--text-muted)]">
               Less passive reading. More executable math. Every topic is designed to be tested,
               visualized, and hacked.
@@ -62,29 +69,29 @@ export default function HomePage() {
           <section className="lg:col-span-5 flex min-h-0 flex-col gap-3 rounded-lg border border-[var(--border-strong)] bg-[var(--surface-1)]/60 p-4 font-mono text-sm backdrop-blur-sm">
             <div className="rounded-md border border-[var(--border-strong)] bg-black/30 p-3">
               <p className="text-[var(--text-soft)]">$ status</p>
-              <p className="mt-1 text-[var(--text-strong)]">7 tracks, interactive sims, source-first.</p>
+              <p className="mt-1 text-[var(--text-strong)]">{topicCount} topics, {subtopicCount} subtopics — all systems nominal.</p>
               <p className="mt-1 text-[var(--text-soft)]">$ mission</p>
-              <p className="mt-1 text-[var(--text-strong)]">Learn by breaking, tuning, and rebuilding models.</p>
-              <p className="mt-1 text-[var(--text-soft)]">$ output</p>
-              <p className="mt-1 text-[var(--text-strong)]">Intuition that survives real data and real code.</p>
+              <p className="mt-1 text-[var(--text-strong)]">Build a self-growing, agent-managed learning platform.</p>
+              <p className="mt-1 text-[var(--text-soft)]">$ discord</p>
+              <p className="mt-1 text-[var(--text-strong)]"><a href="https://discord.gg/JzZRhUNV5c" target="_blank" rel="noopener noreferrer" className="text-[var(--accent)] underline underline-offset-2 hover:text-[var(--text-strong)] transition">Join the community →</a></p>
             </div>
 
             <div className="grid grid-cols-2 gap-2 text-xs">
               <div className="rounded-md border border-[var(--border-strong)] p-2.5">
-                <p className="text-[var(--text-soft)]">Core</p>
-                <p className="mt-1 text-[var(--text-strong)]">Quantum, continuum, inverse</p>
+                <p className="text-[var(--text-soft)]">Engine</p>
+                <p className="mt-1 text-[var(--text-strong)]">AI agent-driven content</p>
               </div>
               <div className="rounded-md border border-[var(--border-strong)] p-2.5">
-                <p className="text-[var(--text-soft)]">Tooling</p>
+                <p className="text-[var(--text-soft)]">Growth</p>
+                <p className="mt-1 text-[var(--text-strong)]">Self-expanding knowledge graph</p>
+              </div>
+              <div className="rounded-md border border-[var(--border-strong)] p-2.5">
+                <p className="text-[var(--text-soft)]">Stack</p>
                 <p className="mt-1 text-[var(--text-strong)]">Next.js, TypeScript, Plotly</p>
               </div>
               <div className="rounded-md border border-[var(--border-strong)] p-2.5">
-                <p className="text-[var(--text-soft)]">Style</p>
-                <p className="mt-1 text-[var(--text-strong)]">Math + code + visuals</p>
-              </div>
-              <div className="rounded-md border border-[var(--border-strong)] p-2.5">
-                <p className="text-[var(--text-soft)]">Mode</p>
-                <p className="mt-1 text-[var(--text-strong)]">Hands-on and fast</p>
+                <p className="text-[var(--text-soft)]">Cycle</p>
+                <p className="mt-1 text-[var(--text-strong)]">Generate → validate → publish</p>
               </div>
             </div>
           </section>

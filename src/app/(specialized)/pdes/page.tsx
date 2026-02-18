@@ -2,6 +2,8 @@
 
 import dynamic from 'next/dynamic';
 import { useState, useMemo } from 'react';
+import { Slider } from '@/components/ui/slider';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -33,6 +35,7 @@ export default function PDEs() {
   const [alpha, setAlpha] = useState(1);
   const [t, setT] = useState(0);
   const [initialType, setInitialType] = useState<'sine' | 'gaussian' | 'step'>('sine');
+  const { mergeLayout } = usePlotlyTheme();
 
   const u = useMemo(() => solveHeat1D(initialConditions[initialType], alpha, t), [initialType, alpha, t]);
 
@@ -49,12 +52,12 @@ export default function PDEs() {
     },
   ];
 
-  const layout = {
+  const layout = mergeLayout({
     title: { text: '1D Heat Equation Solution' },
     xaxis: { title: { text: 'Position x' }, range: [0, L] },
     yaxis: { title: { text: 'Temperature u(x,t)' } },
     showlegend: true,
-  };
+  });
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
@@ -69,7 +72,7 @@ export default function PDEs() {
         <select
           value={initialType}
           onChange={(e) => setInitialType(e.target.value as 'sine' | 'gaussian' | 'step')}
-          className="border rounded p-2"
+          className="border border-[var(--border-strong)] bg-[var(--surface-2)] text-[var(--text-strong)] rounded p-2"
         >
           <option value="sine">Sine Wave</option>
           <option value="gaussian">Gaussian</option>
@@ -81,14 +84,12 @@ export default function PDEs() {
         <label htmlFor="alpha-slider" className="block text-sm font-medium mb-2">
           Diffusivity α: {alpha.toFixed(2)}
         </label>
-        <input
-          id="alpha-slider"
-          type="range"
-          min="0.01"
-          max="2"
-          step="0.01"
-          value={alpha}
-          onChange={(e) => setAlpha(Number(e.target.value))}
+        <Slider
+          min={0.01}
+          max={2}
+          step={0.01}
+          value={[alpha]}
+          onValueChange={([v]) => setAlpha(v)}
           className="w-full"
         />
       </div>
@@ -97,14 +98,12 @@ export default function PDEs() {
         <label htmlFor="t-slider" className="block text-sm font-medium mb-2">
           Time t: {t.toFixed(3)}
         </label>
-        <input
-          id="t-slider"
-          type="range"
-          min="0"
-          max="1"
-          step="0.001"
-          value={t}
-          onChange={(e) => setT(Number(e.target.value))}
+        <Slider
+          min={0}
+          max={1}
+          step={0.001}
+          value={[t]}
+          onValueChange={([v]) => setT(v)}
           className="w-full"
         />
       </div>

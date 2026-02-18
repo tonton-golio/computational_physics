@@ -1,7 +1,9 @@
 'use client';
 
-import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { Slider } from '@/components/ui/slider';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -77,6 +79,7 @@ export function IsingModel() {
   const [beta, setBeta] = useState(0.44);
   const [nsteps, setNsteps] = useState(5000);
   const [seed, setSeed] = useState(0);
+  const { mergeLayout } = usePlotlyTheme();
 
   const result = useMemo(() => {
     // seed is used only as a trigger for re-run
@@ -84,57 +87,45 @@ export function IsingModel() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [size, nsteps, beta, seed]);
 
-  const darkLayout = {
-    paper_bgcolor: 'rgba(0,0,0,0)',
-    plot_bgcolor: 'rgba(15,15,25,1)',
-    font: { color: '#9ca3af' },
-    margin: { t: 40, r: 20, b: 40, l: 50 },
-    xaxis: { gridcolor: '#1e1e2e' },
-    yaxis: { gridcolor: '#1e1e2e' },
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap gap-6 items-center">
         <div>
-          <label className="text-sm text-gray-400 block mb-1">Size: {size}</label>
-          <input
-            type="range"
+          <label className="text-sm text-[var(--text-muted)] block mb-1">Size: {size}</label>
+          <Slider
             min={5}
             max={80}
             step={5}
-            value={size}
-            onChange={e => setSize(Number(e.target.value))}
+            value={[size]}
+            onValueChange={([v]) => setSize(v)}
             className="w-48"
           />
         </div>
         <div>
-          <label className="text-sm text-gray-400 block mb-1">Beta (1/T): {beta.toFixed(2)}</label>
-          <input
-            type="range"
+          <label className="text-sm text-[var(--text-muted)] block mb-1">Beta (1/T): {beta.toFixed(2)}</label>
+          <Slider
             min={0.01}
             max={2.0}
             step={0.01}
-            value={beta}
-            onChange={e => setBeta(Number(e.target.value))}
+            value={[beta]}
+            onValueChange={([v]) => setBeta(v)}
             className="w-48"
           />
         </div>
         <div>
-          <label className="text-sm text-gray-400 block mb-1">Steps: {nsteps}</label>
-          <input
-            type="range"
+          <label className="text-sm text-[var(--text-muted)] block mb-1">Steps: {nsteps}</label>
+          <Slider
             min={100}
             max={50000}
             step={100}
-            value={nsteps}
-            onChange={e => setNsteps(Number(e.target.value))}
+            value={[nsteps]}
+            onValueChange={([v]) => setNsteps(v)}
             className="w-48"
           />
         </div>
         <button
           onClick={() => setSeed(s => s + 1)}
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded text-sm mt-4"
+          className="px-4 py-2 bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white rounded text-sm mt-4"
         >
           Re-run
         </button>
@@ -153,13 +144,12 @@ export function IsingModel() {
                 zmin: -1,
                 zmax: 1,
               }]}
-              layout={{
-                ...darkLayout,
-                title: { text: `Step ${snap.step}`, font: { size: 11, color: '#9ca3af' } },
-                xaxis: { ...darkLayout.xaxis, showticklabels: false },
-                yaxis: { ...darkLayout.yaxis, showticklabels: false },
+              layout={mergeLayout({
+                title: { text: `Step ${snap.step}`, font: { size: 11 } },
+                xaxis: { showticklabels: false },
+                yaxis: { showticklabels: false },
                 margin: { t: 30, r: 5, b: 5, l: 5 },
-              }}
+              })}
               config={{ responsive: true, displayModeBar: false }}
               style={{ width: '100%', height: 180 }}
             />
@@ -179,14 +169,13 @@ export function IsingModel() {
               name: 'Energy',
             },
           ]}
-          layout={{
-            ...darkLayout,
-            title: { text: 'Energy vs Time', font: { size: 13, color: '#9ca3af' } },
-            xaxis: { ...darkLayout.xaxis, title: { text: 'Timestep' } },
-            yaxis: { ...darkLayout.yaxis, title: { text: 'Energy' } },
+          layout={mergeLayout({
+            title: { text: 'Energy vs Time', font: { size: 13 } },
+            xaxis: { title: { text: 'Timestep' } },
+            yaxis: { title: { text: 'Energy' } },
             margin: { t: 40, r: 20, b: 50, l: 60 },
             showlegend: false,
-          }}
+          })}
           config={{ responsive: true, displayModeBar: false }}
           style={{ width: '100%', height: 300 }}
         />
@@ -200,14 +189,13 @@ export function IsingModel() {
               name: '|Magnetization|',
             },
           ]}
-          layout={{
-            ...darkLayout,
-            title: { text: '|Magnetization| vs Time', font: { size: 13, color: '#9ca3af' } },
-            xaxis: { ...darkLayout.xaxis, title: { text: 'Timestep' } },
-            yaxis: { ...darkLayout.yaxis, title: { text: '|M|' } },
+          layout={mergeLayout({
+            title: { text: '|Magnetization| vs Time', font: { size: 13 } },
+            xaxis: { title: { text: 'Timestep' } },
+            yaxis: { title: { text: '|M|' } },
             margin: { t: 40, r: 20, b: 50, l: 60 },
             showlegend: false,
-          }}
+          })}
           config={{ responsive: true, displayModeBar: false }}
           style={{ width: '100%', height: 300 }}
         />

@@ -24,28 +24,29 @@ const TOPIC_LESSON_ORDER: Record<string, string[]> = {
   "advanced-deep-learning": [
     "ann",
     "cnn",
-    "unet",
+    "design-and-optimization",
     "vae",
     "gan",
+    "unet",
     "transformers",
-    "design-and-optimization",
     "analysis-and-theory",
   ],
   "applied-machine-learning": [
     "loss-optimization",
     "trees-ensembles",
     "dimensionality-reduction",
-    "graph-neural-networks",
+    "neural-networks-fundamentals",
     "recurrent-neural-networks",
+    "graph-neural-networks",
     "generative-adversarial-networks",
   ],
   "applied-statistics": [
     "introduction-concepts",
     "probability-density-functions",
     "error-propagation",
+    "simulation-fitting",
     "chi-square-method",
     "hypothesis-testing",
-    "simulation-fitting",
     "anova",
     "design-of-experiments",
     "random-effects",
@@ -75,24 +76,25 @@ const TOPIC_LESSON_ORDER: Record<string, string[]> = {
     "notebook",
   ],
   "dynamical-models": [
-    "gene-expression-noise",
     "differential-equations",
     "transcription-translation",
+    "gene-expression-noise",
+    "mutational-analysis",
     "transcriptional-regulation",
     "feedback-loops",
-    "gene-regulatory-networks",
     "signal-transduction",
-    "mutational-analysis",
+    "gene-regulatory-networks",
     "bacterial-growth",
   ],
   "inverse-problems": [
-    "intro",
-    "week1",
-    "week2",
-    "week3",
-    "week4",
-    "Tikonov",
-    "linear_tomography",
+    "foundations",
+    "regularization",
+    "tikhonov",
+    "bayesian-inversion",
+    "linear-tomography",
+    "monte-carlo-methods",
+    "geophysical-inversion",
+    "information-entropy",
   ],
   "online-reinforcement-learning": [
     "regret",
@@ -134,16 +136,160 @@ const TOPIC_LESSON_ORDER: Record<string, string[]> = {
     "bounding_errors",
     "linear_equations",
     "linearLeastSquares",
-    "nonlinearEquationsOptimization",
+    "nonlinearEquations",
     "nonlinearSystems",
     "optimization",
     "eigenSystems",
     "eigenAlgorithms",
+    "fft",
     "initialValueProblems",
     "partialDifferentialEquations",
-    "fft",
   ],
 };
+
+export const LESSON_SUMMARIES: Record<string, Record<string, string>> = {
+  "complex-physics": {
+    statisticalMechanics: "Boltzmann distribution, partition functions, and ensemble averages",
+    metropolisAlgorithm: "Monte Carlo sampling using the Metropolis-Hastings method",
+    phaseTransitions: "Critical behavior and order parameters in phase transitions",
+    meanFieldResults: "Mean field approximations for interacting many-body systems",
+    transferMatrix: "Exact solutions using transfer matrix techniques",
+    criticalPhenomena: "Universality, scaling laws, and renormalization",
+    percolation_and_fractals: "Percolation thresholds, cluster analysis, and fractal geometry",
+    selfOrganizedCriticality: "Sandpile models and power-law distributions",
+    Networks: "Graph theory, small-world networks, and scale-free topology",
+    agentbased: "Simulating emergent behavior from individual agent rules",
+    econophysics: "Statistical physics methods applied to financial markets",
+  },
+  "advanced-deep-learning": {
+    ann: "Feedforward networks, backpropagation, and activation functions",
+    cnn: "Convolutional layers, pooling, and image feature extraction",
+    "design-and-optimization": "Architecture design choices and hyperparameter tuning",
+    vae: "Variational autoencoders for probabilistic latent representations",
+    gan: "Generator-discriminator training for realistic data synthesis",
+    unet: "Encoder-decoder architecture for image segmentation",
+    transformers: "Self-attention mechanisms and sequence modeling",
+    "analysis-and-theory": "Theoretical analysis of deep learning convergence and generalization",
+  },
+  "applied-machine-learning": {
+    "loss-optimization": "Gradient descent variants and loss function design",
+    "trees-ensembles": "Decision trees, random forests, and boosting methods",
+    "dimensionality-reduction": "PCA, t-SNE, and manifold learning techniques",
+    "neural-networks-fundamentals": "Basic neural network architectures and training",
+    "recurrent-neural-networks": "Sequential data modeling with RNNs and LSTMs",
+    "graph-neural-networks": "Message passing and learning on graph-structured data",
+    "generative-adversarial-networks": "GAN architectures for generative modeling",
+  },
+  "applied-statistics": {
+    "introduction-concepts": "Core statistical concepts: mean, variance, and distributions",
+    "probability-density-functions": "Continuous and discrete probability distributions",
+    "error-propagation": "Uncertainty quantification through error propagation rules",
+    "simulation-fitting": "Monte Carlo simulation and curve fitting methods",
+    "chi-square-method": "Goodness-of-fit testing and chi-square statistics",
+    "hypothesis-testing": "Null hypothesis significance testing and p-values",
+    anova: "Analysis of variance for comparing group means",
+    "design-of-experiments": "Experimental design principles and factorial designs",
+    "random-effects": "Mixed models with random and fixed effects",
+    "longitudinal-data": "Repeated measures and time-series analysis methods",
+    "bayesian-statistics": "Prior distributions, posterior inference, and Bayes' theorem",
+    "advanced-fitting-calibration": "Advanced model calibration and nonlinear fitting",
+    "machine-learning-data-analysis": "ML techniques for statistical data analysis",
+  },
+  "continuum-mechanics": {
+    frontpagetext: "Course overview and continuum mechanics introduction",
+    contapprox: "The continuum approximation and material descriptions",
+    tensorfundamentals: "Tensor algebra, notation, and coordinate transformations",
+    stressandstrain: "Stress tensors, strain measures, and constitutive laws",
+    elasticity: "Linear elasticity theory and elastic wave propagation",
+    dynamics: "Conservation laws and equations of motion for continua",
+    fluids: "Fluid statics, pressure, and buoyancy principles",
+    fluidsinmotion: "Euler and Navier-Stokes equations for fluid flow",
+    viscousflow: "Viscous effects, boundary layers, and Reynolds number",
+    channelsandpipes: "Poiseuille flow and flow in channels and pipes",
+    gravitywaves: "Surface gravity waves and dispersion relations",
+    creepingflow: "Low Reynolds number Stokes flow solutions",
+    weakstokes: "Weak formulation of Stokes equations",
+    fem: "Finite element method for continuum problems",
+    pythonpackages: "Python tools for continuum mechanics simulations",
+    examdisp: "Example displacement and exam problems",
+    coursequote: "Course quotes and supplementary references",
+    notebook: "Interactive Jupyter notebooks for exercises",
+  },
+  "dynamical-models": {
+    "differential-equations": "The bathtub equation: how production and degradation set every steady state in biology",
+    "transcription-translation": "Coupled ODEs for mRNA and protein — two timescales, one elegant system",
+    "gene-expression-noise": "Why genetically identical cells behave differently — intrinsic and extrinsic noise",
+    "mutational-analysis": "DNA proofreading, jackpot cultures, and the statistics of rare events",
+    "transcriptional-regulation": "The Hill function: how cooperative binding turns a gentle slope into a sharp switch",
+    "feedback-loops": "Switches, oscillators, and memory — what feedback loops can do",
+    "signal-transduction": "How cells read their mail: chemotaxis, adaptation, and lateral inhibition",
+    "gene-regulatory-networks": "The Lego bricks of gene regulation — motifs nature uses over and over",
+    "bacterial-growth": "Resource allocation, ribosome regulation, and how a cell turns physics into life",
+  },
+  "inverse-problems": {
+    foundations: "Ill-posedness, existence, uniqueness, and stability",
+    regularization: "Regularization strategies for ill-posed problems",
+    tikhonov: "Tikhonov regularization and L-curve parameter selection",
+    "bayesian-inversion": "Bayesian framework for solving inverse problems",
+    "linear-tomography": "Radon transform and tomographic reconstruction",
+    "monte-carlo-methods": "MCMC sampling for inverse problem solutions",
+    "geophysical-inversion": "Seismic and gravity data inversion methods",
+    "information-entropy": "Maximum entropy and information-theoretic approaches",
+  },
+  "online-reinforcement-learning": {
+    regret: "Regret bounds and online learning performance metrics",
+    "feedback-and-settings": "Feedback models: full information vs. bandit",
+    "ftl-and-hedge": "Follow the Leader, Hedge, and expert algorithms",
+    "bandits-ucb-exp3": "UCB and EXP3 algorithms for bandit problems",
+    "contextual-bandits-exp4": "Contextual bandits and the EXP4 algorithm",
+    "mdp-and-dp": "Markov decision processes and dynamic programming",
+    "monte-carlo-rl": "Monte Carlo methods for policy evaluation",
+    "td-sarsa-qlearning": "Temporal difference, SARSA, and Q-learning",
+    "deep-rl-dqn": "Deep Q-networks and neural function approximation",
+    "average-reward-online-rl": "Average reward criteria for continuing tasks",
+    "assignments-projects": "Practice assignments and project exercises",
+  },
+  "quantum-optics": {
+    "quantization-single-mode": "Canonical quantization of a single electromagnetic mode",
+    "quantum-fluctuations": "Vacuum fluctuations and zero-point energy",
+    "multimode-fields": "Quantization of multimode electromagnetic fields",
+    "vacuum-fluctuations": "Casimir effect and vacuum energy consequences",
+    "coherent-states": "Coherent states as quasi-classical quantum states",
+    "coherent-states-field": "Coherent state representation of quantum fields",
+    "coherent-states-properties": "Displacement operator and Poissonian photon statistics",
+    "phase-space-pictures": "Husimi Q-function and phase space representations",
+    "p-function": "Glauber-Sudarshan P-representation and its properties",
+    "wigner-function": "Wigner quasi-probability distribution and negativity",
+    "coherence-functions": "First-order correlation and optical coherence",
+    "higher-order-coherence": "Photon bunching, antibunching, and g(2) functions",
+    "single-photon-experiments": "Single photon detection and quantum light experiments",
+    interferometry: "Mach-Zehnder and quantum-enhanced interferometry",
+    "squeezed-light": "Quadrature squeezing and noise reduction below vacuum",
+    "displaced-squeezed-states": "Combined displacement and squeezing operations",
+    "atom-field-interaction": "Dipole coupling and the rotating wave approximation",
+    "jaynes-cummings": "Jaynes-Cummings model and vacuum Rabi oscillations",
+    "cavity-qed": "Strong coupling regime in optical cavities",
+    "quantum-measurements": "Measurement theory, POVMs, and quantum state tomography",
+    papers: "Key research papers and references in quantum optics",
+  },
+  "scientific-computing": {
+    bounding_errors: "Floating-point arithmetic and error analysis",
+    linear_equations: "Gaussian elimination and LU factorization",
+    linearLeastSquares: "QR factorization and least squares data fitting",
+    nonlinearEquations: "Root finding: bisection, Newton, and secant methods",
+    nonlinearSystems: "Newton's method for systems of nonlinear equations",
+    optimization: "BFGS, conjugate gradients, and metaheuristic optimization",
+    eigenSystems: "Power method and Rayleigh quotient iteration",
+    eigenAlgorithms: "QR algorithm and eigenvalue decomposition methods",
+    fft: "Fast Fourier Transform and spectral analysis",
+    initialValueProblems: "Runge-Kutta and multistep ODE integration methods",
+    partialDifferentialEquations: "Finite difference and spectral methods for PDEs",
+  },
+};
+
+export function getLessonSummary(contentId: string, slug: string): string | undefined {
+  return LESSON_SUMMARIES[contentId]?.[slug];
+}
 
 export function getOrderedLessonSlugs(contentId: string): string[] {
   const slugs = listLessonSlugs(contentId);
@@ -167,18 +313,39 @@ export function getOrderedLessonSlugs(contentId: string): string[] {
   });
 }
 
-export function getLessonsForTopic(contentId: string): Array<{ slug: string; title: string }> {
+export function getLandingPageSlug(contentId: string): string | null {
+  const slugs = listLessonSlugs(contentId);
+  let best: string | null = null;
+  let bestPriority = Infinity;
+  for (const slug of slugs) {
+    const priority = LANDING_PAGE_PRIORITY.get(slug);
+    if (priority !== undefined && priority < bestPriority) {
+      best = slug;
+      bestPriority = priority;
+    }
+  }
+  return best;
+}
+
+export function isLandingPage(slug: string): boolean {
+  return LANDING_PAGE_PRIORITY.has(slug);
+}
+
+export function getLessonsForTopic(contentId: string): Array<{ slug: string; title: string; summary?: string }> {
   return getOrderedLessonSlugs(contentId)
     .map((slug) => {
       const doc = readLessonDocument(contentId, slug);
-      return doc ? { slug, title: doc.title } : null;
+      if (!doc) return null;
+      const summary = getLessonSummary(contentId, slug);
+      return { slug, title: doc.title, ...(summary ? { summary } : {}) };
     })
-    .filter((lesson): lesson is { slug: string; title: string } => lesson !== null);
+    .filter((lesson): lesson is { slug: string; title: string; summary?: string } => lesson !== null);
 }
 
 export interface SearchableLesson {
   slug: string;
   title: string;
+  summary?: string;
   searchableText: string;
 }
 
@@ -188,9 +355,11 @@ export function getSearchableLessonsForTopic(contentId: string): SearchableLesso
       const doc = readLessonDocument(contentId, slug);
       if (!doc) return null;
 
+      const summary = getLessonSummary(contentId, slug);
       return {
         slug,
         title: doc.title,
+        ...(summary ? { summary } : {}),
         searchableText: `${doc.title}\n${doc.content}`.toLowerCase(),
       };
     })

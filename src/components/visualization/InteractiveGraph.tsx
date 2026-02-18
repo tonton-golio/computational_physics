@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import type Plotly from 'plotly.js-dist';
+import { mergePlotlyTheme } from '@/lib/plotly-theme';
 
 interface GraphProps {
   type: string;
@@ -20,32 +21,7 @@ const COLORS = {
 
 const BASE_LAYOUT: Partial<Plotly.Layout> = {
   paper_bgcolor: 'rgba(0,0,0,0)',
-  plot_bgcolor: '#0a1120',
-  font: { color: '#b8c3d9', family: 'var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace' },
   margin: { t: 48, r: 22, b: 48, l: 58 },
-  hoverlabel: {
-    bgcolor: '#111d33',
-    bordercolor: '#355487',
-    font: { color: '#dbeafe' },
-  },
-  legend: {
-    bgcolor: 'rgba(11,22,39,0.75)',
-    bordercolor: '#273d63',
-    borderwidth: 1,
-    font: { color: '#cdd7e9' },
-  },
-  xaxis: { 
-    gridcolor: '#1a2740',
-    zerolinecolor: '#243858',
-    linecolor: '#33507f',
-    tickfont: { color: '#9eb0cf' },
-  },
-  yaxis: { 
-    gridcolor: '#1a2740',
-    zerolinecolor: '#243858',
-    linecolor: '#33507f',
-    tickfont: { color: '#9eb0cf' },
-  },
 };
 
 let plotlyPromise: Promise<typeof import('plotly.js-dist')['default']> | null = null;
@@ -56,69 +32,6 @@ function loadPlotly() {
   return plotlyPromise;
 }
 
-function cssVar(name: string, fallback: string): string {
-  if (typeof window === "undefined") return fallback;
-  const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-  return value || fallback;
-}
-
-function withTheme(layout: Partial<Plotly.Layout>): Partial<Plotly.Layout> {
-  const background = cssVar("--surface-2", "#0a1120");
-  const textStrong = cssVar("--text-strong", "#f4f7ff");
-  const textMuted = cssVar("--text-muted", "#9eb0cf");
-  const border = cssVar("--border-strong", "#2c4166");
-  const surface = cssVar("--surface-1", "#0d1528");
-
-  return {
-    ...layout,
-    plot_bgcolor: background,
-    font: { ...(layout.font ?? {}), color: textMuted, family: 'var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace' },
-    legend: {
-      ...(layout.legend ?? {}),
-      bgcolor: surface,
-      bordercolor: border,
-      borderwidth: 1,
-      font: { ...((layout.legend as Plotly.Legend)?.font ?? {}), color: textMuted },
-    },
-    hoverlabel: {
-      ...(layout.hoverlabel ?? {}),
-      bgcolor: surface,
-      bordercolor: border,
-      font: { ...((layout.hoverlabel as Plotly.HoverLabel)?.font ?? {}), color: textStrong },
-    },
-    xaxis: {
-      ...((layout.xaxis as Plotly.LayoutAxis) ?? {}),
-      gridcolor: border,
-      zerolinecolor: border,
-      linecolor: border,
-      tickfont: { ...(((layout.xaxis as Plotly.LayoutAxis)?.tickfont) ?? {}), color: textMuted },
-      title: {
-        ...(((layout.xaxis as Plotly.LayoutAxis)?.title) ?? {}),
-        font: { ...((((layout.xaxis as Plotly.LayoutAxis)?.title as Plotly.DataTitle)?.font) ?? {}), color: textStrong },
-      },
-    },
-    yaxis: {
-      ...((layout.yaxis as Plotly.LayoutAxis) ?? {}),
-      gridcolor: border,
-      zerolinecolor: border,
-      linecolor: border,
-      tickfont: { ...(((layout.yaxis as Plotly.LayoutAxis)?.tickfont) ?? {}), color: textMuted },
-      title: {
-        ...(((layout.yaxis as Plotly.LayoutAxis)?.title) ?? {}),
-        font: { ...((((layout.yaxis as Plotly.LayoutAxis)?.title as Plotly.DataTitle)?.font) ?? {}), color: textStrong },
-      },
-    },
-    scene: layout.scene
-      ? {
-          ...layout.scene,
-          bgcolor: background,
-          xaxis: { ...(layout.scene.xaxis ?? {}), gridcolor: border, color: textMuted },
-          yaxis: { ...(layout.scene.yaxis ?? {}), gridcolor: border, color: textMuted },
-          zaxis: { ...(layout.scene.zaxis ?? {}), gridcolor: border, color: textMuted },
-        }
-      : undefined,
-  };
-}
 
 // ============ BASIC PHYSICS ============
 
@@ -631,10 +544,9 @@ function lorenzAttractor(params: Record<string, number>): { data: Plotly.Data[];
     layout: {
       paper_bgcolor: 'rgba(0,0,0,0)',
       scene: {
-        xaxis: { title: { text: 'x' }, gridcolor: '#1e1e2e', color: '#9ca3af' },
-        yaxis: { title: { text: 'y' }, gridcolor: '#1e1e2e', color: '#9ca3af' },
-        zaxis: { title: { text: 'z' }, gridcolor: '#1e1e2e', color: '#9ca3af' },
-        bgcolor: 'rgba(15,15,25,1)',
+        xaxis: { title: { text: 'x' } },
+        yaxis: { title: { text: 'y' } },
+        zaxis: { title: { text: 'z' } },
       },
       title: { text: 'Lorenz Attractor' },
       margin: { l: 0, r: 0, b: 0, t: 40 },
@@ -700,7 +612,7 @@ export function InteractiveGraph({ type, params = {}, title }: GraphProps) {
       if (generator) {
         const { data, layout } = generator(params);
         const mergedLayout = title ? { ...layout, title: { text: title } } : layout;
-        const finalLayout = withTheme(mergedLayout);
+        const finalLayout = mergePlotlyTheme(mergedLayout);
 
         plotly.newPlot(container, data, finalLayout, {
           responsive: true,
@@ -712,7 +624,7 @@ export function InteractiveGraph({ type, params = {}, title }: GraphProps) {
       }
 
       plotly.newPlot(container, [], {
-        ...withTheme(BASE_LAYOUT),
+        ...mergePlotlyTheme(BASE_LAYOUT),
         title: { text: `Unknown graph type: ${type}` },
       });
     });

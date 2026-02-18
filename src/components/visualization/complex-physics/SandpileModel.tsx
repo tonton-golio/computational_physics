@@ -2,6 +2,8 @@
 
 import React, { useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { Slider } from '@/components/ui/slider';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -72,49 +74,40 @@ export function SandpileModel() {
   const [size, setSize] = useState(35);
   const [nsteps, setNsteps] = useState(5000);
   const [rerun, setRerun] = useState(0);
+  const { mergeLayout } = usePlotlyTheme();
 
   const { grid, avalanches } = useMemo(() => runSandpile(size, nsteps, rerun), [size, nsteps, rerun]);
   const nonZero = avalanches.filter(v => v > 0);
-
-  const darkLayout = {
-    paper_bgcolor: 'rgba(0,0,0,0)',
-    plot_bgcolor: 'rgba(15,15,25,1)',
-    font: { color: '#9ca3af' },
-    margin: { t: 40, r: 20, b: 50, l: 60 },
-    xaxis: { gridcolor: '#1e1e2e' },
-    yaxis: { gridcolor: '#1e1e2e' },
-  };
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap gap-6 items-center">
         <div>
-          <label className="text-sm text-gray-400 block mb-1">Grid Size: {size}</label>
-          <input type="range" min={15} max={80} step={5} value={size} onChange={e => setSize(Number(e.target.value))} className="w-48" />
+          <label className="mb-1 block text-sm text-[var(--text-muted)]">Grid Size: {size}</label>
+          <Slider value={[size]} onValueChange={([v]) => setSize(v)} min={15} max={80} step={5} />
         </div>
         <div>
-          <label className="text-sm text-gray-400 block mb-1">Steps: {nsteps}</label>
-          <input type="range" min={500} max={20000} step={500} value={nsteps} onChange={e => setNsteps(Number(e.target.value))} className="w-48" />
+          <label className="mb-1 block text-sm text-[var(--text-muted)]">Steps: {nsteps}</label>
+          <Slider value={[nsteps]} onValueChange={([v]) => setNsteps(v)} min={500} max={20000} step={500} />
         </div>
-        <button onClick={() => setRerun(v => v + 1)} className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded text-sm mt-4">
+        <button onClick={() => setRerun(v => v + 1)} className="px-4 py-2 bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white rounded text-sm mt-4">
           Re-run
         </button>
       </div>
 
-      <div className="text-sm text-gray-300">
+      <div className="text-sm text-[var(--text-muted)]">
         Non-zero avalanches: {nonZero.length} / {avalanches.length}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Plot
           data={[{ z: grid, type: 'heatmap', colorscale: 'Turbo', showscale: true }]}
-          layout={{
-            ...darkLayout,
-            title: { text: 'Sandpile Height Field', font: { size: 13, color: '#9ca3af' } },
-            xaxis: { ...darkLayout.xaxis, visible: false },
-            yaxis: { ...darkLayout.yaxis, visible: false },
+          layout={mergeLayout({
+            title: { text: 'Sandpile Height Field', font: { size: 13 } },
+            xaxis: { visible: false },
+            yaxis: { visible: false },
             margin: { t: 40, r: 10, b: 10, l: 10 },
-          }}
+          })}
           config={{ responsive: true, displayModeBar: false }}
           style={{ width: '100%', height: 360 }}
         />
@@ -127,12 +120,12 @@ export function SandpileModel() {
               nbinsx: 50,
             },
           ]}
-          layout={{
-            ...darkLayout,
-            title: { text: 'Avalanche Size Distribution', font: { size: 13, color: '#9ca3af' } },
-            xaxis: { ...darkLayout.xaxis, title: { text: 'Avalanche size' }, type: 'log' },
-            yaxis: { ...darkLayout.yaxis, title: { text: 'Count' }, type: 'log' },
-          }}
+          layout={mergeLayout({
+            title: { text: 'Avalanche Size Distribution', font: { size: 13 } },
+            xaxis: { title: { text: 'Avalanche size' }, type: 'log' },
+            yaxis: { title: { text: 'Count' }, type: 'log' },
+            margin: { t: 40, r: 20, b: 50, l: 60 },
+          })}
           config={{ responsive: true, displayModeBar: false }}
           style={{ width: '100%', height: 360 }}
         />

@@ -2,6 +2,8 @@
 
 import React, { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { Slider } from '@/components/ui/slider';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -79,20 +81,12 @@ export function BakSneppen() {
   const [size, setSize] = useState(200);
   const [nsteps, setNsteps] = useState(8000);
   const [seed, setSeed] = useState(0);
+  const { mergeLayout } = usePlotlyTheme();
 
   const result = useMemo(() => {
     return runBakSneppen(size, nsteps);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [size, nsteps, seed]);
-
-  const darkLayout = {
-    paper_bgcolor: 'rgba(0,0,0,0)',
-    plot_bgcolor: 'rgba(15,15,25,1)',
-    font: { color: '#9ca3af' },
-    margin: { t: 40, r: 20, b: 40, l: 50 },
-    xaxis: { gridcolor: '#1e1e2e' },
-    yaxis: { gridcolor: '#1e1e2e' },
-  };
 
   // Subsample the chains for the imshow display (take every Nth row)
   const subsampleRate = Math.max(1, Math.floor(result.chains.length / 300));
@@ -102,32 +96,30 @@ export function BakSneppen() {
     <div className="space-y-6">
       <div className="flex flex-wrap gap-6 items-center">
         <div>
-          <label className="text-sm text-gray-400 block mb-1">Chain Size: {size}</label>
-          <input
-            type="range"
+          <label className="text-sm text-[var(--text-muted)] block mb-1">Chain Size: {size}</label>
+          <Slider
             min={50}
             max={500}
             step={10}
-            value={size}
-            onChange={e => setSize(Number(e.target.value))}
+            value={[size]}
+            onValueChange={([v]) => setSize(v)}
             className="w-48"
           />
         </div>
         <div>
-          <label className="text-sm text-gray-400 block mb-1">Steps: {nsteps}</label>
-          <input
-            type="range"
+          <label className="text-sm text-[var(--text-muted)] block mb-1">Steps: {nsteps}</label>
+          <Slider
             min={1000}
             max={30000}
             step={500}
-            value={nsteps}
-            onChange={e => setNsteps(Number(e.target.value))}
+            value={[nsteps]}
+            onValueChange={([v]) => setNsteps(v)}
             className="w-48"
           />
         </div>
         <button
           onClick={() => setSeed(s => s + 1)}
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded text-sm mt-4"
+          className="px-4 py-2 bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white rounded text-sm mt-4"
         >
           Re-run
         </button>
@@ -144,13 +136,12 @@ export function BakSneppen() {
           showscale: true,
           colorbar: { tickfont: { color: '#9ca3af' } },
         }]}
-        layout={{
-          ...darkLayout,
-          title: { text: 'Bak-Sneppen Evolution (chain values over time)', font: { size: 13, color: '#9ca3af' } },
-          xaxis: { ...darkLayout.xaxis, title: { text: 'Site index' } },
-          yaxis: { ...darkLayout.yaxis, title: { text: 'Timestep (subsampled)' } },
+        layout={mergeLayout({
+          title: { text: 'Bak-Sneppen Evolution (chain values over time)', font: { size: 13 } },
+          xaxis: { title: { text: 'Site index' } },
+          yaxis: { title: { text: 'Timestep (subsampled)' } },
           margin: { t: 40, r: 80, b: 50, l: 60 },
-        }}
+        })}
         config={{ responsive: true, displayModeBar: false }}
         style={{ width: '100%', height: 350 }}
       />
@@ -175,14 +166,13 @@ export function BakSneppen() {
               name: 'Steady state',
             },
           ]}
-          layout={{
-            ...darkLayout,
-            title: { text: 'Average Value Over Time', font: { size: 13, color: '#9ca3af' } },
-            xaxis: { ...darkLayout.xaxis, title: { text: 'Timestep' } },
-            yaxis: { ...darkLayout.yaxis, title: { text: 'Mean' } },
+          layout={mergeLayout({
+            title: { text: 'Average Value Over Time', font: { size: 13 } },
+            xaxis: { title: { text: 'Timestep' } },
+            yaxis: { title: { text: 'Mean' } },
             margin: { t: 40, r: 20, b: 50, l: 60 },
             showlegend: false,
-          }}
+          })}
           config={{ responsive: true, displayModeBar: false }}
           style={{ width: '100%', height: 280 }}
         />
@@ -204,14 +194,13 @@ export function BakSneppen() {
               name: 'Steady state',
             },
           ]}
-          layout={{
-            ...darkLayout,
-            title: { text: 'Min-fitness Index Over Time', font: { size: 13, color: '#9ca3af' } },
-            xaxis: { ...darkLayout.xaxis, title: { text: 'Timestep' } },
-            yaxis: { ...darkLayout.yaxis, title: { text: 'Argmin' } },
+          layout={mergeLayout({
+            title: { text: 'Min-fitness Index Over Time', font: { size: 13 } },
+            xaxis: { title: { text: 'Timestep' } },
+            yaxis: { title: { text: 'Argmin' } },
             margin: { t: 40, r: 20, b: 50, l: 60 },
             showlegend: false,
-          }}
+          })}
           config={{ responsive: true, displayModeBar: false }}
           style={{ width: '100%', height: 280 }}
         />
@@ -227,13 +216,12 @@ export function BakSneppen() {
               marker: { color: '#8b5cf6' },
               nbinsx: 20,
             }]}
-            layout={{
-              ...darkLayout,
-              title: { text: 'Avalanche Duration Distribution', font: { size: 13, color: '#9ca3af' } },
-              xaxis: { ...darkLayout.xaxis, title: { text: 'Duration (timesteps)' }, type: 'log' },
-              yaxis: { ...darkLayout.yaxis, title: { text: 'Frequency' }, type: 'log' },
+            layout={mergeLayout({
+              title: { text: 'Avalanche Duration Distribution', font: { size: 13 } },
+              xaxis: { title: { text: 'Duration (timesteps)' }, type: 'log' },
+              yaxis: { title: { text: 'Frequency' }, type: 'log' },
               margin: { t: 40, r: 20, b: 50, l: 60 },
-            }}
+            })}
             config={{ responsive: true, displayModeBar: false }}
             style={{ width: '100%', height: 280 }}
           />
@@ -244,13 +232,12 @@ export function BakSneppen() {
               marker: { color: '#ec4899' },
               nbinsx: 20,
             }]}
-            layout={{
-              ...darkLayout,
-              title: { text: 'Avalanche Spatial Span Distribution', font: { size: 13, color: '#9ca3af' } },
-              xaxis: { ...darkLayout.xaxis, title: { text: 'Spatial span' }, type: 'log' },
-              yaxis: { ...darkLayout.yaxis, title: { text: 'Frequency' }, type: 'log' },
+            layout={mergeLayout({
+              title: { text: 'Avalanche Spatial Span Distribution', font: { size: 13 } },
+              xaxis: { title: { text: 'Spatial span' }, type: 'log' },
+              yaxis: { title: { text: 'Frequency' }, type: 'log' },
               margin: { t: 40, r: 20, b: 50, l: 60 },
-            }}
+            })}
             config={{ responsive: true, displayModeBar: false }}
             style={{ width: '100%', height: 280 }}
           />

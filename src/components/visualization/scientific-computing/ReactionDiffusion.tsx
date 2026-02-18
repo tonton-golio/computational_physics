@@ -2,6 +2,8 @@
 
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import dynamic from 'next/dynamic';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { Slider } from '@/components/ui/slider';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -26,12 +28,11 @@ export function ReactionDiffusion({}: SimulationProps) {
   const [stepCount, setStepCount] = useState(0);
   const [stepsPerFrame, setStepsPerFrame] = useState(10);
   const [stable, setStable] = useState(true);
+  const { mergeLayout } = usePlotlyTheme();
 
   const pRef = useRef<Float64Array | null>(null);
   const qRef = useRef<Float64Array | null>(null);
   const animFrameRef = useRef<number>(0);
-  const plotContainerRef = useRef<HTMLDivElement | null>(null);
-
   // Initialize grids
   const initializeGrids = useCallback(() => {
     const N = resolution;
@@ -165,14 +166,13 @@ export function ReactionDiffusion({}: SimulationProps) {
     setK(p.K);
   }, []);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const pGrid = useMemo(() => getGrid(pRef.current, resolution), [getGrid, resolution, stepCount]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const qGrid = useMemo(() => getGrid(qRef.current, resolution), [getGrid, resolution, stepCount]);
 
   const heatmapLayout = useMemo(
     () => ({
-      paper_bgcolor: 'rgba(0,0,0,0)',
-      plot_bgcolor: 'rgba(15,15,25,1)',
-      font: { color: '#9ca3af', family: 'system-ui', size: 11 },
       margin: { t: 35, r: 10, b: 30, l: 30 },
       xaxis: { showticklabels: false, ticks: '' as const },
       yaxis: { showticklabels: false, ticks: '' as const },
@@ -194,10 +194,10 @@ export function ReactionDiffusion({}: SimulationProps) {
                 colorbar: { title: { text: 'p', side: 'right' as const }, len: 0.8 },
               },
             ]}
-            layout={{
+            layout={mergeLayout({
               ...heatmapLayout,
               title: { text: 'Concentration p', font: { size: 14 } },
-            } as Partial<Plotly.Layout>}
+            }) as Partial<Plotly.Layout>}
             config={{ responsive: true, displayModeBar: false }}
             style={{ width: '100%', height: '350px' }}
           />
@@ -213,10 +213,10 @@ export function ReactionDiffusion({}: SimulationProps) {
                 colorbar: { title: { text: 'q', side: 'right' as const }, len: 0.8 },
               },
             ]}
-            layout={{
+            layout={mergeLayout({
               ...heatmapLayout,
               title: { text: 'Concentration q', font: { size: 14 } },
-            } as Partial<Plotly.Layout>}
+            }) as Partial<Plotly.Layout>}
             config={{ responsive: true, displayModeBar: false }}
             style={{ width: '100%', height: '350px' }}
           />
@@ -239,7 +239,7 @@ export function ReactionDiffusion({}: SimulationProps) {
         </button>
         <button
           onClick={handleReset}
-          className="px-4 py-2 bg-gray-600 rounded text-sm hover:bg-gray-700 text-white"
+          className="px-4 py-2 bg-[var(--surface-3)] rounded text-sm hover:bg-[var(--border-strong)] text-[var(--text-strong)]"
         >
           Reset
         </button>
@@ -247,7 +247,7 @@ export function ReactionDiffusion({}: SimulationProps) {
           <button
             key={key}
             onClick={() => handlePreset(key)}
-            className="px-3 py-2 bg-[#1e1e3a] rounded text-sm hover:bg-[#2a2a4a] text-gray-300"
+            className="px-3 py-2 bg-[var(--surface-2)] rounded text-sm hover:opacity-80 text-[var(--text-muted)]"
           >
             {val.label}
           </button>
@@ -255,63 +255,59 @@ export function ReactionDiffusion({}: SimulationProps) {
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <label className="text-sm text-gray-400">
-          D_p: <span className="text-white">{Dp}</span>
-          <input
-            type="range"
+        <label className="text-sm text-[var(--text-muted)]">
+          D_p: <span className="text-[var(--text-strong)]">{Dp}</span>
+          <Slider
             min={0.1}
             max={10}
             step={0.1}
-            value={Dp}
-            onChange={(e) => setDp(parseFloat(e.target.value))}
-            className="w-full accent-blue-500"
+            value={[Dp]}
+            onValueChange={([v]) => setDp(v)}
+            className="w-full"
           />
         </label>
-        <label className="text-sm text-gray-400">
-          D_q: <span className="text-white">{Dq}</span>
-          <input
-            type="range"
+        <label className="text-sm text-[var(--text-muted)]">
+          D_q: <span className="text-[var(--text-strong)]">{Dq}</span>
+          <Slider
             min={0.1}
             max={15}
             step={0.1}
-            value={Dq}
-            onChange={(e) => setDq(parseFloat(e.target.value))}
-            className="w-full accent-blue-500"
+            value={[Dq]}
+            onValueChange={([v]) => setDq(v)}
+            className="w-full"
           />
         </label>
-        <label className="text-sm text-gray-400">
-          C: <span className="text-white">{C.toFixed(1)}</span>
-          <input
-            type="range"
+        <label className="text-sm text-[var(--text-muted)]">
+          C: <span className="text-[var(--text-strong)]">{C.toFixed(1)}</span>
+          <Slider
             min={0.1}
             max={10}
             step={0.1}
-            value={C}
-            onChange={(e) => setC(parseFloat(e.target.value))}
-            className="w-full accent-blue-500"
+            value={[C]}
+            onValueChange={([v]) => setC(v)}
+            className="w-full"
           />
         </label>
-        <label className="text-sm text-gray-400">
-          K: <span className="text-white">{K}</span>
-          <input
-            type="range"
+        <label className="text-sm text-[var(--text-muted)]">
+          K: <span className="text-[var(--text-strong)]">{K}</span>
+          <Slider
             min={1}
             max={15}
             step={0.5}
-            value={K}
-            onChange={(e) => setK(parseFloat(e.target.value))}
-            className="w-full accent-blue-500"
+            value={[K]}
+            onValueChange={([v]) => setK(v)}
+            className="w-full"
           />
         </label>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        <label className="text-sm text-gray-400">
-          dt: <span className="text-white">{dt}</span>
+        <label className="text-sm text-[var(--text-muted)]">
+          dt: <span className="text-[var(--text-strong)]">{dt}</span>
           <select
             value={dt}
             onChange={(e) => setDt(parseFloat(e.target.value))}
-            className="w-full bg-[#151525] text-white rounded px-2 py-1 mt-1"
+            className="w-full bg-[var(--surface-1)] text-[var(--text-strong)] rounded px-2 py-1 mt-1"
           >
             <option value={0.001}>0.001</option>
             <option value={0.005}>0.005</option>
@@ -320,12 +316,12 @@ export function ReactionDiffusion({}: SimulationProps) {
             <option value={0.03}>0.03</option>
           </select>
         </label>
-        <label className="text-sm text-gray-400">
-          Resolution: <span className="text-white">{resolution}</span>
+        <label className="text-sm text-[var(--text-muted)]">
+          Resolution: <span className="text-[var(--text-strong)]">{resolution}</span>
           <select
             value={resolution}
             onChange={(e) => { setResolution(parseInt(e.target.value)); }}
-            className="w-full bg-[#151525] text-white rounded px-2 py-1 mt-1"
+            className="w-full bg-[var(--surface-1)] text-[var(--text-strong)] rounded px-2 py-1 mt-1"
           >
             <option value={32}>32</option>
             <option value={48}>48</option>
@@ -333,12 +329,12 @@ export function ReactionDiffusion({}: SimulationProps) {
             <option value={96}>96</option>
           </select>
         </label>
-        <label className="text-sm text-gray-400">
-          Steps/frame: <span className="text-white">{stepsPerFrame}</span>
+        <label className="text-sm text-[var(--text-muted)]">
+          Steps/frame: <span className="text-[var(--text-strong)]">{stepsPerFrame}</span>
           <select
             value={stepsPerFrame}
             onChange={(e) => setStepsPerFrame(parseInt(e.target.value))}
-            className="w-full bg-[#151525] text-white rounded px-2 py-1 mt-1"
+            className="w-full bg-[var(--surface-1)] text-[var(--text-strong)] rounded px-2 py-1 mt-1"
           >
             <option value={1}>1</option>
             <option value={5}>5</option>
@@ -349,13 +345,13 @@ export function ReactionDiffusion({}: SimulationProps) {
         </label>
       </div>
 
-      <div className="flex gap-6 text-sm text-gray-400">
-        <span>Steps: <span className="text-white">{stepCount}</span></span>
-        <span>Time: <span className="text-white">{(stepCount * dt).toFixed(3)}</span></span>
+      <div className="flex gap-6 text-sm text-[var(--text-muted)]">
+        <span>Steps: <span className="text-[var(--text-strong)]">{stepCount}</span></span>
+        <span>Time: <span className="text-[var(--text-strong)]">{(stepCount * dt).toFixed(3)}</span></span>
         <span>Status: <span className={stable ? 'text-green-400' : 'text-red-400'}>{stable ? 'Stable' : 'Unstable'}</span></span>
       </div>
 
-      <p className="text-xs text-gray-500">
+      <p className="text-xs text-[var(--text-soft)]">
         Gray-Scott reaction-diffusion model solved with forward Euler. Patterns emerge from the interplay of diffusion rates and reaction kinetics.
         Try different presets to see stripes, spots, and other Turing patterns.
       </p>

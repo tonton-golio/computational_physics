@@ -2,6 +2,8 @@
 
 import React, { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { Slider } from '@/components/ui/slider';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -42,6 +44,7 @@ export function BetHedging() {
   const [winMultiplier, setWinMultiplier] = useState(1.5);
   const [lossMultiplier, setLossMultiplier] = useState(0.5);
   const [seed, setSeed] = useState(0);
+  const { mergeLayout } = usePlotlyTheme();
 
   const numAgents = 5;
 
@@ -52,87 +55,72 @@ export function BetHedging() {
 
   const colors = ['#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
 
-  const darkLayout = {
-    paper_bgcolor: 'rgba(0,0,0,0)',
-    plot_bgcolor: 'rgba(15,15,25,1)',
-    font: { color: '#9ca3af' },
-    margin: { t: 40, r: 20, b: 50, l: 60 },
-    xaxis: { gridcolor: '#1e1e2e' },
-    yaxis: { gridcolor: '#1e1e2e' },
-  };
-
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         <div>
-          <label className="text-sm text-gray-400 block mb-1">Fear probability p: {p.toFixed(2)}</label>
-          <input
-            type="range"
+          <label className="text-sm text-[var(--text-muted)] block mb-1">Fear probability p: {p.toFixed(2)}</label>
+          <Slider
             min={0}
             max={0.3}
             step={0.01}
-            value={p}
-            onChange={e => setP(Number(e.target.value))}
+            value={[p]}
+            onValueChange={([v]) => setP(v)}
             className="w-full"
           />
         </div>
         <div>
-          <label className="text-sm text-gray-400 block mb-1">Noise: {noise.toFixed(1)}</label>
-          <input
-            type="range"
+          <label className="text-sm text-[var(--text-muted)] block mb-1">Noise: {noise.toFixed(1)}</label>
+          <Slider
             min={0}
             max={3}
             step={0.1}
-            value={noise}
-            onChange={e => setNoise(Number(e.target.value))}
+            value={[noise]}
+            onValueChange={([v]) => setNoise(v)}
             className="w-full"
           />
         </div>
         <div>
-          <label className="text-sm text-gray-400 block mb-1">Invest fraction: {investPerRound.toFixed(2)}</label>
-          <input
-            type="range"
+          <label className="text-sm text-[var(--text-muted)] block mb-1">Invest fraction: {investPerRound.toFixed(2)}</label>
+          <Slider
             min={0.01}
             max={1}
             step={0.01}
-            value={investPerRound}
-            onChange={e => setInvestPerRound(Number(e.target.value))}
+            value={[investPerRound]}
+            onValueChange={([v]) => setInvestPerRound(v)}
             className="w-full"
           />
         </div>
         <div>
-          <label className="text-sm text-gray-400 block mb-1">Win multiplier: {winMultiplier.toFixed(1)}</label>
-          <input
-            type="range"
+          <label className="text-sm text-[var(--text-muted)] block mb-1">Win multiplier: {winMultiplier.toFixed(1)}</label>
+          <Slider
             min={1}
             max={4}
             step={0.1}
-            value={winMultiplier}
-            onChange={e => setWinMultiplier(Number(e.target.value))}
+            value={[winMultiplier]}
+            onValueChange={([v]) => setWinMultiplier(v)}
             className="w-full"
           />
         </div>
         <div>
-          <label className="text-sm text-gray-400 block mb-1">Loss multiplier: {lossMultiplier.toFixed(2)}</label>
-          <input
-            type="range"
+          <label className="text-sm text-[var(--text-muted)] block mb-1">Loss multiplier: {lossMultiplier.toFixed(2)}</label>
+          <Slider
             min={0}
             max={1}
             step={0.05}
-            value={lossMultiplier}
-            onChange={e => setLossMultiplier(Number(e.target.value))}
+            value={[lossMultiplier]}
+            onValueChange={([v]) => setLossMultiplier(v)}
             className="w-full"
           />
         </div>
         <div>
-          <label className="text-sm text-gray-400 block mb-1">Steps: {nsteps}</label>
-          <input
-            type="range"
+          <label className="text-sm text-[var(--text-muted)] block mb-1">Steps: {nsteps}</label>
+          <Slider
             min={50}
             max={3000}
             step={50}
-            value={nsteps}
-            onChange={e => setNsteps(Number(e.target.value))}
+            value={[nsteps]}
+            onValueChange={([v]) => setNsteps(v)}
             className="w-full"
           />
         </div>
@@ -140,7 +128,7 @@ export function BetHedging() {
 
       <button
         onClick={() => setSeed(s => s + 1)}
-        className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded text-sm"
+        className="px-4 py-2 bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white rounded text-sm"
       >
         Re-run
       </button>
@@ -153,14 +141,13 @@ export function BetHedging() {
           line: { color: colors[idx % colors.length], width: 1.5 },
           name: `Agent ${idx + 1}`,
         }))}
-        layout={{
-          ...darkLayout,
-          title: { text: 'Bet Hedging: Capital Over Time', font: { size: 14, color: '#9ca3af' } },
-          xaxis: { ...darkLayout.xaxis, title: { text: 'Timestep' } },
-          yaxis: { ...darkLayout.yaxis, title: { text: 'Capital' }, type: 'log' },
+        layout={mergeLayout({
+          title: { text: 'Bet Hedging: Capital Over Time', font: { size: 14 } },
+          xaxis: { title: { text: 'Timestep' } },
+          yaxis: { title: { text: 'Capital' }, type: 'log' },
           showlegend: true,
-          legend: { font: { color: '#9ca3af' } },
-        }}
+          margin: { t: 40, r: 20, b: 50, l: 60 },
+        })}
         config={{ responsive: true, displayModeBar: false }}
         style={{ width: '100%', height: 400 }}
       />

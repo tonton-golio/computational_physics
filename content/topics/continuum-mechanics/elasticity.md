@@ -1,77 +1,114 @@
 # Elasticity
 
+## The Cheese Test
 
+From basic mechanics, you know Hooke's Law: $F = -kx$. A spring, one dimension, done. But the world isn't one-dimensional. When you squeeze a block of gouda cheese, it doesn't just compress downward — it *bulges outward*. When you stretch a rubber band lengthwise, it gets thinner in the middle. Forces and deformations couple across dimensions, and the simple spring constant $k$ isn't enough anymore.
 
-## Introduction
-From mechanics, we are familiar with *Hooke's Law*. Describing the relationship between force and extention for an object attached to a spring as
+Why cheese? Because it's *perfect* for building intuition. It's solid enough to hold its shape (unlike honey), but soft enough that you can actually *see* the deformation with your eyes (unlike steel). A one cubic meter block of gouda is our mental laboratory for this section. Put a weight on top and watch what happens.
+
+## Young's Modulus — How Stiff Is Your Cheese?
+
+Young's modulus $E$ answers a simple question: *how hard do I have to pull (per unit area) to stretch the material by a certain fraction of its length?*
+
 $$
-F = -kx
+E = \frac{\sigma_{xx}}{\varepsilon_{xx}} = \frac{F/A}{\Delta L / L} = k \frac{L}{A}
 $$
-where k is the spring constant. This is all well and dandy, but only describes elasticity in one dimension. 
-In this topic we expand the law to 3 dimensions.
 
-## Young's Modulus, Poisson's Ratio and Lame Coefficients
-Young's Modulus $E$ is a measure of the instretchability of a continuum. Its definition and its relation to the spring constant is
+It's the spring constant, but normalized by geometry — force per unit area divided by relative deformation. This lets you compare materials regardless of their shape or size:
+
+| Material | Young's Modulus |
+|----------|----------------|
+| Diamond  | $\sim 1000$ GPa |
+| Steel    | $\sim 200$ GPa  |
+| Bone     | $\sim 15$ GPa   |
+| Wood     | $\sim 10$ GPa   |
+| Gouda    | $\sim 0.3$ GPa  |
+| Rubber   | $\sim 0.01$ GPa |
+
+## Poisson's Ratio — The Sideways Squeeze
+
+Now put that weight on the cheese. It compresses vertically, but it also *bulges outward* horizontally. Poisson's ratio $\nu$ measures this coupling:
+
 $$
-E=\frac{\sigma_{xx}}{u_{xx}}=\frac{F/A}{x/L}=k\frac{L}{A}
+\nu = -\frac{\varepsilon_{\text{transverse}}}{\varepsilon_{\text{longitudinal}}}
 $$
-where A is the cross-section, L is the total length, F is the force and x is the absolute deformation which mean $x/L$ is the *relative* deformation.
 
+For most solid materials, $\nu$ is between 0.2 and 0.5. A Poisson's ratio of 0.5 means the material is **incompressible** — it changes shape but not volume (rubber is close to this). A Poisson's ratio of 0 means the dimensions are decoupled — squeezing vertically has no effect on horizontal dimensions (cork is close to this, which is why it works so well as a bottle stopper).
 
-Suppose a block of cheese is deformed by placing a weight on top of it. By intuition, we would assume that when we squeeze, 
-Poisson's Ratio is a measure of the relative *shrinking* in the perpendicular direction to the 
-## Generalized Hooke's Law
-The general case, Hookes Law can be expressed as
+## Generalized Hooke's Law — The Full 3D Picture
+
+In the general case, Hooke's law becomes a tensor equation:
 $$
-\sigma = E u
+\sigma_{ij} = C_{ijkl} \, \varepsilon_{kl}
 $$
-Where E is a rank 4 tensor, relating all the components of the Cauchy strain tensor and the Cauchy stress tensor. 
 
-The problem then becomes given in terms of the force density $f^*$.
+where $C_{ijkl}$ is a rank-4 **stiffness tensor** that relates all components of stress to all components of strain. For a general anisotropic material, this has 21 independent components. For an **isotropic** material (same properties in all directions), it collapses to just two parameters — the Lame coefficients $\lambda$ and $\mu$:
 $$
-f^* = f + \nabla \cdot \sigma
+\sigma_{ij} = \lambda \, \varepsilon_{kk} \, \delta_{ij} + 2\mu \, \varepsilon_{ij}
 $$
-Where $f$ is the body forces like gravity. This is analytically unsolvable for most systems, we can however use finite difference approximations to solve it numerically.
 
-## Work and Energy
-Work can be defined for deformations in a continuum. 
-Its defined by the ":" operator.
+The Lame coefficients relate to Young's modulus and Poisson's ratio by:
 $$
-W=\sigma:u
+\mu = \frac{E}{2(1+\nu)}, \qquad \lambda = \frac{E\nu}{(1+\nu)(1-2\nu)}
 $$
-where $\sigma$ is the Cauchy stress tensor and $u$ is the Cauchy strain tensor.
-The ":" operator takes sum of the elementvise product, i.e.
+
+## What Happens When You Stretch Too Far?
+
+Hooke's law is a *linear* relationship — double the stress, double the strain. But you know from experience that this can't be the whole story. Stretch the rubber band far enough and it snaps. Squeeze the cheese hard enough and it crumbles.
+
+Real materials have a **yield point** where the linear relationship breaks down. Beyond it, the material deforms *permanently* — it doesn't spring back. This is **plastic deformation**, and it's where materials science gets interesting. We won't dive deep into plasticity in this course, but it's important to know that linear elasticity has limits. The von Mises criterion from the previous section tells you *when* those limits are reached.
+
+## Work and Energy in a Deformed Material
+
+When you deform a material, you do work on it. That work gets stored as elastic potential energy (like compressing a spring). The work per unit volume is:
 $$
-W=\sum_{ij} \sigma_{ij} u_{ij}
+W = \sigma : \varepsilon = \sum_{ij} \sigma_{ij} \, \varepsilon_{ij}
 $$
-The units will be in Pascal, which essentially is the same as Joules.
 
-## Linear elastostatics
--\nabla \cdot \sigma = f
-\sigma = 2 \mu \epsilon. blah
+The "$:$" operator is the **double contraction** — you multiply corresponding elements and sum them all up. The units work out to $\text{Pa} = \text{J/m}^3$: energy per unit volume, exactly what you'd expect for stored elastic energy.
 
+## Linear Elastostatics — When Nothing Moves
 
+If a material is in static equilibrium (no acceleration), the forces must balance everywhere:
+$$
+-\nabla \cdot \sigma = \mathbf{f}
+$$
 
-## Beam Profile
+where $\mathbf{f}$ is the body force density (like gravity). Combined with Hooke's law ($\sigma = \lambda \, \text{tr}(\varepsilon) \, \mathbf{I} + 2\mu \, \varepsilon$) and the strain-displacement relation, this gives the **Navier-Cauchy equation** for elastostatics. It's analytically solvable for simple geometries, and it's what we'll solve numerically with FEM for everything else.
 
-## Slender Rods
+## Beam Profiles and Slender Rods
 
-## Vibrations and Sound
-Sound, wirte EQ 24.5
+Many engineering structures — bridges, buildings, bones — can be modeled as slender beams. When a beam bends under load, the top is compressed and the bottom is stretched (or vice versa). There's a **neutral axis** in the middle where the strain is zero.
 
-Examples of vibration; platetectonics and earthquakes.
-Bruel and Kjær uses microphones on objects and when vibrated using inverse problems can tell alot of the object.
+The classic Euler-Bernoulli beam theory gives the deflection $w(x)$ of a beam under load:
+$$
+EI \frac{d^4 w}{dx^4} = q(x)
+$$
 
-Two types of waves, L-ongditudinal or P. Divergence and curl free, producing pressure and shear waves.
+where $I$ is the second moment of area (a geometric property of the cross-section) and $q(x)$ is the distributed load. This single equation governs how bridges sag, diving boards flex, and tree branches bend in the wind.
 
-also known as primary and secondary waves
-Pressure faster than shear.
+## Vibrations and Sound — When Elasticity Meets Dynamics
 
-For poisson coefficients of $1/3$, $c_L=2c_P$
+Push a material and let go. If it's elastic, it springs back — and *overshoots*. Then it springs back again. This oscillation propagates through the material as a **wave**.
 
-Insert picture of plane wave propagation for comparision.
-For pressure waves, the polarization vector is aligned with the wavevector $\vec{K}$.
+There are two kinds of elastic waves:
 
-For shear waves, there exists two polarization vectors perpendicular to the wavevector $\vec{K}$.
+- **P-waves** (pressure/longitudinal): the material compresses and expands along the direction of propagation, like a slinky being pushed and pulled. The displacement is parallel to the wave vector $\vec{K}$.
+- **S-waves** (shear/transverse): the material shears perpendicular to the direction of propagation, like a rope being wiggled. The displacement is perpendicular to $\vec{K}$, with two possible polarizations.
 
+Their speeds are:
+$$
+c_P = \sqrt{\frac{\lambda + 2\mu}{\rho}}, \qquad c_S = \sqrt{\frac{\mu}{\rho}}
+$$
 
+P-waves are always faster than S-waves ($c_P > c_S$). For a Poisson's ratio of $1/3$, $c_P = 2\,c_S$.
+
+This is how earthquakes work. When a fault ruptures, it sends out both P-waves and S-waves. The P-waves arrive first (that's why they're called "primary"), and the S-waves arrive later ("secondary"). The time delay between them tells seismologists how far away the earthquake was. This is also how Bruel & Kjaer uses microphones to characterize the vibrational properties of objects — they listen to the elastic waves and work backward to figure out the material properties (an inverse problem).
+
+## What We Just Learned
+
+Elasticity extends Hooke's law to three dimensions using Young's modulus, Poisson's ratio, and the Lame coefficients. Real materials have yield points beyond which linear elasticity fails. Elastic energy is stored as $\sigma : \varepsilon$, and elastic waves come in two flavors: fast pressure waves and slower shear waves.
+
+## What's Next
+
+We now have the toolkit to describe how solids deform and vibrate. But before we move to fluids, we need to bring in the computational tools you'll use for the rest of the course. Time to meet Python and its friends.

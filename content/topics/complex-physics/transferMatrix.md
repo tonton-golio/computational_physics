@@ -1,72 +1,55 @@
 # 1D Ising Model and Transfer Matrix Method
 
+Think of a one-dimensional chain of spins as a book. Each page (spin) can be "up" or "down." The energy cost depends only on whether two neighboring pages match or not. The transfer matrix is a clever way of multiplying the probabilities page by page until you reach the end of the book — and then the eigenvalues pop out and hand you the exact answer.
+
+This is one of the rare cases in statistical mechanics where we can solve the many-body problem *exactly*. No approximations, no Monte Carlo, no mean-field hand-waving. Just linear algebra.
+
 ## Hamiltonian
-We can obtain partition function of 1D-lattice Ising model can
-analytically.
-Hamiltonian of 1D-lattice Ising model is
+
+The Hamiltonian of the 1D Ising model with periodic boundary conditions ($s_{N+1} = s_1$) is
 $$
     \mathcal{H}
     =
-    -J\sum_{i=1}^{N} s_i s_{i+1} - h \sum_{i=1}^{N} s_i
+    -J\sum_{i=1}^{N} s_i s_{i+1} - h \sum_{i=1}^{N} s_i.
 $$
-with periodic boundary condition $s_{N+1} = s_{1}$.
+
 ## Partition function
-Partition function becomes
+
+The partition function is a sum over all $2^N$ configurations:
 $$
 \begin{align*}
     Z
     &=
-    \sum_{\{s_i\}}
-    e^{-\beta \mathcal{H}\left(\{s_i\}\right)}
-    \\&=
     \sum_{s_1 = \pm 1} \cdots \sum_{s_N = \pm 1}
     \exp
     \left(
         \beta J\sum_{i=1}^{N} s_i s_{i+1}
         + \beta h \sum_{i=1}^{N} s_i
-    \right)
-    \\&=
-    \sum_{s_1 = \pm 1} \cdots \sum_{s_N = \pm 1}
-    \exp
-    \left[
-        \beta J \left( s_1 s_2 + \cdots + s_N s_1 \right)
-        + \beta h \left( s_1 + \cdots + s_N \right)
-    \right]
-    \\&=
-    \sum_{s_1 = \pm 1} \cdots \sum_{s_N = \pm 1}
-    \exp
-    \left(
-        \beta J s_1 s_2
-        + \cdots
-        + \beta J s_N s_1
-        + \beta h \frac{s_1+s_2}{2}
-        + \cdots
-        + \beta h \frac{s_N+s_1}{2}
-    \right)
-    \\&=
-    \sum_{s_1 = \pm 1} \cdots \sum_{s_N = \pm 1}
-    \exp
-    \left(
-        \beta J s_1 s_2
-        + \beta h \frac{s_1+s_2}{2}
-    \right)
-    \cdots
-    \exp
-    \left(
-        \beta J s_N s_1
-        + \beta h \frac{s_N+s_1}{2}
-    \right)
-    \\&=
+    \right).
+\end{align*}
+$$
+
+The trick is to split the external field term equally between each pair of neighbors:
+$$
+    \beta h \sum_i s_i = \beta h \sum_i \frac{s_i + s_{i+1}}{2},
+$$
+so the whole exponent factorizes into a product of identical "bond" terms:
+$$
+    Z =
     \sum_{s_1 = \pm 1} \cdots \sum_{s_N = \pm 1}
     \prod_{i=1}^N
     \exp
     \left(
         \beta J s_i s_{i+1}
         + \beta h \frac{s_i+s_{i+1}}{2}
-    \right)
-\end{align*}
+    \right).
 $$
+
+Each factor depends only on two neighboring spins. That is a matrix element waiting to happen.
+
 ## Transfer matrix
+
+Define the transfer matrix $T$ with elements
 $$
     T_{s_i, s_{i+1}}
     =
@@ -74,257 +57,101 @@ $$
     \left(
         \beta J s_i s_{i+1}
         + \beta h \frac{s_i+s_{i+1}}{2}
-    \right)
+    \right).
 $$
-is a element of transfer matrix $T$. Transfer matrix is
+
+Written out explicitly as a $2 \times 2$ matrix:
 $$
-\begin{align*}
     T
-    &=
-    \begin{bmatrix}
-    T_{+1, +1} & T_{+1, -1} \\
-    T_{-1, +1} & T_{-1, -1}
-    \end{bmatrix}
-    \\&=
-    \begin{bmatrix}
-    \exp \left[ \beta(J+h) \right] & \exp \left[ -\beta J \right] \\
-    \exp \left[ -\beta J \right] & \exp \left[ \beta(J-h) \right]
-    \end{bmatrix}
-\end{align*}
-$$
-From the definition of matrix multiplication, we see
-$$
-    \left(T^2\right)_{s_i, s_{i+2}}
     =
-    \sum_{s_{i+1} = \pm1}
-    T_{s_i, s_{i+1}}
-    T_{s_{i+1}, s_{i+2}}
+    \begin{bmatrix}
+    e^{\beta(J+h)} & e^{-\beta J} \\
+    e^{-\beta J} & e^{\beta(J-h)}
+    \end{bmatrix}.
 $$
-Using these let's caliculate partition function!
+
+Now here is where the magic happens. The partition function involves summing products of these matrix elements over all intermediate spins — but that is exactly what matrix multiplication does! Summing over $s_2$ gives $(T^2)_{s_1, s_3}$, then summing over $s_3$ gives $(T^3)_{s_1, s_4}$, and so on:
 $$
 \begin{align*}
     Z
     &=
     \sum_{s_1 = \pm 1} \cdots \sum_{s_N = \pm 1}
-    \prod_{i=1}^N
-    T_{s_i, s_{i+1}}
-    \\&=
-    \sum_{s_1 = \pm 1} \cdots \sum_{s_N = \pm 1}
-    T_{s_1, s_2}
-    \cdots
-    T_{s_N, s_1}
+    T_{s_1, s_2} T_{s_2, s_3} \cdots T_{s_N, s_1}
     \\&=
     \sum_{s_1 = \pm 1}
-    \sum_{s_3 = \pm 1}
-    \cdots
-    \sum_{s_N = \pm 1}
-    \left(
-    \sum_{s_2 = \pm 1}
-    T_{s_1, s_2}
-    T_{s_2, s_3}
-    \right)
-    T_{s_3, s_4}
-    \cdots
-    T_{s_N, s_1}
+    (T^N)_{s_1, s_1}
     \\&=
-    \sum_{s_1 = \pm 1}
-    \sum_{s_3 = \pm 1}
-    \cdots
-    \sum_{s_N = \pm 1}
-    \left(T^2\right)_{s_1, s_3}
-    T_{s_3, s_4}
-    \cdots
-    T_{s_N, s_1}
-    \\&=
-    \sum_{s_1 = \pm 1}
-    \cdots
-    \sum_{s_N = \pm 1}
-    \left(
-    \sum_{s_3 = \pm 1}
-    \left(T^2\right)_{s_1, s_3}
-    T_{s_3, s_4}
-    \right)
-    T_{s_4, s_5}
-    \cdots
-    T_{s_N, s_1}
-    \\&=
-    \cdots
-    \\&=
-    \sum_{s_1 = \pm 1}
-    \left(
-    \sum_{s_N = \pm 1}
-    \left(T^{N-1}\right)_{s_1, s_N}
-    T_{s_N, s_1}
-    \right)
-    \\&=
-    \sum_{s_1 = \pm 1}
-    \left(T^{N}\right)_{s_1, s_1}
-    \\&=
-    \mathrm{Tr}
-    \left(
-    T^{N}
-    \right)
+    \mathrm{Tr}(T^N).
 \end{align*}
 $$
-Here $T$ is a real symmetric matrix which is diagonalizable.
+
+The partition function is the trace of the $N$-th power of the transfer matrix. We have converted the statistical mechanics problem into a linear algebra problem.
+
+## Diagonalization and eigenvalues
+
+Since $T$ is a real symmetric matrix, it is diagonalizable: $T = PDP^{-1}$, where $D$ is the diagonal matrix of eigenvalues. Then
 $$
-    T = PDP^{-1}
+    T^N = PD^N P^{-1},
 $$
-where $D$ is a diagonal matrix with eigenvalues $\lambda_1$ and
-$\lambda_2$
+and using the cyclic property of the trace:
 $$
-    D
+    Z = \mathrm{Tr}(T^N) = \mathrm{Tr}(D^N) = \lambda_1^N + \lambda_2^N.
+$$
+
+The entire partition function reduces to the eigenvalues of a $2 \times 2$ matrix. That is the power of the transfer matrix method.
+
+## Finding the eigenvalues
+
+The characteristic equation $\det(T - \lambda I) = 0$ gives:
+$$
+    \lambda^2
+    -
+    2\lambda \, e^{\beta J} \cosh(\beta h)
+    +
+    2 \sinh(2\beta J)
+    = 0.
+$$
+
+Solving the quadratic:
+$$
+    \lambda_{\pm}
     =
-    \begin{bmatrix}
-    \lambda_1 & 0 \\
-    0 & \lambda_2
-    \end{bmatrix}
-$$
-and $P$ is a matrix containing eigenvectors.
-Thanks to this diagonalization $T^{N}$ becomes simpler.
-$$
-\begin{align*}
-    T^{N}
-    &=
-    PDP^{-1}PDP^{-1} \cdots PDP^{-1}
-    \\&=
-    PD^{N}P^{-1}
-\end{align*}
-$$
-Using the property of trace,
-$$
-\begin{aligned}
-    \operatorname{Tr}(A B) &=\sum_i(A B)_{i i} \\
-    &=\sum_i \sum_j A_{i j} B_{j i} \\
-    &=\sum_j \sum_i B_{j i} A_{i j} \\
-    &=\sum_j(B A)_{j j} \\
-    &=\operatorname{Tr}(B A)
-\end{aligned}
-$$
-we obtain
-$$
-\begin{aligned}
-    \mathrm{Tr}
-    \left(
-        PD^{N}P^{-1}
-    \right)
-    &=
-    \mathrm{Tr}
-    \left(
-        D^{N}P^{-1}P
-    \right)
-    \\&=
-    \mathrm{Tr}
-    \left(
-        D^{N}
-    \right)
-\end{aligned}
-$$
-Returning to partition function
-$$
-\begin{aligned}
-    Z
-    &=
-    \mathrm{Tr}
-    \left(
-        T^{N}
-    \right)
-    \\&=
-    \mathrm{Tr}
-    \left(
-        D^{N}
-    \right)
-    \\&=
-    \lambda_1^N + \lambda_2^N
-\end{aligned}
-$$
-Cool. We need eigenvalue of transfer matrix.
-$$
-\begin{aligned}
-    0
-    &=
-    \operatorname{det}(T-\lambda)
-    \\&=
-    \left|\begin{array}{cc}
-    \exp\left({\beta J+ \beta h}\right)-\lambda & \exp\left({-\beta J}\right) \\
-    \exp\left(-\beta J\right) & \exp\left(\beta J - \beta h\right)-\lambda
-    \end{array}\right|
-    \\&=
-    \left(\exp\left(\beta J+ \beta h\right)-\lambda\right)
-    \left(\exp\left(\beta J- \beta h\right)-\lambda\right)
-    -\exp\left(-2 \beta J\right)
-    \\&=
-    \exp\left(2\beta J\right)
-    -\lambda
-    \left(
-        \exp\left(\beta J + \beta h\right)
-        +
-        \exp\left(\beta J - \beta h\right)
-    \right)
-    +\lambda^2
-    -\exp\left(-2 \beta J\right)
-\end{aligned}
-$$
-We obtaiend quadratic equation of $\lambda$.
-$$
-\begin{aligned}
-    0
-    &=
-    \lambda^2
-    -
-    \lambda
-    \left[
-            \exp\left(\beta J+ \beta h\right)
-        +\exp\left(\beta J- \beta h\right)
-    \right]
-    +
-    \left[
-    \exp\left(2\beta J\right)
-    - \exp\left(-2 \beta J\right)
-    \right]
-    \\&=
-    \lambda^2
-    -
-    2 \lambda \exp \left(\beta J\right) \cosh \left(\beta h\right)
-    +
-    2 \sinh \left(2 \beta J\right)
-\end{aligned}
-$$
-This equation has two solutions.
-$$
-\begin{aligned}
-    \lambda
-    &=
-    \exp \left(\beta J\right) \cosh \left(\beta h\right)
+    e^{\beta J} \cosh(\beta h)
     \pm
     \sqrt{
-        \exp \left(2 \beta J\right) \cosh^2 \left(\beta h\right)
-        -
-        2 \sinh \left(2 \beta J\right)
-    }
-    \\&=
-    \exp \left(\beta J\right) \cosh \left(\beta h\right)
-    \pm
-    \sqrt{
-        \exp \left(2 \beta J\right)
-        +
-        \exp \left(2 \beta J\right)
-        \sinh^2 \left(\beta h\right)
-        -
-        \left(
-            \exp\left(2 \beta J\right)
-            +
-            \exp\left(-2 \beta J\right)
-        \right)
-    }
-    \\&=
-    \exp \left(\beta J\right) \cosh \left(\beta h\right)
-    \pm
-    \sqrt{
-        \exp \left(2 \beta J\right)
-        \sinh^2 \left(\beta h\right)
-        -
-        \exp\left(-2 \beta J\right)
-    }
-\end{aligned}
+        e^{2\beta J} \sinh^2(\beta h)
+        + e^{-2\beta J}
+    }.
 $$
+
+Since $\lambda_+ > \lambda_-$ always, in the thermodynamic limit ($N \to \infty$) the smaller eigenvalue becomes negligible:
+$$
+    Z \approx \lambda_+^N.
+$$
+
+The free energy per spin is
+$$
+    f = -\frac{1}{\beta N} \ln Z = -\frac{1}{\beta} \ln \lambda_+.
+$$
+
+## The punchline: no phase transition in 1D
+
+For $h = 0$, the eigenvalues simplify to
+$$
+    \lambda_+ = e^{\beta J} + e^{-\beta J} = 2\cosh(\beta J), \qquad
+    \lambda_- = e^{\beta J} - e^{-\beta J} = 2\sinh(\beta J).
+$$
+
+Both eigenvalues are positive and analytic (smooth) functions of temperature for all $T > 0$. Since the free energy $f = -(1/\beta)\ln\lambda_+$ is an analytic function of $T$, there is *no singularity* at any finite temperature. No singularity means no phase transition.
+
+This is the exact confirmation of what we suspected: in one dimension, thermal fluctuations always win. A single domain wall (a place where neighboring spins disagree) costs energy $2J$ but increases entropy by $k_\mathrm{B} \ln N$ (it can be placed at any of $N$ bonds). For large enough $N$, the entropy always beats the energy, and domain walls proliferate, destroying any long-range order.
+
+Mean-field theory predicted a phase transition in 1D — and that prediction is wrong. This is a concrete example of why mean-field theory fails in low dimensions: it ignores the fluctuations that matter most.
+
+> **Key Intuition.** The transfer matrix converts the partition function into a trace of a matrix power: $Z = \mathrm{Tr}(T^N)$. In the thermodynamic limit, only the largest eigenvalue matters. If the largest eigenvalue is analytic (no singularity), there is no phase transition. In 1D, the largest eigenvalue is always smooth — so there is no phase transition at finite temperature. Entropy always wins over energy in one dimension.
+
+> **Challenge.** For the 1D Ising model with $h = 0$, compute the average energy per spin $\langle E \rangle / N = -\partial \ln \lambda_+ / \partial \beta$. You should get $-J\tanh(\beta J)$. Check that this interpolates between $0$ (high $T$) and $-J$ (low $T$). Does it make physical sense?
+
+---
+
+*We solved the one-dimensional case exactly — beautiful, but it has no phase transition. In real life, things are higher-dimensional and messy. So now we zoom out and ask a much deeper question: what do all critical points have in common, regardless of the system? That is the subject of critical phenomena and universality.*

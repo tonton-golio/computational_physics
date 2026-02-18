@@ -1,5 +1,17 @@
 # Optimization Methods
+*Finding the best answer when "best" is all you've got*
+
+> *The quasi-Newton ideas from Lesson 05 (Broyden) show up again here as BFGS — the same trick of building up curvature knowledge step by step, but now for finding minima instead of zeros.*
+
 ## Non-linear Optimization
+
+### The party in the dark
+
+Imagine you're at a party in a pitch-dark room and you're trying to find the coldest spot (next to the air conditioning). You can feel the temperature where you're standing, and maybe you can feel which direction is cooler. That's gradient descent — just follow the chill.
+
+But what if the room has multiple cold spots? You might get stuck in a corner that's cool but not the *coolest*. That's a local minimum. Now imagine the room is full of people, all searching independently, and they shout to each other when they find somewhere cold. That's metaheuristic optimization — collective exploration beats individual greedy search.
+
+The big question is always: **How much do you know about the landscape, and how much can you afford to explore?**
 
 ## When to use what:
 
@@ -16,21 +28,77 @@
 
 2. Slow function evaluations
    1. Low to medium dimensions: If the energy landscape is simple, BFGS. Even if you have a complicated energy landscape, your search area is small enough that you can use BFGS with exploration.
-   2. High dimensions: Simple energy landscape, use conjugate gradients. When it's expensive to evaluate the function, and you're in a high-dimensional complex landscape, the search space is too big for you to get anywhere. Here you need to think, and tailor yourr solution to fit your problem. Generally, you can try to use some sort of symmetry or structrue of your problem and then use a metaheuristic to guide your solutions
+   2. High dimensions: Simple energy landscape, use conjugate gradients. When it's expensive to evaluate the function, and you're in a high-dimensional complex landscape, the search space is too big for you to get anywhere. Here you need to think, and tailor your solution to fit your problem. Generally, you can try to use some sort of symmetry or structure of your problem and then use a metaheuristic to guide your solutions
+
+> **You might be wondering...** "Why can't I just use gradient descent for everything?" Because gradient descent is like always walking downhill in the steepest direction — it zigzags in narrow valleys and takes forever to converge. BFGS and conjugate gradients are smarter: they learn the shape of the valley and take much better steps.
+
+## BFGS (Broyden-Fletcher-Goldfarb-Shanno)
+
+BFGS is a quasi-Newton method for minimizing $f:\mathbb{R}^n\to\mathbb{R}$. Newton's method for optimization uses the Hessian $H$ to find the step:
+
+$$H_k \Delta x_k = -\nabla f(x_k)$$
+
+*This says: the Hessian tells you the curvature of the landscape, and Newton uses it to jump directly to the bottom of the local bowl. But computing the full Hessian is expensive.*
+
+Computing the full Hessian is expensive ($O(n^2)$ storage, $O(n^3)$ to solve). BFGS builds an approximation $B_k \approx H_k^{-1}$ using only gradient information, similar to how Broyden's method approximates the Jacobian.
+
+**BFGS update rule:** Given step $s_k = x_{k+1} - x_k$ and gradient change $y_k = \nabla f(x_{k+1}) - \nabla f(x_k)$:
+
+$$B_{k+1} = \left(I - \frac{s_k y_k^T}{y_k^T s_k}\right) B_k \left(I - \frac{y_k s_k^T}{y_k^T s_k}\right) + \frac{s_k s_k^T}{y_k^T s_k}$$
+
+*This says: update your curvature estimate using the step you just took and how much the gradient changed. Each step teaches you a bit more about the shape of the landscape.*
+
+This is a rank-2 update (two outer products), so each step costs $O(n^2)$ instead of $O(n^3)$.
+
+**Algorithm — a numbered story:**
+1. **Start ignorant:** Set $B_0 = I$ (pretend the landscape is a simple bowl)
+2. **Feel the slope:** Compute search direction $\Delta x_k = -B_k \nabla f(x_k)$
+3. **Walk carefully:** Line search to find step size $\alpha_k$ along $\Delta x_k$ (Wolfe conditions)
+4. **Take the step:** Update $x_{k+1} = x_k + \alpha_k \Delta x_k$
+5. **Learn from the step:** Update $B_{k+1}$ using the formula above
+6. **Repeat** until $\Vert \nabla f \Vert < \text{tol}$
+
+BFGS achieves **superlinear convergence** near a minimum and works well up to medium dimensions (~100). Beyond that, storing the $n\times n$ matrix $B_k$ becomes prohibitive.
+
+**L-BFGS** (limited-memory BFGS) avoids storing the full matrix by keeping only the last $m$ pairs $(s_k, y_k)$ and reconstructing the matrix-vector product implicitly. This reduces storage from $O(n^2)$ to $O(mn)$ and works up to millions of dimensions, though it converges somewhat slower than full BFGS.
+
+## Conjugate Gradient Method
+
+For high-dimensional problems where even $O(n^2)$ storage is too much, the conjugate gradient (CG) method uses only $O(n)$ storage by maintaining just a search direction vector.
+
+**Key idea:** Instead of steepest descent (which zigzags), choose search directions that are _conjugate_ with respect to the Hessian: $d_i^T H d_j = 0$ for $i \neq j$. This guarantees that progress made in one direction is not undone by later steps.
+
+*Think of it like this: if steepest descent is a drunk stumbling downhill (zigzagging back and forth across a valley), conjugate gradients is a sober hiker who remembers where they've already been and never backtracks.*
+
+**Nonlinear CG (Fletcher-Reeves):**
+1. **Start steep:** Set initial direction $d_0 = -\nabla f(x_0)$
+2. **Slide downhill:** Line search to find $\alpha_k$ that minimizes $f(x_k + \alpha_k d_k)$
+3. **Take the step:** $x_{k+1} = x_k + \alpha_k d_k$
+4. **New gradient:** $g_{k+1} = \nabla f(x_{k+1})$
+5. **Stay conjugate:** $\beta_{k+1} = \frac{g_{k+1}^T g_{k+1}}{g_k^T g_k}$
+6. **New direction:** $d_{k+1} = -g_{k+1} + \beta_{k+1} d_k$
+
+The Polak-Ribiere variant uses $\beta_{k+1} = \frac{g_{k+1}^T(g_{k+1}-g_k)}{g_k^T g_k}$ instead, which often performs better in practice.
+
+CG converges slower than BFGS per iteration, but each iteration is $O(n)$ instead of $O(n^2)$, making it the method of choice for high-dimensional problems (up to millions of dimensions).
+
+> **You might be wondering...** "If conjugate gradients only uses $O(n)$ storage and works in millions of dimensions, why not always use it?" Because BFGS converges faster per step — it has more information (the approximate Hessian). It's a classic speed-memory tradeoff.
 
 ## Metaheuristics
 
-_Algorithm:_ Computatoinal metho with guaranteed correct result after finite steps.
+_Algorithm:_ A computational method with a guaranteed correct result after a finite number of steps.
 
 _Heuristic:_ The same as an algorithm, but with no guarantees.
 
-An algorithm has 2 guarantees: it gives you a "correct" result (as per your definition of correct, we were using tolerance to decide that), and it happens after a finite number of steps. A heuristic doesn't guarantee either.
+An algorithm has 2 guarantees: it gives you a "correct" result (as per your definition of correct; for optimization, this could mean finding a local minimum within some tolerance), and it happens after a finite number of steps. A heuristic doesn't guarantee either.
 
 _Metaheuristic:_ A scheme for building heuristics. It's a framework where you have some overall structure (from your problem), then you take your metaheuristic scheme, tailor it to your problem, and then you produce a heuristic that you can run to get good answers for your problem
 
 ## Simulated Annealing:
 
 Inspired by physical processes: annealing is when you let something cool slowly in order to get the correct hardened structure (in glass, metal, etc). 'Hardening' means that you find a position of atoms that minimizes the energy.
+
+*Think of it as shaking a box of balls on a bumpy surface. At high temperature (lots of shaking), balls jump out of shallow dips and explore widely. As you cool down (less shaking), they settle into the deepest valleys.*
 
 For minimizing $f:\mathbb{R}^n\to\mathbb{R}$ (maps from the high dimensional space to a scalar energy value):
 
@@ -39,11 +107,13 @@ For minimizing $f:\mathbb{R}^n\to\mathbb{R}$ (maps from the high dimensional spa
 * Gradually cool it down to 0 K
 
 In each step:
-1. Perturn $x$ by a random motion $\Delta x$
+1. Perturb $x$ by a random motion $\Delta x$
 2. Let $\Delta E=(f(x+\Delta x)-f(x))\gamma$, where $\gamma$ is an optional energy unit.
 3. Define a _transition probability_: $P(T, \Delta E) = e^{\Delta E/k_BT}$
 4. Call a random number generator to get an $r\in[0,1]$ and accept new step if $P(T, \Delta E)\geq r$
 5. Cool temperature: $T_{k+1} = \alpha T_k$
+
+*The trick: sometimes accept a *worse* solution (uphill step) with probability that decreases as you cool. This lets you escape local minima early on, then settle into the global minimum as the temperature drops.*
 
 ## Particle Swarm Optimizations
 
@@ -63,17 +133,17 @@ The attraction term ($\alpha$) is something that we must decide for ourselves. F
 Note: when programming: **don't** make loops over $i$ and $j$: do 2.2. like
 ```python
 fs = array([f(x) for x in xs])
-F = fs[:, np.newaxis] - fs[np.newaxis, :]
+F = fs[:, np.newaxis] - fs[np.newaxis, :]   # all pairwise energy differences at once
 ```
 Similarly for 3.
 ```python
-Phi =(1-np.sign(F))/2
+Phi = (1 - np.sign(F)) / 2                  # who's better than whom?
 ```
 And for 4.
 ```python
-X += np.sum(alpha[:,:,np.newaxis]*phi[:,:,np.newaxis]*d, axis=1)
+X += np.sum(alpha[:,:,np.newaxis] * phi[:,:,np.newaxis] * d, axis=1)  # swarm update
 ```
-We use newaxis in order to math $\alpha$ and $\phi$ with $d$, which is a rank 3 tensor.
+We use newaxis in order to match $\alpha$ and $\phi$ with $d$, which is a rank 3 tensor.
 
 Note that $\delta$, the free will step, can also be tweaked. The simplest thing to do is to use brownian motion: you get something that explores a local area really well, but doesn't go very far out. If you use the Levy distribution instead of the gaussian, you get a combination of local exploration with (sometimes) big jumps to a new place.
 
@@ -84,6 +154,14 @@ Note that $\delta$, the free will step, can also be tweaked. The simplest thing 
 1. **Representation:** A genetic code
 2. **Mating:** Processes for splitting and recombining genomes
 3. **Selection Pressure:** Who, and whose offspring, make up the next generation?
-4. **Mutation:** Radom perturbations (to get somewhere new)
+4. **Mutation:** Random perturbations (to get somewhere new)
 
 Ideas $f:\mathbb{R}^{3N}\to\mathbb{R}$ representing $N$ particle position in space $\mathbb{R}^3$
+
+> **Challenge:** Implement simulated annealing in 20 lines of Python. Minimize the Rastrigin function $f(x) = 10n + \sum(x_i^2 - 10\cos(2\pi x_i))$ in 2D. Start at temperature $T=100$, cool with $\alpha=0.999$. Plot the path — watch it jump around at first, then settle down.
+
+---
+
+**What we just learned in one sentence:** BFGS learns the landscape's curvature as it goes, conjugate gradients work in huge dimensions with tiny memory, and metaheuristics let you escape local minima by embracing randomness.
+
+**What's next and why it matters:** All these methods have been about solving equations and finding optima. But sometimes the most important thing about a matrix isn't how to solve it — it's what its *eigenvalues* reveal about the system's personality. That's next.

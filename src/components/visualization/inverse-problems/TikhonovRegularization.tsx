@@ -2,6 +2,8 @@
 
 import React, { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
+import { Slider } from '@/components/ui/slider';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -118,6 +120,7 @@ export default function TikhonovRegularization({ id }: SimulationProps) { // esl
   const [epsExpMin, setEpsExpMin] = useState(-13);
   const [epsExpMax, setEpsExpMax] = useState(-9);
   const [nEps, setNEps] = useState(16);
+  const { mergeLayout } = usePlotlyTheme();
 
   const result = useMemo(() => {
     // Measurement positions (similar to the old gravdata)
@@ -184,32 +187,28 @@ export default function TikhonovRegularization({ id }: SimulationProps) { // esl
   }, [nDepthCells, epsExpMin, epsExpMax, nEps]);
 
   return (
-    <div className="w-full bg-[#151525] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-white">Tikhonov Regularization: Epsilon Sweep</h3>
-      <p className="text-gray-400 text-sm mb-4">
+    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
+      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Tikhonov Regularization: Epsilon Sweep</h3>
+      <p className="text-[var(--text-muted)] text-sm mb-4">
         Visualize how the regularization parameter epsilon affects the recovered density profile.
         Small epsilon yields noisy solutions (overfitting); large epsilon yields overly smooth solutions (underfitting).
       </p>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
         <div>
-          <label className="text-gray-300 text-xs">Depth cells: {nDepthCells}</label>
-          <input type="range" min={8} max={40} step={1} value={nDepthCells}
-            onChange={(e) => setNDepthCells(parseInt(e.target.value))} className="w-full" />
+          <label className="text-[var(--text-muted)] text-xs">Depth cells: {nDepthCells}</label>
+          <Slider min={8} max={40} step={1} value={[nDepthCells]} onValueChange={([v]) => setNDepthCells(v)} />
         </div>
         <div>
-          <label className="text-gray-300 text-xs">log10(eps_min): {epsExpMin}</label>
-          <input type="range" min={-15} max={-5} step={1} value={epsExpMin}
-            onChange={(e) => setEpsExpMin(parseInt(e.target.value))} className="w-full" />
+          <label className="text-[var(--text-muted)] text-xs">log10(eps_min): {epsExpMin}</label>
+          <Slider min={-15} max={-5} step={1} value={[epsExpMin]} onValueChange={([v]) => setEpsExpMin(v)} />
         </div>
         <div>
-          <label className="text-gray-300 text-xs">log10(eps_max): {epsExpMax}</label>
-          <input type="range" min={-10} max={0} step={1} value={epsExpMax}
-            onChange={(e) => setEpsExpMax(parseInt(e.target.value))} className="w-full" />
+          <label className="text-[var(--text-muted)] text-xs">log10(eps_max): {epsExpMax}</label>
+          <Slider min={-10} max={0} step={1} value={[epsExpMax]} onValueChange={([v]) => setEpsExpMax(v)} />
         </div>
         <div>
-          <label className="text-gray-300 text-xs">Epsilon steps: {nEps}</label>
-          <input type="range" min={5} max={30} step={1} value={nEps}
-            onChange={(e) => setNEps(parseInt(e.target.value))} className="w-full" />
+          <label className="text-[var(--text-muted)] text-xs">Epsilon steps: {nEps}</label>
+          <Slider min={5} max={30} step={1} value={[nEps]} onValueChange={([v]) => setNEps(v)} />
         </div>
       </div>
 
@@ -221,18 +220,15 @@ export default function TikhonovRegularization({ id }: SimulationProps) { // esl
             y: result.epsValues.map(e => e.toExponential(1)),
             type: 'heatmap' as const,
             colorscale: 'Inferno',
-            colorbar: { title: { text: 'density' }, tickfont: { color: '#9ca3af' } },
+            colorbar: { title: { text: 'density' } },
           }]}
-          layout={{
+          layout={mergeLayout({
             title: { text: 'Solutions m(depth) for each epsilon' },
-            xaxis: { title: { text: 'Depth index' }, color: '#9ca3af' },
-            yaxis: { title: { text: 'epsilon' }, color: '#9ca3af' },
+            xaxis: { title: { text: 'Depth index' } },
+            yaxis: { title: { text: 'epsilon' } },
             height: 380,
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(15,15,25,1)',
-            font: { color: '#9ca3af' },
             margin: { t: 40, b: 50, l: 80, r: 20 },
-          }}
+          })}
           config={{ displayModeBar: false }}
           style={{ width: '100%' }}
         />
@@ -245,22 +241,19 @@ export default function TikhonovRegularization({ id }: SimulationProps) { // esl
               type: 'scatter' as const,
               mode: 'text+lines+markers' as const,
               textposition: 'top right',
-              textfont: { size: 8, color: '#9ca3af' },
+              textfont: { size: 8 },
               marker: { color: result.epsValues.map((_, i) => i), colorscale: 'Viridis', size: 8 },
               line: { color: 'rgba(255,255,255,0.3)' },
               name: 'L-curve',
             },
           ]}
-          layout={{
+          layout={mergeLayout({
             title: { text: 'L-Curve (Residual vs Model Norm)' },
-            xaxis: { title: { text: '||d_obs - Gm||' }, type: 'log', color: '#9ca3af' },
-            yaxis: { title: { text: '||m||' }, type: 'log', color: '#9ca3af' },
+            xaxis: { title: { text: '||d_obs - Gm||' }, type: 'log' },
+            yaxis: { title: { text: '||m||' }, type: 'log' },
             height: 380,
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(15,15,25,1)',
-            font: { color: '#9ca3af' },
             margin: { t: 40, b: 50, l: 60, r: 20 },
-          }}
+          })}
           config={{ displayModeBar: false }}
           style={{ width: '100%' }}
         />
@@ -286,21 +279,18 @@ export default function TikhonovRegularization({ id }: SimulationProps) { // esl
             opacity: 0.7,
           })),
         ]}
-        layout={{
+        layout={mergeLayout({
           title: { text: 'Selected Solutions vs True Model' },
-          xaxis: { title: { text: 'Depth index' }, color: '#9ca3af' },
-          yaxis: { title: { text: 'Density anomaly' }, color: '#9ca3af' },
+          xaxis: { title: { text: 'Depth index' } },
+          yaxis: { title: { text: 'Density anomaly' } },
           height: 350,
-          paper_bgcolor: 'rgba(0,0,0,0)',
-          plot_bgcolor: 'rgba(15,15,25,1)',
-          font: { color: '#9ca3af' },
-          legend: { bgcolor: 'rgba(0,0,0,0.3)', x: 0.7, y: 0.98 },
+          legend: { x: 0.7, y: 0.98 },
           margin: { t: 40, b: 50, l: 60, r: 20 },
-        }}
+        })}
         config={{ displayModeBar: false }}
         style={{ width: '100%' }}
       />
-      <p className="text-gray-500 text-xs mt-3">
+      <p className="text-[var(--text-soft)] text-xs mt-3">
         The L-curve shows the trade-off between data misfit and model complexity. The corner of the L-curve indicates the optimal regularization parameter.
         Precision increases as resolution is refined, but too little regularization amplifies noise.
       </p>

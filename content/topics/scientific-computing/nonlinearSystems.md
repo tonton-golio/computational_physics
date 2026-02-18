@@ -1,67 +1,32 @@
 # Nonlinear Systems
+*Newton goes to higher dimensions and brings friends*
+
+> *Everything we learned about Newton's method in 1D carries over — but now the derivative is a Jacobian matrix, and we solve a linear system at every step. Remember Lesson 02? You'll need it here.*
+
 ## Nonlinear solvers
 
+## Fixed point iteration (Recap)
 
-## Fixed point iteration equation solvers (Recap)
+Recall from the previous page: we can transform $f(x)=0$ to $g(x)=x$ and iterate $x_{k+1} = g(x_k)$. The key results were:
 
-We can transform $f(x)=0$ to $g(x)=x$ in multiple ways, but we need to pick one that doesn't blow up in our face. We can converge to our solution with $x_{k+1} = g(x_k)$. Solutions are $x^* = g(x^*)$
+* If $|g'(x^*)| < 1$, $g$ is a contraction near $x^*$ and we get **linear convergence**: $|e_{k+1}| \leq c^k |e_0|$
+* If $g'(x^*) = 0$, we get **quadratic convergence**: $|e_{k+1}| \leq \bar{c}^k |e_0|^{2^k}$
 
-This doesn't require anything to be one dimensional, it holds in higher dimensional space as well.
-
-First, let's suppose $|g'(x)| \leq c \lt 1$ on a ball $k_\delta$ of radius $\delta$.
-
-$$ \Vert e_{x_k + 1}\Vert = \Vert x_{k+1}-x^* \Vert$$
-$$ = \Vert x_{k+1}-g(x^*) \Vert$$
-$$ = \Vert g(x_k)-g(x^*) \Vert$$
-
-Because of the _mean value theorem_, there exists an $x' \in [x_k, x^*]$
-
-$$ = \Vert g'(x')(x_k - x^*) \Vert$$
-$$ \leq \Vert g'(x')\Vert\,\Vert(x_k - x^*) \Vert $$
-
-If $x_k \in k_\delta:$
-
-$$ \leq c \,\Vert(x_k - x^*) \Vert $$
-$$ \leq c^k \,\Vert(x_0 - x^*) \Vert $$
-
-We can build the ball $k_\delta$ from continuity of $g'$:
-
-**Continuity**: A function $f: X\to Y$ is continuous if for any $\epsilon>0 \quad \exists \quad \delta >0$ such that
-$$\Vert x - x' \Vert \lt \delta \implies \Vert f(x) - f(x') \Vert < \epsilon$$
-
-Assume $|g'(x^*)| <1$, then
-* Pick $0 < \epsilon<1-|g'(x^*)|$ and set $c = |g'(x^*)| + \epsilon$
-* Then by continuity of $g'$ at $x^*$, there is a $\delta>0$ such that $\Vert x - x' \Vert \lt \delta \implies \Vert f(x) - f(x') \Vert < \epsilon$
-* $\Vert g'(x) \Vert - \Vert g'(x^*)\Vert\lt\Vert g'(x) - g'(x^*)\Vert$ so $\Vert g'(x) \Vert \leq \Vert g'(x^*)\Vert + c$, where $c<1 \forall x\in k_\delta$
-
-## Constructing quadratic convergence:
-
-If $g'(x^*) = 0$ then the second term in the taylor expanion is 0
-
-$$ g(x) = g(x^*)+g'(x^*)(x-x^*)+\frac{g''(x^*)(x-x^*)^2}{2} $$
-
-By continuity, we can find a ball $k_\delta$ for which $\Vert g''(x)\Vert <\bar{c}$, where $\bar{c}=\Vert g''(x^*)\Vert + \epsilon$.
-
-$$ \Vert e_{k+1} \Vert = \Vert g(x_k)-g(x^*)\Vert $$
-$$ \leq \bar{c}^2\Vert x_k - x^* \Vert^2  $$
-$$ \leq \bar{c}^k\Vert x_0 - x^* \Vert^{2^k}  $$
-
-**Requirements for g:**
-
-* $|g'(x^*)|<1$ at all solutiond $x^*$
-* if $0<|g'(x^*)|<1$, we get linear convergence: $\vert e_{k+1} \vert\leq c^k | e_0|$
-* if $0=|g'(x^*)|$, we get quadratic convergence: $\vert e_{k+1} \vert\leq \bar{c}^k | e_0|^{2^k}$
+This all generalizes directly to higher dimensions, replacing $|g'|$ with $\Vert g' \Vert$ (the Jacobian norm).
 
 
 ## Newton's method
 
 A quadratically convergent fixed point iteration solver. Take a point, take the tangent of the curve at that point, your new point is the tangent's x-intercept. Intuition: find zero for linear approximation, set as next $x$.
 
-Talor expand:
+Taylor expand:
 $$ f(x_{k+1}) = f(x_k) + f'(x_k) (x_{k+1}-x_k) + \mathcal{O}(\vert x_{k+1}-x_k\vert^2)$$
 $$ \approx f(x_k) + f'(x_k) (x_{k+1}-x_k)$$
 $$ 0 \approx f(x_k) + f'(x_k) \Delta x_{k+1}$$
 $$ f'(x_k) \Delta x_{k+1} = f(x_k)$$
+
+*This says: at each step, pretend the world is linear (use the tangent), solve the linear problem to find the step, then take that step.*
+
 Remember the above line, cause we'll use it in higher dimensions as it's solving linear systems
 $$ \Delta x_k = -\frac{f(x_k)}{f'(x_k)}  $$
 This works in 1d, but is not general because we're dividing by a matrix (the jacobian) and not a number
@@ -81,13 +46,16 @@ These are methods that try to replicate the wonderful properties of Newton's met
 
 **Method**: Use secant (finite difference) instead of tangent (derivative).
 
-$$f'(x) \\approx \\frac{f(x_k) - f(x_{k-1})}{x_k - x_{k-1}}$$
-In 1D, we have the following equation for $\\Delta x$
-$$\\Delta x_{k+1} = -\\frac{f(x_k)}{\\hat{f}'(x_k)}$$
+$$f'(x) \approx \frac{f(x_k) - f(x_{k-1})}{x_k - x_{k-1}}$$
+
+*This says: instead of knowing the exact slope, estimate it from the last two points. You lose a bit of convergence speed but save a huge amount of computation.*
+
+In 1D, we have the following equation for $\Delta x$:
+$$\Delta x_{k+1} = -\frac{f(x_k)}{\hat{f}'(x_k)}$$
 where
-$$\\hat{f}'(x_k) = \\frac{f(x_k) - f(x_{k-1})}{x_k - x_{k-1}}$$
+$$\hat{f}'(x_k) = \frac{f(x_k) - f(x_{k-1})}{x_k - x_{k-1}}$$
 For higher dimensions, we want to write it like
-$$ \\hat{f}'(x_k) \\Delta x_{k+1} = - f(x_k)$$
+$$ \hat{f}'(x_k) \Delta x_{k+1} = - f(x_k)$$
 Cause we'll solve a linear system instead
 
 ## Interactive Visualizations
@@ -130,21 +98,9 @@ import Himmelblau2D from '@/components/visualization/nonlinear-equations/Himmelb
 
 For secant methods like Broyden/BFGS, paths approximate Newton without exact derivs/Hessians.
 
+## Going to higher dimensions
 
-These are methods that try to replicate the wonderful properties of Newton's method, but without having to evaluate the derivative. In higher dimensions, you don't want to be evaluating the derivative cause it's a massive matrix.
-
-**Method**: Use secant (finite difference) instead of tangent (derivative).
-
-$$f'(x) \approx \frac{f(x_k) - f(x_{k-1})}{x_k - x_{k-1}}$$
-In 1D, we have the following equation for $\Delta x$
-$$\Delta x_{k+1} = -\frac{f(x_k)}{\hat{f}'(x_k)}$$
-where
-$$\hat{f}'(x_k) = \frac{f(x_k) - f(x_{k-1})}{x_k - x_{k-1}}$$
-For higher dimensions, we want to write it like
-$$ \hat{f}'(x_k) \Delta x_{k+1} = - f(x_k)$$
-Cause we'll solve a linear system instead
-
-## Going to higher dimensions:
+Imagine you're a blind mountain climber feeling the slope under your boots. In one dimension, you only feel "uphill" or "downhill." But in $n$ dimensions, the slope has a direction — it's a vector (the gradient), and the rate of change along any particular direction is the directional derivative. The Jacobian matrix collects all these directional sensitivities into one object.
 
 Notation: $f: \mathbb{R}\to\mathbb{R}$, $F: \mathbb{R}^n\to\mathbb{R}^n$
 
@@ -156,28 +112,37 @@ n-dimensional case:
 $$F(x_{k+1}) = F(x_k + \Delta x_{k+1})$$
 $$F(x_{k+1}) = F(x_k) + F'(x_k)\Delta x_{k+1} + \mathcal{O}(|\Delta x_{k+1}|^2)$$
 
+*Here $F'(x_k)$ is the Jacobian — an $n \times n$ matrix of all partial derivatives. Each row tells you how one output component changes with all the inputs.*
+
 To go to the next step, we don't divide by $f'(x)$ like we do in the 1D case, but instead we solve the linear system
 $$F'(x_k) \Delta x_{k+1} = - F(x)$$
 where we know the first and last terms and want to find $\Delta x_{k+1}$
 
+*This is the key connection: each Newton step in n dimensions requires solving a linear system (Lesson 02). The Jacobian plays the role of the coefficient matrix, and $-F(x_k)$ is the right-hand side.*
+
 In the secant method, we just use $\hat{F}'(x)$ instead. This raises an extra problem: We need to find a good $\hat{F}'$
+
+> **You might be wondering...** "How expensive is computing the Jacobian?" For $n$ unknowns, the Jacobian has $n^2$ entries. If each partial derivative requires a function evaluation, that's $n$ extra evaluations per step (using finite differences). For $n = 1000$, that's 1000 extra function evaluations — which is why quasi-Newton methods that avoid this cost are so valuable.
 
 ## Broyden's Secant Method
 
 Secant equation:
 $$\hat{F}'_{k+1} \Delta x_k = \Delta F_k$$
 
-We know $\Delta x_k$ and $\Delta F'_k$ from step k.
+We know $\Delta x_k$ and $\Delta F_k$ from step $k$.
 
-The problem: we have $n^2$ unknowns and 1 equation. What do we do?
+The problem: we have $n^2$ unknowns (entries of $\hat{F}'_{k+1}$) but only $n$ equations (the secant equation). What do we do?
 
-We need to determine some $B_{k+1}$ that satisfies the secant equation.
+We need to determine some $B_{k+1}$ that satisfies the secant equation $B_{k+1} \Delta x_k = \Delta y_k$, where $\Delta y_k = \Delta F_k$.
 1. "Absorb" $\Delta x_k$, and "Produce" $\Delta y_k$.
    $$\left( \Delta y_k \frac{\Delta x_k^T}{\Vert\Delta x_k \Vert^2}\right)\Delta x = \Delta y_k $$
    The left part of the big bracket produces $\Delta y_k$, the right part eliminates $\Delta x_k$
 
 2. Decide what $B_{k+1}$ does on the rest of $\mathbb{R}^n$. Anything that satisfies the secant equation will do 1., now we're into the arbitrary stuff. Broyden decides to let it act on the rest of the space in the same way as before (i.e, same as $B_k$). In math,
    $$ B_{k+1} = \Delta y_k \frac{\Delta x_k^T}{\Vert \Delta x_k\Vert^2} + B_k\left( I-P_{\Delta x_k}\right)$$
+
+   *This says: update the Jacobian approximation along the direction we just stepped in (because we have new info there), and leave it unchanged in every other direction (because we don't know anything new there). Minimal change, maximum information.*
+
    $\left( I-P_{\Delta x_k}\right)$ is the rest of the space
 
 ### How to compute action on orthogonal component to $\Delta x$
@@ -186,9 +151,7 @@ $$P_{\Delta x_k} = \frac{\Delta x_k \Delta x_k^T}{\Vert \Delta x_k \Vert^2} $$
 $$ \implies I = P_{\Delta x_k} = I - \frac{\Delta x_k \Delta x_k^T}{\Vert \Delta x_k \Vert^2} $$
 In conclusion:
    $$ B_{k+1} = \Delta y_k \frac{\Delta x_k^T}{\Delta x_k^T \Delta x_k} + B_k - B_k\left( \frac{\Delta x_k \Delta x_k^T}{\Vert \Delta x_k \Vert^2} \right)$$
-Note: verify the derivation above carefully before using.
-
-It really looks like
+Simplifying, this becomes:
 
 $$ B_k + \frac{\Delta y_k \Delta x_k^T}{\Vert \Delta x_k\Vert^2} - B_k \frac{\Delta x_k \Delta x_k^T}{\Vert \Delta x_k\Vert^2} $$
 
@@ -203,9 +166,11 @@ Let's build $\tilde{B}_{k+1}$ (which does the effect of the inverse, I think?) b
 
 What do we start out with? We could start out with an approximation to the Jacobian, but there's no reason to: if we start out with the identity, we'll get a reasonable step that'll converge slowly, and as we gain information it'll get better and better.
 
+> **You might be wondering...** "Why start with the identity instead of a better initial guess?" Because it works! The identity gives you a gradient-descent-like first step. After a few iterations, Broyden's update will have learned enough about the curvature that it starts to look like the real Jacobian. It's like learning to drive — you start cautiously and get bolder as you learn the road.
+
 ## n-D to 1-D: Constrained equations on a curve
 
-If you have a function $F: \mathbb{R}^m\to\mathbb{R}^n$ and $\gamma: \mathbb{R}\to\mathbb{R}^m$. ($\gamma$ is a parameterized curve in the highere dimensional space).
+If you have a function $F: \mathbb{R}^m\to\mathbb{R}^n$ and $\gamma: \mathbb{R}\to\mathbb{R}^m$. ($\gamma$ is a parameterized curve in the higher dimensional space).
 
 Compose $F \circ \gamma: \mathbb{R}\to\mathbb{R}^n, \qquad F(\gamma(t))\in\mathbb{R}^n$.
 
@@ -219,4 +184,10 @@ where $d$ is a vector with the direction of the line.
 $$\gamma(t)' =d$$
 $$\implies F_\gamma (t) = F(\gamma(t))^T d$$
 
+> **Challenge:** Implement 2D Newton's method: solve $F(x,y) = (x^2 + y^2 - 1, \; x - y) = 0$ (intersection of circle and line). Start from $(2, 2)$ and watch it converge in ~5 steps. Print the Jacobian at each step to see how it guides you.
 
+---
+
+**What we just learned in one sentence:** Newton's method in $n$ dimensions solves a linear system at every step using the Jacobian, and Broyden's method fakes the Jacobian using only the information you pick up along the way.
+
+**What's next and why it matters:** Finding zeros is one thing, but what if you want to find the *minimum* of a function? That's optimization — and it turns out the same quasi-Newton ideas (like BFGS) become the workhorses of machine learning and scientific computing.

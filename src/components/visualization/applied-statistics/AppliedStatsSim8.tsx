@@ -2,6 +2,8 @@
 
 import React, { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
+import { Slider } from '@/components/ui/slider';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -19,6 +21,7 @@ export default function AppliedStatsSim8({ }: SimulationProps) {
   const [L, setL] = useState(5);
   const [sigW, setSigW] = useState(0.3);
   const [sigL, setSigL] = useState(0.3);
+  const { mergeLayout } = usePlotlyTheme();
 
   const result = useMemo(() => {
     const nSim = 2000;
@@ -72,37 +75,37 @@ export default function AppliedStatsSim8({ }: SimulationProps) {
   }, [W, L, sigW, sigL]);
 
   return (
-    <div className="w-full bg-[#151525] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-white">Error Propagation: Area of a Rectangle</h3>
-      <p className="text-sm text-gray-300 mb-4">
+    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
+      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Error Propagation: Area of a Rectangle</h3>
+      <p className="text-sm text-[var(--text-muted)] mb-4">
         Consider a rectangle with width W and length L, each measured with Gaussian uncertainty.
         The area A = W * L inherits the propagated error. The left plot shows the uncertain edges
         of the rectangle; the right plot shows the resulting distribution of the area.
       </p>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
         <div>
-          <label className="text-sm text-gray-400">W: {W}</label>
-          <input type="range" min={1} max={10} step={1} value={W}
-            onChange={e => setW(+e.target.value)} className="w-full" />
+          <label className="text-sm text-[var(--text-muted)]">W: {W}</label>
+          <Slider min={1} max={10} step={1} value={[W]}
+            onValueChange={([v]) => setW(v)} />
         </div>
         <div>
-          <label className="text-sm text-gray-400">sigma_W: {sigW.toFixed(2)}</label>
-          <input type="range" min={0.01} max={1.5} step={0.01} value={sigW}
-            onChange={e => setSigW(+e.target.value)} className="w-full" />
+          <label className="text-sm text-[var(--text-muted)]">sigma_W: {sigW.toFixed(2)}</label>
+          <Slider min={0.01} max={1.5} step={0.01} value={[sigW]}
+            onValueChange={([v]) => setSigW(v)} />
         </div>
         <div>
-          <label className="text-sm text-gray-400">L: {L}</label>
-          <input type="range" min={1} max={10} step={1} value={L}
-            onChange={e => setL(+e.target.value)} className="w-full" />
+          <label className="text-sm text-[var(--text-muted)]">L: {L}</label>
+          <Slider min={1} max={10} step={1} value={[L]}
+            onValueChange={([v]) => setL(v)} />
         </div>
         <div>
-          <label className="text-sm text-gray-400">sigma_L: {sigL.toFixed(2)}</label>
-          <input type="range" min={0.01} max={1.5} step={0.01} value={sigL}
-            onChange={e => setSigL(+e.target.value)} className="w-full" />
+          <label className="text-sm text-[var(--text-muted)]">sigma_L: {sigL.toFixed(2)}</label>
+          <Slider min={0.01} max={1.5} step={0.01} value={[sigL]}
+            onValueChange={([v]) => setSigL(v)} />
         </div>
       </div>
 
-      <div className="text-sm text-gray-300 mb-2">
+      <div className="text-sm text-[var(--text-muted)] mb-2">
         Simulated: A = {result.areaMean.toFixed(2)} +/- {result.areaStd.toFixed(3)} |
         Analytical sigma_A = {result.sigAAnalytical.toFixed(3)}
       </div>
@@ -135,16 +138,13 @@ export default function AppliedStatsSim8({ }: SimulationProps) {
               name: 'Nominal rect',
             },
           ]}
-          layout={{
-            title: { text: 'Rectangle with Uncertain Edges', font: { color: '#fff' } },
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(15,15,25,1)',
-            font: { color: '#9ca3af' },
+          layout={mergeLayout({
+            title: { text: 'Rectangle with Uncertain Edges' },
             margin: { t: 40, r: 20, b: 50, l: 50 },
-            xaxis: { title: { text: 'Width' }, gridcolor: '#1e1e2e' },
-            yaxis: { title: { text: 'Length' }, gridcolor: '#1e1e2e' },
-            legend: { font: { color: '#9ca3af' } },
-          }}
+            xaxis: { title: { text: 'Width' } },
+            yaxis: { title: { text: 'Length' } },
+            legend: {},
+          })}
           config={{ responsive: true, displayModeBar: false }}
           style={{ width: '100%', height: 400 }}
         />
@@ -156,16 +156,13 @@ export default function AppliedStatsSim8({ }: SimulationProps) {
             marker: { color: 'rgba(59,130,246,0.6)' },
             name: 'Area distribution',
           }]}
-          layout={{
-            title: { text: 'Area Distribution', font: { color: '#fff' } },
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(15,15,25,1)',
-            font: { color: '#9ca3af' },
+          layout={mergeLayout({
+            title: { text: 'Area Distribution' },
             margin: { t: 40, r: 20, b: 50, l: 50 },
-            xaxis: { title: { text: 'Area' }, gridcolor: '#1e1e2e' },
-            yaxis: { title: { text: 'Count' }, gridcolor: '#1e1e2e' },
+            xaxis: { title: { text: 'Area' } },
+            yaxis: { title: { text: 'Count' } },
             showlegend: false,
-          }}
+          })}
           config={{ responsive: true, displayModeBar: false }}
           style={{ width: '100%', height: 400 }}
         />

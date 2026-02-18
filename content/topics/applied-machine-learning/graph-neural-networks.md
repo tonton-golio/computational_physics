@@ -1,16 +1,29 @@
 # Graph Neural Networks
 
-Graphs represent entities and relations directly. Graph neural networks (GNNs) learn on this structure without forcing data into fixed grids.
+What if your data has friendships?
+
+Not all data fits neatly into a table or a sequence. Molecules are atoms connected by bonds. Social networks are people connected by relationships. Protein structures are amino acids connected in 3D space. In all these cases, the connections carry as much information as the entities themselves. Graph neural networks learn on this structure directly, without forcing relational data into a flat grid.
 
 ## Why graphs
-Many systems are relational:
-- molecules (atoms and bonds),
-- social and communication networks,
-- recommendation systems,
-- physical interaction graphs.
 
-## Message passing view
-A standard GNN layer aggregates neighborhood information:
+Many systems we care about are fundamentally relational:
+
+- **Molecules**: atoms are nodes, bonds are edges. Predicting molecular properties requires understanding the connectivity, not just a list of atom types.
+- **Social and communication networks**: who talks to whom shapes information flow, influence, and community structure.
+- **Recommendation systems**: users and items form a bipartite graph, and similar users connect to similar items.
+- **Physical simulations**: particles interact through local forces, forming interaction graphs.
+
+A graph $G=(V,E)$ has nodes $V$ (entities) and edges $E$ (relationships). Each node can carry a feature vector, and edges can have their own features (bond type, interaction strength, distance).
+
+## Message passing: the gossip network
+
+The central idea in GNNs is beautifully simple. Every node is gossiping with its neighbors, then updating its own diary based on what it heard.
+
+More precisely, a single GNN layer does two things:
+
+1. **Aggregate**: each node collects messages from its neighbors.
+2. **Update**: each node updates its own representation using the collected messages and its current state.
+
 $$
 m_v^{(l+1)}=\bigoplus_{u\in\mathcal{N}(v)}\phi^{(l)}(h_v^{(l)},h_u^{(l)},e_{uv})
 $$
@@ -18,16 +31,44 @@ $$
 h_v^{(l+1)}=\psi^{(l)}(h_v^{(l)},m_v^{(l+1)})
 $$
 
-Popular architectures include GCN, GraphSAGE, and GAT.
+In words: node $v$ gathers messages from all its neighbors $u \in \mathcal{N}(v)$ using a message function $\phi$. The aggregation $\bigoplus$ (sum, mean, or max) must be permutation-invariant — it should not matter what order you read the messages. Then node $v$ updates its hidden state $h_v$ using an update function $\psi$ that combines the old state with the aggregated messages.
+
+After $L$ layers of message passing, each node's representation encodes information from its $L$-hop neighborhood. One layer captures immediate neighbors; two layers capture neighbors-of-neighbors; and so on.
 
 ## GCN normalization
-For adjacency $A$:
+
+The Graph Convolutional Network (GCN) is one of the simplest and most widely used GNN variants. For adjacency matrix $A$:
+
 $$
 \tilde{A}=A+I,\quad
 H^{(l+1)}=\sigma\left(\tilde{D}^{-1/2}\tilde{A}\tilde{D}^{-1/2}H^{(l)}W^{(l)}\right)
 $$
 
+The key idea: we add self-loops ($A+I$, so each node also receives its own message), then normalize by the degree matrix $\tilde{D}$ so that high-degree nodes do not dominate simply because they have more neighbors. The result is a weighted average of neighbor features, followed by a linear transformation and nonlinearity — essentially a localized convolution on the graph.
+
+## A tiny example you can compute by hand
+
+Consider four nodes in a triangle-plus-tail graph: nodes A, B, C form a triangle, and node D connects only to C.
+
+Initial features: $h_A=[1,0]$, $h_B=[0,1]$, $h_C=[1,1]$, $h_D=[0,0]$.
+
+With a simple mean-aggregation GNN layer (no learned weights, just averaging):
+
+- Node A's neighbors are B, C. Message: mean of $[0,1]$ and $[1,1]$ = $[0.5, 1.0]$.
+- Node B's neighbors are A, C. Message: mean of $[1,0]$ and $[1,1]$ = $[1.0, 0.5]$.
+- Node C's neighbors are A, B, D. Message: mean of $[1,0]$, $[0,1]$, $[0,0]$ = $[0.33, 0.33]$.
+- Node D's neighbor is only C. Message: $[1,1]$.
+
+After one layer, each node knows about its immediate neighbors. After two layers, node D would know about A and B through C — information has propagated across the graph.
+
+## Oversmoothing: when everyone sounds the same
+
+There is a catch with stacking many GNN layers. After too many rounds of gossip, everyone ends up with the same opinion. This is **oversmoothing**: node representations converge to indistinguishable vectors as you add layers, because information has diffused uniformly across the graph. It is like a party where everyone has talked to everyone else so many times that all opinions have blended into a single consensus.
+
+In practice, most GNNs work best with 2–4 layers. Beyond that, you need architectural tricks (skip connections, normalization, or attention mechanisms) to preserve node identity.
+
 ## Interactive simulations
+
 [[simulation aml-graph-convolution-intuition]]
 
 [[simulation aml-graph-adjacency-demo]]
@@ -35,6 +76,13 @@ $$
 [[simulation aml-graph-message-passing]]
 
 ## Practical notes
-- Aggregation must be permutation-invariant.
-- Deeper vanilla GCNs can oversmooth node representations.
-- Task formulation matters: node-level, edge-level, and graph-level objectives differ.
+
+- The aggregation function must be permutation-invariant — sum, mean, and max are the standard choices.
+- Task formulation matters: node-level tasks (classify each node), edge-level tasks (predict whether an edge exists), and graph-level tasks (predict a property of the whole graph) require different readout strategies.
+- For graph-level tasks, you need a pooling step that aggregates all node representations into a single graph vector.
+
+## Check your understanding
+
+- Can you explain message passing to a friend using the gossip analogy?
+- What is the one picture in your head that shows why too many GNN layers cause oversmoothing?
+- What experiment would test whether your GNN benefits from 2 layers versus 4?

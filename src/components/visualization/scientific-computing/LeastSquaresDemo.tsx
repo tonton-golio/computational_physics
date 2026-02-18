@@ -2,6 +2,8 @@
 
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import dynamic from 'next/dynamic';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { Slider } from '@/components/ui/slider';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -26,6 +28,7 @@ export function LeastSquaresDemo({}: SimulationProps) {
   const [isAnimating, setIsAnimating] = useState(false);
   const [animStep, setAnimStep] = useState(0);
   const animRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const { mergeLayout } = usePlotlyTheme();
 
   const generateData = useCallback((s: number) => {
     const rng = seededRandom(s);
@@ -246,26 +249,19 @@ export function LeastSquaresDemo({}: SimulationProps) {
   }, [data, fitResult, showResiduals, animResult, animStep, fitDegree]);
 
   const layout = useMemo(
-    () => ({
-      paper_bgcolor: 'rgba(0,0,0,0)',
-      plot_bgcolor: 'rgba(15,15,25,1)',
-      font: { color: '#9ca3af', family: 'system-ui' },
+    () => mergeLayout({
       margin: { t: 40, r: 20, b: 50, l: 50 },
       xaxis: {
         title: { text: 'x' },
-        gridcolor: '#1e1e2e',
-        zerolinecolor: '#2d2d44',
       },
       yaxis: {
         title: { text: 'y' },
-        gridcolor: '#1e1e2e',
-        zerolinecolor: '#2d2d44',
       },
       title: { text: 'Least Squares Fitting', font: { size: 16 } },
       legend: { x: 0, y: 1, bgcolor: 'rgba(0,0,0,0)' },
       showlegend: true,
     }),
-    []
+    [mergeLayout]
   );
 
   const coeffString = useMemo(() => {
@@ -293,39 +289,37 @@ export function LeastSquaresDemo({}: SimulationProps) {
       />
 
       <div className="flex flex-wrap gap-4 items-center">
-        <label className="text-sm text-gray-400">
+        <label className="text-sm text-[var(--text-muted)]">
           Points:
-          <input
-            type="range"
+          <Slider
             min={10}
             max={100}
-            value={nPoints}
-            onChange={(e) => setNPoints(parseInt(e.target.value))}
-            className="ml-2 w-24 accent-blue-500"
+            value={[nPoints]}
+            onValueChange={([v]) => setNPoints(v)}
+            className="ml-2 w-24"
           />
-          <span className="ml-1 text-white">{nPoints}</span>
+          <span className="ml-1 text-[var(--text-strong)]">{nPoints}</span>
         </label>
 
-        <label className="text-sm text-gray-400">
+        <label className="text-sm text-[var(--text-muted)]">
           Noise:
-          <input
-            type="range"
+          <Slider
             min={0}
             max={3}
             step={0.1}
-            value={noiseLevel}
-            onChange={(e) => setNoiseLevel(parseFloat(e.target.value))}
-            className="ml-2 w-24 accent-blue-500"
+            value={[noiseLevel]}
+            onValueChange={([v]) => setNoiseLevel(v)}
+            className="ml-2 w-24"
           />
-          <span className="ml-1 text-white">{noiseLevel.toFixed(1)}</span>
+          <span className="ml-1 text-[var(--text-strong)]">{noiseLevel.toFixed(1)}</span>
         </label>
 
-        <label className="text-sm text-gray-400">
+        <label className="text-sm text-[var(--text-muted)]">
           Degree:
           <select
             value={fitDegree}
             onChange={(e) => setFitDegree(parseInt(e.target.value))}
-            className="ml-2 bg-[#151525] text-white rounded px-2 py-1"
+            className="ml-2 bg-[var(--surface-1)] text-[var(--text-strong)] rounded px-2 py-1"
           >
             <option value={1}>1 (Linear)</option>
             <option value={2}>2 (Quadratic)</option>
@@ -338,7 +332,7 @@ export function LeastSquaresDemo({}: SimulationProps) {
       <div className="flex flex-wrap gap-3">
         <button
           onClick={handleNewData}
-          className="px-4 py-2 bg-blue-600 rounded text-sm hover:bg-blue-700 text-white"
+          className="px-4 py-2 bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white rounded text-sm"
         >
           New Data
         </button>
@@ -350,28 +344,28 @@ export function LeastSquaresDemo({}: SimulationProps) {
         </button>
         <button
           onClick={() => setShowResiduals(!showResiduals)}
-          className={`px-4 py-2 rounded text-sm text-white ${showResiduals ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-gray-600 hover:bg-gray-700'}`}
+          className={`px-4 py-2 rounded text-sm ${showResiduals ? 'bg-amber-600 hover:bg-amber-700 text-white' : 'bg-[var(--surface-3)] hover:bg-[var(--border-strong)] text-[var(--text-strong)]'}`}
         >
           {showResiduals ? 'Hide' : 'Show'} Residuals
         </button>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-        <div className="bg-[#151525] rounded-lg p-3">
-          <div className="text-gray-400">Fit equation</div>
-          <div className="text-white font-mono text-xs mt-1">{coeffString}</div>
+        <div className="bg-[var(--surface-1)] rounded-lg p-3">
+          <div className="text-[var(--text-muted)]">Fit equation</div>
+          <div className="text-[var(--text-strong)] font-mono text-xs mt-1">{coeffString}</div>
         </div>
-        <div className="bg-[#151525] rounded-lg p-3">
-          <div className="text-gray-400">R-squared</div>
+        <div className="bg-[var(--surface-1)] rounded-lg p-3">
+          <div className="text-[var(--text-muted)]">R-squared</div>
           <div className="text-green-400 font-mono mt-1">{fitResult.rSquared.toFixed(6)}</div>
         </div>
-        <div className="bg-[#151525] rounded-lg p-3">
-          <div className="text-gray-400">Sum of Squared Residuals</div>
+        <div className="bg-[var(--surface-1)] rounded-lg p-3">
+          <div className="text-[var(--text-muted)]">Sum of Squared Residuals</div>
           <div className="text-yellow-400 font-mono mt-1">{fitResult.ssRes.toFixed(4)}</div>
         </div>
       </div>
 
-      <p className="text-xs text-gray-500">
+      <p className="text-xs text-[var(--text-soft)]">
         The fit is computed via the normal equations: solve A^T A c = A^T y where A is the Vandermonde matrix.
         Press &quot;Animate GD&quot; to watch gradient descent converge to the linear fit from a random initial guess.
       </p>

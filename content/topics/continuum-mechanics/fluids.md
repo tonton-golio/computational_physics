@@ -1,93 +1,109 @@
-# Fluids
+# Fluids at Rest
 
+## What Makes a Fluid a Fluid?
 
+Pick up a block of cheese and set it on the table. It holds its shape. Now pour a glass of water on the table. It spreads everywhere.
 
-## Introduction
-In physics, a fluid is a liquid, gas, or other material
-that continuously deforms (flows) under an applied shear
-stress, or external force. They have zero shear modulus,
-or, in simpler terms, are substances which cannot resist
-any shear force applied to them.
-Fluids display properties such as:
-1. Lack of resistance to permanent deformation
-2. Resisting only relative rates of deformation in a dissipative, frictional manner
-3. The ability to flow (also described as the ability to
-take on the shape of the container).
+That's the fundamental difference between solids and fluids. A solid resists being deformed — apply a shear stress and it pushes back with a restoring force, like a spring. A fluid *can't* resist shear. Apply even the tiniest shear stress and it flows. It might flow slowly (honey) or quickly (water), but it flows.
 
-These properties are typically a function of their inability to support a shear stress in static equilibrium. In
-contrast, solids respond to shear either with a spring-
-like restoring force, which means that deformations are
-reversible, or they require a certain initial stress before
-they deform (known as plasticity).
-Solids respond with restoring forces to both shear
-stresses and to normal stresses both compressive and
-tensile. In contrast, ideal fluids only respond with restoring forces to normal stresses, called pressure: fluids can
-be subjected to both compressive stress, corresponding
-to positive pressure, and to tensile stress, corresponding
-to negative pressure. Both solids and liquids also have
-tensile strengths, which when exceeded in solids makes irreversible deformation and fracture, and in liquids causes
-the onset of cavitation.
-Both solids and liquids have free surfaces, which cost
-some amount of free energy to form. In the case of solids,
-the amount of free energy to form a given unit of surface
-area is called surface energy, whereas for liquids the same
-quantity is called surface tension. The ability of liquids
-to flow results in different behaviour in response to surface tension than in solids, although in equilibrium both
-will try to minimise their surface energy: liquids tend
-to form rounded droplets, whereas pure solids tend to
-form crystals. Gases do not have free surfaces, and freely
-diffuse.
+More precisely: a **fluid** is a material with zero shear modulus. It deforms continuously under any applied shear stress. Fluids resist compression (you can't easily squeeze water into a smaller volume), but they don't resist shearing.
 
-From wikipedia.
+This means fluids respond to stress in a very particular way:
+- **Normal stress** (compression/tension) → yes, fluids push back through **pressure**.
+- **Shear stress** → no resistance in equilibrium. Any shear causes flow.
 
-## Pressure
-pressure
-
-## Equation of State
-Van de Waals
-
-## Buoyancy and Stability
-A body will exhibit the phenomena of weight, if placed in a gravitational field. This force is given as
+At rest, the only stress a fluid can sustain is pressure — equal in all directions, like being squeezed uniformly from all sides. The stress tensor for a fluid at rest is:
 $$
-\mathbf{F}_G = \int_V \rho_{body} \mathbf{g}\hspace{0.2cm}dV
-$$
-When a body is submerged into a fluid such as water or air, the pressure from that fluid will act on the surface of the body causing a buoyancy effect. The force is given as
-$$
-\mathbf{F}_B = - \oint_S p\hspace{0.2cm} d\mathbf{S}
-$$
-Putting them together reproduces Archimedes Principle:
-$$
-\mathbf{F}=\mathbf{F}_G + \mathbf{F}_B =\int_V (\rho_{body}-\rho_{fluid})\mathbf{g}\hspace{0.2cm}dV
-$$
-\emph{The force of buoyancy is equal and opposite to the weight of the displaced fluid}\\
-If the gravitational field can be assumed constant in the body, the equation simplifies to
-$$
-\mathbf{F}=\mathbf{F}_G + \mathbf{F}_B =(M_{body}-M_{fluid})\mathbf{g}_0
+\sigma_{ij} = -p \, \delta_{ij}
 $$
 
-Beyond the buoyant equilibrium, for a floating body to be in total equilibrium, there must also be a balance of moments acting on the body. Similar to above, the contribution of buoyancy and gravity can be expressed as
-$$
-\mathbf{M}_G = \int_V \mathbf{x}\times \rho_{body} \mathbf{g}\hspace{2mm}dV,\hspace{1cm}\mathbf{M}_B = \oint_S  \mathbf{x}\times (-p) \hspace{2mm}dV
-$$
-Since these must be equal to be in total equilibrium we have
-$$
-\mathbf{M}_B=-\mathbf{M}_G
-$$
-Reproducing the moment equivalent to Archimedes Principle\\
-\emph{The moment of buoyancy is equal and opposite to the moment of weight of the displaced fluid}\\
+That's it: negative pressure (compression) equally on every face of every tiny cube.
 
-In a constant gravitational field the equations simplifies by introducing the center of gravity $\mathbf{x}_G$ and the center of buoyancy $\mathbf{x}_B$ as
+## Pressure — The Weight of Everything Above
 
+What *is* pressure? At a molecular level, it's the result of billions of molecules bombarding a surface. But in the continuum picture, we don't need molecules — we just need the fact that the fluid pushes back against compression.
+
+The force on a small surface element $d\mathbf{S}$ due to pressure is:
 $$
-\mathbf{M}_G=\mathbf{x}_G\times M \mathbf{g}_0,\hspace{0.5cm}\mathbf{x}_G=\frac{1}{M}\int_V \mathbf{x}\rho_{body}\hspace{2mm}dV
-$$
-$$
-\mathbf{M}_B=-\mathbf{x}_B\times M \mathbf{g}_0,\hspace{0.5cm}\mathbf{x}_B=\frac{1}{M}\int_V \mathbf{x}\rho_{fluid}\hspace{2mm}dV
-$$
-$$
-\mathbf{M}_{total}=(\mathbf{x}_G - \mathbf{x}_B)\times M\mathbf{g}_0
+d\mathbf{F} = -p \, d\mathbf{S}
 $$
 
+The minus sign means the force points *inward* — the fluid pushes against the surface, trying to expand. The total pressure force on a body submerged in fluid is:
+$$
+\mathbf{F}_B = -\oint_S p \, d\mathbf{S}
+$$
 
-## sample headline
-sample text
+In a fluid at rest in a gravitational field, the pressure increases with depth. You've felt this in a swimming pool — your ears pop as you dive deeper. The condition for static equilibrium is:
+$$
+\nabla p = \rho \, \mathbf{g}
+$$
+
+This is the **hydrostatic equation**: pressure gradient equals body force density. For a constant-density fluid with gravity pointing down:
+$$
+p(z) = p_0 + \rho g (z_0 - z)
+$$
+
+Pressure increases linearly with depth. Every 10 meters of water adds about 1 atmosphere of pressure.
+
+## Equation of State — How Pressure Relates to Density
+
+For many applications, we need to know how pressure relates to other properties of the fluid, like density and temperature. This is the **equation of state**.
+
+For an ideal gas: $p = \rho R T / M_{\text{mol}}$. For liquids, the relationship is more complex — the **bulk modulus** $K = -V \, dp/dV$ tells you how much the pressure changes when you compress the fluid. Water has a bulk modulus of about 2.2 GPa, which is why it's nearly incompressible under everyday conditions.
+
+For advanced applications (like modeling phase transitions), the **van der Waals equation** accounts for molecular interactions and finite molecular size — but for most of this course, we'll treat fluids as either ideal gases or incompressible liquids.
+
+## Buoyancy — Why Icebergs Float
+
+Drop an object into a fluid. Gravity pulls it down. But the pressure of the fluid pushes up on its bottom surface more than it pushes down on its top surface (because pressure increases with depth). The result is an upward **buoyancy force**.
+
+The gravitational force on the body:
+$$
+\mathbf{F}_G = \int_V \rho_{\text{body}} \, \mathbf{g} \, dV
+$$
+
+The buoyancy force from the surrounding fluid pressure:
+$$
+\mathbf{F}_B = -\oint_S p \, d\mathbf{S}
+$$
+
+Combining them gives **Archimedes' principle**:
+$$
+\mathbf{F} = \mathbf{F}_G + \mathbf{F}_B = \int_V (\rho_{\text{body}} - \rho_{\text{fluid}}) \, \mathbf{g} \, dV
+$$
+
+*The buoyant force equals the weight of the displaced fluid.* If the object is less dense than the fluid, it floats. If it's denser, it sinks.
+
+For a uniform gravitational field:
+$$
+\mathbf{F} = (M_{\text{body}} - M_{\text{displaced fluid}}) \, \mathbf{g}_0
+$$
+
+Here's a beautiful way to think about it: imagine replacing the object with an equal volume of fluid. That "fluid object" would be in perfect equilibrium — the buoyancy exactly balances its weight. Now swap in the real object: if it's lighter, there's a net upward force; if heavier, a net downward force.
+
+As the course quote goes: *"If the berg is full of water or if it's full of iceberg, it doesn't matter! Just imagine an iceberg made of water, a so-called waterberg."*
+
+## Stability — Will It Tip Over?
+
+Floating isn't enough. A floating body must also be *stable* — if you nudge it, it should rock back to its original position, not capsize.
+
+Beyond the buoyant force balance, there must also be a balance of **moments**. The gravitational moment acts through the **center of gravity** $\mathbf{x}_G$, and the buoyancy moment acts through the **center of buoyancy** $\mathbf{x}_B$:
+
+$$
+\mathbf{x}_G = \frac{1}{M}\int_V \mathbf{x} \, \rho_{\text{body}} \, dV, \qquad \mathbf{x}_B = \frac{1}{M_{\text{displaced}}}\int_V \mathbf{x} \, \rho_{\text{fluid}} \, dV
+$$
+
+The total moment is:
+$$
+\mathbf{M}_{\text{total}} = (\mathbf{x}_G - \mathbf{x}_B) \times M \, \mathbf{g}_0
+$$
+
+For stability, this moment must be *restoring*: tilting the body should create a moment that pushes it back upright. This is why ships have heavy keels (to lower $\mathbf{x}_G$) and wide hulls (to raise $\mathbf{x}_B$ when tilted).
+
+## What We Just Learned
+
+A fluid at rest sustains only pressure — no shear. The hydrostatic equation relates pressure to depth. Archimedes' principle tells us the buoyancy force, and the relative positions of the centers of gravity and buoyancy determine whether a floating body is stable.
+
+## What's Next
+
+We've studied fluids sitting still. Now we set them in motion. What happens when you turn on a hose, stir a cup of tea, or watch the wind blow? The next section brings us to ideal flows, Euler's equations, and Bernoulli's theorem.

@@ -1,15 +1,19 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import * as math from 'mathjs';
-import Plotly from 'react-plotly.js';
+import dynamic from 'next/dynamic';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Slider } from '@/components/ui/slider';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
+
+const Plotly = dynamic(() => import('react-plotly.js'), { ssr: false });
 
 type Matrix2 = number[][];
 
 type Props = Record<string, never>;
 
 function Label({ children }: { children: React.ReactNode }) {
-  return <label className="block text-sm text-gray-300">{children}</label>;
+  return <label className="block text-sm text-[var(--text-muted)]">{children}</label>;
 }
 
 const ConditionNumberDemo: React.FC<Props> = () => {
@@ -21,6 +25,7 @@ const ConditionNumberDemo: React.FC<Props> = () => {
   const [b2, setB2] = useState(0);
   const [eps, setEps] = useState(0);
   const [perturbType, setPerturbType] = useState<'b' | 'A'>('b');
+  const { mergeLayout } = usePlotlyTheme();
 
   const A = useMemo(() => [[a11, a12], [a21, a22]] as Matrix2, [a11, a12, a21, a22]);
   const b = useMemo(() => math.matrix([b1, b2]), [b1, b2]);
@@ -89,35 +94,29 @@ const ConditionNumberDemo: React.FC<Props> = () => {
       <CardContent className="flex-1 flex flex-col gap-4 p-4">
         <div className="grid grid-cols-3 gap-4 text-sm">
           <div>
-            <Label>a11</Label>
-            <input type="range" min={-2} max={2} step={0.1} value={a11} onChange={(e) => setA11(parseFloat(e.target.value))} />
-            <span>{a11.toFixed(2)}</span>
+            <Label>a11: {a11.toFixed(2)}</Label>
+            <Slider min={-2} max={2} step={0.1} value={[a11]} onValueChange={([v]) => setA11(v)} />
           </div>
           {/* similar for a12, a21, a22, b1, b2 */}
           <div>
-            <Label>a12</Label>
-            <input type="range" min={-2} max={2} step={0.1} value={a12} onChange={(e) => setA12(parseFloat(e.target.value))} />
-            <span>{a12.toFixed(2)}</span>
+            <Label>a12: {a12.toFixed(2)}</Label>
+            <Slider min={-2} max={2} step={0.1} value={[a12]} onValueChange={([v]) => setA12(v)} />
           </div>
           <div>
-            <Label>a21</Label>
-            <input type="range" min={-2} max={2} step={0.1} value={a21} onChange={(e) => setA21(parseFloat(e.target.value))} />
-            <span>{a21.toFixed(2)}</span>
+            <Label>a21: {a21.toFixed(2)}</Label>
+            <Slider min={-2} max={2} step={0.1} value={[a21]} onValueChange={([v]) => setA21(v)} />
           </div>
           <div>
-            <Label>a22</Label>
-            <input type="range" min={-2} max={2} step={0.1} value={a22} onChange={(e) => setA22(parseFloat(e.target.value))} />
-            <span>{a22.toFixed(2)}</span>
+            <Label>a22: {a22.toFixed(2)}</Label>
+            <Slider min={-2} max={2} step={0.1} value={[a22]} onValueChange={([v]) => setA22(v)} />
           </div>
           <div>
-            <Label>b1</Label>
-            <input type="range" min={-2} max={2} step={0.1} value={b1} onChange={(e) => setB1(parseFloat(e.target.value))} />
-            <span>{b1.toFixed(2)}</span>
+            <Label>b1: {b1.toFixed(2)}</Label>
+            <Slider min={-2} max={2} step={0.1} value={[b1]} onValueChange={([v]) => setB1(v)} />
           </div>
           <div>
-            <Label>b2</Label>
-            <input type="range" min={-2} max={2} step={0.1} value={b2} onChange={(e) => setB2(parseFloat(e.target.value))} />
-            <span>{b2.toFixed(2)}</span>
+            <Label>b2: {b2.toFixed(2)}</Label>
+            <Slider min={-2} max={2} step={0.1} value={[b2]} onValueChange={([v]) => setB2(v)} />
           </div>
         </div>
         <div className="flex gap-2">
@@ -125,9 +124,8 @@ const ConditionNumberDemo: React.FC<Props> = () => {
           <Button variant={perturbType === 'A' ? 'primary' : 'outline'} onClick={() => setPerturbType('A')}>Perturb A</Button>
         </div>
         <div>
-          <Label>Eps</Label>
-          <input type="range" min={0} max={0.2} step={0.01} value={eps} onChange={(e) => setEps(parseFloat(e.target.value))} />
-          <span>{eps.toFixed(3)}</span>
+          <Label>Eps: {eps.toFixed(3)}</Label>
+          <Slider min={0} max={0.2} step={0.01} value={[eps]} onValueChange={([v]) => setEps(v)} />
         </div>
         <div className="grid grid-cols-2 gap-4 text-lg font-mono">
           <div>x: [{x[0].toFixed(2)}, {x[1].toFixed(2)}] | cond ≈ {cond.toFixed(1)}</div>
@@ -136,7 +134,7 @@ const ConditionNumberDemo: React.FC<Props> = () => {
         <div className="flex-1 min-h-0">
           <Plotly
             data={[line1, line2]}
-            layout={{ width: 400, height: 400, title: { text: 'Equation Lines (x,y plane)' }, xaxis: {title: { text: 'x1' }}, yaxis: {title: { text: 'x2' }} }}
+            layout={mergeLayout({ width: 400, height: 400, title: { text: 'Equation Lines (x,y plane)' }, xaxis: {title: { text: 'x1' }}, yaxis: {title: { text: 'x2' }} })}
             config={{ staticPlot: false, displayModeBar: false }}
           />
         </div>

@@ -2,6 +2,8 @@
 
 import React, { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
+import { Slider } from '@/components/ui/slider';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -173,6 +175,7 @@ export default function LinearTomography({ id }: SimulationProps) { // eslint-di
   const [left, setLeft] = useState(3);
   const [right, setRight] = useState(7);
   const [nEps, setNEps] = useState(10);
+  const { mergeLayout } = usePlotlyTheme();
 
   const result = useMemo(() => {
     const clampedTop = Math.min(top, bot);
@@ -262,43 +265,37 @@ export default function LinearTomography({ id }: SimulationProps) { // eslint-di
   }, [N, top, bot, left, right, nEps]);
 
   return (
-    <div className="w-full bg-[#151525] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-white">Linear Tomography</h3>
-      <p className="text-gray-400 text-sm mb-4">
+    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
+      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Linear Tomography</h3>
+      <p className="text-[var(--text-muted)] text-sm mb-4">
         Reconstruct subsurface density anomalies from seismograph arrival times using Tikhonov regularization.
         Adjust the anomaly position and grid size. The method sweeps over regularization parameter epsilon
         to find the optimal reconstruction.
       </p>
       <div className="grid grid-cols-3 lg:grid-cols-6 gap-3 mb-4">
         <div>
-          <label className="text-gray-300 text-xs">Grid N: {N}</label>
-          <input type="range" min={6} max={18} step={1} value={N}
-            onChange={(e) => setN(parseInt(e.target.value))} className="w-full" />
+          <label className="text-[var(--text-muted)] text-xs">Grid N: {N}</label>
+          <Slider min={6} max={18} step={1} value={[N]} onValueChange={([v]) => setN(v)} />
         </div>
         <div>
-          <label className="text-gray-300 text-xs">Top: {top}</label>
-          <input type="range" min={0} max={N - 1} step={1} value={top}
-            onChange={(e) => setTop(parseInt(e.target.value))} className="w-full" />
+          <label className="text-[var(--text-muted)] text-xs">Top: {top}</label>
+          <Slider min={0} max={N - 1} step={1} value={[top]} onValueChange={([v]) => setTop(v)} />
         </div>
         <div>
-          <label className="text-gray-300 text-xs">Bottom: {bot}</label>
-          <input type="range" min={1} max={N} step={1} value={bot}
-            onChange={(e) => setBot(parseInt(e.target.value))} className="w-full" />
+          <label className="text-[var(--text-muted)] text-xs">Bottom: {bot}</label>
+          <Slider min={1} max={N} step={1} value={[bot]} onValueChange={([v]) => setBot(v)} />
         </div>
         <div>
-          <label className="text-gray-300 text-xs">Left: {left}</label>
-          <input type="range" min={0} max={N - 1} step={1} value={left}
-            onChange={(e) => setLeft(parseInt(e.target.value))} className="w-full" />
+          <label className="text-[var(--text-muted)] text-xs">Left: {left}</label>
+          <Slider min={0} max={N - 1} step={1} value={[left]} onValueChange={([v]) => setLeft(v)} />
         </div>
         <div>
-          <label className="text-gray-300 text-xs">Right: {right}</label>
-          <input type="range" min={1} max={N} step={1} value={right}
-            onChange={(e) => setRight(parseInt(e.target.value))} className="w-full" />
+          <label className="text-[var(--text-muted)] text-xs">Right: {right}</label>
+          <Slider min={1} max={N} step={1} value={[right]} onValueChange={([v]) => setRight(v)} />
         </div>
         <div>
-          <label className="text-gray-300 text-xs">Eps steps: {nEps}</label>
-          <input type="range" min={5} max={30} step={1} value={nEps}
-            onChange={(e) => setNEps(parseInt(e.target.value))} className="w-full" />
+          <label className="text-[var(--text-muted)] text-xs">Eps steps: {nEps}</label>
+          <Slider min={5} max={30} step={1} value={[nEps]} onValueChange={([v]) => setNEps(v)} />
         </div>
       </div>
 
@@ -308,18 +305,14 @@ export default function LinearTomography({ id }: SimulationProps) { // eslint-di
             z: result.mTrueGrid,
             type: 'heatmap' as const,
             colorscale: 'Viridis',
-            colorbar: { tickfont: { color: '#9ca3af' } },
           }]}
-          layout={{
+          layout={mergeLayout({
             title: { text: 'True Model m' },
-            xaxis: { title: { text: 'x' }, color: '#9ca3af' },
-            yaxis: { title: { text: 'depth' }, autorange: 'reversed' as const, color: '#9ca3af' },
+            xaxis: { title: { text: 'x' } },
+            yaxis: { title: { text: 'depth' }, autorange: 'reversed' as const },
             height: 300,
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(15,15,25,1)',
-            font: { color: '#9ca3af' },
             margin: { t: 40, b: 50, l: 50, r: 20 },
-          }}
+          })}
           config={{ displayModeBar: false }}
           style={{ width: '100%' }}
         />
@@ -328,18 +321,14 @@ export default function LinearTomography({ id }: SimulationProps) { // eslint-di
             z: result.gSumGrid,
             type: 'heatmap' as const,
             colorscale: 'Greys',
-            colorbar: { tickfont: { color: '#9ca3af' } },
           }]}
-          layout={{
+          layout={mergeLayout({
             title: { text: 'Ray Coverage (sum of |G|)' },
-            xaxis: { title: { text: 'x' }, color: '#9ca3af' },
-            yaxis: { title: { text: 'depth' }, autorange: 'reversed' as const, color: '#9ca3af' },
+            xaxis: { title: { text: 'x' } },
+            yaxis: { title: { text: 'depth' }, autorange: 'reversed' as const },
             height: 300,
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(15,15,25,1)',
-            font: { color: '#9ca3af' },
             margin: { t: 40, b: 50, l: 50, r: 20 },
-          }}
+          })}
           config={{ displayModeBar: false }}
           style={{ width: '100%' }}
         />
@@ -348,18 +337,14 @@ export default function LinearTomography({ id }: SimulationProps) { // eslint-di
             z: result.mOptGrid,
             type: 'heatmap' as const,
             colorscale: 'Viridis',
-            colorbar: { tickfont: { color: '#9ca3af' } },
           }]}
-          layout={{
+          layout={mergeLayout({
             title: { text: `Predicted m (eps=${result.epsOpt.toExponential(2)})` },
-            xaxis: { title: { text: 'x' }, color: '#9ca3af' },
-            yaxis: { title: { text: 'depth' }, autorange: 'reversed' as const, color: '#9ca3af' },
+            xaxis: { title: { text: 'x' } },
+            yaxis: { title: { text: 'depth' }, autorange: 'reversed' as const },
             height: 300,
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(15,15,25,1)',
-            font: { color: '#9ca3af' },
             margin: { t: 40, b: 50, l: 50, r: 20 },
-          }}
+          })}
           config={{ displayModeBar: false }}
           style={{ width: '100%' }}
         />
@@ -383,18 +368,14 @@ export default function LinearTomography({ id }: SimulationProps) { // eslint-di
               marker: { color: 'rgba(251,146,60,0.7)' },
             },
           ]}
-          layout={{
+          layout={mergeLayout({
             title: { text: 'Observed Seismograph Data' },
-            xaxis: { title: { text: 'Detector index' }, color: '#9ca3af' },
-            yaxis: { title: { text: 'Time anomaly' }, color: '#9ca3af' },
+            xaxis: { title: { text: 'Detector index' } },
+            yaxis: { title: { text: 'Time anomaly' } },
             barmode: 'group',
             height: 300,
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(15,15,25,1)',
-            font: { color: '#9ca3af' },
-            legend: { bgcolor: 'rgba(0,0,0,0.3)' },
             margin: { t: 40, b: 50, l: 50, r: 20 },
-          }}
+          })}
           config={{ displayModeBar: false }}
           style={{ width: '100%' }}
         />
@@ -408,14 +389,11 @@ export default function LinearTomography({ id }: SimulationProps) { // eslint-di
             marker: { color: '#f472b6', size: 5 },
             name: 'Residual',
           }]}
-          layout={{
+          layout={mergeLayout({
             title: { text: 'Residual vs Epsilon' },
-            xaxis: { title: { text: 'epsilon' }, type: 'log', color: '#9ca3af' },
-            yaxis: { title: { text: '|d_obs - G*m| - |noise|' }, type: 'log', color: '#9ca3af' },
+            xaxis: { title: { text: 'epsilon' }, type: 'log' },
+            yaxis: { title: { text: '|d_obs - G*m| - |noise|' }, type: 'log' },
             height: 300,
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(15,15,25,1)',
-            font: { color: '#9ca3af' },
             margin: { t: 40, b: 50, l: 50, r: 20 },
             shapes: [{
               type: 'line',
@@ -423,12 +401,12 @@ export default function LinearTomography({ id }: SimulationProps) { // eslint-di
               y0: 0, y1: 1, yref: 'paper',
               line: { color: '#22d3ee', dash: 'dash', width: 2 },
             }],
-          }}
+          })}
           config={{ displayModeBar: false }}
           style={{ width: '100%' }}
         />
       </div>
-      <p className="text-gray-500 text-xs mt-3">
+      <p className="text-[var(--text-soft)] text-xs mt-3">
         The optimal epsilon minimizes the difference between the residual norm and the noise norm.
         Areas traced by rays from both earthquakes are recovered well; untouched areas remain uncertain.
       </p>

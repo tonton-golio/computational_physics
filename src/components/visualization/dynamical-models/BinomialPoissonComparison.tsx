@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { Slider } from '@/components/ui/slider';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -20,6 +22,7 @@ function choose(n: number, k: number): number {
 export default function BinomialPoissonComparison() {
   const [n, setN] = useState(40);
   const [mean, setMean] = useState(6);
+  const { mergeLayout } = usePlotlyTheme();
 
   const { ks, binom, poisson } = useMemo(() => {
     const p = mean / n;
@@ -31,19 +34,19 @@ export default function BinomialPoissonComparison() {
   }, [n, mean]);
 
   return (
-    <div className="w-full bg-[#151525] rounded-lg p-6 mb-8 space-y-4">
-      <h3 className="text-xl font-semibold text-white">Binomial vs Poisson Limit</h3>
-      <p className="text-sm text-gray-400">
+    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8 space-y-4">
+      <h3 className="text-xl font-semibold text-[var(--text-strong)]">Binomial vs Poisson Limit</h3>
+      <p className="text-sm text-[var(--text-muted)]">
         Compare exact Binomial(n, p) with Poisson(lambda) where lambda = n p.
       </p>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="text-sm text-gray-300">n (trials): {n}</label>
-          <input className="w-full" type="range" min={10} max={200} step={5} value={n} onChange={(e) => setN(parseInt(e.target.value, 10))} />
+          <label className="mb-1 block text-sm text-[var(--text-muted)]">n (trials): {n}</label>
+          <Slider value={[n]} onValueChange={([v]) => setN(v)} min={10} max={200} step={5} />
         </div>
         <div>
-          <label className="text-sm text-gray-300">lambda = n p: {mean.toFixed(1)}</label>
-          <input className="w-full" type="range" min={1} max={20} step={0.5} value={mean} onChange={(e) => setMean(parseFloat(e.target.value))} />
+          <label className="mb-1 block text-sm text-[var(--text-muted)]">lambda = n p: {mean.toFixed(1)}</label>
+          <Slider value={[mean]} onValueChange={([v]) => setMean(v)} min={1} max={20} step={0.5} />
         </div>
       </div>
       <Plot
@@ -67,16 +70,13 @@ export default function BinomialPoissonComparison() {
             name: 'Poisson approximation',
           },
         ]}
-        layout={{
+        layout={mergeLayout({
           title: { text: 'Distribution comparison' },
-          paper_bgcolor: 'rgba(0,0,0,0)',
-          plot_bgcolor: 'rgba(15,15,25,1)',
-          font: { color: '#9ca3af' },
           margin: { t: 40, r: 20, b: 40, l: 50 },
-          xaxis: { title: { text: 'k events' }, gridcolor: '#1e1e2e' },
-          yaxis: { title: { text: 'Probability' }, gridcolor: '#1e1e2e' },
+          xaxis: { title: { text: 'k events' } },
+          yaxis: { title: { text: 'Probability' } },
           height: 430,
-        }}
+        })}
         config={{ responsive: true, displayModeBar: false }}
         style={{ width: '100%', height: 430 }}
       />

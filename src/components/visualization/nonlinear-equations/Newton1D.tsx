@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import Plotly from 'react-plotly.js';
 import type { Data, Layout } from 'plotly.js';
+import { Slider } from '@/components/ui/slider';
 
 interface Func {
   name: string;
@@ -168,33 +169,29 @@ const Newton1D: React.FC = () => {
           </select>
         </div>
         <div>
-          <label>x₀:</label>
-          <input
-            type="range"
+          <label>x₀: {x0.toFixed(2)}</label>
+          <Slider
             min={-5}
             max={5}
             step={0.1}
-            value={x0}
-            onChange={(e) => setX0(Number(e.target.value))}
+            value={[x0]}
+            onValueChange={([v]) => setX0(v)}
             className="ml-2"
           />
-          <span>{x0.toFixed(2)}</span>
         </div>
         <div>
-          <label>Max Steps:</label>
-          <input
-            type="range"
+          <label>Max Steps: {maxSteps}</label>
+          <Slider
             min={5}
             max={20}
-            value={maxSteps}
-            onChange={(e) => setMaxSteps(Number(e.target.value))}
+            value={[maxSteps]}
+            onValueChange={([v]) => setMaxSteps(v)}
             className="ml-2"
           />
-          <span>{maxSteps}</span>
         </div>
         <div>
-          <button onClick={handleStep} className="bg-blue-500 text-white px-4 py-1 mr-2 rounded">Step</button>
-          <button onClick={handleReset} className="bg-gray-500 text-white px-4 py-1 mr-2 rounded">Reset</button>
+          <button onClick={handleStep} className="bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white px-4 py-1 mr-2 rounded">Step</button>
+          <button onClick={handleReset} className="bg-[var(--surface-3)] hover:bg-[var(--border-strong)] text-[var(--text-strong)] px-4 py-1 mr-2 rounded">Reset</button>
         </div>
       </div>
       <div>Path length: {path.length}, Current step: {currentStep}, Final x: {path[path.length-1]?.toFixed(6)}</div>

@@ -2,6 +2,8 @@
 
 import React, { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
+import { Slider } from '@/components/ui/slider';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -16,6 +18,7 @@ const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 export default function MichaelisMenten() {
   const [lambdaMax, setLambdaMax] = useState(1.25);
   const [Ks, setKs] = useState(0.5);
+  const { mergeLayout } = usePlotlyTheme();
 
   const { xVals, yVals } = useMemo(() => {
     const n = 500;
@@ -33,19 +36,17 @@ export default function MichaelisMenten() {
   }, [lambdaMax, Ks]);
 
   return (
-    <div className="w-full bg-[#151525] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-white">Michaelis-Menten / Monod Growth Curve</h3>
+    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
+      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Michaelis-Menten / Monod Growth Curve</h3>
 
       <div className="grid grid-cols-2 gap-6 mb-4">
         <div>
-          <label className="text-white text-sm">Maximum growth rate (lambda_max): {lambdaMax.toFixed(2)}</label>
-          <input type="range" min={0.1} max={2.0} step={0.05} value={lambdaMax}
-            onChange={(e) => setLambdaMax(parseFloat(e.target.value))} className="w-full" />
+          <label className="mb-1 block text-sm text-[var(--text-muted)]">Maximum growth rate (lambda_max): {lambdaMax.toFixed(2)}</label>
+          <Slider value={[lambdaMax]} onValueChange={([v]) => setLambdaMax(v)} min={0.1} max={2.0} step={0.05} />
         </div>
         <div>
-          <label className="text-white text-sm">Half-saturation constant (K_S): {Ks.toFixed(2)}</label>
-          <input type="range" min={0.1} max={10.0} step={0.1} value={Ks}
-            onChange={(e) => setKs(parseFloat(e.target.value))} className="w-full" />
+          <label className="mb-1 block text-sm text-[var(--text-muted)]">Half-saturation constant (K_S): {Ks.toFixed(2)}</label>
+          <Slider value={[Ks]} onValueChange={([v]) => setKs(v)} min={0.1} max={10.0} step={0.1} />
         </div>
       </div>
 
@@ -92,36 +93,28 @@ export default function MichaelisMenten() {
             showlegend: false,
           },
         ] as any}
-        layout={{
+        layout={mergeLayout({
           height: 420,
-          paper_bgcolor: 'rgba(0,0,0,0)',
-          plot_bgcolor: 'rgba(15,15,25,1)',
-          font: { color: '#9ca3af' },
           margin: { t: 40, b: 60, l: 60, r: 20 },
           title: {
             text: 'lambda = lambda_max * S / (K_S + S)',
-            font: { color: '#9ca3af', size: 14 },
           },
           xaxis: {
             title: { text: 'S (concentration of limiting nutrient)' },
             range: [0, 10],
-            gridcolor: 'rgba(75,75,100,0.3)',
-            zerolinecolor: 'rgba(75,75,100,0.5)',
           },
           yaxis: {
             title: { text: 'lambda (growth rate)' },
             range: [0, 2.2],
-            gridcolor: 'rgba(75,75,100,0.3)',
-            zerolinecolor: 'rgba(75,75,100,0.5)',
           },
-        }}
+        })}
         config={{ displayModeBar: false }}
         style={{ width: '100%' }}
       />
 
-      <div className="mt-3 text-sm text-gray-400">
+      <div className="mt-3 text-sm text-[var(--text-muted)]">
         <p>
-          The <strong className="text-gray-300">Monod equation</strong> describes bacterial growth rate as a function
+          The <strong className="text-[var(--text-muted)]">Monod equation</strong> describes bacterial growth rate as a function
           of nutrient concentration, analogous to the Michaelis-Menten equation for enzyme kinetics.
           At low substrate concentrations the growth rate increases approximately linearly;
           at high concentrations it saturates at the maximum rate.

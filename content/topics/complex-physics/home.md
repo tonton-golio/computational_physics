@@ -14,6 +14,14 @@ Core approach:
 3. Recognize universal scaling behavior near critical points.
 4. Simulate complex systems computationally when analytical solutions fail.
 
+## The road map
+
+Imagine you are watching a pot of water boil. First we will understand why anything happens at all: why does heat spread evenly, why do molecules share energy the way they do? That is **statistical mechanics**. Then we will ask: how can we let a computer roll the dice for us when the math gets too hard? That is the **Metropolis algorithm**. Next comes the dramatic part: what happens when everything suddenly changes, when a magnet loses its magnetism or a liquid becomes a gas? Those are **phase transitions**, and we will build a simple theory (**mean-field**) to understand them, then solve a toy model exactly with the **transfer matrix**.
+
+But here is where it gets truly beautiful. We will discover that completely different systems, magnets and fluids and gases, all behave *identically* near their critical points. That is **universality and critical phenomena**. The same patterns keep showing up: in **percolation** (when a connected path suddenly spans a random medium), in **self-organized criticality** (when a sandpile tunes itself to the edge of chaos), in **networks** (when the rich get richer and power laws emerge), in **agent-based models** (when dumb local rules produce smart global behavior), and even in **econophysics** (when stock markets crash like avalanches).
+
+By the end of this course, you will see these patterns everywhere. Nature reuses her tricks, and we are going to learn them.
+
 ## Why this topic matters
 
 - Phase transitions underpin phenomena from magnetism to superconductivity.
@@ -49,22 +57,19 @@ Core approach:
 
 This module is organized from equilibrium foundations to complex emergent behavior:
 
-- Statistical mechanics: ensembles, partition functions, and the Ising model.
-- Phase transitions: mean-field theory, Monte Carlo simulation, order parameters.
-- Critical phenomena: universality, scaling laws, renormalization group.
-- Percolation and fractals: connectivity thresholds, fractal dimension, self-similarity.
-- Self-organized criticality: sandpile models, avalanches, power-law distributions.
-- Networks: graph metrics, scale-free structures, dynamics on networks.
-- Agent-based models: stochastic simulation, Gillespie algorithm, cellular automata.
-- Econophysics: Brownian motion in markets, Hurst exponent, bet hedging.
+- **Statistical Mechanics** — Why does a room full of air molecules share energy so democratically? We start with the rules that govern huge numbers of particles.
+- **Metropolis Algorithm** — Let the computer do the hard work of exploring impossible-to-calculate probabilities.
+- **Phase Transitions** — The moment everything changes: how a magnet suddenly finds its direction.
+- **Mean-Field Results** — A beautifully simple (and sometimes wrong) theory where every spin feels the average of all the others.
+- **1D Ising & Transfer Matrix** — One dimension, one exact solution, and a clever matrix trick that makes it all work.
+- **Critical Phenomena** — The miracle of universality: why magnets, fluids, and gases all forget their differences at the critical point.
+- **Percolation and Fractals** — When random connections suddenly span the world, and the geometry turns out to be fractal.
+- **Self-Organized Criticality** — Sandpiles, avalanches, and systems that tune themselves to the edge without anyone turning the knob.
+- **Networks** — The rich get richer, power laws appear, and six degrees of separation connect us all.
+- **Agent-Based Models** — Dumb local rules, smart global behavior: flocking birds, traffic jams, and the Game of Life.
+- **Econophysics** — Stock markets crash like sandpiles, and the same mathematics describes both.
 
 ## Visual and Simulation Gallery
-
-[[simulation ising-model]]
-
-[[simulation percolation]]
-
-[[simulation sandpile-model]]
 
 [[figure complex-sandpile-image]]
 

@@ -2,6 +2,8 @@
 
 import React, { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
+import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { Slider } from '@/components/ui/slider';
 
 const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
@@ -16,12 +18,13 @@ function costFunction(x: number, y: number, params: number[]): number {
     (1 / 100) * Math.pow(x, 4) + (1 / 100) * Math.pow(y - 1, 4) + y / 4 + 2;
 }
 
-export default function SteepestDescent({ id }: SimulationProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+const COST_PARAMS = [1, 1, 0.77, 1.11, 0.31, 0.31];
+
+export default function SteepestDescent({ id: _id }: SimulationProps) {
   const [lr, setLr] = useState(0.1);
   const [nSteps, setNSteps] = useState(30);
   const [seed, setSeed] = useState(1);
-
-  const params = [1, 1, 0.77, 1.11, 0.31, 0.31];
+  const { mergeLayout } = usePlotlyTheme();
 
   const result = useMemo(() => {
     // Generate contour grid
@@ -39,7 +42,7 @@ export default function SteepestDescent({ id }: SimulationProps) { // eslint-dis
     for (let j = 0; j < nGrid; j++) {
       const row: number[] = [];
       for (let i = 0; i < nGrid; i++) {
-        row.push(costFunction(xArr[i], yArr[j], params));
+        row.push(costFunction(xArr[i], yArr[j], COST_PARAMS));
       }
       zGrid.push(row);
     }
@@ -56,14 +59,14 @@ export default function SteepestDescent({ id }: SimulationProps) { // eslint-dis
     const h = 0.001;
     const pathX: number[] = [x0];
     const pathY: number[] = [y0];
-    const pathZ: number[] = [costFunction(x0, y0, params)];
+    const pathZ: number[] = [costFunction(x0, y0, COST_PARAMS)];
 
     let cx = x0;
     let cy = y0;
     for (let i = 0; i < nSteps; i++) {
-      const fCurrent = costFunction(cx, cy, params);
-      const gradX = (costFunction(cx + h, cy, params) - fCurrent) / h;
-      const gradY = (costFunction(cx, cy + h, params) - fCurrent) / h;
+      const fCurrent = costFunction(cx, cy, COST_PARAMS);
+      const gradX = (costFunction(cx + h, cy, COST_PARAMS) - fCurrent) / h;
+      const gradY = (costFunction(cx, cy + h, COST_PARAMS) - fCurrent) / h;
 
       cx -= gradX * lr;
       cy -= gradY * lr;
@@ -74,7 +77,7 @@ export default function SteepestDescent({ id }: SimulationProps) { // eslint-dis
 
       pathX.push(cx);
       pathY.push(cy);
-      pathZ.push(costFunction(cx, cy, params));
+      pathZ.push(costFunction(cx, cy, COST_PARAMS));
     }
 
     return { xArr, yArr, zGrid, pathX, pathY, pathZ, x0, y0 };
@@ -83,19 +86,19 @@ export default function SteepestDescent({ id }: SimulationProps) { // eslint-dis
   const lrOptions = [0.001, 0.003, 0.01, 0.032, 0.1, 0.316, 1.0];
 
   return (
-    <div className="w-full bg-[#151525] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-white">Steepest Descent Optimization</h3>
-      <p className="text-gray-400 text-sm mb-4">
+    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
+      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Steepest Descent Optimization</h3>
+      <p className="text-[var(--text-muted)] text-sm mb-4">
         Gradient descent on a non-convex surface. The optimizer follows the negative gradient with a
         given learning rate. Observe how step size and number of iterations affect convergence.
       </p>
       <div className="grid grid-cols-3 gap-4 mb-4">
         <div>
-          <label className="text-gray-300 text-sm">Learning rate: {lr}</label>
+          <label className="text-[var(--text-muted)] text-sm">Learning rate: {lr}</label>
           <select
             value={lr}
             onChange={(e) => setLr(parseFloat(e.target.value))}
-            className="w-full bg-[#0a0a15] text-white border border-gray-700 rounded p-1 text-sm mt-1"
+            className="w-full bg-[var(--surface-2)] text-[var(--text-strong)] border border-[var(--border-strong)] rounded p-1 text-sm mt-1"
           >
             {lrOptions.map(v => (
               <option key={v} value={v}>{v}</option>
@@ -103,18 +106,18 @@ export default function SteepestDescent({ id }: SimulationProps) { // eslint-dis
           </select>
         </div>
         <div>
-          <label className="text-gray-300 text-sm">Steps: {nSteps}</label>
-          <input
-            type="range" min={1} max={100} step={1} value={nSteps}
-            onChange={(e) => setNSteps(parseInt(e.target.value))}
+          <label className="text-[var(--text-muted)] text-sm">Steps: {nSteps}</label>
+          <Slider
+            min={1} max={100} step={1} value={[nSteps]}
+            onValueChange={([v]) => setNSteps(v)}
             className="w-full"
           />
         </div>
         <div>
-          <label className="text-gray-300 text-sm">Random start (seed): {seed}</label>
-          <input
-            type="range" min={1} max={20} step={1} value={seed}
-            onChange={(e) => setSeed(parseInt(e.target.value))}
+          <label className="text-[var(--text-muted)] text-sm">Random start (seed): {seed}</label>
+          <Slider
+            min={1} max={20} step={1} value={[seed]}
+            onValueChange={([v]) => setSeed(v)}
             className="w-full"
           />
         </div>
@@ -131,7 +134,6 @@ export default function SteepestDescent({ id }: SimulationProps) { // eslint-dis
               colorscale: 'Inferno',
               ncontours: 30,
               showscale: true,
-              colorbar: { tickfont: { color: '#9ca3af' } },
               contours: { coloring: 'heatmap' },
             },
             {
@@ -160,17 +162,14 @@ export default function SteepestDescent({ id }: SimulationProps) { // eslint-dis
               name: 'End',
             },
           ]}
-          layout={{
+          layout={mergeLayout({
             title: { text: 'Contour Plot with Descent Path' },
-            xaxis: { title: { text: 'x' }, color: '#9ca3af' },
-            yaxis: { title: { text: 'y' }, color: '#9ca3af' },
+            xaxis: { title: { text: 'x' } },
+            yaxis: { title: { text: 'y' } },
             height: 450,
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(15,15,25,1)',
-            font: { color: '#9ca3af' },
-            legend: { x: 0.02, y: 0.98, bgcolor: 'rgba(0,0,0,0.3)' },
+            legend: { x: 0.02, y: 0.98 },
             margin: { t: 40, b: 50, l: 50, r: 20 },
-          }}
+          })}
           config={{ displayModeBar: false }}
           style={{ width: '100%' }}
         />
@@ -183,21 +182,18 @@ export default function SteepestDescent({ id }: SimulationProps) { // eslint-dis
             line: { color: '#f472b6' },
             name: 'Cost f(x,y)',
           }]}
-          layout={{
+          layout={mergeLayout({
             title: { text: 'Cost Function vs Iteration' },
-            xaxis: { title: { text: 'Step' }, color: '#9ca3af' },
-            yaxis: { title: { text: 'f(x, y)' }, color: '#9ca3af' },
+            xaxis: { title: { text: 'Step' } },
+            yaxis: { title: { text: 'f(x, y)' } },
             height: 450,
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(15,15,25,1)',
-            font: { color: '#9ca3af' },
             margin: { t: 40, b: 50, l: 50, r: 20 },
-          }}
+          })}
           config={{ displayModeBar: false }}
           style={{ width: '100%' }}
         />
       </div>
-      <p className="text-gray-500 text-xs mt-3">
+      <p className="text-[var(--text-soft)] text-xs mt-3">
         Try different starting seeds and learning rates to see how the optimizer can get stuck in local minima or overshoot.
       </p>
     </div>
