@@ -111,7 +111,7 @@ Networks describe the *structure* of interactions, but not what happens on them.
 
 1. A Poisson random graph (Erdős-Rényi model) has an exponential degree distribution: $P(k) \sim e^{-\langle k \rangle} \langle k \rangle^k / k!$. A scale-free network has $P(k) \sim k^{-\gamma}$. Why does the scale-free distribution lead to a finite epidemic threshold vanishing in the limit $N \to \infty$, while the Poisson distribution gives a nonzero threshold?
 2. The clustering coefficient of a node measures whether its neighbors are connected to each other. The Watts-Strogatz model has high clustering for small rewiring probability $p$. Explain intuitively why rewiring destroys clustering even when the average path length drops dramatically.
-3. Removing hub nodes rapidly fragments a scale-free network. In a network where the hub with degree $k_{\max} \sim \sqrt{N}$ is removed, roughly what fraction of the remaining nodes lose their connection to the giant component?
+3. Removing hub nodes rapidly fragments a scale-free network. In a network where the hub with degree $k_{\max} \sim \sqrt{N}$ (more precisely, the natural cutoff scales as $k_{\max} \sim N^{1/(\gamma-1)}$, which gives $\sqrt{N}$ for $\gamma = 3$, with logarithmic corrections) is removed, roughly what fraction of the remaining nodes lose their connection to the giant component?
 
 ## Challenge
 

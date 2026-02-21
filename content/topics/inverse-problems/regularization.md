@@ -73,6 +73,8 @@ Other approaches exist: the discrepancy principle (choose $\epsilon$ so the resi
 
 **Rule of thumb you can remember forever:** Sweep $\epsilon$ on a log scale. Plot the L-curve. Pick the corner — the simplest model that still fits the data within its noise level. Everything else is either drunk (overfitting noise) or dead (ignoring data).
 
+[[simulation l-curve-construction]]
+
 [[simulation tikhonov-regularization]]
 
 Things to look for in the simulation:
@@ -85,15 +87,15 @@ Things to look for in the simulation:
 
 ## The Drunk, the Sober, and the Dead
 
-Here's a picture that will stay with you. Imagine solving the same inverse problem with three different values of $\epsilon$:
+Here's a picture that will stay with you. Three regularization regimes, three personalities:
 
-**$\epsilon \approx 0$ (no regularization):** The solution fits every data point, including noise. It's wild, oscillatory, physically absurd — like a drunk person trying to walk a straight line. This is **overfitting**.
+**The Drunk** ($\epsilon \approx 0$). No regularization. The solution lurches through every data point, noise included — wild, oscillatory, physically absurd. It has memorized the measurement errors and mistaken them for geology. This is **overfitting**.
 
-**$\epsilon$ just right:** The solution captures the real features of the model while staying smooth and physically plausible. Sober. Clear-eyed. This is the answer you want.
+**The Sober** ($\epsilon$ just right). The solution captures every real feature while ignoring the noise. Smooth where the Earth is smooth, sharp where the Earth is sharp. Clear-eyed. This is the answer you want.
 
-**$\epsilon$ way too large:** The solution is flat, featureless, boring. It's so afraid of complexity that it sees nothing. Dead. This is **underfitting**.
+**The Dead** ($\epsilon$ huge). Too much regularization. The solution is flat, featureless, comatose — so terrified of complexity that it sees nothing at all. This is **underfitting**.
 
-Drunk. Sober. Dead. Your job is to find the sober one.
+Your entire job in regularization is finding the sober regime — where the party ends and science begins.
 
 ---
 

@@ -7,6 +7,7 @@ import { useFullscreen } from "@/lib/use-fullscreen";
 import { FullscreenButton } from "@/components/ui/fullscreen-button";
 import { SimulationFullscreenProvider } from "@/lib/simulation-fullscreen-context";
 import { SIMULATION_DESCRIPTIONS } from "@/lib/simulation-descriptions";
+import { InlineSuggestionBox } from "@/components/layout/InlineSuggestionBox";
 
 type GraphComponent = React.ComponentType<{ type: string; params?: Record<string, number> }>;
 type LoadResult = {
@@ -185,6 +186,85 @@ export function SimulationHost({ id }: { id: string }) {
 
   const { isFullscreen, toggle: toggleFullscreen } = useFullscreen(containerRef);
 
+  // Minimal fullscreen effect: index charts for CSS stacking, handle multi-main split,
+  // and promote charts to mains when there is no primary visualization.
+  // Layout is driven by CSS classes (.sim-fs-main, [data-fs-role] selectors).
+  // Deferred by one frame so React has flushed data-fs-role attributes.
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container || !isFullscreen) return;
+
+    const cleanup: (() => void)[] = [];
+
+    const rafId = requestAnimationFrame(() => {
+      const fsContent = container.querySelector(".sim-fs-content");
+      if (!fsContent) return;
+
+      const mains = fsContent.querySelectorAll<HTMLElement>(".sim-fs-main");
+      const charts = fsContent.querySelectorAll<HTMLElement>("[data-fs-role='chart']");
+
+      // Fallback: chart-only simulations (no SimulationMain, no plain canvas/video).
+      // Promote all charts to act as mains — fill the viewport side by side.
+      const hasPlainCanvas = fsContent.querySelector(
+        "canvas:not([data-fs-role] canvas), video:not([data-fs-role] video)",
+      );
+      if (mains.length === 0 && !hasPlainCanvas && charts.length > 0) {
+        const n = charts.length;
+        const slice = 100 / n;
+        charts.forEach((c, i) => {
+          c.classList.add("sim-fs-main");
+          cleanup.push(() => c.classList.remove("sim-fs-main"));
+          // Remove chart overlay positioning
+          const prevRole = c.dataset.fsRole;
+          c.dataset.fsRole = "main";
+          cleanup.push(() => {
+            if (prevRole) c.dataset.fsRole = prevRole;
+          });
+          // Side-by-side split for multiple charts
+          if (n > 1) {
+            const prevLeft = c.style.left;
+            const prevWidth = c.style.width;
+            c.style.left = `${i * slice}%`;
+            c.style.width = `${slice}%`;
+            cleanup.push(() => {
+              c.style.left = prevLeft;
+              c.style.width = prevWidth;
+            });
+          }
+        });
+        return;
+      }
+
+      // Multi-main side-by-side split
+      if (mains.length > 1) {
+        const slice = 100 / mains.length;
+        mains.forEach((m, i) => {
+          const prevLeft = m.style.left;
+          const prevWidth = m.style.width;
+          m.style.left = `${i * slice}%`;
+          m.style.width = `${slice}%`;
+          cleanup.push(() => {
+            m.style.left = prevLeft;
+            m.style.width = prevWidth;
+          });
+        });
+      }
+
+      // Index charts for CSS stacking (bottom-right grid layout)
+      // Only index charts that remain as overlays (not promoted to mains)
+      const overlayCharts = fsContent.querySelectorAll<HTMLElement>("[data-fs-role='chart']");
+      overlayCharts.forEach((c, i) => {
+        c.dataset.fsChartIndex = String(i);
+        cleanup.push(() => delete c.dataset.fsChartIndex);
+      });
+    });
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      cleanup.forEach((fn) => fn());
+    };
+  }, [isFullscreen]);
+
   const simContent = !isVisible && !hasUserIntent ? (
     <SimulationLoading />
   ) : Simulation ? (
@@ -224,12 +304,21 @@ export function SimulationHost({ id }: { id: string }) {
         </SimulationFullscreenProvider>
       </div>
 
+      {/* Inline caption (normal mode only) */}
+      {!isFullscreen && SIMULATION_DESCRIPTIONS[id] && (
+        <div className="px-4 pt-2 pb-1 text-xs text-[var(--text-soft)]">
+          {SIMULATION_DESCRIPTIONS[id]}
+        </div>
+      )}
+
       {/* Fullscreen title overlay */}
       {isFullscreen && SIMULATION_DESCRIPTIONS[id] && (
         <div className="sim-fs-title">
           {SIMULATION_DESCRIPTIONS[id]}
         </div>
       )}
+
+      {isFullscreen && <InlineSuggestionBox />}
 
       <FullscreenButton
         isFullscreen={isFullscreen}

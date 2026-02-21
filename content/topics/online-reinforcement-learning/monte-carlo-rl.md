@@ -24,6 +24,8 @@ That is it. Play many episodes, average the returns for each state, and the law 
 
 ## Variants: when to count the visit
 
+*Try it yourself: if a state appears three times in one episode, which variant — first-visit or every-visit — uses more data, and which gives cleaner statistical guarantees? Guess before reading.*
+
 **First-visit MC** only uses the return from the *first* time you visit a state in an episode. If you pass through state $s$ three times in one episode, you only record the return from the first visit. This gives you independent samples (across episodes) and clean convergence guarantees.
 
 **Every-visit MC** uses the return from *every* visit to state $s$ within an episode. You get more data per episode, but the samples within an episode are correlated. Both variants converge to the right answer, but their finite-sample properties differ.
@@ -32,7 +34,7 @@ That is it. Play many episodes, average the returns for each state, and the law 
 
 **On-policy MC control** learns about the policy it is actually following. You play episodes using an epsilon-greedy policy (mostly exploit, sometimes explore), compute returns, update action-values, and improve the policy. The exploration keeps you from getting stuck, and the updates keep improving the policy. It is simple and stable.
 
-**Off-policy MC** is trickier but more flexible. You collect episodes using one policy (the behavior policy) and use importance sampling to correct the returns so they reflect a *different* policy (the target policy). This is useful when you want to learn about the optimal policy while exploring with a safe, exploratory policy. The importance-sampling correction can have high variance, though, so you need many episodes for the estimates to settle down.
+**Off-policy MC** is trickier but more flexible. You collect episodes using one policy (the behavior policy) and use importance sampling to correct the returns so they reflect a *different* policy (the target policy). This is the same importance-sampling trick we saw in [EXP3's loss estimates](./bandits-ucb-exp3) — correcting for the mismatch between what you observed and what you needed. It is useful when you want to learn about the optimal policy while exploring with a safe, exploratory policy. The importance-sampling correction can have high variance, though, so you need many episodes for the estimates to settle down.
 
 ## Trade-offs: why MC is both wonderful and frustrating
 
@@ -44,6 +46,8 @@ Monte Carlo is also **naturally episodic**. You have to wait until the episode e
 
 [[simulation monte-carlo-convergence]]
 
+[[simulation blackjack-trajectory]]
+
 ## Big Ideas
 * Monte Carlo is the law of large numbers applied to sequential decisions. No equations, no model — just averaging enough experience until the truth emerges from the noise.
 * Low bias and high variance is the fundamental trade-off. Unbiased targets are expensive: you have to wait for the whole episode to finish and then survive the noise of every random decision along the way.
@@ -52,9 +56,7 @@ Monte Carlo is also **naturally episodic**. You have to wait until the episode e
 
 ## What Comes Next
 
-Monte Carlo methods wait until the episode is over before updating anything. That is clean and unbiased, but it can be maddeningly slow. Every time step that passes is a missed opportunity to refine your estimates.
-
-Temporal-difference learning asks: why wait? After a single transition, you already have a reward and a next state. You can bootstrap — use your current estimate of the next state's value as part of the learning target, and update right away. The next lesson develops this idea into TD(0), SARSA, and Q-learning: the trio of algorithms that learn online, one step at a time, and form the backbone of modern model-free RL.
+Monte Carlo waits until the episode ends — clean and unbiased, but maddeningly slow. Temporal-difference learning asks: why wait? After a single transition, you can bootstrap — update right away using the next state's estimated value. The next lesson develops TD(0), SARSA, and Q-learning: the backbone of modern model-free RL.
 
 ## Check Your Understanding
 1. Why does first-visit MC produce unbiased estimates of $V^\pi(s)$, while every-visit MC produces biased estimates within an episode? Does every-visit MC still converge to the correct value asymptotically?

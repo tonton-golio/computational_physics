@@ -6,30 +6,11 @@ The answer is statistics. When you have an enormous number of particles, the law
 
 ## Microcanonical Ensemble
 
-The central assumption of statistical mechanics is the principle of *equal a priori probabilities*: all microstates that share a given total energy are equally likely. There is no favoritism. Nature does not prefer one arrangement of molecular speeds over another, as long as the energy adds up.
-
-With this assumption, the probability of finding the system in a particular microstate $i$ is simply
-$$
-    P_i = \frac{1}{\Omega},
-$$
-where $\Omega$ is the total number of microstates with energy $E$.
-
-Think of it this way: if you have a jar with $\Omega$ lottery tickets and each one is equally likely, the chance of drawing any particular ticket is $1/\Omega$. That is all this equation says.
-
-Ludwig Boltzmann connected this counting of states to thermodynamics through his famous entropy formula:
+The central assumption of statistical mechanics is the principle of *equal a priori probabilities*: all microstates that share a given total energy $E$ are equally likely, so the probability of any one microstate is $P_i = 1/\Omega$, where $\Omega$ is the total number of microstates at that energy. Boltzmann's great insight was that the thermodynamic entropy is simply a measure of this count:
 $$
     S = k_\mathrm{B} \ln \Omega.
 $$
-Here $k_\mathrm{B}$ is Boltzmann's constant. More microstates means more entropy. A system left to itself will find its way to the macrostate with the most microstates, because that is simply the most probable outcome.
-
-Temperature then emerges as a statistical quantity:
-$$
-    \frac{1}{T}
-    = \frac{\partial S}{\partial E}
-    = k_\mathrm{B} \frac{\partial}{\partial E} \ln \Omega.
-$$
-
-Temperature tells you how fast the number of available states grows as you add energy. If adding a little energy opens up a huge number of new states, the system is cold. If the number of states barely changes, the system is hot.
+More microstates means more entropy, and a system left to itself will find its way to the macrostate with the most microstates, because that is simply the most probable outcome. The key conceptual point is that "disorder" wins not because it is preferred, but because disordered macrostates correspond to overwhelmingly more microstates. From this single formula, temperature emerges as a derived quantity, $1/T = \partial S / \partial E$, measuring how fast the number of accessible states grows when you add energy. If adding a little energy opens up a huge number of new states, the system is cold; if the count barely changes, the system is hot. For the classic worked example (counting states of an ideal gas via phase-space volume and Stirling's approximation to recover the Sackur-Tetrode equation), see Schroeder, *An Introduction to Thermal Physics*, Ch. 2, or Pathria & Beale, *Statistical Mechanics*, Ch. 1.
 
 ## Canonical Ensemble
 
@@ -118,6 +99,8 @@ This is the **Boltzmann distribution**: the probability of finding the system in
 
 ### Partition function, free energy, and thermodynamic observables
 
+Imagine you have a huge library of every possible arrangement of energy among the particles in your system. Some arrangements have low energy, some high. The partition function is a single number that summarizes the entire library: it is a weighted catalog where each arrangement is counted, but high-energy arrangements are exponentially discounted. Once you have this catalog, you can look up any thermodynamic quantity — energy, entropy, heat capacity — just by taking derivatives. It is the Rosetta Stone of statistical mechanics.
+
 The **partition function** is the normalization constant that makes probabilities add up to one:
 $$
 \begin{align*}
@@ -193,6 +176,8 @@ $$
 $$
     \chi_T = - \left.\frac{\partial^2 F}{\partial H^2} \right|_T.
 $$
+
+[[simulation two-level-system]]
 
 Just as the specific heat is the variance of energy, the susceptibility is the **variance of magnetization**:
 $$

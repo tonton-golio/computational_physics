@@ -49,6 +49,8 @@ $$
 
 The $\sqrt{n+1}$ dependence is a purely quantum effect. For a coherent state input $|\alpha\rangle$ with $\bar{n} = |\alpha|^2$ photons, different Fock components oscillate at different frequencies $\Omega_n$, leading to **collapse and revival** of the Rabi oscillations. The initial oscillations collapse on a timescale $t_c \sim 1/(g\sqrt{\bar{n}})$ due to dephasing, then revive at $t_r \sim 2\pi\sqrt{\bar{n}}/g$ when the phases realign.
 
+[[simulation jaynes-cummings-revival]]
+
 ## Dispersive Regime
 
 When the detuning is large ($|\Delta| \gg g\sqrt{n+1}$), the atom and field exchange only virtual excitations. Perturbation theory gives an effective Hamiltonian

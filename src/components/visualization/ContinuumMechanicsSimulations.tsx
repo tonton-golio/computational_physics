@@ -9,6 +9,18 @@ import ElasticWave from './continuum-mechanics/ElasticWave';
 import StressTensorDiagram from './continuum-mechanics/StressTensorDiagram';
 import HookesLawDiagram from './continuum-mechanics/HookesLawDiagram';
 import DensityFluctuations from './continuum-mechanics/DensityFluctuations';
+import AveragingVolume from './continuum-mechanics/AveragingVolume';
+import DeformationGrid from './continuum-mechanics/DeformationGrid';
+import PSWaveAnimation from './continuum-mechanics/PSWaveAnimation';
+import ArchimedesStability from './continuum-mechanics/ArchimedesStability';
+import BernoulliStreamline from './continuum-mechanics/BernoulliStreamline';
+import BoundaryLayer from './continuum-mechanics/BoundaryLayer';
+import PoiseuilleVsPowerLaw from './continuum-mechanics/PoiseuilleVsPowerLaw';
+import DispersionRelation from './continuum-mechanics/DispersionRelation';
+import StokesFlowDemo from './continuum-mechanics/StokesFlowDemo';
+import GlacierCrossSection from './continuum-mechanics/GlacierCrossSection';
+import FEMConvergence from './continuum-mechanics/FEMConvergence';
+import UnifiedMap from './continuum-mechanics/UnifiedMap';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 
@@ -307,6 +319,18 @@ export const CONTINUUM_MECHANICS_SIMULATIONS: Record<string, React.ComponentType
   'stress-tensor-diagram': StressTensorDiagram,
   'hookes-law-diagram': HookesLawDiagram,
   'density-fluctuations': DensityFluctuations,
+  'averaging-volume': AveragingVolume,
+  'deformation-grid': DeformationGrid,
+  'ps-wave-animation': PSWaveAnimation,
+  'archimedes-stability': ArchimedesStability,
+  'bernoulli-streamline': BernoulliStreamline,
+  'boundary-layer': BoundaryLayer,
+  'poiseuille-vs-power-law': PoiseuilleVsPowerLaw,
+  'dispersion-relation': DispersionRelation,
+  'stokes-flow-demo': StokesFlowDemo,
+  'glacier-cross-section': GlacierCrossSection,
+  'fem-convergence': FEMConvergence,
+  'unified-map': UnifiedMap,
 };
 
 // ============ CO-LOCATED DESCRIPTIONS ============
@@ -320,4 +344,16 @@ export const CONTINUUM_DESCRIPTIONS: Record<string, string> = {
   "stress-tensor-diagram": "Stress tensor diagram — the components of the Cauchy stress tensor acting on an infinitesimal element.",
   "hookes-law-diagram": "Hooke's law — the linear relationship between stress and strain in the elastic regime of material deformation.",
   "density-fluctuations": "Density fluctuation analysis — examining spatial variations in material density and their statistical properties.",
+  "averaging-volume": "Averaging volume convergence — showing how density fluctuations decrease as 1/sqrt(N) with increasing averaging volume, validating the continuum approximation.",
+  "deformation-grid": "2D deformation grid — visualising how different strain states (pure shear, simple shear, uniaxial, biaxial) transform a regular grid.",
+  "ps-wave-animation": "P-wave vs S-wave animation — contrasting longitudinal (compressional) and transverse (shear) particle displacements in elastic wave propagation.",
+  "archimedes-stability": "Archimedes' principle and floating stability — showing buoyancy, draft, and metacentric height for a rectangular floating body.",
+  "bernoulli-streamline": "Bernoulli streamline — flow through a converging-diverging channel showing velocity increase and pressure drop at the throat (Venturi effect).",
+  "boundary-layer": "Boundary layer profiles — Blasius velocity profiles at different stations along a flat plate, showing boundary layer growth with downstream distance.",
+  "poiseuille-vs-power-law": "Poiseuille vs power-law flow — comparing Newtonian parabolic and power-law velocity profiles in pipe flow, including glacier rheology (Glen's law).",
+  "dispersion-relation": "Gravity-capillary dispersion relation — plotting omega vs k for gravity and capillary waves, with phase and group velocities and water depth dependence.",
+  "stokes-flow-demo": "Stokes creeping flow — streamlines around a sphere at low Reynolds number with fore-aft symmetry, and Stokes drag scaling linearly with velocity.",
+  "glacier-cross-section": "Glacier cross-section — ice flow velocity and shear stress profiles through a glacier slab using Glen's power-law rheology.",
+  "fem-convergence": "FEM convergence study — L2 error vs number of elements for the 1D bar problem, confirming O(h^2) convergence for linear elements.",
+  "unified-map": "Continuum mechanics concept map — a node-link diagram showing the logical connections between the main topics from continuum approximation to FEM.",
 };

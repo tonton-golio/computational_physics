@@ -10,6 +10,8 @@ The answer is the **p-value**. And here is where most people get confused, so le
 
 The p-value is *not* the probability that your hypothesis is true. It's the probability you'd see data this extreme *if your hypothesis were true*. That's a huge difference — like the difference between "the suspect is probably guilty" and "an innocent person would almost never look this suspicious." The first is a statement about the suspect. The second is a statement about innocent people. They sound similar. They are not the same thing.
 
+Think of it this way: a p-value is like the probability of being dealt a royal flush given that you are not cheating — not the probability that you are cheating.
+
 A small p-value means the data would be very surprising under $H_0$, so you reject it. The threshold for "surprising enough" is the **significance level** $\alpha$ (typically 0.05). You can perform **one-tailed** tests ("is the effect in *this* direction?") or **two-tailed** tests ("is there *any* effect at all?").
 
 ## The Testing Toolkit
@@ -59,6 +61,8 @@ The **Runs test** checks whether a sequence of two-valued data is random. Given 
 
 it counts the number of "runs" (consecutive sequences of the same value). Too few runs suggest clustering; too many suggest alternation. Either way, the sequence is not random.
 
+[[simulation residual-pattern]]
+
 ## Comparing Models: The Likelihood Ratio Test
 
 The tests above compare data to a single hypothesis. But often you want to compare two competing models: does adding an extra parameter significantly improve the fit? This is where the **likelihood ratio test** connects hypothesis testing to the [chi-square framework](./chi-square-method).
@@ -89,7 +93,7 @@ Before moving on, here is a cautionary tale about what can go wrong when you tes
 
 A famous example: in 1973, UC Berkeley was accused of gender bias in graduate admissions. The overall admission rate was significantly higher for men than for women. Case closed? Not quite. When researchers looked department by department, women were admitted at *equal or higher* rates in most departments. The paradox arose because women disproportionately applied to the most competitive departments (with low admission rates for everyone), while men applied to less competitive ones.
 
-The lesson is fundamental: aggregated data can tell a completely different story than disaggregated data. Whenever you run a hypothesis test, ask yourself whether a lurking variable — one you haven't accounted for — could be confounding the results. Simpson's paradox is the strongest argument for careful experimental design, which is exactly where we go next. Your fertilizer worked... or did it? Three fields look different — but is it real or just soil noise? That's ANOVA.
+The lesson is fundamental: aggregated data can tell a completely different story than disaggregated data. Whenever you run a hypothesis test, ask yourself whether a lurking variable — one you haven't accounted for — could be confounding the results. Simpson's paradox is the strongest argument for careful experimental design, which is exactly where we go next.
 
 ## Big Ideas
 
@@ -100,9 +104,9 @@ The lesson is fundamental: aggregated data can tell a completely different story
 
 ## What Comes Next
 
-So far you can compare one group to a standard, or two groups to each other. But experiments often involve three, four, or a dozen groups — and running t-tests on every pair creates a dangerous multiplicity problem: with enough comparisons, you will find "significant" differences by pure chance.
+You now have a toolkit for testing whether data supports or undermines a hypothesis. But every test you've seen assumes the data was collected properly. Before you can analyze multi-group experiments, you need to learn how to *collect* the data in the first place — how to randomize, replicate, block, and determine sample size so that your statistical tests actually answer the question you're asking.
 
-Analysis of variance solves this with a single test. The core idea is the same ratio you already understand from hypothesis testing: signal relative to noise. But now the signal is the spread of group means and the noise is the scatter within each group.
+That's the subject of experimental design, and it's where we go next.
 
 ## Check Your Understanding
 

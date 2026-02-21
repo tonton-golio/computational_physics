@@ -50,8 +50,6 @@ Here is a practical decision guide:
 * **You need a fast nonlinear embedding that scales** — use UMAP. It handles large datasets well and often gives clearer global structure than t-SNE.
 * **PCA underperforms and you need a learnable, nonlinear embedding** — use autoencoders. Especially valuable when you want to train the embedding end-to-end with a downstream model.
 
-[[figure aml-dimred-comparison]]
-
 ## Interactive simulations
 
 [[simulation aml-pca-correlated-data]]
@@ -76,9 +74,9 @@ Here is a practical decision guide:
 
 ## What Comes Next
 
-Dimensionality reduction is often a means to an end rather than a destination. PCA as a preprocessing step improves the conditioning of everything downstream. Autoencoder embeddings feed into classifiers, clustering algorithms, and generative models. And the latent-space idea — compressing a complex object into a compact code — is the conceptual bridge to the generative architectures that follow.
+Dimensionality reduction is often a means to an end rather than a destination. PCA as a preprocessing step improves the conditioning of everything downstream. Autoencoder embeddings feed into classifiers, clustering algorithms, and generative models. And the latent-space idea — compressing a complex object into a compact code — is the conceptual bridge to representation learning in neural networks.
 
-Generative adversarial networks, covered next, take a compressed noise vector and learn to expand it into realistic data. That generator is essentially a decoder with no corresponding encoder — and understanding autoencoders first makes the GAN architecture much easier to reason about. The deeper question they all share is the same: what is the true geometry of the data, and how do we navigate it?
+Now that you have seen loss functions, tree-based models, and how to compress and visualize high-dimensional data, you are ready for neural network fundamentals. Neural networks take the optimization ideas from lesson one and scale them to millions of parameters, learning their own features directly from raw data — no hand-engineering required. The ideas you built in this module — explained variance, intrinsic dimensionality, bottleneck representations — will reappear when you study autoencoders, variational models, and the latent spaces that power generative architectures.
 
 ## Check your understanding
 

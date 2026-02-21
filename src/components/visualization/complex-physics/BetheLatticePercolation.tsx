@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import { Slider } from '@/components/ui/slider';
 import { useTheme } from '@/lib/use-theme';
 
@@ -368,14 +369,16 @@ export function BetheLatticePercolation() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <TreeCanvas
-          nodes={nodes}
-          adj={adj}
-          percolatedAdj={percolatedAdj}
-          componentOf={componentOf}
-          numComponents={numComponents}
-          isDark={isDark}
-        />
+        <SimulationMain scaleMode="contain">
+          <TreeCanvas
+            nodes={nodes}
+            adj={adj}
+            percolatedAdj={percolatedAdj}
+            componentOf={componentOf}
+            numComponents={numComponents}
+            isDark={isDark}
+          />
+        </SimulationMain>
 
         <CanvasChart
           data={[

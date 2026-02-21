@@ -48,6 +48,8 @@ Things to look for in the simulation:
 * Look for the elongated depth-vs-slip trade-off: shallow+large-slip and deep+small-slip produce similar surface data
 * The total seismic moment (depth x slip) is tightly constrained even when individual parameters aren't
 
+[[simulation tradeoff-cloud]]
+
 ### What the Posterior Tells Us
 
 Watch the simulation carefully. The chain doesn't settle on a single answer — it wanders through a cloud of plausible fault configurations. Some things are well-determined: the total seismic moment (roughly, depth × slip) is tightly constrained because it controls the total amount of surface displacement. But there's a **trade-off**: a shallow fault with large slip can produce similar surface displacements as a deeper fault with smaller slip.
@@ -117,6 +119,20 @@ The answer to an inverse problem is never a single number. The answer is always 
 
 ---
 
+## Resolution and Coverage
+
+Both examples raise a practical question: where in the model can the data actually resolve structure, and where is it effectively blind?
+
+Two standard diagnostic tests answer this:
+
+**Spike test.** Place a single compact anomaly — a delta function — at one location in the model. Generate synthetic data and invert. If the recovered anomaly is sharp and localized, that region is well-resolved. If it smears into a broad blob, the data geometry there is poor. In the fault example, a spike near the surface recovers cleanly because surface stations are close. A spike at depth smears because the displacement signal decays and the depth-slip trade-off kicks in.
+
+**Checkerboard test.** Create an alternating pattern of positive and negative anomalies across the model grid. Generate synthetic data and invert. Where the checkerboard recovers cleanly, you have good resolution. Where it degrades into gray mush, you don't. In the glacier example, a checkerboard in the bed topography recovers well near the glacier edges (thin ice, strong surface signal) and poorly near the center (thick ice, weak sensitivity).
+
+The smearing pattern tells you exactly what the data can and cannot see — and this depends on the acquisition geometry, not on the inversion algorithm. You can't fix bad survey design with clever math. This is why resolution diagnostics belong alongside the posterior: the posterior tells you *what* the data says, and the resolution analysis tells you *where* the data has the authority to say it.
+
+---
+
 ## Connection to Regularization
 
 Recall from [Bayesian Inversion](./bayesian-inversion) that Tikhonov regularization corresponds to a Gaussian prior (under Gaussian noise and a quadratic penalty). MCMC generalizes this — instead of finding a single regularized optimum, we explore the full posterior distribution. These examples show why that matters:
@@ -131,6 +147,7 @@ Recall from [Bayesian Inversion](./bayesian-inversion) that Tikhonov regularizat
 * A trade-off between depth and slip is not a failure of the inversion — it is a fact about the data. The posterior captures it honestly; a point estimate buries it.
 * Well-constrained and poorly-constrained regions coexist in every real inversion. Identifying which is which is as scientifically important as the best-fit model itself.
 * The smoothness prior is not an arbitrary aesthetic preference — it encodes the physical fact that geological structures do not change abruptly at the meter scale. Without it, any inversion becomes a Rorschach test.
+* Resolution depends on geometry, not just algorithm. Spike tests and checkerboard tests reveal where the data has resolving power — no amount of clever inversion can compensate for a geometry that doesn't illuminate the target.
 * When two different forward models can explain your data equally well, the right response is not to pick one. The right response is to report both, and to quantify what additional data would break the ambiguity.
 
 ## What Comes Next

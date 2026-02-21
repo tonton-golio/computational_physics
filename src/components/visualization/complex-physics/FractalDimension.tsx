@@ -2,6 +2,7 @@
 
 import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import { Slider } from '@/components/ui/slider';
 import { useTheme } from '@/lib/use-theme';
 
@@ -209,7 +210,7 @@ export function FractalDimension() {
       <div className="flex flex-wrap gap-6 items-center">
         <div>
           <label className="mb-1 block text-sm text-[var(--text-muted)]">Resolution: {resolution}</label>
-          <Slider value={[resolution]} onValueChange={([v]) => setResolution(v)} min={64} max={256} step={32} />
+          <Slider value={[resolution]} onValueChange={([v]) => setResolution(v)} min={64} max={512} step={64} />
         </div>
         <div>
           <label className="mb-1 block text-sm text-[var(--text-muted)]">Iterations: {maxIter}</label>
@@ -225,9 +226,9 @@ export function FractalDimension() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* p5.js Fractal Rendering */}
-        <div className="rounded-lg overflow-hidden" style={{ background: isDark ? '#0a0a0f' : '#f0f4ff' }}>
+        <SimulationMain scaleMode="contain" className="rounded-lg overflow-hidden" style={{ background: isDark ? '#0a0a0f' : '#f0f4ff' }}>
           <FractalCanvas mask={mask} resolution={resolution} isDark={isDark} />
-        </div>
+        </SimulationMain>
 
         {/* Box-counting log-log plot */}
         <CanvasChart

@@ -24,8 +24,6 @@ Eigenvalues appear throughout physics and engineering:
 
 *Every time you ask "what are the natural modes of this system?" you're asking an eigenvalue question.*
 
-[[figure eigen-applications]]
-
 ---
 
 ## Mathematical Foundations
@@ -62,8 +60,6 @@ The characteristic polynomial $P(\lambda) = \det(A-\lambda I)$ is of degree $n$,
 
 1. **Algebraic multiplicity**: How many times $\lambda_i$ appears in the characteristic polynomial
 2. **Geometric multiplicity**: Dimension of the eigenspace $E_\lambda$
-
-[[figure multiplicity-diagram]]
 
 **Key inequality**: Geometric multiplicity $\leq$ algebraic multiplicity
 
@@ -158,8 +154,6 @@ def power_iterate(A, x0, tol=1e-10, max_iter=1000):
 * Fails if the dominant eigenvalue is not unique
 * Slow convergence when $|\lambda_1| \approx |\lambda_2|$ (small spectral gap)
 
-[[figure convergence-comparison]]
-
 ---
 
 ### Inverse Iteration — finding eigenvalues near a target
@@ -240,7 +234,7 @@ def rayleigh_quotient_iteration(A, x0, tol=1e-12, max_iter=100):
     return eigenvalue, x, max_iter
 ```
 
-How can convergence be *cubic*? It is insane — and beautiful. The Rayleigh quotient is an optimally accurate eigenvalue estimate for a given eigenvector approximation. As the eigenvector improves, the shift gets better, which makes the inverse iteration converge faster, which improves the eigenvector faster... It's a virtuous cycle that accelerates explosively.
+How can convergence be *cubic*? It is insane — and beautiful. Here is the feedback loop that makes it happen. The Rayleigh quotient $\lambda_R(x)$ is not just any eigenvalue estimate — it is the *optimal* estimate for a given direction $x$, in the sense that its error is quadratic in the eigenvector error: $|\lambda_R - \lambda^*| = O(\|x - x^*\|^2)$. Now watch the cycle: (1) a better eigenvector gives a quadratically better shift; (2) a better shift makes the shifted matrix $(A - \lambda_R I)$ more nearly singular along the true eigenvector, so inverse iteration converges faster; (3) faster inverse iteration gives an even better eigenvector. Each step feeds the next with a squared improvement, and composing a quadratic gain with a linear inverse-iteration step yields cubic convergence overall. It is a virtuous cycle that accelerates explosively.
 
 [[simulation rayleigh-convergence]]
 
@@ -315,8 +309,6 @@ def qr_algorithm(A, max_iter=1000, tol=1e-12):
 * **Shifts**: Use Wilkinson or Francis shifts for faster convergence
 * **Implicit QR**: Avoid explicit QR factorization for efficiency
 
-[[figure qr-convergence-plot]]
-
 ---
 
 ### Gershgorin Circle Theorem
@@ -355,8 +347,6 @@ def gershgorin(A):
                       for i in range(n)])
     return centers, radii
 ```
-
-[[figure gershgorin-example]]
 
 > **Challenge.** Make a random 4x4 matrix, compute its Gershgorin circles, and plot them as circles in the complex plane. Then compute the actual eigenvalues with `np.linalg.eig` and plot them as dots. Are they all inside the circles? (They must be!)
 
@@ -401,8 +391,6 @@ Matrix functions connect eigenvalue theory to dynamical systems (via $e^{At}$), 
 | Rayleigh Quotient | Single $\lambda$ | Cubic | $O(n^3)$ | Fast convergence | The shift chases the eigenvalue |
 | QR Algorithm | All $\lambda$ | Quadratic | $O(n^3)$ | All eigenvalues | Factorize and reverse-multiply |
 | Lanczos | $k$ largest/smallest | Superlinear | $O(kn)$ | Large sparse matrices | Only touch what matters |
-
-[[figure algorithm-comparison]]
 
 ---
 

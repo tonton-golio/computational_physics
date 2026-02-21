@@ -181,35 +181,84 @@ body {
   gap: 8px !important;
   padding: 12px;
   position: relative;
+  pointer-events: none;
 }
 
-/* ── Visual children: fill the screen behind everything ── */
-.sim-fs-content > * > *:has(canvas),
-.sim-fs-content > * > *:has(video) {
-  position: absolute !important;
-  top: 44px; /* leave room for title */
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 0;
-  max-width: 100%;
-  max-height: calc(100% - 44px);
-  border-radius: 0 !important;
-  border: none !important;
+/* ── Main visualization (SimulationMain): fill viewport ── */
+.sim-fs-main {
+  position: absolute;
+  top: 44px;
+  left: 0;
+  width: 100%;
+  height: calc(100% - 44px);
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 0;
+  pointer-events: auto;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+  backdrop-filter: none;
 }
 
-/* ── Non-visual, non-labeled children: overlay bottom-left ── */
-.sim-fs-content > * > *:not(:has(canvas)):not(:has(video)):not([data-fs-role]) {
+/* Contain mode: prevent square / aspect-ratio canvases from overflowing */
+.sim-fs-main[data-fs-scale="contain"] > * {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: 100%;
+}
+
+/* Scale p5.js / 2D canvases to fill their main container.
+   Three.js canvases have data-engine and resize automatically. */
+.sim-fs-main canvas:not([data-engine]) {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* ── Fallback: non-hybrid visual children (canvas/video/svg without SimulationMain) ── */
+.sim-fs-content > * > *:has(canvas):not(.sim-fs-main),
+.sim-fs-content > * > *:has(video):not(.sim-fs-main),
+.sim-fs-content > * > *:has(> svg[viewBox]):not(.sim-fs-main) {
+  position: absolute;
+  top: 44px;
+  left: 0;
+  width: 100%;
+  height: calc(100% - 44px);
+  z-index: 0;
+  border-radius: 0;
+  border: none;
+  overflow: hidden;
+  pointer-events: auto;
+}
+
+/* Scale inline SVGs to fill their fallback container */
+.sim-fs-content > * > *:has(> svg[viewBox]):not(.sim-fs-main) > svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Grid/flex wrappers between sim root and role elements: transparent ── */
+.sim-fs-content > * > *:not([data-fs-role]):not(.sim-fs-main):not(:has(canvas)):not(:has(video)):not(:has(> svg[viewBox])) {
   position: relative;
   z-index: 5;
   max-width: min(360px, calc(100% - 24px));
   background: color-mix(in srgb, var(--surface-1) 80%, transparent);
   backdrop-filter: blur(12px);
-  border-radius: 12px !important;
+  border-radius: 12px;
   border: 1px solid var(--border-strong);
   padding: 12px;
   pointer-events: auto;
   flex-shrink: 0;
+}
+
+/* Wrapper divs that contain chart/main children become transparent in fullscreen */
+.sim-fs-content > * > *:has([data-fs-role]):not([data-fs-role]):not(.sim-fs-main) {
+  display: contents;
 }
 
 /* ── Controls (Card, SimulationPanel): overlay bottom-left ── */
@@ -217,33 +266,55 @@ body {
   position: relative;
   z-index: 5;
   max-width: min(360px, calc(100% - 24px));
-  background: color-mix(in srgb, var(--surface-1) 80%, transparent) !important;
+  background: color-mix(in srgb, var(--surface-1) 80%, transparent);
   backdrop-filter: blur(12px);
   pointer-events: auto;
   flex-shrink: 0;
 }
 
-/* ── Charts (CanvasChart): overlay bottom-right ── */
+/* ── Charts (CanvasChart): base overlay style ── */
 .sim-fs-content [data-fs-role="chart"] {
-  position: absolute !important;
-  bottom: 12px;
-  right: 12px;
+  position: absolute;
   z-index: 6;
-  width: min(520px, 45vw) !important;
+  width: min(340px, 25vw);
+  height: min(200px, 25vh);
   background: color-mix(in srgb, var(--surface-1) 80%, transparent);
   backdrop-filter: blur(12px);
-  border-radius: 12px !important;
+  border-radius: 12px;
   border: 1px solid var(--border-strong);
   padding: 8px;
   pointer-events: auto;
+}
+
+/* Chart stacking: positioned by data-fs-chart-index (set by JS) */
+.sim-fs-content [data-fs-role="chart"][data-fs-chart-index="0"] {
+  bottom: 12px;
+  right: 12px;
+}
+.sim-fs-content [data-fs-role="chart"][data-fs-chart-index="1"] {
+  bottom: calc(12px + min(200px, 25vh) + 8px);
+  right: 12px;
+}
+.sim-fs-content [data-fs-role="chart"][data-fs-chart-index="2"] {
+  bottom: 12px;
+  right: calc(12px + min(340px, 25vw) + 8px);
+}
+.sim-fs-content [data-fs-role="chart"][data-fs-chart-index="3"] {
+  bottom: calc(12px + min(200px, 25vh) + 8px);
+  right: calc(12px + min(340px, 25vw) + 8px);
+}
+
+/* Fallback: charts without an index (JS not yet run) stack bottom-right */
+.sim-fs-content [data-fs-role="chart"]:not([data-fs-chart-index]) {
+  bottom: 12px;
+  right: 12px;
 }
 
 /* ── Fullscreen title overlay ── */
 .sim-fs-title {
   position: absolute;
   top: 12px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 12px;
   z-index: 10;
   font-size: 14px;
   font-weight: 600;

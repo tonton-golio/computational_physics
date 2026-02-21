@@ -9,6 +9,18 @@ import MichaelisMenten from './dynamical-models/MichaelisMenten';
 import SteadyStateRegulation from './dynamical-models/SteadyStateRegulation';
 import { LotkaVolterraSim } from './dynamical-models/LotkaVolterraSim';
 import BinomialPoissonComparison from './dynamical-models/BinomialPoissonComparison';
+import BathtubDynamics from './dynamical-models/BathtubDynamics';
+import LuriaDelbruckComparison from './dynamical-models/LuriaDelbruckComparison';
+import BifurcationDiagram from './dynamical-models/BifurcationDiagram';
+import Repressilator from './dynamical-models/Repressilator';
+import ChemotaxisAdaptation from './dynamical-models/ChemotaxisAdaptation';
+import ProteomeAllocation from './dynamical-models/ProteomeAllocation';
+import PhasePlanePortrait from './dynamical-models/PhasePlanePortrait';
+import BacterialLineageTree from './dynamical-models/BacterialLineageTree';
+import GillespieTrajectory from './dynamical-models/GillespieTrajectory';
+import ProductionDegradationCrossings from './dynamical-models/ProductionDegradationCrossings';
+import NotchDeltaCheckerboard from './dynamical-models/NotchDeltaCheckerboard';
+import MotifGallery from './dynamical-models/MotifGallery';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 
@@ -21,6 +33,18 @@ export const DYNAMICAL_MODELS_SIMULATIONS: Record<string, React.ComponentType<Si
   'steady-state-regulation': SteadyStateRegulation as React.ComponentType<SimulationComponentProps>,
   'lotka-volterra': LotkaVolterraSim as React.ComponentType<SimulationComponentProps>,
   'binomial-poisson-comparison': BinomialPoissonComparison as React.ComponentType<SimulationComponentProps>,
+  'bathtub-dynamics': BathtubDynamics as React.ComponentType<SimulationComponentProps>,
+  'luria-delbruck-comparison': LuriaDelbruckComparison as React.ComponentType<SimulationComponentProps>,
+  'bifurcation-diagram': BifurcationDiagram as React.ComponentType<SimulationComponentProps>,
+  'repressilator': Repressilator as React.ComponentType<SimulationComponentProps>,
+  'chemotaxis-adaptation': ChemotaxisAdaptation as React.ComponentType<SimulationComponentProps>,
+  'proteome-allocation': ProteomeAllocation as React.ComponentType<SimulationComponentProps>,
+  'phase-plane-portrait': PhasePlanePortrait as React.ComponentType<SimulationComponentProps>,
+  'bacterial-lineage-tree': BacterialLineageTree as React.ComponentType<SimulationComponentProps>,
+  'gillespie-trajectory': GillespieTrajectory as React.ComponentType<SimulationComponentProps>,
+  'production-degradation-crossings': ProductionDegradationCrossings as React.ComponentType<SimulationComponentProps>,
+  'notch-delta-checkerboard': NotchDeltaCheckerboard as React.ComponentType<SimulationComponentProps>,
+  'motif-gallery': MotifGallery as React.ComponentType<SimulationComponentProps>,
 };
 
 // ============ CO-LOCATED DESCRIPTIONS ============
@@ -34,4 +58,16 @@ export const DYNAMICAL_DESCRIPTIONS: Record<string, string> = {
   "steady-state-regulation": "Steady-state gene regulation — how production and degradation rates determine equilibrium protein concentrations.",
   "lotka-volterra": "Lotka–Volterra predator-prey dynamics — coupled oscillations between predator and prey populations.",
   "binomial-poisson-comparison": "Binomial vs. Poisson comparison — visualizing how the Poisson distribution approximates the binomial for large n and small p.",
+  "bathtub-dynamics": "Bathtub dynamics — time-course approach to steady state with adjustable production and degradation rates.",
+  "luria-delbruck-comparison": "Luria-Delbrück comparison — side-by-side histograms contrasting directed (Poisson) vs spontaneous mutation models.",
+  "bifurcation-diagram": "Bifurcation diagram — interactive hysteresis and saddle-node bifurcations in a positive-feedback gene circuit.",
+  "repressilator": "Repressilator — three-gene oscillator showing how odd-numbered repression rings generate sustained oscillations.",
+  "chemotaxis-adaptation": "Chemotaxis adaptation — receptor activity and methylation dynamics demonstrating perfect adaptation.",
+  "proteome-allocation": "Proteome allocation — interactive pie chart and growth rate curve showing the ribosome-metabolic enzyme tradeoff.",
+  "phase-plane-portrait": "Phase plane portrait — interactive 2D phase portrait with nullclines, vector field, and trajectories for a predator-prey system.",
+  "bacterial-lineage-tree": "Bacterial lineage tree — visual tree showing stochastic partitioning of molecules across dividing bacterial generations.",
+  "gillespie-trajectory": "Gillespie trajectory — stochastic simulation algorithm for a birth-death process, comparing individual trajectories to the ODE mean.",
+  "production-degradation-crossings": "Production vs. degradation — graphical construction of steady states by finding where production and degradation curves cross.",
+  "notch-delta-checkerboard": "Notch-Delta checkerboard — lateral inhibition simulation showing how a regular checkerboard pattern emerges from random initial conditions.",
+  "motif-gallery": "Network motif gallery — interactive gallery of four key network motifs with their step responses and computational personalities.",
 };

@@ -77,7 +77,7 @@ Look at what happened: the spins have decoupled! Each spin $s_i$ now sees an eff
 ## Big Ideas
 
 * An order parameter is a number that is zero above the transition and nonzero below it — it is the system's way of "announcing" that it has chosen a preferred state.
-* Phase transitions are collective phenomena: no single spin decides to align, yet the whole system snaps into order through purely local interactions.
+* Phase transitions are fundamentally about symmetry breaking: the Hamiltonian treats "all up" and "all down" equally, yet the system spontaneously chooses one — the order parameter selects a direction that the underlying physics does not prefer.
 * Mean-field theory tames the many-body problem by replacing all the messy neighbor-neighbor interactions with a single average field — the "wisdom of the crowd" acting on each individual.
 * Dropping the fluctuation-fluctuation term $\delta s_i \, \delta s_j$ is the mean-field approximation: it works well when each spin has many neighbors, and fails badly in low dimensions where fluctuations dominate.
 

@@ -31,6 +31,8 @@ The first term is in the image, the second is in the perpendicular subspace. We 
 
 **So:** the residual of least squares is perpendicular to $Im(A)$.
 
+[[simulation geometric-projection]]
+
 ## The Least Squares Problem
 With given data and a desired function, determine the parameters of the function to minimize the distance to data points.
 
@@ -50,6 +52,8 @@ for all the rows of $A$, the dot product with the residual has to be 0.
 * The only problem is that this has a large condition number: $\text{COND}(A^TA) = \text{COND}(A)^2$
 
 *This says: forming the normal equations squares the condition number. If your matrix was a bit ill-conditioned (say COND = 1000), the normal equations make it horrifically ill-conditioned (COND = 1,000,000). That's like photocopying a blurry photo — every generation makes it worse.*
+
+Here is a more visceral way to see the damage. In double precision you start with about 16 significant digits. The condition number tells you how many of those digits evaporate. If $\text{COND}(A) \approx 10^8$, the normal equations square that to $10^{16}$, and **all sixteen digits disappear** — the answer is pure noise. The normal equations are a photocopier that runs the original through twice: the first pass blurs the image; the second pass makes the blur unreadable.
 
 We're almost at our goal, but not there yet. We've found an efficient solution (the normal equations) which are great for mathematical calculations, but we can't use them because a small error will ruin us because of the squared condition number.
 

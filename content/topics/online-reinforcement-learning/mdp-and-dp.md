@@ -34,6 +34,8 @@ $$
 
 Think of $V^\pi(s)$ as the "worth" of being in state $s$ under policy $\pi$. A state near the goal with a good policy has high value. A state far from the goal or served by a bad policy has low value.
 
+*Try it yourself: in a 3-state chain (start → middle → goal), what does the value function look like when $\gamma = 0$ versus $\gamma = 0.99$? Pause and sketch both before reading on.*
+
 ## The Bellman equation: the fixed point where ice meets water
 
 The Bellman equation is the most important equation in reinforcement learning. It says: the value of a state is the immediate reward plus the discounted value of wherever you end up next.
@@ -64,22 +66,41 @@ These methods are elegant and exact, but they require knowing $P$ and $R$. In th
 [[simulation dp-convergence]]
 [[simulation mdp-simulation]]
 
+### A note on the discount factor
+
+The discount factor $\gamma$ appears everywhere in this lesson — in the value functions, the Bellman equations, the contraction argument. It is easy to treat it as just another number and move on. But it deserves a closer look, because it carries a philosophical assumption that is not always justified.
+
+Why $\gamma < 1$? The mathematical reason is clear: without discounting, the infinite sum $\sum_{t=0}^{\infty} r_t$ can diverge. The discount factor forces convergence by making far-future rewards exponentially small. It also makes the Bellman operator a contraction, which guarantees a unique fixed point and the convergence of value iteration and policy iteration. Without $\gamma < 1$, the fixed-point machinery breaks down.
+
+But there is a deeper issue. The discount factor says that tomorrow's reward is worth less than today's — not because of any feature of the environment, but by modeling convention. A small $\gamma$ produces a myopic agent that grabs whatever is nearby. A $\gamma$ close to 1 produces a far-sighted agent, but also a harder optimization problem (the contraction factor weakens, convergence slows, and numerical conditioning degrades).
+
+For **episodic tasks** — games that end, mazes with exits, problems with a clear terminal state — discounting is a reasonable modeling choice. The episode ends, so the sum is finite even without discounting. Here, $\gamma$ acts as a soft preference for sooner rewards, and nothing goes badly wrong.
+
+For **continuing tasks** — a server that runs 24/7, a robot that never shuts down, a factory line that keeps going — the discount factor becomes philosophically awkward. There is no natural reason why the ten-thousandth time step should matter less than the first. The agent will run just as long tomorrow as it did today. In these settings, $\gamma$ is a mathematical convenience masquerading as a modeling choice, and the resulting policies can depend sensitively on its exact value in ways that have no physical meaning.
+
+This tension motivates the **average-reward formulation** introduced in the [final lesson](./average-reward-online-rl), which removes $\gamma$ entirely and instead asks: what is my average reward per time step in steady state? That formulation sidesteps the awkward question of how much to discount the future by refusing to discount at all.
+
+For now, keep using $\gamma$ — it works well for the episodic and finite-horizon problems in the next several lessons. But remember that it is a choice, not a law.
+
 ## Big Ideas
 * The Markov property is a compression miracle: all the history of how you got here is irrelevant; the current state contains everything you need to act optimally. That is not always true of the real world, but it is a useful lie.
 * The Bellman equation is a self-consistency condition. The value of a state must equal what you get now plus the discounted value of where you end up. Any other assignment is unstable and will correct itself under iteration.
 * Dynamic programming requires a perfect map. The moment you do not know the transition probabilities, the whole edifice becomes learning rather than planning. The next lessons are about learning without a map.
-* The discount factor $\gamma$ is not just a mathematical convenience — it shapes behavior. A small $\gamma$ produces a myopic agent; $\gamma$ close to 1 produces a far-sighted one, but also a harder optimization problem.
+* The discount factor $\gamma$ is not just a mathematical convenience — it shapes behavior. As discussed above, it is a modeling choice that works well for episodic tasks but becomes philosophically awkward for continuing tasks. The [final lesson](./average-reward-online-rl) resolves this with the average-reward formulation.
 
 ## What Comes Next
 
-Dynamic programming solves MDPs perfectly, but only when you already know the model — the transition probabilities and rewards. In the real world, you almost never have that. You have to learn by interacting.
+Dynamic programming solves MDPs perfectly, but only when you know the model. In the real world, you have to learn by interacting. The next lesson introduces Monte Carlo methods: run complete episodes, observe returns, and estimate value functions — no model needed. Understanding its trade-offs (low bias, high variance, requires episode termination) sets up the TD methods that follow.
 
-The next lesson introduces Monte Carlo methods: run complete episodes, observe the total reward, and use those returns to estimate value functions. No model needed, no Bellman backup — just the law of large numbers applied to full trajectories. It is the simplest possible way to learn from experience in a sequential decision problem, and understanding its trade-offs — low bias, high variance, requires episode termination — sets up the more sophisticated TD methods that follow.
+Later, in the [final lesson](./average-reward-online-rl), we will see how optimism-based planning (UCRL) brings together the model-based perspective from dynamic programming with the regret analysis from the opening lessons.
 
 ## Check Your Understanding
 1. The Bellman optimality operator is a contraction with factor $\gamma$ under the max-norm. What does this mean geometrically, and why does it guarantee that value iteration converges to $V^*$?
 2. Policy iteration alternates evaluation and greedy improvement. Why is the improved policy guaranteed to be at least as good as the old one after each improvement step?
 3. Suppose you have a 100-state MDP and you want to compute $V^\pi$ for a fixed policy $\pi$. When would you prefer matrix inversion over iterative policy evaluation, and when would you prefer iteration?
 
-## Challenge
+## Challenge (Advanced)
+
+**Advanced challenge (optional).** This exercise is aimed at students who want to go beyond the core material.
+
 Design a small MDP (5 states, 2 actions) where policy iteration converges in exactly 2 improvement steps but value iteration requires many sweeps to achieve the same accuracy. Compute both the exact optimal policy and the number of value-iteration sweeps needed to get within $\epsilon = 0.01$ of $V^*$ in the $\ell^\infty$ norm. What does this reveal about the relationship between policy and value convergence rates?

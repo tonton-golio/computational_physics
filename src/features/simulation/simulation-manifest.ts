@@ -108,6 +108,9 @@ const ONLINE_REINFORCEMENT_IDS = new Set<string>([
   "sarsa-vs-qlearning",
   "dqn-stability",
   "average-reward-vs-discounted",
+  "blackjack-trajectory",
+  "cliff-walking",
+  "replay-buffer-explorer",
 ]);
 
 function loadRegistry(group: RegistryGroup): Promise<SimulationRegistry> {

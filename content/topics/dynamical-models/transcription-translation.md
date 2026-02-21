@@ -10,23 +10,19 @@ Imagine tuning a radio in a noisy room. The raw signal from the antenna jitters 
 
 This two-timescale structure is not a bug — it is a feature. It means protein levels are naturally buffered against rapid noise in transcription. Nature builds its own low-pass filter.
 
-[[figure two-timescale-response]]
-
 ## The equations
 
 For **transcription**, mRNA is produced at rate $k_\mathrm{m}$ and degraded at rate $\Gamma_\mathrm{m}$:
 
-$$
-\frac{\mathrm{d} n_\mathrm{m}(t)}{\mathrm{d} t} = k_\mathrm{m} - \Gamma_\mathrm{m} \, n_\mathrm{m}(t).
-$$
+> **Key Equation — Coupled Transcription-Translation**
+> $$
+> \frac{\mathrm{d} n_\mathrm{m}}{\mathrm{d} t} = k_\mathrm{m} - \Gamma_\mathrm{m} \, n_\mathrm{m}, \qquad \frac{\mathrm{d} n_\mathrm{p}}{\mathrm{d} t} = k_\mathrm{p} \, n_\mathrm{m} - \Gamma_\mathrm{p} \, n_\mathrm{p}
+> $$
+> mRNA follows a bathtub equation; protein production depends on how much mRNA is present, coupling the two timescales.
 
-> *This is exactly the [bathtub equation](./differential-equations), applied to mRNA.*
+> *The first equation is exactly the [bathtub equation](./differential-equations), applied to mRNA.*
 
-For **translation**, protein is produced at a rate proportional to the number of mRNA molecules (more mRNA means more ribosomes translating) and degraded at rate $\Gamma_\mathrm{p}$:
-
-$$
-\frac{\mathrm{d} n_\mathrm{p}(t)}{\mathrm{d} t} = k_\mathrm{p} \, n_\mathrm{m}(t) - \Gamma_\mathrm{p} \, n_\mathrm{p}(t).
-$$
+For **translation**, protein is produced at a rate proportional to the number of mRNA molecules (more mRNA means more ribosomes translating) and degraded at rate $\Gamma_\mathrm{p}$.
 
 > *Notice the key difference: the production of protein depends on how much mRNA is present. These two equations are coupled.*
 
@@ -62,9 +58,19 @@ $$
 
 > *The switch from number to concentration is just a rescaling — the physics does not change. But be careful: when cells grow and divide, the volume changes, and dilution acts like an extra degradation term.*
 
+## Scaling and dimensionless variables
+
+There is one more rescaling trick that will pay dividends throughout this course. Instead of working with raw numbers or concentrations, measure time in units of the half-life ($\tilde{t} = \Gamma \, t$) and concentration in units of some characteristic scale — for example, the steady-state level $n_\mathrm{ss}$ itself. Define $\tilde{n} = n / n_\mathrm{ss}$. Then the bathtub equation becomes:
+
+$$
+\frac{\mathrm{d} \tilde{n}}{\mathrm{d} \tilde{t}} = 1 - \tilde{n}.
+$$
+
+All the parameters have disappeared. The solution $\tilde{n}(\tilde{t}) = 1 - e^{-\tilde{t}}$ is universal: *every* bathtub equation, regardless of its specific $k$ and $\Gamma$, follows the same dimensionless curve. This is the power of nondimensionalization — it strips away the details and reveals the universal behavior. When we later encounter the Hill function, the natural concentration scale will be the dissociation constant $K$, and measuring in units of $K$ will again collapse many different systems onto a single curve.
+
 ## Why does nature do it this way?
 
-Why have two separate steps (transcription and translation) instead of going directly from DNA to protein? One reason is **amplification**: each mRNA molecule can be translated many times, so a single gene can produce thousands of protein copies. Another reason is **control**: the cell can regulate gene expression at either step independently — adjusting how much mRNA is made, how fast it is degraded, or how efficiently it is translated. Two knobs are better than one.
+We saw in the [previous lesson](./differential-equations) that degradation lets a cell change its mind quickly. The two-step design adds two further advantages: **amplification** (each mRNA is translated many times, turning one gene into thousands of protein copies) and **independent control** (the cell can regulate transcription and translation separately — two knobs instead of one).
 
 ## Check your understanding
 
@@ -74,7 +80,7 @@ Why have two separate steps (transcription and translation) instead of going dir
 
 ## Challenge
 
-In *E. coli*, a typical mRNA has a half-life of about 3 minutes, and a typical protein has a half-life of about 1 hour (or longer, often set by the cell division time of ~20 minutes). Compute the degradation rates $\Gamma_\mathrm{m}$ and $\Gamma_\mathrm{p}$. If the transcription rate is $k_\mathrm{m} = 0.5$ mRNA per minute and the translation rate is $k_\mathrm{p} = 20$ proteins per mRNA per minute, what is the steady-state protein level? Now suddenly shut off transcription ($k_\mathrm{m} = 0$). How long does it take for the mRNA level to drop to half? How long for the protein level?
+In *E. coli*, a typical mRNA has a half-life of about 3 minutes, and a typical protein has an intrinsic half-life of about 1 hour, but in fast-growing *E. coli* the effective half-life is dominated by dilution through cell division (~20 minutes). Compute the degradation rates $\Gamma_\mathrm{m}$ and $\Gamma_\mathrm{p}$. If the transcription rate is $k_\mathrm{m} = 0.5$ mRNA per minute and the translation rate is $k_\mathrm{p} = 20$ proteins per mRNA per minute, what is the steady-state protein level? Now suddenly shut off transcription ($k_\mathrm{m} = 0$). How long does it take for the mRNA level to drop to half? How long for the protein level?
 
 ## Big ideas
 

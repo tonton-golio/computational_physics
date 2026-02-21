@@ -12,6 +12,8 @@ But when does this trick actually work? And when does it break down? That's what
 
 As Benny Lautrup puts it: "Science originates from curiosity and bad eyesight." The continuum approximation is the formal version of *not looking too closely*.
 
+The rule of thumb: it works whenever your measuring stick is vastly larger than the distance molecules travel between collisions. We'll make this precise below.
+
 ## Density Fluctuations — When Is Smooth Smooth Enough?
 
 Let's start with something concrete. You have a box of gas. The density is:
@@ -37,6 +39,8 @@ L_{\text{mol}} = \left( \frac{V}{N} \right)^{1/3} = \left( \frac{M_{\text{mol}}}
 $$
 
 For air at sea level, $L_{\text{mol}} \approx 3 \times 10^{-9}$ m. So $L_{\text{micro}} \approx 3 \times 10^{-7}$ m — about 300 nanometers. Anything bigger than that, and the continuum approximation gives you density to better than 0.1%. That's *tiny*. The continuum approximation works spectacularly well for everyday situations.
+
+[[simulation averaging-volume]]
 
 ## Macroscopic Smoothness — The Slow-Change Rule
 

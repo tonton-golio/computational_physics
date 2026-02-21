@@ -1,5 +1,9 @@
 # Quantum Fluctuations and Quadrature Operators
 
+## The vacuum is not empty
+
+The most startling prediction of quantum field theory is that "nothing" is not silent. Strip away every photon from a cavity — cool it, shield it, pump it down to the absolute quantum ground state — and the electric field is still fluctuating. Not because of stray photons leaking in, and not because of thermal noise, but because the uncertainty principle forbids the field from sitting perfectly still. The vacuum state $|0\rangle$ has zero average field yet non-zero field variance. Those irreducible fluctuations drive the Casimir effect, set the noise floor for every optical measurement, and determine the fundamental sensitivity limit of interferometers like LIGO.
+
 ## Quantum fluctuations
 Time average of electric field is
 $$

@@ -16,6 +16,11 @@ import { FractalDimension } from './complex-physics/FractalDimension';
 import { RandomWalkFirstReturn } from './complex-physics/RandomWalkFirstReturn';
 import { SandpileModel } from './complex-physics/SandpileModel';
 import { StockVariance } from './complex-physics/StockVariance';
+import { TwoLevelSystem } from './complex-physics/TwoLevelSystem';
+import { LandauFreeEnergy } from './complex-physics/LandauFreeEnergy';
+import { TransferMatrixDemo } from './complex-physics/TransferMatrixDemo';
+import { DataCollapse } from './complex-physics/DataCollapse';
+import { VicsekFlocking } from './complex-physics/VicsekFlocking';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 
@@ -37,6 +42,11 @@ export const COMPLEX_SIMULATIONS: Record<string, React.ComponentType<SimulationC
   'random-walk-first-return': RandomWalkFirstReturn,
   'sandpile-model': SandpileModel,
   'stock-variance': StockVariance,
+  'two-level-system': TwoLevelSystem,
+  'landau-free-energy': LandauFreeEnergy,
+  'transfer-matrix-demo': TransferMatrixDemo,
+  'data-collapse': DataCollapse,
+  'vicsek-flocking': VicsekFlocking,
 };
 
 // ============ CO-LOCATED DESCRIPTIONS ============
@@ -57,15 +67,11 @@ export const COMPLEX_DESCRIPTIONS: Record<string, string> = {
   "random-walk-first-return": "Random walk first-return times — the distribution of steps before a 1D random walker returns to the origin.",
   "sandpile-model": "The Abelian sandpile model — grains topple when a cell exceeds a threshold, producing power-law avalanche distributions.",
   "stock-variance": "Stock return variance analysis — examining how financial return distributions deviate from Gaussian behavior.",
+  "two-level-system": "Two-level system thermodynamics — partition function, energy, heat capacity, and entropy as functions of temperature.",
+  "landau-free-energy": "Landau free energy landscape — visualizing second-order and first-order phase transitions through the shape of F(m).",
+  "transfer-matrix-demo": "Transfer matrix eigenvalues — correlation length from the eigenvalue ratio of the 1D Ising transfer matrix.",
+  "data-collapse": "Finite-size scaling data collapse — adjusting critical exponents to collapse susceptibility curves onto a universal function.",
+  "vicsek-flocking": "Vicsek flocking model — self-propelled particles aligning with neighbors, showing the order-disorder phase transition.",
 };
 
-export const COMPLEX_FIGURES: Record<string, { src: string; caption: string }> = {
-  'complex-percolation-video': {
-    src: 'https://archive.org/download/percolation-2d-simulation/percolation-2d-simulation.mp4',
-    caption: 'Percolation evolution animation for cluster formation and critical threshold intuition.',
-  },
-  'complex-sandpile-image': {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/0/0d/Sandpile_model.gif',
-    caption: 'Self-organized criticality in sandpile avalanches.',
-  },
-};
+export const COMPLEX_FIGURES: Record<string, { src: string; caption: string }> = {};

@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import { Slider } from '@/components/ui/slider';
 import { useTheme } from '@/lib/use-theme';
 import { Canvas } from '@react-three/fiber';
@@ -210,7 +211,7 @@ export function IsingModel() {
       </div>
 
       {/* 3D Spin Grid */}
-      <div className="w-full rounded-lg overflow-hidden" style={{ height: 400, background: isDark ? '#0a0a0f' : '#f0f4ff' }}>
+      <SimulationMain className="w-full rounded-lg overflow-hidden" style={{ height: 400, background: isDark ? '#0a0a0f' : '#f0f4ff' }}>
         <Canvas
           camera={{
             position: [cameraDistance * 0.6, cameraDistance * 0.7, cameraDistance * 0.6],
@@ -243,7 +244,7 @@ export function IsingModel() {
             maxDistance={cameraDistance * 3}
           />
         </Canvas>
-      </div>
+      </SimulationMain>
 
       {/* Snapshot selector */}
       <div className="flex items-center gap-2 flex-wrap">

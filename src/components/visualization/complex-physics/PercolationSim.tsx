@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import { Slider } from '@/components/ui/slider';
 import { useTheme } from '@/lib/use-theme';
 
@@ -305,7 +306,9 @@ export function PercolationSim() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* 2D Cluster Grid */}
-        <GridCanvas clusterMap={clusterMap} size={size} isDark={isDark} lattice={lattice} />
+        <SimulationMain scaleMode="contain">
+          <GridCanvas clusterMap={clusterMap} size={size} isDark={isDark} lattice={lattice} />
+        </SimulationMain>
 
         {/* N(p) Curve */}
         <CanvasChart

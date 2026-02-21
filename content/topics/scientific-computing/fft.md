@@ -26,6 +26,8 @@ $$
 
 Each coefficient $X_k$ represents the amplitude and phase of a sinusoidal component at frequency $k/N$ cycles per sample. The **power spectrum** $|X_k|^2$ reveals the dominant frequencies in the signal.
 
+Remember that the DFT implicitly treats your finite signal as one period of an infinite periodic extension — forgetting this is the source of spectral leakage.
+
 Why complex exponentials instead of sines and cosines? Because $e^{i\theta} = \cos\theta + i\sin\theta$ packages both into one elegant expression. The real part gives you cosines, the imaginary part gives you sines, and the math becomes cleaner. It's like writing coordinates as $(x, y)$ instead of "x units east and y units north."
 
 ## The FFT algorithm
@@ -81,6 +83,8 @@ The DFT assumes the signal is periodic with period $N$. If the signal contains f
 
 The **sampling theorem** (Shannon-Nyquist) states that a bandlimited signal can be perfectly reconstructed from its samples if and only if the sampling rate exceeds twice the highest frequency present.
 
+[[simulation aliasing-slider]]
+
 ## Windowing
 
 Real signals are finite in duration. Truncation introduces spectral **leakage**, spreading energy from a true frequency into neighboring bins. **Window functions** (Hann, Hamming, Blackman) taper the signal at the edges to reduce leakage at the cost of slightly reduced frequency resolution.
@@ -89,9 +93,11 @@ Real signals are finite in duration. Truncation introduces spectral **leakage**,
 
 ---
 
+**Periodicity caveat.** The statement "every signal is secretly a sum of sinusoids" comes with fine print: the DFT implicitly assumes the $N$ samples repeat forever. It treats your finite data as one period of a periodic signal. If the actual signal is not periodic over the window — and it almost never is — the DFT sees artificial jumps at the window edges, and those jumps smear energy across many frequency bins. This is **spectral leakage**, and it is the reason windowing (Hann, Hamming, etc.) exists: tapered windows smooth out the edge discontinuities at the cost of slightly reduced frequency resolution.
+
 ## Big Ideas
 
-* The DFT is a change of basis: from the time domain to the frequency domain. Every signal is secretly a sum of sinusoids; the DFT finds the recipe.
+* The DFT is a change of basis: from the time domain to the frequency domain. Every signal is secretly a sum of sinusoids; the DFT finds the recipe — but the DFT assumes the signal is periodic over the observation window, so non-periodic signals leak energy across frequency bins.
 * The FFT's $O(N \log N)$ trick is recursive splitting: one big transform equals two half-size transforms plus cheap combining. Applied log $N$ times, this transforms a trillion operations into twenty million.
 * Convolution in time is multiplication in frequency — the convolution theorem is the reason spectral methods can compute derivatives and solve PDEs at the cost of a few FFTs.
 * Aliasing is not a glitch but a mathematical necessity: if you sample too slowly, high frequencies have no choice but to masquerade as low ones. The Nyquist rate is the minimum sampling rate that prevents this.

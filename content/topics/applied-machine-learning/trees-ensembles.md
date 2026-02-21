@@ -24,6 +24,8 @@ If every sample is class A, you are never surprised — entropy is zero. If the 
 
 Trees are wonderfully interpretable — you can draw them on a whiteboard and explain every prediction. But a single deep tree will memorize the training data, fitting noise along with signal. That is where ensembles come in.
 
+[[figure aml-tree-growth-steps]]
+
 ## Ensemble methods
 
 The key insight behind ensembles is that combining many imperfect models can produce something much better than any individual.
@@ -40,13 +42,15 @@ A very shallow tree (say, depth 2) is like a tourist with a simple rule: "If you
 
 Bagging (random forests) fights variance by averaging many high-variance trees — each tree overfits differently, and the errors cancel. Boosting fights bias by building a sequence of simple trees that progressively correct each other's mistakes. In practice, gradient boosting with careful tuning (early stopping, regularization) is one of the most powerful methods for structured data.
 
-[[figure aml-xor-ensemble]]
-
 ## Interactive simulations
 
 [[simulation aml-tree-split-impurity]]
 
+[[simulation aml-tree-growth-steps]]
+
 [[simulation aml-tree-ensemble-xor]]
+
+[[simulation aml-forest-vs-single-tree]]
 
 ## Model selection notes
 
@@ -63,9 +67,9 @@ Bagging (random forests) fights variance by averaging many high-variance trees �
 
 ## What Comes Next
 
-Trees and ensembles are the gold standard for structured, tabular data — the kind that lives in spreadsheets and databases. But they have a fundamental limitation: they cannot learn representations. Given a raw image, they need you to hand-engineer features first. Neural networks remove that requirement by learning their own feature hierarchies directly from data, which is why they dominate unstructured inputs like images, audio, and text.
+Trees and ensembles are the gold standard for structured, tabular data — the kind that lives in spreadsheets and databases. But high-dimensional data often has far fewer meaningful dimensions than it appears. Before diving into neural networks, it pays to understand how to find and exploit that lower-dimensional structure.
 
-The ideas you built here — depth versus width, overfitting and regularization, the wisdom of crowds — reappear in neural networks in new forms. Dropout is a kind of random forest for neural networks. Early stopping is the neural network version of limiting tree depth. Understanding ensembles makes the neural network regularization story much easier to reason about.
+Dimensionality reduction — PCA, t-SNE, UMAP, and autoencoders — gives you the tools to compress, visualize, and preprocess your features. PCA on the output of a tree ensemble can reveal which directions in feature space actually matter. And the autoencoder idea — learning a compressed representation through a bottleneck — is the conceptual bridge between classical feature engineering and the representation learning that neural networks do automatically.
 
 ## Check your understanding
 

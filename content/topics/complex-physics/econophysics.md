@@ -48,7 +48,7 @@ For self-similar time series, $H$ is directly related to the fractal dimension (
 
 [[simulation hurst-exponent]]
 
-Estimate the Hurst exponent from data in this simulation. Real financial time series typically show $H$ close to $0.5$ for the returns themselves (they are nearly uncorrelated), but $H$ significantly above $0.5$ for the absolute returns or volatility (volatility is persistent — this is the clustering effect).
+Estimate the Hurst exponent from data in this simulation. Log-returns themselves are nearly uncorrelated ($H \approx 0.5$), but absolute returns $|r|$ show persistent long-range correlations ($H \approx 0.7$–$0.8$) — this is the signature of volatility clustering. The returns themselves are unpredictable, but their *magnitude* has long memory.
 
 ## The fear-factor model
 
@@ -108,4 +108,4 @@ The unifying theme is this: complex collective behavior — phase transitions, p
 
 ## Challenge
 
-The Black-Scholes model assumes log-returns are Gaussian with constant volatility. Collect daily closing prices for a major stock or index over a period of several years (freely available from financial data sources). Compute the daily log-returns $x_t = \log(S_{t+1}/S_t)$. Test the Gaussian assumption: plot the empirical distribution of $x_t$ against a fitted Gaussian. Quantify the fat tails by computing the fourth standardized moment (kurtosis) — a Gaussian has kurtosis 3. Then compute the autocorrelation of $|x_t|$ (absolute returns) at lags 1, 5, 10, 20, 50 days. What do your results imply about the validity of the Black-Scholes assumption? What would a more realistic model need to capture?
+Download a real stock-index time series (e.g. S&P 500 daily closes, freely available from financial data sources). Compute the daily log-returns $x_t = \log(S_{t+1}/S_t)$. Test the Gaussian assumption: plot the empirical distribution of $x_t$ against a fitted Gaussian and quantify the fat tails by computing the kurtosis (a Gaussian has kurtosis 3). Then compute the autocorrelation of $|x_t|$ (absolute returns) at lags 1, 5, 10, 20, 50 days to measure volatility clustering. Finally, estimate the Hurst exponent of $|x_t|$ using rescaled-range ($R/S$) analysis: for window sizes $n = 10, 20, 50, 100, 200$, compute $R/S$ and fit the power law $R/S \sim n^H$. Compare your findings to the Gaussian random-walk prediction ($H = 0.5$, kurtosis $= 3$, zero autocorrelation at all lags). What do the deviations tell you about what a more realistic model of financial markets would need to capture?

@@ -122,11 +122,15 @@ For non-periodic domains, **Chebyshev spectral methods** use Chebyshev polynomia
 
 [[simulation reaction-diffusion]]
 
+[[simulation heat-equation-2d]]
+
 ## Stability and Convergence
 
 There's a beautiful theorem that says: if your scheme is consistent and stable, you're guaranteed to get the right answer. It's like saying: if you follow the recipe (consistency) and don't burn the house down (stability), dinner will taste right (convergence).
 
-The **Lax equivalence theorem** states that for a consistent finite difference scheme applied to a well-posed linear PDE, **stability is equivalent to convergence**. This means we only need to verify stability (via von Neumann analysis or matrix methods) to guarantee that the numerical solution converges to the true solution as the grid is refined.
+The **Lax equivalence theorem** states that for a consistent finite difference scheme applied to a well-posed **linear** PDE, **stability is equivalent to convergence** (strictly, Lax's theorem applies to linear problems with well-posed boundary conditions; nonlinear problems require separate convergence analysis). This means we only need to verify stability (via von Neumann analysis or matrix methods) to guarantee that the numerical solution converges to the true solution as the grid is refined.
+
+**Important caveat:** Lax's theorem applies only to linear problems. For nonlinear PDEs (Navier-Stokes, nonlinear Schrödinger, reaction-diffusion systems with nonlinear source terms), consistency plus stability does *not* automatically guarantee convergence. Nonlinear problems can develop shocks, blow-up, or other singularities where additional conditions (entropy conditions, TVD properties, etc.) are needed. The Lax-Wendroff theorem extends the idea to conservation laws, but the clean "stability $\Leftrightarrow$ convergence" equivalence is a luxury of linearity.
 
 *This is one of the most important results in numerical analysis. It transforms the hard question "does my method converge?" into the easier question "is my method stable?" — and we have powerful tools for answering the stability question.*
 

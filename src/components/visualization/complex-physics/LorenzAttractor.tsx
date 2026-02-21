@@ -7,6 +7,7 @@ import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import { Slider } from '@/components/ui/slider';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import { useTheme } from '@/lib/use-theme';
 
 // ---------------------------------------------------------------------------
@@ -304,9 +305,10 @@ export function LorenzAttractor() {
   return (
     <div className="flex flex-col lg:flex-row gap-4">
       {/* 3D Canvas */}
-      <div
+      <SimulationMain
         className="flex-1 w-full rounded-lg overflow-hidden"
         style={{ minHeight: 500, background: isDark ? '#050510' : '#f0f4ff' }}
+        scaleMode="fill"
       >
         <Canvas
           gl={{
@@ -328,7 +330,7 @@ export function LorenzAttractor() {
             isDark={isDark}
           />
         </Canvas>
-      </div>
+      </SimulationMain>
 
       {/* Parameters panel */}
       <Card className="w-full lg:w-80 shrink-0">

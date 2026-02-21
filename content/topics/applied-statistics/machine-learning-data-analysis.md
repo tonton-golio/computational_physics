@@ -101,6 +101,10 @@ For classifiers, key metrics include:
 * **Recall (sensitivity)**: $\text{TP} / (\text{TP} + \text{FN})$ — of all the signal events that existed, how many did you find? This is the efficiency.
 * **ROC curve**: Plots true positive rate vs. false positive rate as the decision threshold varies. The area under the curve (AUC) summarizes discrimination power in a single number.
 
+[[simulation overfitting-carousel]]
+
+[[simulation roc-live]]
+
 **Overfitting** occurs when the model memorizes training noise rather than learning the underlying pattern. It's detected by a gap between training and validation performance. Mitigation strategies include regularization (penalty terms, as in ridge/lasso), early stopping (halting training before over-adaptation), and ensemble methods (averaging over multiple models).
 
 > **Challenge.** Explain overfitting to a friend. Use this analogy: memorizing the textbook word-for-word lets you ace the practice test, but if the exam has different questions, you fail. A student who *understands* the material can handle both. One minute.
@@ -126,4 +130,11 @@ These tools do not exist in isolation — each lesson built on the previous ones
 
 ## Challenge
 
-You are classifying particle physics events as signal or background using a boosted decision tree trained on simulated data. After deployment on real data, the model's performance degrades. Systematically diagnose what might have gone wrong: consider the possibility that (a) the simulation does not perfectly match the real data distribution, (b) the model overfit to simulation-specific artifacts, and (c) the feature distributions in real data have shifted over time. For each possibility, describe a diagnostic test you could run, and propose a mitigation strategy. How would the uncertainty quantification tools from this topic — confidence intervals, systematic uncertainties, calibration — help you detect and correct the problem?
+You are classifying particle physics events as signal or background using a boosted decision tree trained on simulated data. After deployment on real data, the model's performance degrades. Diagnose what might have gone wrong:
+
+* **Simulation–reality mismatch** — Compare feature distributions between simulation and real data; retrain or reweight if they diverge.
+* **Overfitting to simulation artifacts** — Check for a large gap between training and validation performance; apply stronger regularization or prune features unique to the simulation.
+* **Feature drift over time** — Monitor feature distributions across data-taking periods; re-calibrate or retrain on recent data if shifts appear.
+* **Uncertainty quantification** — Use confidence intervals on the classifier output, systematic uncertainty bands, and calibration curves to detect and bound each of the above problems.
+
+For each bullet, sketch a concrete diagnostic test and a mitigation strategy.

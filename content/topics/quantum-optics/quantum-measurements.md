@@ -48,6 +48,8 @@ $$
 
 Negative values of $W$ indicate non-classical states (e.g., Fock states, cat states).
 
+[[simulation homodyne-tomography]]
+
 ## Quantum Non-Demolition Measurements
 
 A **quantum non-demolition** (QND) measurement extracts information about an observable without disturbing it. For photon number, the key requirement is $[\hat{n}, \hat{H}_{\text{int}}] = 0$: the interaction used for measurement commutes with the measured observable.
@@ -88,3 +90,9 @@ This is where the quantum optics journey culminates. The thread that began with 
 ## Challenge
 
 Model a realistic photon detector with efficiency $\eta < 1$ as a beam splitter that mixes the signal with a vacuum mode, followed by an ideal detector. Derive the POVM elements for this lossy detector and compute the probability $p(n_\text{click})$ of registering $n_\text{click}$ clicks when the input state is a Fock state $|N\rangle$. Show that this gives a binomial distribution with success probability $\eta$. Then consider the post-measurement state: if $n_\text{click}$ clicks are registered from $|N\rangle$, what is the state of the field after detection? This calculation reveals the fundamental distinction between a destructive measurement and a QND measurement of the same photon number.
+
+## Extension: Multi-Photon Entanglement via Linear Optics
+
+**Advanced challenge (optional).** This exercise goes beyond the core material and is aimed at students who want to explore multi-photon entanglement.
+
+**Cluster-state circuit.** Consider three beam splitters arranged so that two photons undergo two successive Hong-Ou-Mandel interactions. Work out the output state when two photons enter the input modes of this network, assuming perfect indistinguishability and balanced (50:50) beam splitters. Identify which output-mode occupation patterns have non-zero probability and which are forbidden by destructive two-photon interference. This computation is the core of linear-optical quantum computing: sketch why the pattern of coincidences cannot be efficiently simulated by sampling from a classical probability distribution.

@@ -1,0 +1,154 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420">
+  <rect x="0" y="0" width="900" height="420" fill="#0f172a"/>
+  <rect x="0" y="0" width="900" height="56" fill="#1e293b"/>
+  <text x="24" y="38" fill="#e2e8f0" font-family="Arial, sans-serif" font-size="22" font-weight="bold">Forward &amp; Backward Pass — A Numeric Example</text>
+
+  <!-- Network: 2 inputs → 3 hidden → 1 output -->
+  <!-- Layout: Input layer x=100, Hidden layer x=380, Output layer x=620, Loss x=780 -->
+
+  <!-- ============ INPUT LAYER ============ -->
+  <!-- Node 1: x₁ = 0.8 -->
+  <circle cx="100" cy="150" r="28" fill="#1e293b" stroke="#3b82f6" stroke-width="2"/>
+  <text x="100" y="146" fill="#e2e8f0" font-family="Arial, sans-serif" font-size="12" text-anchor="middle">x₁</text>
+  <text x="100" y="162" fill="#22d3ee" font-family="Arial, sans-serif" font-size="13" text-anchor="middle" font-weight="bold">0.80</text>
+
+  <!-- Node 2: x₂ = 0.3 -->
+  <circle cx="100" cy="280" r="28" fill="#1e293b" stroke="#3b82f6" stroke-width="2"/>
+  <text x="100" y="276" fill="#e2e8f0" font-family="Arial, sans-serif" font-size="12" text-anchor="middle">x₂</text>
+  <text x="100" y="292" fill="#22d3ee" font-family="Arial, sans-serif" font-size="13" text-anchor="middle" font-weight="bold">0.30</text>
+
+  <text x="100" y="95" fill="#94a3b8" font-family="Arial, sans-serif" font-size="14" text-anchor="middle">Input</text>
+
+  <!-- ============ FORWARD PASS ARROWS (cyan, left to right) ============ -->
+  <!-- Arrows from input to hidden layer -->
+  <defs>
+    <marker id="arrowCyan" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#22d3ee"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#10b981"/>
+    </marker>
+    <marker id="arrowAmber" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#f59e0b"/>
+    </marker>
+    <marker id="arrowRed" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#ef4444"/>
+    </marker>
+  </defs>
+
+  <!-- x₁ → h₁ (w=0.6) -->
+  <line x1="128" y1="142" x2="332" y2="112" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrowCyan)" opacity="0.7"/>
+  <text x="218" y="116" fill="#22d3ee" font-family="Arial, sans-serif" font-size="10" opacity="0.8">w=0.6</text>
+
+  <!-- x₁ → h₂ (w=0.4) -->
+  <line x1="128" y1="150" x2="332" y2="210" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrowCyan)" opacity="0.7"/>
+  <text x="200" y="176" fill="#22d3ee" font-family="Arial, sans-serif" font-size="10" opacity="0.8">w=0.4</text>
+
+  <!-- x₁ → h₃ (w=-0.2) -->
+  <line x1="128" y1="158" x2="332" y2="302" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrowCyan)" opacity="0.7"/>
+  <text x="195" y="248" fill="#22d3ee" font-family="Arial, sans-serif" font-size="10" opacity="0.8">w=−0.2</text>
+
+  <!-- x₂ → h₁ (w=0.3) -->
+  <line x1="128" y1="272" x2="332" y2="120" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrowCyan)" opacity="0.7"/>
+  <text x="245" y="178" fill="#22d3ee" font-family="Arial, sans-serif" font-size="10" opacity="0.8">w=0.3</text>
+
+  <!-- x₂ → h₂ (w=0.5) -->
+  <line x1="128" y1="280" x2="332" y2="218" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrowCyan)" opacity="0.7"/>
+  <text x="248" y="256" fill="#22d3ee" font-family="Arial, sans-serif" font-size="10" opacity="0.8">w=0.5</text>
+
+  <!-- x₂ → h₃ (w=0.7) -->
+  <line x1="128" y1="288" x2="332" y2="310" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrowCyan)" opacity="0.7"/>
+  <text x="236" y="310" fill="#22d3ee" font-family="Arial, sans-serif" font-size="10" opacity="0.8">w=0.7</text>
+
+  <!-- ============ HIDDEN LAYER ============ -->
+  <text x="360" y="78" fill="#94a3b8" font-family="Arial, sans-serif" font-size="14" text-anchor="middle">Hidden (ReLU)</text>
+
+  <!-- h₁: z=0.6*0.8+0.3*0.3=0.57, ReLU(0.57)=0.57 -->
+  <circle cx="360" cy="115" r="28" fill="#1e293b" stroke="#8b5cf6" stroke-width="2"/>
+  <text x="360" y="111" fill="#e2e8f0" font-family="Arial, sans-serif" font-size="12" text-anchor="middle">h₁</text>
+  <text x="360" y="127" fill="#22d3ee" font-family="Arial, sans-serif" font-size="13" text-anchor="middle" font-weight="bold">0.57</text>
+
+  <!-- h₂: z=0.4*0.8+0.5*0.3=0.47, ReLU(0.47)=0.47 -->
+  <circle cx="360" cy="215" r="28" fill="#1e293b" stroke="#8b5cf6" stroke-width="2"/>
+  <text x="360" y="211" fill="#e2e8f0" font-family="Arial, sans-serif" font-size="12" text-anchor="middle">h₂</text>
+  <text x="360" y="227" fill="#22d3ee" font-family="Arial, sans-serif" font-size="13" text-anchor="middle" font-weight="bold">0.47</text>
+
+  <!-- h₃: z=-0.2*0.8+0.7*0.3=0.05, ReLU(0.05)=0.05 -->
+  <circle cx="360" cy="315" r="28" fill="#1e293b" stroke="#8b5cf6" stroke-width="2"/>
+  <text x="360" y="311" fill="#e2e8f0" font-family="Arial, sans-serif" font-size="12" text-anchor="middle">h₃</text>
+  <text x="360" y="327" fill="#22d3ee" font-family="Arial, sans-serif" font-size="13" text-anchor="middle" font-weight="bold">0.05</text>
+
+  <!-- ============ HIDDEN → OUTPUT ARROWS ============ -->
+  <!-- h₁ → ŷ (w=0.8) -->
+  <line x1="388" y1="110" x2="572" y2="208" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrowCyan)" opacity="0.7"/>
+  <text x="478" y="148" fill="#22d3ee" font-family="Arial, sans-serif" font-size="10" opacity="0.8">w=0.8</text>
+
+  <!-- h₂ → ŷ (w=0.5) -->
+  <line x1="388" y1="215" x2="572" y2="215" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrowCyan)" opacity="0.7"/>
+  <text x="480" y="208" fill="#22d3ee" font-family="Arial, sans-serif" font-size="10" opacity="0.8">w=0.5</text>
+
+  <!-- h₃ → ŷ (w=0.3) -->
+  <line x1="388" y1="310" x2="572" y2="222" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrowCyan)" opacity="0.7"/>
+  <text x="478" y="278" fill="#22d3ee" font-family="Arial, sans-serif" font-size="10" opacity="0.8">w=0.3</text>
+
+  <!-- ============ OUTPUT LAYER ============ -->
+  <text x="600" y="178" fill="#94a3b8" font-family="Arial, sans-serif" font-size="14" text-anchor="middle">Output</text>
+
+  <!-- ŷ: 0.8*0.57 + 0.5*0.47 + 0.3*0.05 = 0.456+0.235+0.015 = 0.706 ≈ 0.71 -->
+  <circle cx="600" cy="215" r="28" fill="#1e293b" stroke="#10b981" stroke-width="2"/>
+  <text x="600" y="211" fill="#e2e8f0" font-family="Arial, sans-serif" font-size="12" text-anchor="middle">ŷ</text>
+  <text x="600" y="227" fill="#22d3ee" font-family="Arial, sans-serif" font-size="13" text-anchor="middle" font-weight="bold">0.71</text>
+
+  <!-- ============ LOSS ============ -->
+  <line x1="628" y1="215" x2="732" y2="215" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrowCyan)" opacity="0.7"/>
+
+  <rect x="740" y="192" width="90" height="46" fill="#1e293b" stroke="#ef4444" stroke-width="2" rx="8"/>
+  <text x="785" y="212" fill="#e2e8f0" font-family="Arial, sans-serif" font-size="12" text-anchor="middle">Loss (MSE)</text>
+  <text x="785" y="230" fill="#ef4444" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" font-weight="bold">0.084</text>
+
+  <text x="785" y="256" fill="#94a3b8" font-family="Arial, sans-serif" font-size="10" text-anchor="middle">target = 1.0</text>
+
+  <!-- ============ BACKWARD PASS ARROWS (colored by gradient magnitude) ============ -->
+  <!-- Gradient flow label -->
+  <text x="450" y="390" fill="#e2e8f0" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" font-weight="bold">← Backward pass: gradient magnitude</text>
+
+  <!-- Loss → ŷ: dL/dŷ = 2(ŷ-y)/N = 2(0.71-1.0) = -0.58, |grad|=0.58 (green, healthy) -->
+  <line x1="740" y1="225" x2="632" y2="225" stroke="#10b981" stroke-width="3" marker-end="url(#arrowGreen)"/>
+  <text x="686" y="243" fill="#10b981" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" font-weight="bold">|∇| = 0.58</text>
+
+  <!-- ŷ → h₁: grad * w_out = 0.58 * 0.8 = 0.46 (green) -->
+  <line x1="575" y1="228" x2="392" y2="126" stroke="#10b981" stroke-width="2.5" marker-end="url(#arrowGreen)"/>
+  <text x="496" y="168" fill="#10b981" font-family="Arial, sans-serif" font-size="10" text-anchor="middle">|∇| = 0.46</text>
+
+  <!-- ŷ → h₂: grad * w_out = 0.58 * 0.5 = 0.29 (amber) -->
+  <line x1="572" y1="232" x2="392" y2="228" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrowAmber)"/>
+  <text x="480" y="240" fill="#f59e0b" font-family="Arial, sans-serif" font-size="10" text-anchor="middle">|∇| = 0.29</text>
+
+  <!-- ŷ → h₃: grad * w_out = 0.58 * 0.3 = 0.17 (amber-red) -->
+  <line x1="575" y1="235" x2="392" y2="322" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#arrowAmber)"/>
+  <text x="496" y="296" fill="#f59e0b" font-family="Arial, sans-serif" font-size="10" text-anchor="middle">|∇| = 0.17</text>
+
+  <!-- h₁ → x₁: 0.46 * 0.6 = 0.28 (amber) -->
+  <line x1="332" y1="126" x2="132" y2="156" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrowAmber)"/>
+
+  <!-- h₁ → x₂: 0.46 * 0.3 = 0.14 (red) -->
+  <line x1="332" y1="130" x2="132" y2="276" stroke="#ef4444" stroke-width="1.5" marker-end="url(#arrowRed)"/>
+
+  <!-- h₂ → x₁: 0.29 * 0.4 = 0.12 (red) -->
+  <line x1="332" y1="222" x2="132" y2="162" stroke="#ef4444" stroke-width="1.5" marker-end="url(#arrowRed)"/>
+
+  <!-- h₂ → x₂: 0.29 * 0.5 = 0.15 (red) -->
+  <line x1="332" y1="228" x2="132" y2="282" stroke="#ef4444" stroke-width="1.5" marker-end="url(#arrowRed)"/>
+
+  <!-- Gradient magnitude annotations at input layer -->
+  <text x="100" y="340" fill="#ef4444" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" font-weight="bold">|∇| ≈ 0.12–0.28</text>
+  <text x="100" y="356" fill="#94a3b8" font-family="Arial, sans-serif" font-size="10" text-anchor="middle">gradients shrink</text>
+
+  <!-- Legend bar -->
+  <rect x="120" y="396" width="50" height="10" fill="#10b981" rx="2"/>
+  <text x="180" y="406" fill="#94a3b8" font-family="Arial, sans-serif" font-size="10">large (near output)</text>
+  <rect x="340" y="396" width="50" height="10" fill="#f59e0b" rx="2"/>
+  <text x="400" y="406" fill="#94a3b8" font-family="Arial, sans-serif" font-size="10">medium</text>
+  <rect x="510" y="396" width="50" height="10" fill="#ef4444" rx="2"/>
+  <text x="570" y="406" fill="#94a3b8" font-family="Arial, sans-serif" font-size="10">small (near input) — vanishing risk</text>
+</svg>

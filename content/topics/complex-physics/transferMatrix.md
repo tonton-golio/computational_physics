@@ -87,33 +87,11 @@ $$
 
 The partition function is the trace of the $N$-th power of the transfer matrix. We have converted the statistical mechanics problem into a linear algebra problem.
 
-## Diagonalization and eigenvalues
+## Eigenvalues and the thermodynamic limit
 
-Since $T$ is a real symmetric matrix, it is diagonalizable: $T = PDP^{-1}$, where $D$ is the diagonal matrix of eigenvalues. Then
+Since $T$ is a real symmetric $2 \times 2$ matrix, it has two real eigenvalues $\lambda_+ > \lambda_-$. Diagonalizing and using the cyclic property of the trace gives the exact partition function in closed form:
 $$
-    T^N = PD^N P^{-1},
-$$
-and using the cyclic property of the trace:
-$$
-    Z = \mathrm{Tr}(T^N) = \mathrm{Tr}(D^N) = \lambda_1^N + \lambda_2^N.
-$$
-
-The entire partition function reduces to the eigenvalues of a $2 \times 2$ matrix. That is the power of the transfer matrix method.
-
-## Finding the eigenvalues
-
-The characteristic equation $\det(T - \lambda I) = 0$ gives:
-$$
-    \lambda^2
-    -
-    2\lambda \, e^{\beta J} \cosh(\beta h)
-    +
-    2 \sinh(2\beta J)
-    = 0.
-$$
-
-Solving the quadratic:
-$$
+    Z = \mathrm{Tr}(T^N) = \lambda_+^N + \lambda_-^N, \qquad
     \lambda_{\pm}
     =
     e^{\beta J} \cosh(\beta h)
@@ -123,16 +101,13 @@ $$
         + e^{-2\beta J}
     }.
 $$
-
-Since $\lambda_+ > \lambda_-$ always, in the thermodynamic limit ($N \to \infty$) the smaller eigenvalue becomes negligible:
-$$
-    Z \approx \lambda_+^N.
-$$
-
-The free energy per spin is
+The entire partition function of $2^N$ configurations reduces to two eigenvalues of a $2 \times 2$ matrix — that is the power of the transfer matrix. In the thermodynamic limit ($N \to \infty$), $\lambda_-^N / \lambda_+^N \to 0$, and the free energy per spin depends only on the largest eigenvalue:
 $$
     f = -\frac{1}{\beta N} \ln Z = -\frac{1}{\beta} \ln \lambda_+.
 $$
+The same structure holds for any 1D nearest-neighbor model: replace the $2 \times 2$ matrix with a $q \times q$ transfer matrix (for $q$-state spins or Potts models), diagonalize, and the largest eigenvalue determines the thermodynamics. The algebra grows but the logic is identical.
+
+[[simulation transfer-matrix-demo]]
 
 ## The punchline: no phase transition in 1D
 

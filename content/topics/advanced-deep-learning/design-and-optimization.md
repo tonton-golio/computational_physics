@@ -135,7 +135,7 @@ Then came **random search**: instead of an exhaustive grid, sample hyperparamete
 
 **Bayesian optimization** got even cleverer: it builds a surrogate model (e.g., Gaussian process) of the validation loss as a function of the hyperparameters, then selects the next configuration to try by maximizing expected improvement. Each experiment teaches the model something about the hyperparameter landscape, making each subsequent choice more informed.
 
-**Population-based training** takes a different approach entirely: run many configurations in parallel, and periodically replace the worst performers with perturbed copies of the best. The hyperparameters evolve during training, adapting to different phases of optimization.
+Population-based training (PBT) evolves a population of agents that simultaneously train and share hyperparameters, combining grid search with online adaptation — see Jaderberg et al. (2017) for details.
 
 ## Initialization
 
@@ -160,9 +160,27 @@ KAIMING_INIT(layer.weight, mode="fan_in", activation="relu")
 XAVIER_INIT(layer.weight)
 ```
 
+## Residual connections
+
+Deep networks suffer from the **degradation problem**: adding more layers can actually *increase* training error, even though the network has strictly more capacity. This is counterintuitive — a deeper network should do at least as well as a shallower one, since the extra layers could just learn the identity function. In practice, learning the identity is surprisingly hard.
+
+**Residual connections** solve this elegantly. Instead of asking the network to learn the full transformation, we ask it to learn only the *difference* from the identity:
+
+$$
+\mathbf{h}_{l+1} = \mathbf{h}_l + F(\mathbf{h}_l; \theta_l),
+$$
+
+where $F$ is the residual function (typically two conv-BN-ReLU layers). It is like telling the network: "If you cannot figure out what to do, at least copy what was already there." If the optimal transformation is close to identity, the network only needs to learn a small residual $F \approx 0$, which is much easier than learning the full mapping from scratch.
+
+Skip connections also improve gradient flow: the gradient can flow directly through the identity path, preventing vanishing gradients even in very deep networks. Residual connections are a general optimization trick — they happen to be most famous in vision (ResNet), but they appear everywhere from U-Nets to transformers.
+
+[[simulation adl-skip-connection-ablation]]
+
 ## Practical tips
 
 * **Start with a learning rate finder**: Sweep the learning rate from very small to very large over one epoch, plotting loss vs. learning rate. Choose a rate just below where the loss starts increasing.
+
+[[simulation adl-lr-finder]]
 * **Monitor both train and validation loss**: A growing gap signals overfitting; add regularization or reduce model capacity.
 * **Use mixed precision training**: FP16 computation with FP32 master weights accelerates training 2-3x on modern GPUs with minimal accuracy impact.
 * **Gradient clipping**: Cap the gradient norm to prevent explosion, especially important for RNNs and transformers: $\hat{g} = g \cdot \min(1, c / \|g\|)$.
@@ -173,10 +191,11 @@ XAVIER_INIT(layer.weight)
 * Dropout's real power is not that it randomly kills neurons, but that it forces the network to distribute knowledge across many pathways — preventing any single neuron from becoming irreplaceable.
 * Weight initialization is not a detail: starting with weights that are too large or too small determines whether gradients survive long enough to teach the network anything at all.
 * Random search beats grid search not because randomness is magical, but because most hyperparameters are unimportant — random search naturally explores more of what matters.
+* Residual connections reframe the problem: instead of asking the network to learn a transformation, ask it to learn a correction to the identity, which turns out to be a much easier problem.
 
 ## What Comes Next
 
-Armed with an optimizer, a regularizer, and a learning rate schedule, you can now train a network that actually generalizes. But all the lessons so far have treated images as flat vectors — a 28x28 image is just 784 numbers in a row, with no notion of which pixels are neighbors. The next lesson introduces convolutional neural networks, which bake the spatial structure of images directly into the architecture. The same ideas of weights, gradients, and backpropagation still apply — but now the network knows that nearby pixels are more likely to be related than distant ones, and it exploits that knowledge to achieve results no flat MLP can match.
+Armed with an optimizer, a regularizer, a learning rate schedule, and residual connections, you can now train a network that actually generalizes — even a very deep one. But all the lessons so far have treated images as flat vectors — a 28x28 image is just 784 numbers in a row, with no notion of which pixels are neighbors. The next lesson introduces convolutional neural networks, which bake the spatial structure of images directly into the architecture. The residual connections you just learned will reappear as **ResNet**, enabling convolutional networks with 100+ layers. The same ideas of weights, gradients, and backpropagation still apply — but now the network knows that nearby pixels are more likely to be related than distant ones, and it exploits that knowledge to achieve results no flat MLP can match.
 
 ## Check Your Understanding
 

@@ -174,7 +174,7 @@ $$
 \delta_j^{(l)} = \sigma'(a_j^{(l)}) \sum_i w_{ij}^{(l+1)} \delta_i^{(l+1)}.
 $$
 
-This recursion means we compute all gradients in a single backward pass, making training efficient even for networks with millions of parameters. Without backpropagation, you would have to wiggle each weight individually and measure the change in loss — millions of forward passes instead of one backward pass.
+Backpropagation is the single trick that made deep learning practical. Without it, training a million-parameter network would require roughly a million separate forward passes per update — just to estimate each gradient by wiggling one weight at a time. Backprop does the same job with **one** forward pass and **one** backward pass. It is the difference between "possible in theory" and "runs on my laptop tonight."
 
 [[simulation adl-backprop-flow]]
 

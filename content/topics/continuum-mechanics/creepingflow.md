@@ -56,6 +56,8 @@ $$
 
 For glaciers, $n \approx 3$ (Glen's flow law), making ice a strongly shear-thinning material at glacier scales — it flows more easily where the shear rates are high, which is near the base and the valley walls.
 
+[[simulation stokes-flow-demo]]
+
 ## Big Ideas
 
 * Creeping flow (Re $\ll 1$) is the world of viscosity as the absolute ruler: the moment you stop pushing, the fluid stops moving. There is no coasting.
@@ -65,7 +67,7 @@ For glaciers, $n \approx 3$ (Glen's flow law), making ice a strongly shear-thinn
 
 ## What Comes Next
 
-To solve the Stokes equation for realistic geometries (like Gladys the Glacier flowing through an irregular valley), we need to reformulate it in **weak form** — a step that prepares the equation for numerical solution by the finite element method.
+We've seen what happens when viscosity dominates. Now let's go back and meet the other limit: fluids where motion is absent altogether. Pressure, buoyancy, floating icebergs — fluids at rest.
 
 ## Check Your Understanding
 

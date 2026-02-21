@@ -56,6 +56,8 @@ Forward error is the error in the output, backward error is the error in the inp
 ## Sensitivity, Conditioning, and Floating Point
 **Sensitivity and conditioning**
 
+Think of the condition number as an **error amplifier** built into the problem itself. Before you choose an algorithm, before you write a single line of code, the mathematics already has an opinion about how many of your input digits will survive to the output. A condition number of 1 means every input digit comes through intact. A condition number of $10^6$ means you lose six decimal digits on the spot — not because the algorithm is bad, but because the problem is inherently sensitive. The whole point of learning about conditioning first is that no clever algorithm can rescue digits the problem has already destroyed.
+
 Condition number: $\text{COND}(f) \equiv \frac{|\Delta y / y|}{|\Delta x / x|} = \frac{|x \Delta y|}{|y \Delta x|}$
 
 In the limit $\Delta x \to 0$, this becomes $\text{COND}(f) = \left|\frac{x f'(x)}{f(x)}\right|$, which measures how sensitive the relative output is to relative changes in input.
@@ -111,6 +113,8 @@ $$ h_\text{optimal} = 2 \sqrt{\frac{\epsilon}{M}} $$
 (Note that $\epsilon$ here is a bound on the relative rounding error.)
 
 > **Challenge.** Try this in Python in 30 seconds. Compute the derivative of $\sin(x)$ at $x=1$ using $h = 10^{-1}, 10^{-2}, \dots, 10^{-16}$. Plot the error. You'll see it drop, hit a sweet spot, then climb back up. That's the truncation-rounding tug of war, right there on your screen.
+
+[[simulation error-vs-h]]
 
 ## Propagated Data Error
 

@@ -62,8 +62,6 @@ def title_from_markdown(body: str, fallback: str) -> str:
 
 
 def topic_route_slug(topic_id: str) -> str:
-  if topic_id == "online-reinforcement-learning":
-    return "online-reinforcement"
   return topic_id
 
 

@@ -119,6 +119,8 @@ $$
 
 where $\tilde{\chi}$ is a universal scaling function. By plotting data for different system sizes as a function of $t L^{1/\nu}$, all curves collapse onto a single master curve when the correct exponents are used. This **data collapse** is a powerful method for extracting critical exponents from numerical simulations — and it is deeply satisfying when it works.
 
+[[simulation data-collapse]]
+
 ## Big Ideas
 
 * Universality is the miracle that systems made of completely different stuff — iron atoms, water molecules, copper alloys — behave identically near their critical points, because the diverging correlation length erases all memory of microscopic details.
@@ -138,4 +140,4 @@ Critical phenomena are driven by thermal fluctuations tuned by temperature. But 
 
 ## Challenge
 
-The finite-size scaling ansatz states that the susceptibility of a finite system of size $L$ obeys $\chi(t, L) = L^{\gamma/\nu} \tilde{\chi}(t L^{1/\nu})$. Design a numerical experiment to extract the critical exponents $\gamma$ and $\nu$ for the 2D Ising model from this relation. Specifically: what simulations would you run, how would you plot the data to achieve "collapse," and what systematic errors would you need to worry about? Estimate how large $L$ needs to be for the finite-size effects to be smaller than 10%.
+Here is raw susceptibility data from 2D Ising simulations at system sizes $L = 16, 32, 64, 128$. Each dataset gives $\chi(T)$ as a function of temperature near $T_c$. Your task: find the critical exponents $\gamma/\nu$ and $1/\nu$ that make the data collapse. Plot $\chi / L^{\gamma/\nu}$ versus $(T - T_c) L^{1/\nu}$ for all four system sizes. When your exponents are correct, all four curves will fall on a single master curve. Start by guessing $\gamma/\nu = 1.75$ and $1/\nu = 1.0$ (the known 2D Ising values), then try deliberately wrong values to see the collapse fail. What happens to the collapse when you use mean-field exponents instead? Use the interactive data-collapse simulation below to explore this.

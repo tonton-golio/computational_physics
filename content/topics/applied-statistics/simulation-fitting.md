@@ -62,6 +62,8 @@ The idea: draw samples from a simple proposal distribution and keep only those t
 
 The accepted samples follow the target distribution exactly. The efficiency depends on how tightly the proposal $g$ envelops the target $f$ — a loose envelope wastes many samples, like casting a wide net when you only want one kind of fish.
 
+[[simulation accept-reject]]
+
 ```python
 def accept_reject_sample(target_pdf, proposal_sample, proposal_pdf, M, num_samples):
     samples = []
@@ -72,6 +74,8 @@ def accept_reject_sample(target_pdf, proposal_sample, proposal_pdf, M, num_sampl
             samples.append(x)
     return samples
 ```
+
+[[simulation monte-carlo-integration-stats]]
 
 ## Why Monte Carlo Scales Well
 

@@ -40,6 +40,8 @@ Think of each expert as carrying a backpack of confidence. Every time an expert 
 
 ## The learning rate: adjusting the gas pedal
 
+*Try it yourself: what happens to Hedge weights if $\eta$ is too large? Pause and guess before the math.*
+
 We need a learning rate $\eta$ that works like adjusting the gas pedal on a long road trip. If you keep the pedal all the way down (large $\eta$), you react too aggressively to every mistake — you overshoot the exit. If you barely tap the pedal (tiny $\eta$), you never get there in time. The sweet spot turns out to be roughly
 
 $$

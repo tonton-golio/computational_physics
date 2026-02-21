@@ -1,0 +1,147 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420">
+  <rect x="0" y="0" width="900" height="420" fill="#0f172a"/>
+  <rect x="0" y="0" width="900" height="56" fill="#1e293b"/>
+  <text x="24" y="38" fill="#e2e8f0" font-family="Arial, sans-serif" font-size="22" font-weight="bold">Decision Tree Growth — Recursive Partitioning</text>
+
+  <!-- 4 panels: Step 0, Step 1, Step 2, Step 3 -->
+  <!-- Each panel is 195×310, gap of 15px -->
+  <!-- Points: 6 blue class-A, 6 amber class-B, consistent positions -->
+  <!-- Blue: (30,240) (50,260) (40,210) (60,230) (70,200) (55,280) → lower-left cluster -->
+  <!-- Amber: (140,80) (160,100) (150,60) (130,110) (170,70) (155,130) → upper-right cluster -->
+  <!-- Scale to panel coords: x in [20,175], y in [40,145] -->
+
+  <!-- STEP 0 — No splits -->
+  <g transform="translate(18,68)">
+    <rect x="0" y="0" width="200" height="310" fill="#1e293b" rx="6"/>
+    <text x="100" y="24" fill="#e2e8f0" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" font-weight="bold">Step 0 — No Split</text>
+    <!-- Plot area -->
+    <line x1="28" y1="260" x2="180" y2="260" stroke="#334155" stroke-width="1.5"/>
+    <line x1="28" y1="42" x2="28" y2="260" stroke="#334155" stroke-width="1.5"/>
+    <text x="104" y="276" fill="#94a3b8" font-family="Arial, sans-serif" font-size="10" text-anchor="middle">x₁</text>
+    <text x="16" y="152" fill="#94a3b8" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" transform="rotate(-90,16,152)">x₂</text>
+    <!-- Full region — mixed -->
+    <rect x="29" y="43" width="150" height="216" fill="#8b5cf6" fill-opacity="0.08"/>
+    <!-- Blue points (class A) — bottom-left cluster -->
+    <circle cx="52" cy="210" r="5" fill="#3b82f6"/>
+    <circle cx="68" cy="228" r="5" fill="#3b82f6"/>
+    <circle cx="58" cy="192" r="5" fill="#3b82f6"/>
+    <circle cx="78" cy="215" r="5" fill="#3b82f6"/>
+    <circle cx="85" cy="185" r="5" fill="#3b82f6"/>
+    <circle cx="72" cy="245" r="5" fill="#3b82f6"/>
+    <!-- Amber points (class B) — top-right cluster -->
+    <circle cx="132" cy="82" r="5" fill="#f59e0b"/>
+    <circle cx="148" cy="98" r="5" fill="#f59e0b"/>
+    <circle cx="140" cy="65" r="5" fill="#f59e0b"/>
+    <circle cx="125" cy="108" r="5" fill="#f59e0b"/>
+    <circle cx="158" cy="72" r="5" fill="#f59e0b"/>
+    <circle cx="145" cy="125" r="5" fill="#f59e0b"/>
+    <!-- Gini label -->
+    <rect x="40" y="284" width="120" height="22" fill="#0f172a" rx="3"/>
+    <text x="100" y="299" fill="#94a3b8" font-family="Arial, sans-serif" font-size="12" text-anchor="middle">Gini = 0.500</text>
+  </g>
+
+  <!-- STEP 1 — First vertical split at x₁ = 105 -->
+  <g transform="translate(236,68)">
+    <rect x="0" y="0" width="200" height="310" fill="#1e293b" rx="6"/>
+    <text x="100" y="24" fill="#e2e8f0" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" font-weight="bold">Step 1 — Split x₁</text>
+    <line x1="28" y1="260" x2="180" y2="260" stroke="#334155" stroke-width="1.5"/>
+    <line x1="28" y1="42" x2="28" y2="260" stroke="#334155" stroke-width="1.5"/>
+    <text x="104" y="276" fill="#94a3b8" font-family="Arial, sans-serif" font-size="10" text-anchor="middle">x₁</text>
+    <text x="16" y="152" fill="#94a3b8" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" transform="rotate(-90,16,152)">x₂</text>
+    <!-- Two regions -->
+    <rect x="29" y="43" width="76" height="216" fill="#3b82f6" fill-opacity="0.12"/>
+    <rect x="105" y="43" width="74" height="216" fill="#f59e0b" fill-opacity="0.12"/>
+    <!-- Split line -->
+    <line x1="105" y1="42" x2="105" y2="260" stroke="#ef4444" stroke-width="2" stroke-dasharray="8 5"/>
+    <!-- Blue points -->
+    <circle cx="52" cy="210" r="5" fill="#3b82f6"/>
+    <circle cx="68" cy="228" r="5" fill="#3b82f6"/>
+    <circle cx="58" cy="192" r="5" fill="#3b82f6"/>
+    <circle cx="78" cy="215" r="5" fill="#3b82f6"/>
+    <circle cx="85" cy="185" r="5" fill="#3b82f6"/>
+    <circle cx="72" cy="245" r="5" fill="#3b82f6"/>
+    <!-- Amber points -->
+    <circle cx="132" cy="82" r="5" fill="#f59e0b"/>
+    <circle cx="148" cy="98" r="5" fill="#f59e0b"/>
+    <circle cx="140" cy="65" r="5" fill="#f59e0b"/>
+    <circle cx="125" cy="108" r="5" fill="#f59e0b"/>
+    <circle cx="158" cy="72" r="5" fill="#f59e0b"/>
+    <circle cx="145" cy="125" r="5" fill="#f59e0b"/>
+    <rect x="40" y="284" width="120" height="22" fill="#0f172a" rx="3"/>
+    <text x="100" y="299" fill="#10b981" font-family="Arial, sans-serif" font-size="12" text-anchor="middle">Gini = 0.000</text>
+  </g>
+
+  <!-- STEP 2 — Show what happens with mixed data: add 2 points that cross boundary -->
+  <!-- Actually, let me rethink: a cleaner approach is overlapping clusters that need 2+ splits -->
+  <!-- Let me adjust: some points are in "wrong" region to require more splits -->
+
+  <!-- STEP 2 — Better: add a horizontal split in left region for an amber intruder -->
+  <g transform="translate(454,68)">
+    <rect x="0" y="0" width="200" height="310" fill="#1e293b" rx="6"/>
+    <text x="100" y="24" fill="#e2e8f0" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" font-weight="bold">Step 2 — Split x₂</text>
+    <line x1="28" y1="260" x2="180" y2="260" stroke="#334155" stroke-width="1.5"/>
+    <line x1="28" y1="42" x2="28" y2="260" stroke="#334155" stroke-width="1.5"/>
+    <text x="104" y="276" fill="#94a3b8" font-family="Arial, sans-serif" font-size="10" text-anchor="middle">x₁</text>
+    <text x="16" y="152" fill="#94a3b8" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" transform="rotate(-90,16,152)">x₂</text>
+    <!-- Three regions: left-bottom (blue), left-top (amber intruder), right (amber) -->
+    <rect x="29" y="140" width="76" height="119" fill="#3b82f6" fill-opacity="0.12"/>
+    <rect x="29" y="43" width="76" height="97" fill="#f59e0b" fill-opacity="0.12"/>
+    <rect x="105" y="43" width="74" height="216" fill="#f59e0b" fill-opacity="0.12"/>
+    <!-- Split lines -->
+    <line x1="105" y1="42" x2="105" y2="260" stroke="#ef4444" stroke-width="2" stroke-dasharray="8 5"/>
+    <line x1="29" y1="140" x2="105" y2="140" stroke="#ef4444" stroke-width="2" stroke-dasharray="8 5"/>
+    <!-- Blue points — most in bottom-left -->
+    <circle cx="52" cy="210" r="5" fill="#3b82f6"/>
+    <circle cx="68" cy="228" r="5" fill="#3b82f6"/>
+    <circle cx="58" cy="192" r="5" fill="#3b82f6"/>
+    <circle cx="78" cy="215" r="5" fill="#3b82f6"/>
+    <circle cx="85" cy="185" r="5" fill="#3b82f6"/>
+    <circle cx="72" cy="245" r="5" fill="#3b82f6"/>
+    <!-- Amber points — top-right cluster + 1 intruder top-left -->
+    <circle cx="132" cy="82" r="5" fill="#f59e0b"/>
+    <circle cx="148" cy="98" r="5" fill="#f59e0b"/>
+    <circle cx="140" cy="65" r="5" fill="#f59e0b"/>
+    <circle cx="125" cy="108" r="5" fill="#f59e0b"/>
+    <circle cx="158" cy="72" r="5" fill="#f59e0b"/>
+    <circle cx="145" cy="125" r="5" fill="#f59e0b"/>
+    <rect x="40" y="284" width="120" height="22" fill="#0f172a" rx="3"/>
+    <text x="100" y="299" fill="#10b981" font-family="Arial, sans-serif" font-size="12" text-anchor="middle">Gini = 0.000</text>
+  </g>
+
+  <!-- STEP 3 — Final: additional split in right region for a blue intruder -->
+  <g transform="translate(672,68)">
+    <rect x="0" y="0" width="200" height="310" fill="#1e293b" rx="6"/>
+    <text x="100" y="24" fill="#e2e8f0" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" font-weight="bold">Step 3 — Pure Leaves</text>
+    <line x1="28" y1="260" x2="180" y2="260" stroke="#334155" stroke-width="1.5"/>
+    <line x1="28" y1="42" x2="28" y2="260" stroke="#334155" stroke-width="1.5"/>
+    <text x="104" y="276" fill="#94a3b8" font-family="Arial, sans-serif" font-size="10" text-anchor="middle">x₁</text>
+    <text x="16" y="152" fill="#94a3b8" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" transform="rotate(-90,16,152)">x₂</text>
+    <!-- Four regions -->
+    <rect x="29" y="140" width="76" height="119" fill="#3b82f6" fill-opacity="0.15"/>
+    <rect x="29" y="43" width="76" height="97" fill="#f59e0b" fill-opacity="0.15"/>
+    <rect x="105" y="43" width="74" height="97" fill="#f59e0b" fill-opacity="0.15"/>
+    <rect x="105" y="140" width="74" height="119" fill="#3b82f6" fill-opacity="0.08"/>
+    <!-- Split lines -->
+    <line x1="105" y1="42" x2="105" y2="260" stroke="#ef4444" stroke-width="2" stroke-dasharray="8 5"/>
+    <line x1="29" y1="140" x2="179" y2="140" stroke="#ef4444" stroke-width="2" stroke-dasharray="8 5"/>
+    <!-- Blue points -->
+    <circle cx="52" cy="210" r="5" fill="#3b82f6"/>
+    <circle cx="68" cy="228" r="5" fill="#3b82f6"/>
+    <circle cx="58" cy="192" r="5" fill="#3b82f6"/>
+    <circle cx="78" cy="215" r="5" fill="#3b82f6"/>
+    <circle cx="85" cy="185" r="5" fill="#3b82f6"/>
+    <circle cx="72" cy="245" r="5" fill="#3b82f6"/>
+    <!-- Amber points -->
+    <circle cx="132" cy="82" r="5" fill="#f59e0b"/>
+    <circle cx="148" cy="98" r="5" fill="#f59e0b"/>
+    <circle cx="140" cy="65" r="5" fill="#f59e0b"/>
+    <circle cx="125" cy="108" r="5" fill="#f59e0b"/>
+    <circle cx="158" cy="72" r="5" fill="#f59e0b"/>
+    <circle cx="145" cy="125" r="5" fill="#f59e0b"/>
+    <rect x="40" y="284" width="120" height="22" fill="#0f172a" rx="3"/>
+    <text x="100" y="299" fill="#10b981" font-family="Arial, sans-serif" font-size="12" text-anchor="middle">Gini = 0.000</text>
+  </g>
+
+  <!-- Bottom annotation -->
+  <text x="450" y="404" fill="#94a3b8" font-family="Arial, sans-serif" font-size="13" text-anchor="middle">Each split chooses the feature and threshold that maximizes Gini impurity reduction.</text>
+</svg>

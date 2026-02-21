@@ -161,7 +161,7 @@ In practice, a weighted combination of cross-entropy and Dice loss often works b
 
 ## What Comes Next
 
-The U-Net is a *discriminative* model — given an input, it predicts a structured output. The next lesson introduces **variational autoencoders**, which flip the question: instead of mapping inputs to labels, how do you learn the structure of the data itself well enough to *generate* new examples? This requires inventing a compressed representation of the entire data distribution, not just learning to classify it. The encoder-decoder structure you just learned reappears, but now the bottleneck is probabilistic — a little cloud of uncertainty rather than a single vector — and the goal is to make that cloud coherent enough to sample new images from.
+The U-Net is a *discriminative* model — given an input, it predicts a structured output. But all the architectures so far have been spatial: convolutions, pooling, local receptive fields. The next lesson introduces **transformers and attention mechanisms**, which throw away locality entirely. Instead of sliding a small window across the input, every position attends directly to every other position. Attention turned out to be so powerful that it eventually displaced not just recurrence but, in many domains, convolutions too.
 
 ## Check Your Understanding
 

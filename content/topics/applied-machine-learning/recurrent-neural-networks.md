@@ -34,13 +34,11 @@ The solution is to give the network a notebook — a persistent memory cell with
 
 Consider predicting the next word. Given "The cat sat on the ___", a simple RNN can likely predict "mat" — the context is short and recent. But now consider: "The author, who grew up in Paris and studied literature at the Sorbonne before moving to New York where she worked as a journalist for twenty years, finally published her ___". To predict "book" or "novel," the model must remember "author" and "published" across a gap of 30+ words. A vanilla RNN's hidden state would have long forgotten "author" by the time it reaches "her." An LSTM, with its explicit memory cell, can carry that information across the entire sentence.
 
-[[figure aml-rnn-gradient-flow]]
-
 [[simulation aml-rnn-memory-highway]]
 
 ## Where this topic goes deeper
 
-This page gives you the core intuition for sequence modeling. For full architectural details — bidirectional RNNs, attention mechanisms, the evolution from LSTMs to transformers, and practical sequence modeling workflows — see [Advanced Deep Learning — Sequence Models](/topics/advanced-deep-learning/ann).
+This page gives you the core intuition for sequence modeling. For full architectural details — bidirectional RNNs, attention mechanisms, why attention-based transformers largely replaced recurrent architectures, and practical sequence modeling workflows — see [Advanced Deep Learning — Sequence Models](/topics/advanced-deep-learning/ann).
 
 ## Practical checklist
 
@@ -60,7 +58,7 @@ This page gives you the core intuition for sequence modeling. For full architect
 
 Recurrent networks are powerful but carry a fundamental limitation: they process sequences one step at a time, making parallelization difficult and long-range dependencies hard to maintain even with gating. The transformer architecture, covered in the advanced sequence modeling materials, replaces recurrence entirely with attention — every token can directly attend to every other token in a single parallel operation. Understanding why LSTM gates work is the best preparation for understanding why attention works even better.
 
-Within this module, graph neural networks take a complementary view: instead of ordering data along a time axis, they organize it by relational structure. The message-passing idea in GNNs and the hidden-state idea in RNNs are both answers to the same question — how do you propagate information across a structured input? — and seeing them side by side sharpens your intuition for both.
+The final topic in this module shifts from prediction to creation. Generative adversarial networks turn the optimization framework you learned at the start of this module into a two-player game — a generator that creates fake data and a discriminator that tries to catch it. The result is a model that can produce entirely new samples that look like they came from the training distribution.
 
 ## Check your understanding
 

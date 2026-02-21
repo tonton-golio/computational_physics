@@ -24,11 +24,22 @@ $$
 
 where the prior $\rho_m$ is a zero-mean Gaussian with covariance proportional to $\epsilon^{-2}\mathbf{I}$, and the likelihood $L$ assumes Gaussian noise on the data. (Important caveat: this equivalence holds specifically under Gaussian noise and a quadratic prior. Non-Gaussian noise or non-quadratic penalties lead to different posterior shapes — but the core insight that regularization encodes prior belief remains universal.)
 
+> Minimizing the Tikhonov objective is mathematically identical to finding the mode of a Gaussian posterior. **Regularization is a prior in disguise.**
+
 What does that mean in plain language? The prior says: "I expect the model parameters to be small — close to zero — and I'm about $1/\epsilon$ uncertain about each one." Large $\epsilon$ means a tight prior (you're very confident the model is small). Small $\epsilon$ means a loose prior (you're letting the data do the talking).
 
-[[figure gaussian-process]]
+Each colored line in the prior distribution represents a possible model *before* seeing any data. The prior is telling the model: "I expect you to be smooth, like a gentle hillside, not like the Alps on a bad day." The spread of the lines shows your uncertainty. When you combine this prior with data, the posterior (shaded region) shrinks — the data has taught you something.
 
-Look at this picture carefully. Each colored line is a sample from the prior distribution — a possible model *before* seeing any data. The prior is telling the model: "I expect you to be smooth, like a gentle hillside, not like the Alps on a bad day." The spread of the lines shows your uncertainty. When you combine this prior with data, the posterior (shaded region) shrinks — the data has taught you something.
+[[simulation prior-likelihood-posterior]]
+
+[[simulation posterior-walker-arena]]
+
+Things to look for in the simulation:
+
+* Set the prior wide and the noise tight — the posterior snaps to the data (data-dominated regime, small $\epsilon$)
+* Set the prior tight and the noise wide — the posterior barely moves from the prior (prior-dominated regime, large $\epsilon$)
+* Watch the effective $\epsilon$ ratio: it is exactly the Tikhonov regularization parameter from the [previous lesson](./regularization)
+* The posterior is always narrower than both the prior and the likelihood — combining information always reduces uncertainty
 
 ---
 
@@ -51,6 +62,28 @@ $$
 Now solve the standard Tikhonov problem in these new variables. The effect: noisy data points get downweighted automatically. Model parameters with strong prior constraints are penalized more heavily.
 
 Notice what we just did — we turned our beliefs about noise and about geology into two simple matrices. That's the whole game of science: turn intuition into numbers, then let the numbers argue with the data.
+
+---
+
+## The Linear-Gaussian Closed Form
+
+When both the prior and the noise are Gaussian and the forward model is linear, the posterior is also Gaussian — and we can write it down exactly. No sampling, no optimization, just algebra.
+
+The posterior mean (which is also the MAP estimate) is:
+
+$$
+\hat{\mathbf{m}} = \mathbf{C}_M\mathbf{G}^T(\mathbf{G}\mathbf{C}_M\mathbf{G}^T + \mathbf{C}_D)^{-1}(\mathbf{d} - \mathbf{G}\mathbf{m}_{\text{prior}}) + \mathbf{m}_{\text{prior}},
+$$
+
+and the posterior covariance is:
+
+$$
+\tilde{\mathbf{C}}_M = \mathbf{C}_M - \mathbf{C}_M\mathbf{G}^T(\mathbf{G}\mathbf{C}_M\mathbf{G}^T + \mathbf{C}_D)^{-1}\mathbf{G}\mathbf{C}_M.
+$$
+
+Set $\mathbf{C}_M = \epsilon^{-2}\mathbf{I}$ and $\mathbf{C}_D = \mathbf{I}$, and this reduces to the Tikhonov formula from the [regularization lesson](./regularization). The "regularization parameter" $\epsilon$ was the ratio of noise standard deviation to prior standard deviation all along.
+
+Notice something remarkable about $\tilde{\mathbf{C}}_M$: it depends on $\mathbf{G}$, $\mathbf{C}_M$, and $\mathbf{C}_D$, but **not on the data** $\mathbf{d}$. The data shifts the posterior mean but doesn't change its shape. This means you can compute how uncertain your answer will be *before you collect a single measurement* — which is the foundation of experimental design. If two survey configurations give different $\tilde{\mathbf{C}}_M$, you can pick the one with smaller uncertainty and know you're making an optimal investment.
 
 ---
 

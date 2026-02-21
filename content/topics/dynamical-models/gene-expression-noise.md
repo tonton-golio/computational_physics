@@ -36,6 +36,12 @@ This noise has real biological consequences:
 
 The **coefficient of variation** (CV) measures noise as the ratio of the standard deviation to the mean:
 
+> **Key Equation — Noise Decomposition**
+> $$
+> \eta_{\mathrm{total}}^2 = \eta_{\mathrm{int}}^2 + \eta_{\mathrm{ext}}^2
+> $$
+> Total noise decomposes exactly into intrinsic noise (independent random firing of each gene copy) and extrinsic noise (shared fluctuations across the cell).
+
 $$
 \eta = \frac{\sigma}{\langle N \rangle} = \frac{\sqrt{\langle (N - \langle N \rangle)^2 \rangle}}{\langle N \rangle},
 $$
@@ -88,17 +94,23 @@ $$
 
 The Fano factor is a fingerprint: it tells you something about the underlying mechanism of gene expression just from measuring the variance and mean of protein levels across cells.
 
-[[figure three-noise-histograms]]
-
-[[figure elowitz-two-colour-scatter]]
-
 ## Stochastic simulation: the Gillespie algorithm
 
-Our deterministic equations give us the average, but they miss the noise entirely. To simulate what actually happens inside a single cell, molecule by molecule, we use the **Gillespie algorithm** (also called the stochastic simulation algorithm). The idea is simple: at each step, compute how likely each possible reaction is right now (its *propensity*), draw a random waiting time, pick which reaction fires, update the molecule counts, and repeat. This gives you exact sample trajectories of the chemical master equation — the computational workhorse for studying noise in gene expression. Play with the simulation above to see it in action.
+Our deterministic equations give us the average, but they miss the noise entirely. To simulate what actually happens inside a single cell, molecule by molecule, we use the **Gillespie algorithm** (also called the stochastic simulation algorithm). The idea is simple: at each step, compute how likely each possible reaction is right now (its *propensity*), draw a random waiting time, pick which reaction fires, update the molecule counts, and repeat. This gives you exact sample trajectories of the chemical master equation — the computational workhorse for studying noise in gene expression.
+
+[[simulation gillespie-trajectory]]
+
+Compare the white ODE mean to the colored stochastic trajectories. With a high production rate (large k), the traces cluster tightly around the mean — the law of large numbers in action. Now reduce k to 5 and watch individual trajectories wander far from the deterministic prediction. This is the small-number effect: when molecules are few, noise dominates.
+
+Another major source of noise is what happens at cell division. When a cell splits in two, its molecules are randomly distributed between the daughters — **binomial partitioning**. If a cell has only a handful of molecules, one daughter may get most of them while the other gets almost none.
+
+[[simulation bacterial-lineage-tree]]
+
+Watch how molecular counts diverge across the lineage tree. Start with 100 molecules and the variation is modest. Reduce to 10 and the leaves show dramatic differences — some cells are molecule-rich, others nearly empty, purely from the randomness of partitioning.
 
 ## Why does nature do it this way?
 
-You might think noise is a problem cells would want to eliminate. And sometimes it is — negative autoregulation (which we will see in a later lesson) exists partly to suppress noise. But noise can also be *useful*. A genetically identical population with noisy gene expression is a population that hedges its bets: if the environment suddenly changes, some cells will already be in the right state to survive, purely by chance. This is a form of **bet-hedging**, and it is one of evolution's most elegant strategies.
+Noise seems like a problem, and cells do suppress it when precision matters (negative autoregulation, as we will see in [feedback loops](./feedback-loops), exists partly for this purpose). But noise can also be *useful*: a population with noisy gene expression hedges its bets, so that some cells are already in the right state when the environment suddenly changes. This **bet-hedging** strategy explains phenomena like bacterial persistence and stochastic competence.
 
 ## Check your understanding
 

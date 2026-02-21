@@ -17,7 +17,7 @@ export function Header() {
   return (
     <Suspense
       fallback={
-        <header className="sticky top-0 z-50 bg-transparent backdrop-blur-md">
+        <header className="sticky top-0 z-50 bg-transparent">
           <div className="flex h-16 w-full items-center gap-3 px-6">
             <Link href="/" className="flex items-center gap-2">
               <span className="text-xl font-semibold text-[var(--text-strong)]">koala brain</span>
@@ -60,7 +60,7 @@ function HeaderContent() {
   }
 
   return (
-    <header className="sticky top-0 z-50 bg-transparent backdrop-blur-md">
+    <header className="sticky top-0 z-50 bg-transparent">
       <div className="relative flex h-16 w-full items-center gap-3 px-6">
         <Link href="/" className="flex items-center gap-2">
           <span className="text-xl font-semibold text-[var(--text-strong)]">koala brain</span>
@@ -68,17 +68,23 @@ function HeaderContent() {
 
         {isTopicSubpage ? (
           <>
-            <Link
-              href="/topics"
-              className="flex items-center gap-1.5 rounded-md border border-[var(--border-strong)] bg-[var(--surface-1)] px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
-              back to topics
-            </Link>
+            {/* Centered group: back button + topic title */}
             {topicTitle && (
-              <span className="absolute left-1/2 -translate-x-1/2 text-sm font-semibold text-[var(--text-strong)]">
-                {topicTitle}
-              </span>
+              <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
+                <Link
+                  href="/topics"
+                  className="flex items-center gap-1.5 rounded-md border border-[var(--border-strong)] bg-[var(--surface-1)] px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+                  back to topics
+                </Link>
+                <Link
+                  href={`/topics/${pathname.split("/")[2]}`}
+                  className="text-sm font-semibold text-[var(--text-strong)] transition hover:text-[var(--accent)]"
+                >
+                  {topicTitle}
+                </Link>
+              </div>
             )}
             <div className="flex-1" />
           </>

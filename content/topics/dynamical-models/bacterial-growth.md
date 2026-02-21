@@ -24,6 +24,12 @@ During balanced exponential growth, three conditions hold:
 
 Monod discovered that the growth rate $\lambda$ depends on the concentration of the limiting nutrient $S$ through a saturating function:
 
+> **Key Equation — Growth Rate is Proportional to Ribosome Fraction**
+> $$
+> \lambda = k \cdot \phi_\mathrm{R}
+> $$
+> A bacterium's growth rate equals the translation speed per ribosome times the fraction of its protein that is ribosomes — one of the most robust quantitative laws in microbiology.
+
 $$
 \lambda = \lambda_\mathrm{max} \frac{S}{K_S + S}.
 $$
@@ -72,7 +78,9 @@ $$
 
 > *The cell has a fixed budget. Every ribosome it makes is a metabolic enzyme it did not make, and vice versa. Growth physiology is fundamentally a problem of **resource allocation**.*
 
-[[figure proteome-pie-charts]]
+[[simulation proteome-allocation]]
+
+Adjust the nutrient quality slider to see how the cell redistributes its protein budget. Watch how the growth rate indicator responds as you shift investment between ribosomes ($\phi_R$) and metabolic enzymes ($\phi_P$). The constraint $\phi_R + \phi_P + \phi_Q = 1$ means every extra ribosome comes at the cost of a metabolic enzyme. Find the allocation that maximizes growth rate — and notice that it depends on the nutrient environment.
 
 ## The allocation dilemma
 
@@ -102,11 +110,9 @@ where in the last step we used the fact that the ribosome fraction $\phi_\mathrm
 
 > *This is one of the most beautiful quantitative laws in all of biology: the growth rate of a bacterium is directly proportional to the fraction of its protein that is ribosomes. Faster-growing cells are literally "more ribosome." Evolution has tuned the proteome allocation so that every extra ribosome is paid for by faster growth. And indeed, this is exactly what experimentalists observe — it is one of the most robust quantitative relationships in all of microbiology.*
 
-[[figure growth-law-plot]]
-
 ## Why does nature do it this way?
 
-A bacterium lives in a feast-or-famine world. In the gut, nutrients arrive in bursts after the host eats, then disappear. The cell that can rapidly ramp up ribosome production when food is abundant — and rapidly shut it down when food runs out — will outcompete its neighbors. The ppGpp system gives bacteria this ability: a single molecule that coordinates the entire proteome in response to nutrient availability. It is a masterpiece of evolutionary engineering.
+The ppGpp system is the culmination of every principle in this course: degradation for speed ([lesson 1](./differential-equations)), negative feedback for homeostasis ([feedback loops](./feedback-loops)), and adaptation for responding to changes rather than absolute levels ([signal transduction](./signal-transduction)). A single small molecule coordinates the entire proteome, letting a bacterium rapidly reallocate resources in a feast-or-famine world.
 
 ## Big ideas
 
@@ -124,10 +130,12 @@ The same framework extends far beyond bacteria. Cancer cells face a version of t
 
 ## Check your understanding
 
-* If you grow *E. coli* in a rich medium where the doubling time is 20 minutes, and then switch to a poor medium where the doubling time is 60 minutes, what happens to the ribosome fraction $\phi_\mathrm{R}$?
+* Imagine you are the cell. You just got moved from rich to poor medium. What do you do with your ribosome budget, and why?
 * Why is it important that ppGpp targets ribosomal RNA *promoters* specifically, rather than slowing down all transcription equally?
 * A cell devotes 50% of its protein to ribosomes and 30% to metabolic enzymes. Is it likely growing fast or slow? Why?
 
 ## Challenge
 
 Suppose the housekeeping fraction is fixed at $\phi_\mathrm{Q} = 0.4$, so $\phi_\mathrm{P} + \phi_\mathrm{R} = 0.6$. Imagine that nutrient influx is proportional to $\phi_\mathrm{P}$ and growth rate is proportional to $\phi_\mathrm{R}$. What allocation maximizes growth? Now add a constraint: the cell needs *at least* $\phi_\mathrm{P} = 0.1$ to survive. How does the optimal $\phi_\mathrm{R}$ change? Plot growth rate versus $\phi_\mathrm{R}$ and see the tradeoff for yourself.
+
+*Hint: growth rate $\lambda \propto \phi_R$ and nutrient uptake $\propto \phi_P$. Maximize $\lambda$ subject to $\phi_R + \phi_P = 0.6$ and $\phi_P \geq 0.1$. Plot growth rate vs $\phi_R$.*

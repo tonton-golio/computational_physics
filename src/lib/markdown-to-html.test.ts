@@ -257,12 +257,21 @@ describe("markdownToHtml", () => {
       expect(html).toContain("Steepest Descent");
     });
 
-    it("renders code-editor as static pre block", () => {
+    it("renders code-editor as static pre block when code mode is on", () => {
       const { html } = markdownToHtml("[[code-editor some code]]", noKatex, {
         staticMode: true,
+        figureModes: new Set(["code"]),
       });
       expect(html).toContain("<pre");
       expect(html).toContain("some code");
+    });
+
+    it("omits code-editor in static mode when code mode is off", () => {
+      const { html } = markdownToHtml("[[code-editor some code]]", noKatex, {
+        staticMode: true,
+        figureModes: new Set(["screenshot", "alt-text"]),
+      });
+      expect(html).not.toContain("some code");
     });
   });
 

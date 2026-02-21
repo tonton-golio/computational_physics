@@ -62,6 +62,8 @@ At $\chi t = \pi/2$, this becomes $\frac{1}{\sqrt{2}}(|e\rangle|i\alpha\rangle +
 
 These experiments were performed by Haroche's group and provide direct evidence of quantum superpositions at the mesoscopic scale. The decoherence of cat states (monitored by Wigner function tomography) demonstrates the quantum-to-classical transition.
 
+[[simulation vacuum-rabi-oscillation]]
+
 [[simulation wigner-cat-state]]
 
 ## Decoherence and Quantum Jumps

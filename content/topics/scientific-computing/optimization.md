@@ -31,6 +31,8 @@ The big question is always: **How much do you know about the landscape, and how 
 
 Why can't you just use gradient descent for everything? Because gradient descent is like always walking downhill in the steepest direction — it zigzags in narrow valleys and takes forever to converge. BFGS and conjugate gradients are smarter: they learn the shape of the valley and take much better steps.
 
+[[simulation rosenbrock-banana]]
+
 ## BFGS (Broyden-Fletcher-Goldfarb-Shanno)
 
 BFGS is a quasi-Newton method for minimizing $f:\mathbb{R}^n\to\mathbb{R}$. Newton's method for optimization uses the Hessian $H$ to find the step:

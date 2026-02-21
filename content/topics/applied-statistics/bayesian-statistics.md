@@ -55,6 +55,8 @@ This is a reassuring property: with enough data, reasonable people with differen
 
 > **Challenge.** Grab a coin. Before you flip it, write down your prior belief about $P(\text{heads})$. Now flip it 10 times. After each flip, mentally update your belief: is the coin fair, or is it biased? Notice how your confidence grows (or shifts) with each flip. That's Bayesian updating in real time — your brain does this naturally.
 
+[[simulation prior-influence]]
+
 ## Choosing Priors
 
 The prior is the most controversial part of Bayesian statistics. Where does it come from? Here's the menu:
@@ -65,6 +67,8 @@ The prior is the most controversial part of Bayesian statistics. Where does it c
 
 In practice, the prior is most important when data are scarce. With abundant data, the likelihood dominates and the prior washes out. If your conclusions depend sensitively on the prior, that's a signal that the data are insufficient to answer the question — which is itself a useful thing to know.
 
+[[simulation shrinkage-plot]]
+
 ## Bayesian vs Frequentist Confidence
 
 A 95% **confidence interval** (frequentist) means: if you repeated the experiment many times, 95% of the intervals would contain the true value. It says nothing about *this particular* interval.
@@ -72,6 +76,8 @@ A 95% **confidence interval** (frequentist) means: if you repeated the experimen
 A 95% **credible interval** (Bayesian) means: given the data and the prior, there is a 95% probability that the parameter lies in this interval. This is often what people *think* a confidence interval means.
 
 For large samples with weak priors, the two intervals are numerically similar. The philosophical difference becomes practically important for small samples or when strong prior information is available.
+
+When data are scarce, the credible interval is what scientists actually want to report ("we are 95% sure the mass is between..."). The numbers from the two approaches are often similar, but the meaning is different.
 
 > **Challenge.** Explain Bayes' theorem to a friend using only the example of diagnosing a rare disease. A positive test result doesn't mean you have the disease — it depends on how rare the disease is (the prior). One minute.
 

@@ -1,6 +1,6 @@
 # Loss Functions and Optimization
 
-Imagine you are blindfolded on a bumpy mountain, and your only goal is to reach the lowest valley. You can feel the slope under your feet, so each step you take is downhill. That is gradient descent — and the terrain you are walking on is the loss function. Everything in machine learning starts here: you pick a number that measures how wrong your predictions are (the loss), and then you adjust your model's parameters to make that number smaller.
+Imagine a blindfolded hiker in the mountains who can only feel the slope under their feet. Every step they take downhill is gradient descent. The steeper the slope, the bigger the step — until they reach the bottom (a minimum of the loss). Everything in machine learning starts here: you pick a number that measures how wrong your predictions are (the loss), and then you adjust your model's parameters to make that number smaller.
 
 ## Classification losses
 
@@ -27,6 +27,8 @@ Think of it this way: suppose you are estimating earthquake damage across a city
 **MAE (mean absolute error)** treats all errors proportionally. Off by $10k? Penalty of $10k. Off by $100k? Penalty of $100k. It does not obsess over outliers. But it has a kink at zero, which makes optimization slightly trickier.
 
 **Huber loss** gives you the best of both worlds. It behaves like MSE for small errors (smooth, easy to optimize) and like MAE for large errors (robust to outliers).
+
+[[figure aml-loss-outlier-comparison]]
 
 ## Optimization dynamics
 
@@ -72,11 +74,11 @@ Standard k-fold is cheating for temporal data — it lets the model peek into th
 
 Both approaches prevent data leakage by never letting future information contaminate training.
 
-[[figure aml-loss-landscape-3d]]
-
 ## Interactive simulations
 
 [[simulation aml-loss-functions]]
+
+[[simulation aml-loss-curves-outliers]]
 
 [[simulation aml-loss-landscape]]
 

@@ -82,7 +82,7 @@ export function SuggestionBox() {
   const hasContent = value.trim().length > 0;
 
   return (
-    <div className="fixed bottom-6 left-1/2 z-[10000] -translate-x-1/2">
+    <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2">
       <div className="flex items-center gap-2">
         <div className="rounded-full border border-[var(--border-strong)] bg-[var(--surface-1)]/30 shadow-lg backdrop-blur-lg transition-all duration-300 ease-in-out"
           style={{ width: isOpen ? "min(340px, calc(100vw - 5rem))" : "auto" }}

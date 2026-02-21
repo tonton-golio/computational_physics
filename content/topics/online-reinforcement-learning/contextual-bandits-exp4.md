@@ -34,11 +34,13 @@ Compare this to what would happen if you tried each expert one at a time. With a
 * Importance weighting is the universal bridge between what you observed and what you needed to know. It appears in Monte Carlo estimation, causal inference, and off-policy evaluation — all for the same reason.
 * EXP4 reveals that "learning with experts" and "learning with contexts" are the same problem viewed from different angles: experts are just policies, and policies are just functions from contexts to actions.
 
+## From stateless to stateful decisions
+
+So far, every decision we have made is stateless — the context arrives, we act, we see a reward, and the slate is wiped clean. But many real problems have *state*: the action you take now changes the world you will face next. A robot stepping left is now in a different place; a doctor prescribing drug A has changed the patient's chemistry for tomorrow's decision. When the context depends on your own previous actions, you have a Markov Decision Process, and the tools we have built — regret, optimism, importance sampling — will need to be extended to handle this richer structure.
+
 ## What Comes Next
 
-Every setting so far — full-information, bandit, contextual bandit — has one thing in common: your action today does not change what happens tomorrow. The world is memoryless. You pick an action, you observe an outcome, and the next round starts fresh.
-
-That assumption is about to break. In a Markov Decision Process, actions reshape the state of the world, and the state determines future rewards. A bad move today can trap you in bad states for many rounds. A good move today can unlock better states later. The next lesson introduces MDPs and dynamic programming: the mathematical framework for planning when your decisions have consequences that ripple through time.
+That leap is the subject of the next lesson. In a Markov Decision Process, actions reshape the state of the world, and the state determines future rewards. A bad move today can trap you in bad states for many rounds; a good move can unlock better states later. The next lesson introduces MDPs and dynamic programming: the framework for planning when your decisions have consequences that ripple through time.
 
 ## Check Your Understanding
 1. In EXP4, each expert proposes a distribution over actions (not just a single action). Why is this generality necessary for the contextual setting, and what would go wrong if experts were forced to be deterministic?

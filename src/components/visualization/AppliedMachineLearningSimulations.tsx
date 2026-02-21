@@ -15,6 +15,11 @@ import BackpropBlameGame from './applied-machine-learning/BackpropBlameGame';
 import RnnMemoryHighway from './applied-machine-learning/RnnMemoryHighway';
 import GnnMessagePassingLive from './applied-machine-learning/GnnMessagePassingLive';
 import GanForgerArena from './applied-machine-learning/GanForgerArena';
+import LossCurvesOutliers from './applied-machine-learning/LossCurvesOutliers';
+import TreeGrowthSteps from './applied-machine-learning/TreeGrowthSteps';
+import ForestVsSingleTree from './applied-machine-learning/ForestVsSingleTree';
+import ForwardBackwardPass from './applied-machine-learning/ForwardBackwardPass';
+import ActivationGallery from './applied-machine-learning/ActivationGallery';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 
@@ -23,10 +28,13 @@ export const APPLIED_MACHINE_LEARNING_SIMULATIONS: Record<string, React.Componen
   'aml-loss-functions': LossFunctionsDemo,
   'aml-loss-landscape': LossLandscapeExplorer,
   'aml-validation-split': ValidationSplitDemo,
+  'aml-loss-curves-outliers': LossCurvesOutliers,
 
   // Lesson 02 – Decision Trees and Ensemble Methods
   'aml-tree-split-impurity': TreeSplitImpurityDemo,
   'aml-tree-ensemble-xor': XorEnsembleArena,
+  'aml-tree-growth-steps': TreeGrowthSteps,
+  'aml-forest-vs-single-tree': ForestVsSingleTree,
 
   // Lesson 03 – Dimensionality Reduction
   'aml-pca-correlated-data': PcaCorrelatedDataDemo,
@@ -35,15 +43,14 @@ export const APPLIED_MACHINE_LEARNING_SIMULATIONS: Record<string, React.Componen
 
   // Lesson 04 – Neural Network Fundamentals
   'aml-backprop-blame': BackpropBlameGame,
+  'aml-forward-backward-pass': ForwardBackwardPass,
+  'aml-activation-gallery': ActivationGallery,
 
-  // Lesson 05 – Recurrent Neural Networks
-  'aml-rnn-memory-highway': RnnMemoryHighway,
-
-  // Lesson 06 – Graph Neural Networks (unified simulation replaces 3 old demos)
-  'aml-graph-convolution-intuition': GnnMessagePassingLive,
-  'aml-graph-adjacency-demo': GnnMessagePassingLive,
+  // Lesson 05 – Graph Neural Networks
   'aml-graph-message-passing': GnnMessagePassingLive,
-  'aml-gnn-message-passing-live': GnnMessagePassingLive,
+
+  // Lesson 06 – Recurrent Neural Networks
+  'aml-rnn-memory-highway': RnnMemoryHighway,
 
   // Lesson 07 – Generative Adversarial Networks
   'aml-gan-forger-arena': GanForgerArena,
@@ -62,40 +69,30 @@ export const AML_DESCRIPTIONS: Record<string, string> = {
   "aml-tsne-umap-comparison": "Swiss Roll manifold explorer — PCA vs t-SNE vs UMAP on a 3D Swiss Roll, showing why nonlinear methods win.",
   "aml-backprop-blame": "Backpropagation blame game — animated gradient flow through a 4-layer MLP with vanishing gradient demonstration.",
   "aml-rnn-memory-highway": "RNN vs LSTM memory highway — visualizing information decay in RNNs vs cell-state persistence in LSTMs.",
-  "aml-graph-convolution-intuition": "GNN message passing live — interactive graph with step-by-step aggregation and oversmoothing detection.",
-  "aml-graph-adjacency-demo": "GNN message passing live — interactive graph with step-by-step aggregation and oversmoothing detection.",
   "aml-graph-message-passing": "GNN message passing live — interactive graph with step-by-step aggregation and oversmoothing detection.",
-  "aml-gnn-message-passing-live": "GNN message passing live — interactive graph with step-by-step aggregation and oversmoothing detection.",
   "aml-gan-forger-arena": "GAN forger arena — generator learns a target distribution with live loss curves and mode collapse detection.",
+  "aml-loss-curves-outliers": "Loss curves under outliers — comparing MSE, MAE, and Huber regression fits on data with controllable outliers.",
+  "aml-tree-growth-steps": "Tree growth steps — step-by-step visualization of recursive partitioning with Gini impurity at each split.",
+  "aml-forest-vs-single-tree": "Forest vs single tree — comparing a deep overfitting tree against a random forest on noisy data with adjustable tree count.",
+  "aml-forward-backward-pass": "Forward and backward pass — animated numerical values flowing through a 2-3-1 MLP with gradient magnitudes shown at each node.",
+  "aml-activation-gallery": "Activation gallery — side-by-side plots of ReLU, Sigmoid, Tanh, Leaky ReLU, and Swish with their derivatives.",
 };
 
 export const AML_FIGURES: Record<string, { src: string; caption: string }> = {
-  'aml-loss-landscape-3d': {
-    src: '/figures/aml-loss-landscape-3d.svg',
-    caption: '3D loss landscape with optimizer paths: SGD takes a noisy route, momentum smooths the trajectory, and learning-rate arrows show too-large (bouncing over the valley), too-small (stuck in a shallow pit), and just-right step sizes.',
+  'aml-loss-outlier-comparison': {
+    src: '/figures/aml-loss-outlier-comparison.svg',
+    caption: 'Loss function comparison under outliers. MSE fit is dragged toward the three red outlier points; MAE and Huber fits stay anchored to the blue data majority. Bottom-right panel shows the penalty curves — MSE grows quadratically, MAE linearly, and Huber transitions smoothly between the two.',
   },
-  'aml-xor-ensemble': {
-    src: '/figures/aml-xor-ensemble.svg',
-    caption: 'XOR problem solved by an ensemble. Left: a single shallow tree fails with overlapping regions. Right: a random forest produces a clean diagonal decision boundary. Inset: 100 tiny trees voting.',
+  'aml-tree-growth-steps': {
+    src: '/figures/aml-tree-growth-steps.svg',
+    caption: 'Decision tree recursive partitioning in four steps. Step 0: unsplit data with Gini 0.5. Steps 1-3: successive axis-aligned splits reduce impurity to zero, partitioning blue and amber classes into pure leaf regions.',
   },
-  'aml-dimred-comparison': {
-    src: '/figures/aml-dimred-comparison.svg',
-    caption: 'Side-by-side dimensionality reduction: original 3D Swiss-roll dataset, PCA projection (still twisted), and t-SNE/UMAP (beautifully unrolled 2D colors). PCA is linear; t-SNE/UMAP discover the manifold.',
+  'aml-activation-gallery': {
+    src: '/figures/aml-activation-gallery.svg',
+    caption: 'Activation function gallery. Top row: function curves (solid) with derivative overlays (dashed). Bottom row: gradient-flow heatmaps through 20 layers.',
   },
-  'aml-backprop-blame': {
-    src: '/figures/aml-backprop-blame.svg',
-    caption: 'Backpropagation blame-passing: a chain of four neurons (input to output) with red arrows flowing backward labeled "who is to blame?" — fading intensity shows vanishing gradients, while a parallel path with skip connections shows stable flow.',
-  },
-  'aml-rnn-gradient-flow': {
-    src: '/figures/aml-rnn-gradient-flow.svg',
-    caption: 'Unrolled RNN diagram from time steps t-3 to t+1. Top: simple RNN with fading gradient arrows. Bottom: LSTM with a bright cell-state highway carrying information across all time steps.',
-  },
-  'aml-gnn-message-steps': {
-    src: '/figures/aml-gnn-message-steps.svg',
-    caption: 'Message passing over 3 steps on a 4-node graph (A-B-C-D). Step 0: initial colors. Step 1: 1-hop knowledge. Step 2: 2-hop knowledge. Bonus step 5: all nodes converge to the same dull gray (oversmoothing).',
-  },
-  'aml-gan-progression': {
-    src: '/figures/aml-gan-progression.svg',
-    caption: 'GAN training progression. Left: forger starts terrible (noisy blobs). Middle: mode collapse (100 identical smiling faces). Right: healthy GAN (diverse realistic faces). Inset: forger and detective shaking hands at Nash equilibrium.',
+  'aml-numeric-forward-backward': {
+    src: '/figures/aml-numeric-forward-backward.svg',
+    caption: 'Numeric forward and backward pass through a 2-3-1 MLP showing gradient magnitudes shrinking from output to input.',
   },
 };

@@ -81,29 +81,4 @@ export const EIGEN_DESCRIPTIONS: Record<string, string> = {
   "characteristic-polynomial": "Characteristic polynomial — the polynomial det(A - λI) whose roots are the eigenvalues of A.",
 };
 
-export const EIGEN_FIGURES: Record<string, { src: string; caption: string }> = {
-  'eigen-applications': {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/3/35/Principal_component_analysis_of_Mars_data.png',
-    caption: 'Eigenvalue applications in dimensionality reduction and modal analysis.',
-  },
-  'multiplicity-diagram': {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/3/3f/Jordan_block.svg',
-    caption: 'Algebraic vs geometric multiplicity and defective structure intuition.',
-  },
-  'convergence-comparison': {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/8/8c/NewtonIteration_Ani.gif',
-    caption: 'Qualitative convergence-rate comparison across iterative eigensolvers.',
-  },
-  'qr-convergence-plot': {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/7/7e/QR_decomposition.svg',
-    caption: 'QR-iteration intuition: repeated factorizations drive triangular convergence.',
-  },
-  'gershgorin-example': {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/e/e2/Gerschgorin_disks.svg',
-    caption: 'Gershgorin discs give fast eigenvalue location bounds in the complex plane.',
-  },
-  'algorithm-comparison': {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/7/7a/Complexitysubsets.svg',
-    caption: 'Algorithm trade-offs: convergence speed, robustness, and computational cost.',
-  },
-};
+export const EIGEN_FIGURES: Record<string, { src: string; caption: string }> = {};

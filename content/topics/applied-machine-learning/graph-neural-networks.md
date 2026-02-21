@@ -63,17 +63,11 @@ After one layer, each node knows about its immediate neighbors. After two layers
 
 ## Oversmoothing: when everyone sounds the same
 
-There is a catch with stacking many GNN layers. After enough layers it is like a party where everyone has talked to everyone else ten times. All opinions have blended into one polite average. Every node sounds exactly the same — useful information has been washed away. This is **oversmoothing**: node representations converge to indistinguishable vectors as you add layers, because information has diffused uniformly across the graph.
+There is a catch with stacking many GNN layers. After enough layers it is like a party where everyone has talked to everyone else ten times. All opinions have blended into one polite average. Every node sounds exactly the same — useful information has been washed away. This is **oversmoothing**: node representations converge to indistinguishable vectors as you add layers, because information has diffused uniformly across the graph. After enough layers it is like every person in a group chat has forwarded every message to everyone else ten times — eventually everyone is saying exactly the same thing.
 
 In practice, most GNNs work best with 2–4 layers. Beyond that, you need architectural tricks (skip connections, normalization, or attention mechanisms) to preserve node identity.
 
-[[figure aml-gnn-message-steps]]
-
 ## Interactive simulations
-
-[[simulation aml-graph-convolution-intuition]]
-
-[[simulation aml-graph-adjacency-demo]]
 
 [[simulation aml-graph-message-passing]]
 
@@ -92,7 +86,7 @@ In practice, most GNNs work best with 2–4 layers. Beyond that, you need archit
 
 ## What Comes Next
 
-Graph neural networks close the loop on the main ideas in this module. You have now seen models that handle tabular data (trees and ensembles), unstructured sequences (RNNs), arbitrary relational structure (GNNs), and any continuous input-output mapping (MLPs). The next frontier is generative modeling — not predicting a label, but producing entirely new data that looks like it came from the training distribution. Generative adversarial networks, the final topic in this module, turn the optimization framework you learned in loss and optimization into a two-player game, and the result is a model that can create.
+Graph neural networks handle data where the structure is relational — but not all structure is spatial. Some data only makes sense in order: sentences, time series, sensor streams. Recurrent neural networks, covered next, bend the feedforward graph into a loop, giving the network memory — the ability to carry information from one timestep to the next. The message-passing idea in GNNs and the hidden-state idea in RNNs are both answers to the same question — how do you propagate information across a structured input? — and seeing them side by side sharpens your intuition for both.
 
 Beyond this module, GNNs are an active research frontier: attention-based graph networks, equivariant architectures for physical systems, and graph transformers all build on the message-passing foundation you just learned. If you care about molecules, protein structure, materials science, or any domain where relationships matter as much as quantities, GNNs are where the action is.
 

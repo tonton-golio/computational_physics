@@ -51,6 +51,8 @@ Evolution spent millions of years wiring V1 to IT in the ventral visual stream. 
 
 That is why transfer learning works: the lowest layers are basically universal visual primitives. Swap out the final classification head and the same edge detectors, texture filters, and part detectors serve a completely different task.
 
+[[simulation adl-filter-evolution]]
+
 ## What if we didn't have convolutions?
 
 Without convolutions, you would need a fully connected layer for every pixel-to-pixel connection. A single layer processing a modest 224x224 RGB image would need $224 \times 224 \times 3 \times 224 \times 224 \times 3 \approx 23$ billion parameters — for *one* layer. And the network would have to learn separately that an edge in the top-left is the same concept as an edge in the bottom-right. Convolutions give you parameter sharing and spatial awareness for free.
@@ -113,21 +115,7 @@ The evolution of CNN architectures brought key innovations:
 * **LeNet** (1998): Pioneered the conv-pool-conv-pool-fc pattern. Demonstrated CNNs for handwritten digit recognition.
 * **AlexNet** (2012): Scaled to ImageNet with deeper networks, ReLU activations, and dropout. Won the ImageNet challenge by a large margin and launched the deep learning revolution.
 * **VGGNet** (2014): Showed that using small 3x3 kernels stacked deeply (16-19 layers) outperforms larger kernels. Two 3x3 layers have the same receptive field as one 5x5 layer but with fewer parameters.
-* **ResNet** (2015): Introduced **residual connections** (skip connections) that enabled training of networks with 100+ layers.
-
-## Residual connections
-
-Deep networks suffer from the **degradation problem**: adding more layers can actually *increase* training error, even though the network has strictly more capacity. This is counterintuitive — a deeper network should do at least as well as a shallower one, since the extra layers could just learn the identity function. In practice, learning the identity is surprisingly hard.
-
-**Residual connections** solve this elegantly. Instead of asking the network to learn the full transformation, we ask it to learn only the *difference* from the identity:
-
-$$
-\mathbf{h}_{l+1} = \mathbf{h}_l + F(\mathbf{h}_l; \theta_l),
-$$
-
-where $F$ is the residual function (typically two conv-BN-ReLU layers). It is like telling the network: "If you cannot figure out what to do, at least copy what was already there." If the optimal transformation is close to identity, the network only needs to learn a small residual $F \approx 0$, which is much easier than learning the full mapping from scratch.
-
-Skip connections also improve gradient flow: the gradient can flow directly through the identity path, preventing vanishing gradients even in very deep networks.
+* **ResNet** (2015): Applied the **residual connections** from the previous lesson to CNNs, enabling training of networks with 100+ layers. ResNet demonstrated that residual connections are a natural fit for deep convolutional architectures, making the identity the default and learning only the corrections.
 
 ## Receptive field
 
@@ -139,6 +127,8 @@ The **receptive field** of a neuron is the region of the input image that can in
 * Pooling and strided convolutions increase the receptive field more aggressively.
 
 The **effective receptive field** is typically much smaller than the theoretical one, concentrated in the center following a Gaussian distribution. Dilated convolutions and attention mechanisms can expand it efficiently.
+
+[[simulation adl-receptive-field-growth]]
 
 ## Transfer learning
 
@@ -157,12 +147,11 @@ The CNN achieves approximately 97.5% accuracy on the MNIST test set, with a netw
 
 * Translation equivariance is the kernel of the idea: the same edge detector works in every corner of the image, so there is no reason to learn a separate one for each location.
 * Stacking small 3x3 kernels achieves the same receptive field as a large kernel but with fewer parameters and more nonlinearities in between — depth is cheaper than width for capturing long-range spatial context.
-* Residual connections reframe the problem: instead of asking the network to learn a transformation, ask it to learn a correction to the identity, which turns out to be a much easier problem.
 * Transfer learning works because the visual hierarchy discovered on one task (edges → textures → parts → objects) is genuinely universal — the same filters that recognize dog fur recognize cat fur.
 
 ## What Comes Next
 
-The CNN you have built so far tells you *what* is in an image, but not *where* every pixel belongs. The next lesson introduces the U-Net architecture, which takes the CNN's ability to extract features and augments it with a symmetric decoder that puts those features back onto the original spatial canvas. The result is a network that produces a full segmentation mask — assigning a class label to every single pixel. The skip connections that made ResNet work reappear here in a new guise, this time carrying fine spatial detail across the compression bottleneck.
+You now have a network that exploits spatial structure — but so far it only classifies whole images. What if you want to *generate* images instead? The next lesson introduces **generative adversarial networks**, where two networks compete: a forger tries to produce convincing fakes, and a detective tries to catch them. The adversarial game drives the generator to produce outputs so realistic they fool an expert classifier — a completely different approach to learning than anything we have seen so far.
 
 ## Check Your Understanding
 

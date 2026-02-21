@@ -7,6 +7,7 @@ import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import { useTheme, type Theme } from '@/lib/use-theme';
 
 /* ------------------------------------------------------------------ */
@@ -293,7 +294,7 @@ export function SandpileModel() {
       </div>
 
       {/* 3D Height-Field Visualization */}
-      <div
+      <SimulationMain
         className="w-full rounded-lg overflow-hidden"
         style={{ height: 420, background: isDark ? '#08080c' : '#f0f4ff' }}
       >
@@ -347,7 +348,7 @@ export function SandpileModel() {
             </EffectComposer>
           )}
         </Canvas>
-      </div>
+      </SimulationMain>
 
       {/* Avalanche Histogram */}
       {chartAvalanches.length > 0 && (

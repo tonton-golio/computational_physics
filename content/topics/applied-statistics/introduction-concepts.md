@@ -12,6 +12,8 @@ The "center" of a dataset depends on what question you're asking. Here is the me
 
 ### Arithmetic Mean
 
+[[simulation which-average]]
+
 The most familiar average. You add up all the values and divide by how many there are:
 
 $$
@@ -105,7 +107,9 @@ $$
 
 ### Weighted Mean
 
-When measurements come with different uncertainties, you should trust the precise ones more. The weighted mean does exactly this — measurements with smaller error bars get larger weights:
+When measurements come with different uncertainties, you should trust the precise ones more. The weighted mean does exactly this — measurements with smaller error bars get larger weights.
+
+Imagine each measurement standing on a seesaw. A precise measurement (small $\sigma$) is a heavy person near the fulcrum — it has more say in where the balance point lands. The weighted mean is simply where the seesaw balances.
 
 $$
 \hat{\mu} = \frac{\sum x_i / \sigma_i^2}{\sum 1 / \sigma_i^2}, \qquad \hat{\sigma}_\mu = \sqrt{\frac{1}{\sum 1/\sigma_i^2}}
@@ -116,6 +120,8 @@ The uncertainty on the weighted mean decreases with the number of samples:
 $$
 \hat{\sigma}_\mu = \hat{\sigma}/\sqrt{N}.
 $$
+
+[[simulation weighted-mean]]
 
 Alex has three measurements of the same length: $10.2 \pm 0.1$, $10.5 \pm 0.5$, and $10.1 \pm 0.2$ cm. The weighted mean pulls toward 10.2, because that measurement is the most precise. This is your first taste of a powerful idea: *let the data tell you how much to trust each piece of information*. You'll see this idea again when we meet likelihood in [probability density functions](./probability-density-functions) and [chi-square fitting](./chi-square-method).
 
@@ -148,27 +154,18 @@ A value of $+1$ means perfect positive linear relationship; $-1$ means perfect n
 
 Picture four scatter plots. In the first, points fall neatly along a rising line — Pearson catches this perfectly. In the second, the same rising trend with more scatter — Pearson is smaller but still positive. In the third, the points form a perfect parabola — $y = x^2$ — but Pearson is zero, because the relationship isn't linear. In the fourth, the points form a perfect circle — complete dependence, but Pearson sees nothing at all. Always plot the data.
 
-### Rank Correlation: Beyond Linearity
+### Beyond Pearson: Other Correlation Measures
 
-What if the relationship between two variables is monotonic but not linear? Study hours and exam scores might be positively related, but not in a straight line — the first few hours of study help enormously, while the last few add less. **Rank correlation** handles this by comparing the *rankings* rather than the raw values.
+Pearson's $\rho$ only detects *linear* relationships — a perfect parabola or circle scores zero. A family of alternative measures captures progressively more general patterns. **Spearman's $\rho$** replaces values with ranks and then computes Pearson on those ranks, so it catches any monotonic trend (e.g., study hours vs. exam scores, where the first few hours help enormously but later ones add less). **Kendall's $\tau$** counts concordant vs. discordant pairs and is more robust when the sample is small or contains many ties. For truly complex, non-monotonic dependencies, information-theoretic measures such as the **Maximal Information Coefficient (MIC)**, **Mutual Information (MI)**, and **Distance Correlation (DC)** can detect relationships of any shape, at the cost of higher computation and harder interpretation. The progression from Pearson to Spearman to MIC/MI/DC mirrors a trade-off: each step captures more general relationships, at the cost of simplicity.
 
-**Spearman's $\rho$** replaces each value with its rank and computes the Pearson correlation on the ranks:
-
-$$
-\rho_S = 1 - \frac{6\sum_i (r_i - s_i)^2}{n^3-n}
-$$
-
-**Kendall's $\tau$** takes a different approach: it counts concordant pairs (both variables increase together) versus discordant pairs (one goes up while the other goes down).
-
-### Beyond Monotonic Relationships
-
-Pearson catches linear relationships. Spearman and Kendall catch monotonic ones. But what about truly complex dependencies — where $y$ might go up, then down, then up again as $x$ increases? For these, you need more powerful tools:
-
-* **Maximal Information Coefficient (MIC)**: Scans across many possible grids to find the strongest relationship of any shape. High MIC means the variables are related somehow, even if the pattern is complex.
-* **Mutual Information (MI)**: Borrowed from information theory, MI measures how much knowing $x$ reduces your uncertainty about $y$. It captures any kind of dependency, linear or not.
-* **Distance Correlation (DC)**: Unlike Pearson, distance correlation equals zero *only* when the variables are truly independent. It provides a rigorous test for any form of association.
-
-These measures are more computationally expensive, so they are typically reserved for exploratory analysis when you suspect non-trivial structure. The progression from Pearson to Spearman to MIC/MI/DC mirrors a trade-off: each step captures more general relationships, at the cost of simplicity and interpretability.
+| Measure | What it captures | When to use |
+|---|---|---|
+| Pearson $\rho$ | Linear association | Default first check; data roughly bivariate-normal |
+| Spearman $\rho$ | Any monotonic trend | Ordinal data, outliers, or curved-but-monotonic relationships |
+| Kendall $\tau$ | Monotonic trend (rank-based) | Small samples or many tied values |
+| MIC | Any functional relationship | Exploratory screening for complex patterns |
+| Mutual Information | Any statistical dependency | High-dimensional or strongly non-linear data |
+| Distance Correlation | Any dependency (zero iff independent) | Rigorous independence testing |
 
 Everything in this section describes data you already have. But the deeper question is: what *process* generated that data? If you can describe the underlying mechanism with a mathematical function, you unlock the ability to predict, extrapolate, and quantify uncertainty. That's the idea of a probability density function — and it's where we go next.
 

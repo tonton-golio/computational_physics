@@ -613,7 +613,9 @@ export function CanvasChart({ data, layout, style }: CanvasChartProps) {
     const redraw = () => {
       THEME = getCanvasTheme();
       const width = container.clientWidth;
-      const height = parseInt(String(style?.height || 320), 10);
+      const height = isFullscreen && container.clientHeight > 0
+        ? container.clientHeight
+        : parseInt(String(style?.height || 320), 10);
       const dpr = window.devicePixelRatio || 1;
 
       canvas.width = width * dpr;
@@ -635,13 +637,13 @@ export function CanvasChart({ data, layout, style }: CanvasChartProps) {
     const ro = new ResizeObserver(redraw);
     ro.observe(container);
     return () => ro.disconnect();
-  }, [data, layout, style, themeKey]);
+  }, [data, layout, style, themeKey, isFullscreen]);
 
   return (
     <div
       ref={containerRef}
       data-fs-role={isFullscreen ? 'chart' : undefined}
-      style={{ width: style?.width || '100%' }}
+      style={isFullscreen ? undefined : { width: style?.width || '100%' }}
     >
       <canvas ref={canvasRef} style={{ display: 'block', borderRadius: '4px' }} />
     </div>

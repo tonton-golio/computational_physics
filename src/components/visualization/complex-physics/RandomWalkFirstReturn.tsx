@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import { Slider } from '@/components/ui/slider';
 import { useTheme } from '@/lib/use-theme';
 
@@ -253,12 +254,13 @@ export function RandomWalkFirstReturn() {
       </div>
 
       {/* p5.js animated 2D walk trail */}
-      <div
+      <SimulationMain
+        scaleMode="contain"
         className="w-full rounded-lg overflow-hidden"
         style={{ background: isDark ? '#0a0a0f' : '#f0f4ff', aspectRatio: '1 / 1' }}
       >
         <WalkCanvas path={path} pathSteps={pathSteps} isDark={isDark} />
-      </div>
+      </SimulationMain>
 
       {/* Histograms */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

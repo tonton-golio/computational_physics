@@ -55,6 +55,8 @@ $$
 * Models individual trajectories, not just group means.
 * Allows complex correlation structures.
 
+[[simulation spaghetti-trajectory]]
+
 ## Growth Curve Models
 
 When the outcome follows a nonlinear trajectory over time — growth spurts, learning curves, disease progression — polynomial or nonlinear growth curves can be fit within the mixed-model framework:
@@ -90,6 +92,8 @@ Suppose you follow patients for five years. Some drop out. Some miss appointment
 * **MCAR** (missing completely at random): Missingness is unrelated to any data. The data you have are a random subset of what you would have collected. Standard methods remain valid, though less powerful.
 * **MAR** (missing at random): Missingness depends on observed data but not on the missing values themselves. A patient might drop out because of a recorded side effect, but not because of their unrecorded future outcome. LMMs under maximum likelihood provide valid inference.
 * **MNAR** (missing not at random): Missingness depends on the unobserved values themselves. Patients drop out *because* they're getting worse, and you never see how much worse. This is the hardest case, requiring specialized models (selection models, pattern-mixture models).
+
+[[simulation missingness-mechanisms]]
 
 Why the heck do you care whether the missing data is random or not? Because if patients who are getting worse are the ones who drop out, your remaining data makes the treatment look better than it is. The missingness *biases* your results. LMMs estimated by maximum likelihood or REML (the estimation method from [random effects](./random-effects)) are valid under MAR, making them the preferred approach for longitudinal analysis with incomplete data.
 

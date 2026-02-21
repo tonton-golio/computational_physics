@@ -9,6 +9,23 @@ import BayesianInference from './applied-statistics/BayesianInference';
 import ConfidenceIntervals from './applied-statistics/ConfidenceIntervals';
 import CorrelationAnalysis from './applied-statistics/CorrelationAnalysis';
 import BootstrapResampling from './applied-statistics/BootstrapResampling';
+import WhichAverage from './applied-statistics/WhichAverage';
+import WeightedMean from './applied-statistics/WeightedMean';
+import LikelihoodSurface from './applied-statistics/LikelihoodSurface';
+import PoissonToGaussian from './applied-statistics/PoissonToGaussian';
+import AcceptReject from './applied-statistics/AcceptReject';
+import MonteCarloIntegrationStats from './applied-statistics/MonteCarloIntegrationStats';
+import ResidualPattern from './applied-statistics/ResidualPattern';
+import VarianceDecomposition from './applied-statistics/VarianceDecomposition';
+import InteractionSurface from './applied-statistics/InteractionSurface';
+import RandomizationVsBlocking from './applied-statistics/RandomizationVsBlocking';
+import ShrinkagePlot from './applied-statistics/ShrinkagePlot';
+import SpaghettiTrajectory from './applied-statistics/SpaghettiTrajectory';
+import MissingnessMechanisms from './applied-statistics/MissingnessMechanisms';
+import PriorInfluence from './applied-statistics/PriorInfluence';
+import ProfileLikelihood from './applied-statistics/ProfileLikelihood';
+import OverfittingCarousel from './applied-statistics/OverfittingCarousel';
+import ROCLive from './applied-statistics/ROCLive';
 import { Slider } from '@/components/ui/slider';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
@@ -147,6 +164,23 @@ export const APPLIED_STATS_SIMULATIONS: Record<string, React.ComponentType<Simul
   'applied-stats-sim-6': ConfidenceIntervals,
   'applied-stats-sim-7': CorrelationAnalysis,
   'applied-stats-sim-8': BootstrapResampling,
+  'which-average': WhichAverage,
+  'weighted-mean': WeightedMean,
+  'likelihood-surface': LikelihoodSurface,
+  'poisson-to-gaussian': PoissonToGaussian,
+  'accept-reject': AcceptReject,
+  'monte-carlo-integration-stats': MonteCarloIntegrationStats,
+  'residual-pattern': ResidualPattern,
+  'variance-decomposition': VarianceDecomposition,
+  'interaction-surface': InteractionSurface,
+  'randomization-vs-blocking': RandomizationVsBlocking,
+  'shrinkage-plot': ShrinkagePlot,
+  'spaghetti-trajectory': SpaghettiTrajectory,
+  'missingness-mechanisms': MissingnessMechanisms,
+  'prior-influence': PriorInfluence,
+  'profile-likelihood': ProfileLikelihood,
+  'overfitting-carousel': OverfittingCarousel,
+  'roc-live': ROCLive,
 };
 
 // ============ CO-LOCATED DESCRIPTIONS ============
@@ -160,4 +194,21 @@ export const STATS_DESCRIPTIONS: Record<string, string> = {
   "applied-stats-sim-6": "Confidence intervals — visualizing the range of plausible parameter values at a given significance level.",
   "applied-stats-sim-7": "Correlation analysis — measuring the strength and direction of linear relationships between variables.",
   "applied-stats-sim-8": "Bootstrap resampling — estimating sampling distributions by repeatedly drawing with replacement from the data.",
+  "which-average": "Compare mean, median, and mode on a skewed distribution — see how each measure of central tendency responds to skewness.",
+  "weighted-mean": "Weighted mean visualization — measurements with smaller uncertainties get more weight, pulling the average toward precise readings.",
+  "likelihood-surface": "2D likelihood surface for Gaussian parameters — add or remove data points and watch the likelihood peak shift.",
+  "poisson-to-gaussian": "Poisson-to-Gaussian convergence — animate the Poisson distribution as lambda increases, showing it approaching a bell curve.",
+  "accept-reject": "Accept-reject sampling — visualize proposal distribution, target density, and accepted vs rejected random points.",
+  "monte-carlo-integration-stats": "Monte Carlo integration — random points estimate an integral, with running convergence toward the true value.",
+  "residual-pattern": "Residual diagnostics — compare residual patterns from a well-specified model vs a misspecified one.",
+  "variance-decomposition": "ANOVA variance decomposition — adjust between-group and within-group spread to see F-statistic and SS breakdown.",
+  "interaction-surface": "Factorial experiment interaction — two factors with adjustable main effects and interaction; parallel lines mean no interaction.",
+  "randomization-vs-blocking": "Randomization vs blocking — side-by-side comparison showing how blocking removes nuisance variability.",
+  "shrinkage-plot": "Bayesian shrinkage — group means pulled toward the grand mean, with stronger priors producing more shrinkage.",
+  "spaghetti-trajectory": "Spaghetti plot of random trajectories — individual paths, mean trajectory, and confidence bands.",
+  "missingness-mechanisms": "Missing data mechanisms — illustrate MCAR, MAR, and MNAR patterns in a scatter plot.",
+  "prior-influence": "Prior influence on the posterior — slider for prior precision shows how the posterior interpolates between prior and likelihood.",
+  "profile-likelihood": "Profile likelihood for a single parameter — confidence intervals derived from the likelihood ratio threshold.",
+  "overfitting-carousel": "Overfitting demo — polynomial degree slider shows training error decreasing while test error rises.",
+  "roc-live": "Interactive ROC curve — adjust the classification threshold and class separation to explore TPR, FPR, and AUC.",
 };

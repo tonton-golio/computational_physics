@@ -29,6 +29,8 @@ $$
 
 Notice what happened: the second derivatives that were in the strong form got distributed (via integration by parts) between $\mathbf{v}$ and $\mathbf{w}$. We no longer need $\mathbf{v}$ to be twice differentiable — once differentiable is enough. This is the technical payoff of the weak form: weaker smoothness requirements on the solution.
 
+Why does this matter in practice? Building $C^1$ finite elements — basis functions that are continuously differentiable across element boundaries — is painful: the elements need many degrees of freedom and complicated shape functions. Building $C^0$ elements — merely continuous, with possible kinks at element edges — is easy: simple triangles with linear or quadratic polynomials will do. Integration by parts trades one order of smoothness from the solution for one on the test function, letting us use those simple $C^0$ elements instead.
+
 ## From Weak Form to Linear System
 
 In the finite element method (next section), we'll approximate $\mathbf{v}$ and $p$ as combinations of basis functions. The weak form then becomes a system of linear equations:
@@ -37,6 +39,8 @@ $$
 $$
 
 where $\mathbf{K}$ is the viscosity matrix, $\mathbf{G}$ enforces incompressibility, $\mathbf{u}$ contains the unknown velocities at mesh nodes, and $\mathbf{p}$ contains the unknown pressures. This is a **saddle-point system** — it requires careful choice of finite element spaces to ensure stability (the inf-sup condition).
+
+[[simulation fem-convergence]]
 
 ## Big Ideas
 
@@ -57,4 +61,4 @@ We have the equations in the right form. Now we need to learn how to actually *s
 
 ## Challenge
 
-Derive the 1D weak form of the equation $-d^2u/dx^2 = f(x)$ on $[0,1]$ with $u(0) = u(1) = 0$. Multiply by a test function $w$ that vanishes at the endpoints, integrate by parts, and write down the resulting bilinear form $a(u,w)$ and linear form $\ell(w)$. Now discretize using piecewise-linear hat functions on a uniform mesh of $n$ elements. Write out the $n-1$ by $n-1$ stiffness matrix $\mathbf{K}$ explicitly and show that it's tridiagonal. For $f = 1$ and $n = 4$, solve the system and compare with the exact solution $u = x(1-x)/2$.
+**Challenge.** Apply what you have learned here to build a finite-element solver — you will do exactly this in the next lesson on the Finite Element Method, where you derive the weak form of a 1D Poisson problem, assemble the stiffness matrix with hat functions, and compare numerical and exact solutions.

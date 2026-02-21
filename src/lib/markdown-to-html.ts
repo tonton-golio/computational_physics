@@ -1,11 +1,15 @@
 import { FIGURE_DEFS } from "./figure-definitions";
 import { SIMULATION_DESCRIPTIONS, simulationTitle } from "./simulation-descriptions";
 
+export type FigureMode = "screenshot" | "alt-text" | "code";
+
 export interface MarkdownToHtmlOptions {
   /** When true, renders interactive elements as static placeholders for PDF export */
   staticMode?: boolean;
   /** When set, figure images use this base path in generated HTML (e.g. "figures/") */
   figureBasePath?: string;
+  /** Which figure representations to include in static mode (default: screenshot + alt-text) */
+  figureModes?: Set<FigureMode>;
 }
 
 export interface MarkdownToHtmlResult {
@@ -42,7 +46,7 @@ export function markdownToHtml(
   katexModule: KatexLike | null,
   options: MarkdownToHtmlOptions = {},
 ): MarkdownToHtmlResult {
-  const { staticMode = false, figureBasePath } = options;
+  const { staticMode = false, figureBasePath, figureModes } = options;
 
   let processed = content;
   const placeholders: Array<{ type: string; id: string; index: number }> = [];
@@ -57,41 +61,53 @@ export function markdownToHtml(
         const trimmedId = id.trim();
 
         if (type === "simulation") {
+          const fModes = figureModes ?? new Set<FigureMode>(["screenshot", "alt-text"]);
+          if (fModes.size === 0) return "";
           const title = simulationTitle(trimmedId);
           const description = SIMULATION_DESCRIPTIONS[trimmedId];
-          return `<div style="border:2px dashed #555;border-radius:12px;padding:24px;margin:16px 0;background:#111;color:#999;">
-            <div style="font-size:14px;font-weight:600;margin-bottom:4px;text-align:center;">Interactive Simulation: ${escapeHtml(title)}</div>
-            ${description ? `<div style="font-size:12px;margin-top:8px;line-height:1.5;">${escapeHtml(description)}</div>` : ""}
-          </div>`;
+          const parts: string[] = [];
+          if (fModes.has("screenshot") || fModes.has("alt-text")) {
+            parts.push(`<div style="font-size:14px;font-weight:600;margin-bottom:4px;text-align:center;">Interactive Simulation: ${escapeHtml(title)}</div>`);
+            if (description) parts.push(`<div style="font-size:12px;margin-top:8px;line-height:1.5;">${escapeHtml(description)}</div>`);
+          }
+          if (parts.length === 0) return "";
+          return `<div style="border:2px dashed #555;border-radius:12px;padding:24px;margin:16px 0;background:#111;color:#999;">${parts.join("\n")}</div>`;
         }
 
         if (type === "figure") {
+          const fModes = figureModes ?? new Set<FigureMode>(["screenshot", "alt-text"]);
+          if (fModes.size === 0) return "";
           const knownFigure = FIGURE_DEFS[trimmedId];
+          const caption = knownFigure?.caption ?? `Figure: ${trimmedId}`;
+          let fetchableSrc: string;
+          let localFilename: string;
           if (knownFigure) {
-            const fetchableSrc = resolveAbsoluteUrl(knownFigure.src);
+            fetchableSrc = resolveAbsoluteUrl(knownFigure.src);
             const ext = getExtensionFromUrl(knownFigure.src);
-            const localFilename = `${trimmedId}.${ext}`;
-            figures.push({ id: trimmedId, src: fetchableSrc, caption: knownFigure.caption, localFilename });
-            const displaySrc = figureBasePath ? `${figureBasePath}${localFilename}` : fetchableSrc;
-            return `<div style="margin:16px 0;text-align:center;">
-              <img src="${displaySrc}" alt="${escapeHtml(knownFigure.caption)}" style="max-width:100%;max-height:440px;border-radius:8px;border:1px solid #333;" />
-              <div style="margin-top:8px;font-size:11px;color:#999;">${escapeHtml(knownFigure.caption)}</div>
-            </div>`;
+            localFilename = `${trimmedId}.${ext}`;
+          } else {
+            const hasExt = /\.[a-z0-9]+$/i.test(trimmedId);
+            const localSrc = hasExt ? `/figures/${trimmedId}` : `/figures/${trimmedId}.png`;
+            fetchableSrc = resolveAbsoluteUrl(localSrc);
+            localFilename = `${trimmedId}.${hasExt ? localSrc.split(".").pop()! : "png"}`;
           }
-          const hasExt = /\.[a-z0-9]+$/i.test(trimmedId);
-          const localSrc = hasExt ? `/figures/${trimmedId}` : `/figures/${trimmedId}.png`;
-          const fetchableSrc = resolveAbsoluteUrl(localSrc);
-          const ext = hasExt ? localSrc.split(".").pop()! : "png";
-          const localFilename = `${trimmedId}.${ext}`;
-          figures.push({ id: trimmedId, src: fetchableSrc, caption: `Figure: ${trimmedId}`, localFilename });
           const displaySrc = figureBasePath ? `${figureBasePath}${localFilename}` : fetchableSrc;
-          return `<div style="margin:16px 0;text-align:center;">
-            <img src="${displaySrc}" alt="Figure ${escapeHtml(trimmedId)}" style="max-width:100%;border-radius:8px;border:1px solid #333;" />
-            <div style="margin-top:8px;font-size:11px;color:#999;">Figure: ${escapeHtml(trimmedId)}</div>
-          </div>`;
+          if (fModes.has("screenshot")) {
+            figures.push({ id: trimmedId, src: fetchableSrc, caption, localFilename });
+          }
+          const parts: string[] = [];
+          if (fModes.has("screenshot")) {
+            parts.push(`<img src="${displaySrc}" alt="${escapeHtml(caption)}" style="max-width:100%;max-height:440px;border-radius:8px;border:1px solid #333;" />`);
+          }
+          if (fModes.has("alt-text")) {
+            parts.push(`<div style="margin-top:8px;font-size:11px;color:#999;">${escapeHtml(caption)}</div>`);
+          }
+          return `<div style="margin:16px 0;text-align:center;">${parts.join("\n")}</div>`;
         }
 
         if (type === "code-editor") {
+          const fModes = figureModes ?? new Set<FigureMode>(["screenshot", "alt-text"]);
+          if (!fModes.has("code")) return "";
           const [initialCode] = trimmedId.split("|").map((s: string) => s.trim());
           return `<pre style="background:#0a0a15;color:#e5e7eb;border-radius:8px;padding:16px;margin:16px 0;overflow-x:auto;font-size:13px;"><code>${escapeHtml(initialCode || "")}</code></pre>`;
         }
@@ -109,6 +125,8 @@ export function markdownToHtml(
     /```python\n([\s\S]*?)```\s*<!--code-toggle-->\s*```pseudocode\n([\s\S]*?)```/g,
     (_match, pythonCode: string, pseudoCode: string) => {
       if (staticMode) {
+        const fModes = figureModes ?? new Set<FigureMode>(["screenshot", "alt-text"]);
+        if (!fModes.has("code")) return "";
         return `<pre style="background:#0a0a15;color:#e5e7eb;border-radius:8px;padding:16px;margin:16px 0;overflow-x:auto;font-size:13px;"><code>${escapeHtml(pythonCode.trimEnd())}</code></pre>`;
       }
       const marker = `%%PLACEHOLDER_${placeholderIndex}%%`;

@@ -82,6 +82,7 @@ function FigureBlock({
           src={src}
           alt={alt}
           isVideo={isVideo}
+          caption={caption}
           onClose={() => setLightboxOpen(false)}
         />
       )}

@@ -82,7 +82,7 @@ where $A$ is the enclosed area and $\Omega$ is the rotation rate. Fiber-optic gy
 
 ## What Comes Next
 
-Phase measurement is the gateway to understanding why squeezed light matters. The next lesson introduces squeezed states — states where one quadrature has noise below the vacuum level — and shows how they are generated, characterized, and used to push interferometric sensitivity toward the Heisenberg limit.
+Phase measurement is the gateway to understanding why squeezed light matters. The next lesson introduces [squeezed states](./squeezed-states) — states where one quadrature has noise below the vacuum level — and shows how they are generated, characterized, and used to push interferometric sensitivity toward the Heisenberg limit. In particular, injecting squeezed vacuum into the dark port of a Mach-Zehnder interferometer improves the phase sensitivity from $\Delta\phi = 1/\sqrt{\bar{n}}$ to $\Delta\phi = e^{-r}/\sqrt{\bar{n}}$ — the principle behind LIGO's quantum noise reduction.
 
 ## Check Your Understanding
 

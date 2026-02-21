@@ -26,9 +26,9 @@ where $\sigma_i \in \{-1, +1\}$ are random signs. If your model class can easily
 
 ## Double descent
 
-The **double descent** phenomenon is one of the most surprising empirical discoveries in modern machine learning. As you increase model size, the test error first follows the classic U-shape: it decreases, then increases as the model starts overfitting. But keep going past the point where the model can exactly fit the training data (the interpolation threshold), and something unexpected happens: the test error starts *decreasing again*.
+For a hundred years statistics told us: more parameters than data points means guaranteed overfitting. Then deep learning came along and shattered that rule. The **double descent** curve is the field's most surprising plot: test error goes down, then **up** (classic overfitting), then **down again** as you keep adding parameters past the interpolation threshold — the point where the model can exactly fit the training data.
 
-This challenges the classical bias-variance tradeoff and suggests that overparameterization acts as an implicit regularizer. Among all the functions that perfectly fit the training data, gradient descent finds a particularly smooth one. The phenomenon has been observed in three settings:
+The second descent is where modern deep learning lives. It challenges the classical bias-variance tradeoff and suggests that overparameterization acts as an implicit regularizer. Among all the functions that perfectly fit the training data, gradient descent finds a particularly smooth one. The phenomenon has been observed in three settings:
 
 * Model-wise double descent: varying the number of parameters.
 * Epoch-wise double descent: varying training time.
@@ -55,7 +55,7 @@ where $\theta_0$ are the initial parameters. In this infinite-width regime, the 
 
 The loss function of a deep network defines a surface in a space with millions of dimensions. What does this surface look like? The answer turns out to be far more forgiving than you might expect.
 
-**In 10,000 dimensions, almost every critical point is a saddle point, not a local minimum.** A local minimum requires the loss to curve upward in *every* direction simultaneously. In high dimensions, this is astronomically unlikely — at a random critical point, roughly half the directions curve up and half curve down, making it a saddle. This is why deep networks can be trained at all: gradient descent is almost never truly stuck, because there is almost always a direction that leads further downhill.
+**In 10,000 dimensions, almost every critical point is a saddle point, not a local minimum.** A local minimum requires the Hessian to have all positive eigenvalues — the loss must curve upward in *every* direction simultaneously. In high dimensions, this is astronomically unlikely. At a random critical point, almost all eigenvalues have a mix of signs, meaning at least one direction curves downward (a negative eigenvalue). This makes the point a saddle, not a minimum. This is why deep networks can be trained at all: gradient descent is almost never truly stuck, because there is almost always a direction that leads further downhill.
 
 Key properties of the loss landscape:
 * **Local minima vs saddle points**: Most critical points are saddles. The loss at local minima (when they exist) tends to be close to the global minimum.
@@ -87,6 +87,8 @@ $$
 $$
 
 A fundamental trade-off exists: robustness to adversarial perturbations typically comes at the cost of reduced clean accuracy. The network must allocate some of its capacity to defending against worst-case perturbations instead of optimizing average-case performance.
+
+[[simulation adl-adversarial-attack]]
 
 ```python
 # FGSM attack
@@ -123,12 +125,12 @@ Understanding what deep networks learn — and why they make specific decisions 
 * **Gradient-based methods** (saliency maps, Grad-CAM): Highlight input regions that most affect the output. Grad-CAM uses the gradient of the target class score with respect to the final convolutional layer to produce a coarse localization map showing where the network is looking.
 * **Feature visualization**: Optimize an input to maximally activate a specific neuron or layer, revealing the patterns each neuron responds to. The resulting images are often hauntingly beautiful and alien.
 * **Probing classifiers**: Train simple models on intermediate representations to test what information is encoded at each layer. Does layer 5 know about syntax? Does layer 12 know about sentiment?
-* **Mechanistic interpretability**: Reverse-engineer the computations performed by individual circuits within the network, identifying specific algorithmic roles for groups of neurons. The goal is to understand the network as an algorithm, not just a black box.
+* **Mechanistic interpretability**: Reverse-engineer the learned circuits inside trained networks to understand them as algorithms rather than black boxes. For example, transformer language models develop **induction heads** — attention patterns that copy previously seen sequences — which can be identified and studied as modular computational units. These heads compose in specific ways (one head attends to the previous token, another copies the token that followed it last time) to implement in-context learning, demonstrating that networks learn interpretable, reusable subroutines.
 
 ## Big Ideas
 
 * Double descent is a crack in classical statistics: overparameterized models that interpolate the training data can generalize well, which means "more parameters than data points" is not the disaster a century of theory predicted.
-* In high dimensions, local minima are nearly extinct — almost every critical point is a saddle with at least one direction pointing downhill, which is why gradient descent works even though we never guaranteed it would.
+* In high dimensions, local minima are nearly extinct (more precisely, almost all critical points in high-dimensional loss landscapes have at least one negative Hessian eigenvalue, making them saddle points rather than true local minima) — which is why gradient descent works even though we never guaranteed it would.
 * Adversarial examples are not a bug to be patched; they reveal that neural networks are solving a different problem than we thought — one that has the right answers on the training distribution but is fragile in ways that are geometrically inevitable given the decision boundary's shape.
 * The NTK regime (infinite width) and the feature learning regime (finite width) are two different theories of the same object — and the success of real deep learning lives entirely in the regime the elegant theory cannot fully explain.
 

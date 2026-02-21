@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { NextResponse } from "next/server";
 import { readLessonDocument } from "@/infra/content/file-content-repository";
-import { getOrderedLessonSlugs, getLessonSummary, isLandingPage } from "@/lib/topic-navigation.server";
+import { getOrderedLessonSlugs, getLessonSummary } from "@/lib/topic-navigation.server";
 import { TOPICS } from "@/lib/content";
 import { logRequestMetric, correlationIdFrom } from "@/infra/observability/request-metrics";
 import { AppError, asErrorEnvelope } from "@/shared/errors/app-error";
@@ -32,7 +32,7 @@ export async function GET(request: Request) {
       throw new AppError("NOT_FOUND", `Topic "${topic}" not found.`, 404, { topic });
     }
 
-    const slugs = getOrderedLessonSlugs(topic).filter((s) => !isLandingPage(s));
+    const slugs = getOrderedLessonSlugs(topic);
 
     const lessons = slugs
       .map((slug) => {

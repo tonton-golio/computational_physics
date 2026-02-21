@@ -46,6 +46,8 @@ $$
 
 With rotation ($f \neq 0$), the minimum wave frequency is $f$ — waves slower than one cycle per half-day (at mid-latitudes) are deflected by the Coriolis force into rotating patterns rather than propagating freely.
 
+[[simulation dispersion-relation]]
+
 ## Big Ideas
 
 * Gravity waves exist because two things compete: gravity pulls displaced water back to its resting level, and inertia carries it past. The oscillation between these two tendencies is the wave.
@@ -55,7 +57,7 @@ With rotation ($f \neq 0$), the minimum wave frequency is $f$ — waves slower t
 
 ## What Comes Next
 
-We've now covered the main exact solutions and wave phenomena in fluid mechanics. But what about flows where viscosity absolutely dominates — where the fluid is so sticky or slow that inertia plays no role? That's creeping flow, and it describes everything from honey to glaciers.
+We've now covered the main exact solutions and wave phenomena in fluid mechanics. To solve the Stokes equation for realistic geometries (like Gladys the Glacier flowing through an irregular valley), we need to reformulate it in **weak form** — a step that prepares the equation for numerical solution by the finite element method.
 
 ## Check Your Understanding
 

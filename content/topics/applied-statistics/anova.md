@@ -4,7 +4,7 @@ Your fertilizer worked... or did it? You tested three different fertilizers on t
 
 ## The Idea Behind ANOVA
 
-The t-test from the previous section compares two groups. But experiments often involve three, four, or a dozen groups. You *could* run t-tests on every pair, but this creates a dangerous multiple-testing problem — with enough comparisons, you will find "significant" differences by sheer chance.
+The t-test from [hypothesis testing](./hypothesis-testing) compares two groups. But experiments often involve three, four, or a dozen groups. You *could* run t-tests on every pair, but this creates a dangerous multiple-testing problem — with enough comparisons, you will find "significant" differences by sheer chance.
 
 **Analysis of variance** solves this with a single test: do *any* of the group means differ? Despite its name, ANOVA works by comparing variability *between* groups to variability *within* groups. The key insight: if group means differ substantially, the between-group variance will be large relative to the within-group variance. If all groups come from the same population, the two should be similar.
 
@@ -33,6 +33,8 @@ The **F-statistic** is the ratio:
 $$
 F = \frac{\text{SS}_{\text{between}} / (k - 1)}{\text{SS}_{\text{within}} / (N - k)} = \frac{\text{MS}_{\text{between}}}{\text{MS}_{\text{within}}}.
 $$
+
+[[simulation variance-decomposition]]
 
 Under $H_0: \alpha_1 = \cdots = \alpha_k = 0$, this follows an $F(k-1, N-k)$ distribution. A large $F$ means the group differences are large relative to the noise — evidence that at least one group is different.
 
@@ -89,7 +91,7 @@ where $\bar{R}_i$ is the mean rank in group $i$. Under $H_0$, $H \sim \chi^2(k-1
 
 Because it works with ranks rather than raw values, the Kruskal-Wallis test is robust to outliers, skewness, and non-constant variance. The trade-off is reduced power when the ANOVA assumptions *are* met — you pay a price for making fewer assumptions. If the Kruskal-Wallis test is significant, pairwise comparisons can be performed with the **Dunn test** (with Bonferroni correction).
 
-Now you can compare groups and detect real differences. But all of this analysis is only as good as the data that went into it. A well-designed experiment with 50 observations can beat a sloppy one with 5000. That's the power of experimental design — and it's where we go next.
+Now you can compare groups and detect real differences. But what happens when the data has a natural grouping structure that you can't eliminate — students nested within classrooms, patients nested within hospitals? Ignoring that structure inflates your effective sample size and leads to false discoveries. Random effects models fix this, and that's where we go next.
 
 > **Challenge.** Explain the F-statistic to a friend using the signal-to-noise analogy. The "signal" is how different the group averages are; the "noise" is how much individuals scatter within each group. If the signal is big compared to the noise, something real is happening. One minute.
 
@@ -102,9 +104,9 @@ Now you can compare groups and detect real differences. But all of this analysis
 
 ## What Comes Next
 
-ANOVA tells you that at least one group differs, and post-hoc tests tell you which ones. But the quality of any test depends entirely on how the data were collected. A well-designed experiment answers your question with far fewer observations than a sloppy one.
+ANOVA tells you that at least one group differs, and post-hoc tests tell you which ones. But what happens when your data has a natural grouping structure — students nested within classrooms, patients nested within hospitals, measurements nested within subjects?
 
-The next section introduces the principles of experimental design: randomization, replication, and blocking. These are the tools that control noise before you collect any data — making subsequent analysis cleaner and more powerful.
+Ignoring that structure and treating all observations as independent inflates effective sample sizes and leads to false discoveries. Random effects models fix this by explicitly partitioning the variability between levels of the hierarchy.
 
 ## Check Your Understanding
 

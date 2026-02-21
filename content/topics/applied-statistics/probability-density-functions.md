@@ -46,6 +46,8 @@ $$
 
 **Example**: A large number of people go into traffic every day ($N\rightarrow\infty$), the probability of any one person being killed is tiny ($p\rightarrow 0$), but some number of fatalities occur every year ($\lambda\neq 0$).
 
+[[simulation poisson-to-gaussian]]
+
 The Poisson distribution has a remarkable property: its mean and variance are both equal to $\lambda$. This means the error on a Poisson count is simply the square root of that count — a fact you'll use constantly when working with histograms. If a histogram bin contains $N$ events, its statistical uncertainty is $\sqrt{N}$, provided the count is large enough ($N \gtrsim 5{-}20$) for the Gaussian approximation to hold.
 
 The sum of independent Poissons is itself a Poisson: $\lambda = \lambda_a + \lambda_b$. And when $\lambda$ is large ($\lambda \gtrsim 20$), the Poisson approaches a Gaussian. Nature keeps converging on that bell curve.
@@ -81,6 +83,8 @@ Suppose you flip a coin 10 times and get 7 heads. Which value of $p$ (the probab
 If $p = 0.5$, getting 7 heads is possible but not the most likely result. If $p = 0.7$, it is. If $p = 0.99$, getting *only* 7 heads is actually surprising — you'd expect more. So the answer is somewhere around 0.7. **Maximum likelihood estimation** (MLE) formalizes this intuition: find the parameter values that make the observed data as probable as possible.
 
 > **Challenge.** Grab a coin and flip it 10 times. Write down how many heads you got. What value of $p$ would make your result least surprising? If you got 6 heads, the MLE is $\hat{p} = 0.6$. Simple — but that simplicity hides a powerful principle.
+
+[[simulation likelihood-surface]]
 
 Mathematically, the **likelihood** is the probability of the data as a function of the parameters $\theta$:
 

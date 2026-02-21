@@ -88,6 +88,8 @@ The target is a model that:
 
 If you've been following along, this should feel familiar — it's exactly the Tikhonov formula from the [regularization lesson](./regularization), applied to a concrete problem.
 
+[[simulation ray-smearing-explorer]]
+
 [[simulation linear-tomography]]
 
 Things to look for in the simulation:
@@ -96,22 +98,7 @@ Things to look for in the simulation:
 * Change the regularization parameter and watch the image sharpen (small $\epsilon$) or blur (large $\epsilon$)
 * Notice which cells are well-resolved (crossed by many rays) and which are ghostly (sparse coverage)
 
----
-
-## Resolution and Coverage
-
-Here's something that trips up beginners: the quality of your tomographic image depends as much on your **acquisition geometry** as on your inversion algorithm.
-
-* Dense, cross-cutting rays → high local resolution, sharp features
-* Sparse, one-directional rays → elongated blobs, poor depth resolution
-
-Two stress tests reveal this:
-
-**Delta-function spike test.** Place a single anomaly in one cell. Invert. If the recovered image is a sharp spike, that cell is well-resolved. If it smears into a blob, the ray coverage there is poor.
-
-**Checkerboard test.** Create an alternating pattern of positive and negative anomalies (like a checkerboard). Invert. Where the pattern recovers cleanly, you have good resolution. Where it smears or disappears, you don't. This test is standard practice in seismology — it immediately shows you the reliable and unreliable regions of your image.
-
-The smearing pattern tells you exactly what the data can and cannot see. This is why survey design and inversion are inseparable — you can't fix bad geometry with clever algorithms.
+Resolution and coverage — how to diagnose which parts of your image the data can actually resolve — are critical to interpreting any tomographic result. We return to these tools in the [geophysical examples](./geophysical-inversion), where spike tests and checkerboard tests reveal the resolving power (and blind spots) of real survey geometries.
 
 ---
 
@@ -127,9 +114,8 @@ When the forward model is nonlinear, we can no longer find the answer with a sin
 
 ## Big Ideas
 * The sensitivity matrix $\mathbf{G}$ is not just a computational object — each row is the literal geometric footprint of one measurement on the model. Building it forces you to think carefully about what your data actually sees.
-* Resolution depends on geometry, not just algorithm. Dense, cross-cutting rays produce sharp images; sparse, unidirectional coverage produces elongated blobs. No amount of clever inversion fixes bad survey design.
 * Always validate on synthetic data first. If you cannot recover a known model from clean synthetic data, your inversion workflow has a bug. If you can't recover it from noisy synthetic data, you don't have enough coverage.
-* The checkerboard test is honest in a way that best-fit metrics are not: it shows you the spatial structure of what the data can and cannot resolve.
+* Sparsity of $\mathbf{G}$ is what makes large-scale tomography computationally feasible — each ray only crosses a small fraction of the grid, so matrix-vector products are cheap.
 
 ## What Comes Next
 

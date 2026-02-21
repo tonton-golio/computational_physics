@@ -41,7 +41,7 @@ $$
 
 with $\tau \approx 1.1$ in 2D. The distribution of avalanche areas, durations, and lifetimes also follow power laws. There is no characteristic scale — avalanches of all sizes occur.
 
-After a transient, the system reaches a statistically steady state. The average rate of sand input equals the average rate of sand falling off the edges. The pile maintains itself at the critical slope — not too steep, not too shallow. Self-organized criticality.
+After a transient, the system reaches a statistically steady state. The average rate of sand input equals the average rate of sand falling off the edges. The sandpile does not need a "criticality knob." It self-organizes to the only slope where avalanches of all sizes are possible — not too steep, not too shallow. Tune the slope steeper and avalanches drain it; tune it shallower and grains accumulate until it steepens again. The pile finds the critical point the way water finds its level.
 
 ## The Bak-Sneppen model
 
@@ -68,7 +68,7 @@ $$
 P(T = 2n) \sim n^{-3/2},
 $$
 
-a power law with exponent $-3/2$. This result connects to SOC because avalanches in many SOC models can be mapped to random-walk first-return problems. The avalanche "starts" when the system leaves the critical state and "ends" when it returns — just like a random walk departing from and returning to the origin.
+a power law with exponent $-3/2$. This result connects to SOC because avalanches in many SOC models can be mapped to random-walk first-return problems. The correspondence becomes clear when we map each toppling event to a step in a random walk: an avalanche that returns the pile to its critical slope corresponds exactly to a first-return trajectory, and the exponent $\tau = 3/2$ follows from the classical result for first-return times. More concretely, each toppling event in the sandpile corresponds to a step away from the origin, and the avalanche ends when the walk first returns — i.e., when the chain of topplings dies out and the system returns to a stable configuration. The avalanche "starts" when the system leaves the critical state and "ends" when it returns — just like a random walk departing from and returning to the origin.
 
 [[simulation random-walk-first-return]]
 

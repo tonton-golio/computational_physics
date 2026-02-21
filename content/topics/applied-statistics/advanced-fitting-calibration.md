@@ -30,6 +30,8 @@ $$
 L_p(\boldsymbol{\psi}) = \max_{\boldsymbol{\lambda}} L(\boldsymbol{\psi}, \boldsymbol{\lambda}).
 $$
 
+[[simulation profile-likelihood]]
+
 Think of it as asking: "For this particular value of the interesting parameter, what is the *best* the model can do if I freely adjust everything else?" You trace out a curve of best-case likelihoods, and that curve gives you confidence intervals.
 
 A confidence region at level $\alpha$ is:

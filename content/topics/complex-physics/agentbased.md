@@ -85,6 +85,8 @@ Let us tie together the applications that make agent-based models so compelling:
 
 * **Flocking** (Vicsek model): each bird aligns its velocity with its neighbors, plus some noise. No bird knows the global pattern, yet the flock moves as a coordinated whole. The transition from disordered to ordered motion is a phase transition — just like the Ising model, but for velocities instead of spins.
 
+[[simulation vicsek-flocking]]
+
 * **Traffic flow** (Nagel-Schreckenberg model): each driver follows simple rules — accelerate if there is space, brake if the car ahead is close, randomly slow down sometimes. No driver has a map of the whole highway, yet traffic jams emerge as traveling waves that propagate backward through the flow.
 
 * **Epidemics**: each person can be susceptible, infected, or recovered (SIR). Transmission depends on local contacts. No one knows the global state of the epidemic, yet complex spatial patterns of infection emerge, especially on the scale-free networks we studied earlier.
@@ -97,7 +99,7 @@ This simulation shows the Lorenz attractor — another system where simple deter
 
 ## Big Ideas
 
-* Emergence is not a mystery — it is what happens when many agents following local rules collectively explore a high-dimensional state space, and the typical state looks organized even though no agent planned it.
+* Emergence from simple local rules remains the central theme (see the [Phase Transitions](phaseTransitions) lesson for the foundational statement). Agent-based models make this concrete: flocks, traffic, epidemics, and markets all exhibit coherent macroscopic patterns arising from agents that have no global plan.
 * The Gillespie algorithm is exact stochastic simulation: it generates sample paths from the master equation one reaction at a time, capturing fluctuations that ODEs and mean-field equations completely miss.
 * Spatial structure matters: the agent-based predator-prey model produces traveling waves, local extinctions, and global chaos that the mean-field Lotka-Volterra equations say are impossible.
 * The Vicsek flocking model is an Ising model for velocities — the transition from disordered motion to coordinated flocking is a genuine phase transition, with the same critical phenomena we have studied throughout this topic.

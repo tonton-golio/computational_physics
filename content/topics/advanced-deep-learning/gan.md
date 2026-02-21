@@ -63,7 +63,7 @@ GAN training is notoriously unstable. The two-player game introduces failure mod
 
 ## Improved loss functions
 
-**Wasserstein GAN** (WGAN) replaces the JS divergence implicit in the original loss with the Earth Mover distance — a measure of how much "work" is needed to transform one distribution into another. The discriminator (called a "critic") outputs an unbounded score:
+**Wasserstein GAN** (WGAN) addresses a limitation of the original saturating loss, which corresponds to minimizing the Jensen-Shannon divergence in the optimal-discriminator limit. (The non-saturating variant used in practice — training $G$ to maximize $\log D(G(\mathbf{z}))$ — has a different interpretation.) The JS divergence saturates to a constant $\log 2$ when the real and generated distributions have disjoint supports, which starves the generator of gradient signal. WGAN replaces it with the Earth Mover (Wasserstein-1) distance — a measure of how much "work" is needed to transform one distribution into another. The discriminator (called a "critic") outputs an unbounded score:
 
 $$
 \min_G \max_{D \in \mathcal{D}} \; \mathbb{E}_{\mathbf{x}}[D(\mathbf{x})] - \mathbb{E}_{\mathbf{z}}[D(G(\mathbf{z}))],
@@ -122,13 +122,13 @@ Evaluating generative models is inherently difficult since we lack ground truth 
 ## Big Ideas
 
 * Mode collapse is what happens when the forger discovers a single forgery that reliably fools the detective and stops trying anything else — the game has a Nash equilibrium in principle, but practice offers many worse equilibria to fall into first.
-* The original GAN loss measures JS divergence between distributions, which saturates to a constant when the distributions do not overlap — Wasserstein GAN fixes this by using a distance that keeps providing signal even when the two distributions are far apart.
+* The original saturating GAN loss corresponds to minimizing the Jensen-Shannon divergence (in the optimal-discriminator limit), which saturates to a constant when the distributions do not overlap — Wasserstein GAN fixes this by using a distance that keeps providing signal even when the two distributions are far apart.
 * The discriminator's job is not to win — it is to be helpful to the generator. A discriminator that destroys the generator too quickly leaves no gradient; a weak discriminator teaches nothing. The useful regime is always in between.
 * FID captures both quality and diversity in one number, but it measures them in the feature space of a pre-trained classifier — which means it inherits all the biases of that classifier about what counts as realistic.
 
 ## What Comes Next
 
-GANs introduced the idea of learning through adversarial competition, but they are notoriously difficult to train and provide no way to measure how good the model actually is — you cannot compute the likelihood of your test data under a GAN. The next lesson moves to **transformers and attention mechanisms**, where a completely different architecture revolution happened: instead of competing networks or convolutional locality, every position in the input attends directly to every other position. Attention turned out to be so powerful that it eventually displaced not just recurrence but, in many domains, convolutions too.
+GANs produce sharp, realistic outputs — but their training is chaotic and they offer no way to measure how likely the data is under the model. The next lesson introduces **variational autoencoders**, which take a principled probabilistic approach to the same problem. Instead of an adversarial game, the VAE learns a smooth latent space through a single stable loss function derived from probability theory. The tradeoff: VAEs gain mathematical elegance and smooth interpolation at the cost of blurrier outputs — exactly the sharpness-smoothness tension that defines modern generative modeling.
 
 ## Check Your Understanding
 

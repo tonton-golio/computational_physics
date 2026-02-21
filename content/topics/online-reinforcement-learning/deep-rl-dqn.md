@@ -14,7 +14,7 @@ But then something goes wrong. The network starts dreaming and hallucinating. Va
 
 First, the training data is **correlated**. Consecutive transitions in an episode are nearly identical — the game barely changes between one frame and the next. Imagine the network trying to learn from the last game it played, but it keeps replaying the exact same five seconds over and over. That is like studying only page 47 of the textbook. It overfits to recent experience and forgets everything else.
 
-Second, the **targets move**. In supervised learning, the labels are fixed — a cat is always a cat. But in Q-learning, the target depends on the network's own parameters. When you update the weights, the targets change, which changes the loss, which changes the gradients. You are chasing a moving target, and the target moves because you are chasing it.
+Second, the target is alive. In ordinary supervised learning the label "cat" never changes. In Q-learning the bootstrap target is $r + \gamma \max_{a'} Q(s',a';\theta)$. Every time you update $\theta$, the target moves. It is like teaching a student while simultaneously rewriting the answer key — the network keeps chasing its own tail.
 
 Third, we are combining function approximation, bootstrapping, and off-policy learning — the **deadly triad** from [TD learning](./td-sarsa-qlearning). Without careful engineering, the system explodes.
 
@@ -37,6 +37,8 @@ DQN opened the floodgates, but it is just the beginning. **Policy gradient metho
 For **continuous control** — robotics, motor control, anything where the action is a real number rather than a discrete choice — variants like DDPG and SAC extend these ideas to continuous action spaces.
 
 [[simulation dqn-stability]]
+
+[[simulation replay-buffer-explorer]]
 [[simulation activation-functions]]
 [[simulation cartpole-learning-curves]]
 
@@ -48,9 +50,7 @@ For **continuous control** — robotics, motor control, anything where the actio
 
 ## What Comes Next
 
-DQN made deep RL work for episodic tasks with discrete actions. But many continuing tasks never end, and the discount factor $\gamma$ feels artificial when there is no natural episode boundary. A factory robot does not "reset" at the end of a shift — it just keeps running.
-
-The next lesson closes the loop between the online learning perspective that opened this topic and the full RL framework. It introduces the average-reward formulation — where you optimize long-run reward per step rather than discounted cumulative reward — and connects it to regret-based guarantees. Algorithms like UCRL show that the optimism-under-uncertainty principle from bandits carries all the way up to MDPs with unknown dynamics.
+DQN works for episodic tasks with discrete actions, but many tasks never end, and the discount factor feels artificial when there is no natural episode boundary. The next lesson introduces the average-reward formulation and connects it to regret-based guarantees — closing the loop between the online learning perspective that opened this topic and the full RL setting.
 
 ## Check Your Understanding
 1. Without the replay buffer, consecutive training samples are highly correlated. Why does correlation in training data hurt neural network learning, and why does sampling uniformly from a replay buffer break that correlation?

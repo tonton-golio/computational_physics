@@ -198,6 +198,8 @@ This is where linear algebra pays its debts. Every Newton step in higher dimensi
 2. Newton's method achieves quadratic convergence because $g'(x^*) = 0$ at the root. Explain in your own words why this derivative being zero leads to the error squaring each step.
 3. A function has a double root: $f(x) = (x - r)^2$. What happens to Newton's method near $r$, and why does convergence degrade?
 
+[[simulation basins-of-attraction]]
+
 ## Challenge
 
 Implement both bisection and Newton's method to find all roots of $f(x) = x^5 - 5x^3 + 4x$ on $[-3, 3]$. First plot the function to identify brackets for bisection. Then experiment with different starting points for Newton's method, recording whether each starting point leads to convergence and which root it finds. Map out the basins of attraction: which starting points lead to which roots? Are there starting points where Newton's method diverges entirely?

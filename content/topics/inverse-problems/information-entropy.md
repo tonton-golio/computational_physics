@@ -18,8 +18,6 @@ $$
 
 What does this mean? Think of it as the average surprise. If one outcome is nearly certain ($p_1 \approx 1$), there's almost no surprise when it happens — entropy is low. If all outcomes are equally likely, every observation is maximally surprising — entropy is high.
 
-[[figure claude-shannon]]
-
 A fair coin: $H = \log 2 \approx 0.693$ nats. A loaded coin (99% heads): $H \approx 0.056$ nats. The loaded coin is boring — you almost always know what's coming. The fair coin keeps you guessing.
 
 [[simulation entropy-demo]]
@@ -50,9 +48,11 @@ Three things to remember:
 
 * $D_{\mathrm{KL}} = 0$ *only* when the distributions match exactly
 * It's always non-negative (you can't be *less* surprised by using the wrong model)
-* It's **asymmetric**: $D_{\mathrm{KL}}(P \| Q) \neq D_{\mathrm{KL}}(Q \| P)$. Being wrong about likely events costs more than being wrong about rare ones.
+* It's **asymmetric**: $D_{\mathrm{KL}}(P \| Q) \neq D_{\mathrm{KL}}(Q \| P)$. The asymmetry has a sharp intuition: if you believe a narrow distribution $Q$ but the truth $P$ is broad, you are only mildly surprised — most of $P$'s mass still overlaps $Q$. But if you believe a broad $Q$ when the truth is narrow, your model wastes probability on events that never happen, and every observation quietly penalizes you. Being confidently wrong about likely events costs far more than being vaguely wrong about rare ones.
 
 [[simulation kl-divergence]]
+
+[[simulation entropy-kl-calculator]]
 
 Things to look for in the simulation:
 
@@ -80,9 +80,9 @@ $$
 
 Here's something most textbooks don't tell you. Regularization is about controlling how much information you extract from the data.
 
-With no regularization ($\epsilon \approx 0$), you're extracting *everything* from the data — including the noise. The inferred model has low entropy relative to the prior (you've committed to very specific parameter values), but much of that "information" is actually noise. You've fooled yourself into thinking you know more than you do.
+**Overfitting** ($\epsilon \approx 0$): you're extracting *everything* from the data — including the noise. The inferred model has low entropy relative to the prior (you've committed to very specific parameter values), but much of that "information" is actually noise. You've fooled yourself into thinking you know more than you do.
 
-With too much regularization ($\epsilon$ huge), you're ignoring the data entirely. The posterior is basically the prior. Entropy stays high — you haven't learned anything.
+**Underfitting** ($\epsilon$ huge): you're ignoring the data entirely. The posterior is basically the prior. Entropy stays high — you haven't learned anything.
 
 The right regularization extracts the signal and leaves the noise behind. Information theory gives you a principled way to find that balance: maximize the genuine information gain while penalizing overfitting.
 
@@ -130,7 +130,9 @@ The tools here — regularization, Bayesian inference, iterative optimization, t
 2. Explain in words why $D_{\mathrm{KL}}(P \| Q) \neq D_{\mathrm{KL}}(Q \| P)$. Give a concrete example of two distributions where the asymmetry is large and explain what makes it so.
 3. If the KL divergence from posterior to prior is nearly zero after running an inversion, what does this tell you about the experiment? List two different causes that could produce this result and explain how you would distinguish between them.
 
-## Challenge
+## Advanced Challenge (Optional)
+
+This challenge goes beyond the core material and is aimed at students comfortable with the information-theoretic foundations above.
 
 Design an "experiment value" calculator for a simple linear inverse problem $\mathbf{d} = \mathbf{Gm} + \boldsymbol{\eta}$. Before collecting data, use the prior $p(\mathbf{m})$ and the noise model to compute the expected KL divergence from the posterior to the prior — this is the expected information gain. Implement this for a 1D deconvolution problem as a function of the number of observations $N$ and the noise level $\sigma$. Plot expected information gain vs. $N$ and vs. $\sigma$. At what point does adding more data yield diminishing returns — and how does this threshold shift as you change the regularization strength? Does the optimal regularization (in the sense of maximizing genuine information gain while penalizing overfitting) correspond to the L-curve corner from the very first lesson?
 

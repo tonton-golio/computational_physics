@@ -30,6 +30,8 @@ Without a nonlinear activation, stacking layers would be pointless — a chain o
 
 Start with ReLU for hidden layers unless you have a specific reason to choose otherwise.
 
+[[figure aml-activation-gallery]]
+
 ## Backpropagation
 
 Here is the key question: the network has thousands (or millions) of parameters, and the loss is a single number. How do we figure out which parameters to adjust, and by how much?
@@ -42,7 +44,9 @@ $$
 \frac{\partial\mathcal{L}}{\partial W^{(1)}}=\frac{\partial\mathcal{L}}{\partial\mathbf{h}^{(2)}}\cdot\frac{\partial\mathbf{h}^{(2)}}{\partial\mathbf{h}^{(1)}}\cdot\frac{\partial\mathbf{h}^{(1)}}{\partial W^{(1)}}
 $$
 
-Each term in this chain tells us: "How much does a small change in this layer's output affect the next?" Multiplied together, they give the gradient of the loss with respect to the first layer's weights. Imagine the loss is angry at the output and starts shouting "who did this?!" The blame passes backward through every layer, getting multiplied by how sensitive each layer was. That multiplication is why gradients can vanish or explode. Modern frameworks (PyTorch, JAX) compute these gradients automatically, but understanding the chain rule structure still matters for diagnosing training failures — when gradients explode or vanish, it is usually because one of these terms is too large or too small.
+Each term in this chain tells us: "How much does a small change in this layer's output affect the next?" Multiplied together, they give the gradient of the loss with respect to the first layer's weights. Imagine the loss is angry at the output and starts shouting "who did this?!" The blame passes backward through every layer, getting multiplied by how sensitive each layer was. Mathematically this is the chain rule in action, but the story is what you will remember when your gradients suddenly disappear at layer 47. That multiplication is why gradients can vanish or explode. Modern frameworks (PyTorch, JAX) compute these gradients automatically, but understanding the chain rule structure still matters for diagnosing training failures — when gradients explode or vanish, it is usually because one of these terms is too large or too small.
+
+[[figure aml-numeric-forward-backward]]
 
 ## Regularization
 
@@ -75,7 +79,9 @@ Neural networks specialize by changing how layers are connected. Here is the fam
 
 The remaining pages in this module cover RNNs and GNNs. For CNNs, transformers, and autoencoders, see [Advanced Deep Learning](/topics/advanced-deep-learning).
 
-[[figure aml-backprop-blame]]
+[[simulation aml-activation-gallery]]
+
+[[simulation aml-forward-backward-pass]]
 
 [[simulation aml-backprop-blame]]
 
@@ -96,9 +102,9 @@ The remaining pages in this module cover RNNs and GNNs. For CNNs, transformers, 
 
 ## What Comes Next
 
-Feedforward networks are the foundation, but the most interesting architectures emerge when you specialize the connectivity for a particular structure in the data. Recurrent neural networks bend the feedforward graph into a loop, giving the network memory — the ability to carry information from one timestep to the next. That single change is what lets a model handle sequences, and it brings with it a new set of training challenges, chief among them the vanishing gradient problem.
+Feedforward networks are the foundation, but the most interesting architectures emerge when you specialize the connectivity for a particular structure in the data. Graph neural networks, covered next, generalize message passing to arbitrary relational structure — molecules, social networks, physical simulations — where the connections between entities carry as much information as the entities themselves.
 
-After that, graph neural networks generalize message-passing to arbitrary relational structure, and generative adversarial networks set two networks against each other in a training game that produces entirely new data. Each of these architectures is built from the same primitive operations — linear transformation, nonlinearity, gradient descent — that you just learned.
+After that, recurrent neural networks bend the feedforward graph into a loop, giving the network memory for sequential data, and generative adversarial networks set two networks against each other in a training game that produces entirely new data. Each of these architectures is built from the same primitive operations — linear transformation, nonlinearity, gradient descent — that you just learned.
 
 ## Check your understanding
 

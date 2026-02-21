@@ -19,6 +19,9 @@ import MonteCarloConvergence from './online-reinforcement/MonteCarloConvergence'
 import SarsaVsQLearning from './online-reinforcement/SarsaVsQLearning';
 import DQNStability from './online-reinforcement/DQNStability';
 import AverageRewardVsDiscounted from './online-reinforcement/AverageRewardVsDiscounted';
+import BlackjackTrajectory from './online-reinforcement/BlackjackTrajectory';
+import CliffWalking from './online-reinforcement/CliffWalking';
+import ReplayBufferExplorer from './online-reinforcement/ReplayBufferExplorer';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 
@@ -41,6 +44,9 @@ export const ONLINE_REINFORCEMENT_SIMULATIONS: Record<string, React.ComponentTyp
   'sarsa-vs-qlearning': SarsaVsQLearning,
   'dqn-stability': DQNStability,
   'average-reward-vs-discounted': AverageRewardVsDiscounted,
+  'blackjack-trajectory': BlackjackTrajectory,
+  'cliff-walking': CliffWalking,
+  'replay-buffer-explorer': ReplayBufferExplorer,
 };
 
 // ============ CO-LOCATED DESCRIPTIONS ============
@@ -64,15 +70,9 @@ export const ORL_DESCRIPTIONS: Record<string, string> = {
   "sarsa-vs-qlearning": "SARSA vs. Q-Learning — comparing on-policy and off-policy temporal-difference methods.",
   "dqn-stability": "Deep Q-Network stability — how experience replay and target networks stabilize deep RL training.",
   "average-reward-vs-discounted": "Average reward vs. discounted — comparing two objective formulations for continuing RL tasks.",
+  "blackjack-trajectory": "Blackjack Monte Carlo — first-visit MC value estimation on simplified Blackjack, showing how state values converge from complete episodes.",
+  "cliff-walking": "Cliff Walking — SARSA takes the safe path while Q-learning finds the optimal cliff-edge route, illustrating on-policy vs off-policy TD control.",
+  "replay-buffer-explorer": "Experience Replay Buffer — visualizing how random sampling from a circular buffer breaks temporal correlation and stabilizes DQN training.",
 };
 
-export const ORL_FIGURES: Record<string, { src: string; caption: string }> = {
-  'orl-cartpole-learning-image': {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/0/06/Cart-pole.svg',
-    caption: 'CartPole control setup used for reinforcement learning experiments.',
-  },
-  'mdp-agent-environment-loop': {
-    src: 'https://www.researchgate.net/publication/350130760/figure/fig2/AS:1002586224209929@1616046591580/The-agent-environment-interaction-in-MDP.png',
-    caption: 'Agent-environment interaction loop for Markov decision processes.',
-  },
-};
+export const ORL_FIGURES: Record<string, { src: string; caption: string }> = {};

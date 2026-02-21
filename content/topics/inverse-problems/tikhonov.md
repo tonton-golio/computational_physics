@@ -60,6 +60,17 @@ Steepest descent works but it can be slow, especially when the problem is ill-co
 
 The common thread: none of these need the full Hessian matrix. They all work with matrix-vector products, which means they scale to the problems that matter.
 
+[[simulation l-curve-construction]]
+
+[[simulation conjugate-gradient-race]]
+
+Things to look for in the simulation:
+
+* CG converges in exactly 2 steps for any 2D quadratic — regardless of condition number
+* Crank the condition number up and watch SD zigzag wildly while CG cuts straight through
+* Check the cost-vs-iteration chart: SD shows linear convergence (straight line on log scale), CG shows superlinear (drops to machine zero in 2 steps)
+* Try different start positions — CG's 2-step convergence is universal for 2D quadratics
+
 ---
 
 ## Why the Penalty Term Is Physics, Not Math
@@ -73,8 +84,6 @@ The penalty term encodes **real physical beliefs** about the world:
 * **$\|\mathbf{m}\|_1$ (sparsity):** most parameters should be zero. The model is simple, with a few localized features.
 
 Each choice tells the inversion something different about what "reasonable" looks like. This mirrors how coarse-grid parameterizations work in climate and Earth-system models — the grid resolution itself imposes a smoothness assumption.
-
-[[figure climate-grid]]
 
 Notice what we're really doing: encoding our physical intuition as mathematics. The penalty term is where domain knowledge enters the computation. Get it right, and you extract signal. Get it wrong, and you hallucinate structure or miss it entirely.
 

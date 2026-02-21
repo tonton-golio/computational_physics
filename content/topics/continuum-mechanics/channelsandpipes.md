@@ -49,14 +49,18 @@ $$
 
 This is the **Hagen-Poiseuille law**: flow rate scales with the *fourth power* of the pipe radius. Double the pipe diameter and you get 16 times the flow. This is why your arteries care so much about even a small amount of plaque buildup — a 10% reduction in radius cuts flow by over 34%.
 
-The Reynolds number for pipe flow is Re $= UD/\nu$, where $U$ is the mean velocity and $D = 2a$ is the diameter. For Re $\lesssim 2300$, the flow is laminar and the Poiseuille solution holds. Above that, the flow transitions to turbulence and everything gets much more complicated.
+The Reynolds number for pipe flow is Re $= UD/\nu$, where $U$ is the mean velocity and $D = 2a$ is the diameter. For Re typically below about 2300, the flow is laminar and the Poiseuille solution holds. Above that, the flow transitions to turbulence and everything gets much more complicated.
+
+[[simulation bernoulli-streamline]]
+
+[[simulation poiseuille-vs-power-law]]
 
 ## Big Ideas
 
 * For steady, fully developed, unidirectional flow, the nonlinear advection term vanishes entirely and Navier-Stokes reduces to a simple second-order ODE — solvable by hand.
 * Both pressure-driven and gravity-driven flows produce parabolic velocity profiles for Newtonian fluids. The parabola sharpens (power-law $n > 1$) or blunts ($n < 1$) for non-Newtonian materials.
 * The Hagen-Poiseuille law $Q \propto a^4$ is one of the most consequential scaling laws in biology and engineering: a 10% reduction in artery radius cuts blood flow by more than a third.
-* Laminar pipe flow transitions to turbulence above Re $\approx 2300$ — and once turbulent, the simple Poiseuille solution is gone and the problem becomes far harder.
+* Laminar pipe flow transitions to turbulence above Re around 2300 — and once turbulent, the simple Poiseuille solution is gone and the problem becomes far harder.
 
 ## What Comes Next
 

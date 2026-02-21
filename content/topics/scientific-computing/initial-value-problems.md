@@ -101,6 +101,8 @@ For forward Euler, the stability region is the disk $|1 + h\lambda| \leq 1$ in t
 
 Explicit methods have bounded stability regions, so step sizes must satisfy $|h\lambda| < C$ for some constant $C$. For stiff problems (where eigenvalues of the Jacobian span many orders of magnitude), this restriction makes explicit methods impractical.
 
+[[simulation stability-regions]]
+
 ## Stiffness
 
 A problem is **stiff** when it contains both fast-decaying and slow-varying components. The fast components force explicit methods to use tiny step sizes even when the solution is smooth.

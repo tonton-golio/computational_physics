@@ -54,15 +54,15 @@ The first term says "reconstruct well." The second term says "do not stray too f
 
 ## The reparameterization trick
 
-This is one of the most beautiful ideas in the entire course. Here is the problem: the encoder outputs a distribution, and the decoder needs a sample from that distribution. But sampling is a random operation — and you cannot backpropagate through randomness. The gradient of "pick a random number" with respect to the distribution parameters is undefined.
+The reparameterization trick is the cleverest accounting hack in deep learning. Here is the problem: the encoder outputs a distribution, and the decoder needs a sample from that distribution. But backprop can flow through addition and multiplication — not through "sample from $\mathcal{N}(\mu, \sigma)$." The gradient of "pick a random number" with respect to the distribution parameters is undefined.
 
-The reparameterization trick solves this with a simple, elegant maneuver. Instead of sampling directly from the learned distribution, we sample a "frozen" piece of noise $\boldsymbol{\epsilon}$ from a fixed standard normal, and then *deterministically* transform it using the learned parameters:
+The trick: we move the randomness **outside** the computation graph that depends on the network parameters. Instead of sampling directly from the learned distribution, we sample a "frozen" piece of noise $\boldsymbol{\epsilon}$ from a fixed standard normal, and then *deterministically* transform it using the learned parameters:
 
 $$
 \mathbf{z} = \boldsymbol{\mu} + \boldsymbol{\sigma} \odot \boldsymbol{\epsilon}, \qquad \boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I}).
 $$
 
-Now all the randomness lives in $\boldsymbol{\epsilon}$, which does not depend on any learnable parameters. The gradient flows cleanly through $\boldsymbol{\mu}$ and $\boldsymbol{\sigma}$, and we can train the whole system end-to-end with standard backpropagation. The frozen noise is just a source of randomness that the network reshapes; the shaping is what we optimize.
+The sampler is now a fixed random-number generator, not a stochastic node that blocks gradients. All the randomness lives in $\boldsymbol{\epsilon}$, which does not depend on any learnable parameters. The gradient flows cleanly through $\boldsymbol{\mu}$ and $\boldsymbol{\sigma}$, and we can train the whole system end-to-end with standard backpropagation. We rewrote the sampling step so backprop never sees the random node.
 
 ## KL divergence term
 
@@ -189,7 +189,7 @@ We take a single batch, encode all images, and examine where they fall in the la
 
 ## What Comes Next
 
-The VAE imposes smoothness through probability theory: every encoding is a little Gaussian cloud forced to overlap with the prior. But smooth outputs have a cost — VAEs tend to produce blurry images because they optimize a pixel-level reconstruction loss that averages over uncertainty. The next lesson introduces **generative adversarial networks**, which take a radically different approach: instead of a mathematical loss function, use a second network as a critic. The generator and discriminator play a game that drives outputs toward sharpness rather than smoothness, at the price of a much more chaotic training dynamic.
+The VAE gives you a smooth latent space and principled generation, but the blurriness of its outputs reveals a fundamental limitation of pixel-level reconstruction losses. The next lesson introduces the **U-Net architecture**, which takes the encoder-decoder structure you just learned and applies it to a different problem: **image segmentation**. Instead of generating images from latent codes, the U-Net maps images to pixel-level predictions — assigning a class label to every single pixel. The skip connections that made residual networks work reappear here in a new guise, carrying fine spatial detail across the compression bottleneck.
 
 ## Check Your Understanding
 

@@ -238,6 +238,8 @@ Since $t < 0$, this gives $-2t/(1+t) > 0$. These are **minima**. The ordered sta
 
 So the picture is clear: above $T_c$, the free energy has a single minimum at $m = 0$ (disordered). Below $T_c$, the minimum at $m = 0$ becomes a maximum, and two new minima appear at $\pm m_0$ (ordered). The system must choose one — this is **spontaneous symmetry breaking**.
 
+[[simulation landau-free-energy]]
+
 ### Mean-field critical exponents
 
 Near $T_c$ (where $|t| \ll 1$ and $\theta \approx 1$):

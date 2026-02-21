@@ -25,6 +25,8 @@ Here is the most infamous failure mode. The forger discovers that painting only 
 
 This is **mode collapse**: the generator produces high-quality but low-diversity samples, capturing only a few modes of the real distribution. You asked for a model that can generate any face, and you got one that generates the same three faces over and over.
 
+> Mode collapse is the GAN version of "the model found one answer that works and stopped exploring."
+
 ## Stabilizing training
 
 GAN training is notoriously finicky. The generator and discriminator are locked in a delicate dance, and small imbalances can cascade.
@@ -40,8 +42,6 @@ These are engineering solutions to a fundamental tension: the two networks must 
 ## Where this goes deeper
 
 This page gives you the intuition for adversarial training. GANs are a bridge from classical applied ML to the wild world of deep generative modeling. For architecture details (DCGAN, StyleGAN, conditional GANs), training recipes, and the relationship to other generative approaches (VAEs, diffusion models), see [Advanced Deep Learning — Generative Models](/topics/advanced-deep-learning/gan).
-
-[[figure aml-gan-progression]]
 
 [[simulation aml-gan-forger-arena]]
 

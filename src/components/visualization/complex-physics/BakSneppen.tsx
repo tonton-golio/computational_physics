@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import { Slider } from '@/components/ui/slider';
 import { useTheme } from '@/lib/use-theme';
 
@@ -249,9 +250,9 @@ export function BakSneppen() {
         <div className="text-xs text-[var(--text-muted)] mb-1 font-medium">
           Bak-Sneppen Evolution (chain values over time)
         </div>
-        <div className="rounded-lg overflow-hidden" style={{ background: isDark ? '#0a0a0f' : '#f0f4ff' }}>
+        <SimulationMain scaleMode="contain" className="rounded-lg overflow-hidden" style={{ background: isDark ? '#0a0a0f' : '#f0f4ff' }}>
           <EvolutionCanvas chains={subsampledChains} size={size} isDark={isDark} />
-        </div>
+        </SimulationMain>
         <div className="flex justify-between text-xs text-[var(--text-muted)] mt-1 px-1">
           <span>Site index 0</span>
           <span>Site index {size - 1}</span>

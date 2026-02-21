@@ -48,11 +48,11 @@ Because each extra bound repressor multiplies the probability of the next one bi
 
 For a complex of $n$ molecules (Hill coefficient $n$), the pattern generalizes:
 
-$$
-P_\mathrm{free} = \frac{1}{1 + (c_\mathrm{p}/K)^n}.
-$$
-
-[[figure hill-function-overlay]]
+> **Key Equation — The Hill Function**
+> $$
+> P_\mathrm{free} = \frac{1}{1 + (c_\mathrm{p}/K)^n}
+> $$
+> The fraction of time the promoter is free (gene on) decreases as repressor concentration rises; the Hill coefficient $n$ controls how switch-like the transition is.
 
 Play with this in your head:
 * **$n = 1$**: a gentle, hyperbolic curve. The gene gradually turns off as repressor concentration increases.
@@ -93,21 +93,11 @@ $$
 
 ## Regulation by small RNA
 
-Nature has another elegant trick: **small RNAs** (sRNAs) — think of them as molecular Post-it notes that stick to mRNA and say "delete me" — that bind directly to mRNA and mark it for rapid degradation. The equations become:
-
-$$
-\frac{\mathrm{d} c_\mathrm{s}}{\mathrm{d} t} = \alpha_\mathrm{s} - \Gamma_\mathrm{s} \, c_\mathrm{s} - \delta \, c_\mathrm{m} \, c_\mathrm{s},
-$$
-
-$$
-\frac{\mathrm{d} c_\mathrm{m}}{\mathrm{d} t} = \alpha_\mathrm{m} - \Gamma_\mathrm{m} \, c_\mathrm{m} - \delta \, c_\mathrm{m} \, c_\mathrm{s}.
-$$
-
-> *The key is the third term in each equation: $\delta \, c_\mathrm{m} \, c_\mathrm{s}$, where $\delta$ is the "mutual annihilation rate." When sRNA meets mRNA, they annihilate each other (form a complex that is quickly degraded). This mutual destruction creates a threshold-like response — the mRNA is only abundant when its production rate exceeds the sRNA production rate.*
+Nature has another elegant trick: **small RNAs** (sRNAs) that bind directly to mRNA and mark it for rapid degradation. The key idea is **mutual annihilation** — when sRNA meets mRNA, they form a complex that is quickly degraded ($\delta \, c_\mathrm{m} \, c_\mathrm{s}$ appears as a loss term in both equations). This mutual destruction creates a threshold-like response: the mRNA is only abundant when its production rate exceeds the sRNA production rate. For a full derivation, see the further reading below.
 
 ## Why does nature do it this way?
 
-Why not just make every gene constitutive — always on at a fixed rate? Because the environment changes. A bacterium swimming through your gut encounters shifting nutrient sources, toxins, and competitors. It needs to switch genes on and off rapidly and decisively. The Hill function, with its tunable steepness, gives evolution a knob to turn: make $n$ small for a graded response (useful for fine-tuning), or make $n$ large for an all-or-nothing switch (useful for committing to a decision).
+As we saw in [differential equations](./differential-equations), degradation lets a cell change levels quickly. The Hill function adds the ability to *switch* — making $n$ small for graded fine-tuning or large for all-or-nothing commitment. A constitutive gene (always on) cannot respond to the environment; a regulated one can.
 
 ## Check your understanding
 

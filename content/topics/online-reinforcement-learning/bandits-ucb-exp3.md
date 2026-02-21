@@ -10,6 +10,8 @@ Imagine you have just moved to a new city, and you are trying to find the best r
 
 Should you go back to the Thai place? Maybe. But here is the thing: you have been to the Thai place ten times, so you have a pretty good estimate of how good it is. The sushi place, you visited only once. Maybe that one visit was a bad night. Maybe the sushi place is actually a 4.8 if you went back. You do not know because you have not given it enough chances.
 
+*Try it yourself: you have pulled arm A ten times (average reward 0.5) and arm B twice (average reward 0.6). Which arm should you try next, and why? Think about it before reading the formula.*
+
 UCB1 handles this dilemma with a beautiful principle: **be optimistic about what you do not know**. For each arm $a$, you compute an upper confidence bound — your best estimate of that arm's average reward, plus a bonus for how uncertain you are:
 
 $$
@@ -56,9 +58,7 @@ The lower bound for adversarial bandits is $\Omega(\sqrt{KT})$, so EXP3 is near-
 
 ## What Comes Next
 
-Both UCB1 and EXP3 treat every round as if it were identical — there is no side information that distinguishes one round from the next. But in almost every real application, you do have a clue before you act: a user profile, a patient chart, the current state of a system.
-
-Adding that context transforms the bandit problem into something richer. The next lesson introduces EXP4, which combines the exploration-exploitation logic of EXP3 with a pool of policies that each map contexts to action distributions. The key payoff: whether you have ten policies or a million, the regret only grows logarithmically in the policy count.
+UCB1 and EXP3 treat every round as identical — no side information distinguishes one round from the next. But in practice, you usually have a clue before you act: a user profile, a patient chart, the current state of a system. The next lesson introduces EXP4, which combines EXP3's logic with a pool of context-dependent policies. The key payoff: whether you have ten policies or a million, the regret grows only logarithmically in the policy count.
 
 ## Check Your Understanding
 1. UCB1 uses the bonus term $\sqrt{2 \log t / n_a(t)}$. What happens to this term as $n_a(t) \to \infty$? What happens when $n_a(t) = 1$? Interpret both limits intuitively.

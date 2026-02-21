@@ -15,11 +15,13 @@ A gene product that influences its own production creates a **feedback loop**, a
 
 Suppose a transcription factor $X$ represses its own promoter. Using the Hill function from [transcriptional regulation](./transcriptional-regulation):
 
-$$
-\frac{dX}{dt} = \frac{\beta}{1 + (X/K)^n} - \gamma X,
-$$
+> **Key Equation — Negative Autoregulation**
+> $$
+> \frac{dX}{dt} = \frac{\beta}{1 + (X/K)^n} - \gamma X
+> $$
+> The gene product represses its own production: when $X$ is high, the Hill term shrinks, slowing production and self-correcting toward steady state.
 
-where $\beta$ is the maximal production rate (the "factory at full power"), $K$ is the repression threshold (the "sensitivity dial"), $n$ is the Hill coefficient (the "sharpness knob"), and $\gamma$ is the degradation rate (the "death rate constable").
+Here $\beta$ is the maximal production rate (the "factory at full power"), $K$ is the repression threshold (the "sensitivity dial"), $n$ is the Hill coefficient (the "sharpness knob"), and $\gamma$ is the degradation rate (the "death rate constable").
 
 > *In words: when $X$ is low, the repression term is small and production runs at nearly full speed. As $X$ builds up, it starts sitting on its own promoter and slowing down its own production. The system self-corrects.*
 
@@ -39,13 +41,15 @@ Here is a powerful trick for analyzing any one-dimensional feedback circuit. Thi
 
 > *At the crossing point, production exactly balances degradation — nothing changes. If $X$ is below the crossing point, production exceeds degradation, so $X$ increases. If $X$ is above, degradation wins, so $X$ decreases. The system is pulled toward the crossing like a ball rolling to the bottom of a valley.*
 
-[[figure graphical-steady-state-construction]]
-
 To check stability: if the production curve is *below* the degradation line to the right of the crossing (and above to the left), the fixed point is stable. If the slopes tell the opposite story, it is unstable.
 
 [[simulation steady-state-regulation]]
 
 Start with the degradation rate $\gamma$ low and watch the production and degradation curves cross at one point (stable steady state). Now slowly increase $\gamma$ — the crossing point moves. For negative feedback, you always get exactly one crossing. Switch to positive feedback mode and try the same thing — you should be able to find a parameter range where three crossings appear: two stable and one unstable. That is bistability.
+
+[[simulation production-degradation-crossings]]
+
+This simulation makes the graphical construction explicit: the blue S-shaped curve is the production rate $f(X)$ for positive feedback, and the red line is the degradation rate $\gamma X$. Adjust the Hill coefficient and degradation rate to watch the number of crossings change from one (monostable) to three (bistable). The green dots are stable steady states; the grey dot is unstable.
 
 ## Positive feedback and bistability
 
@@ -63,7 +67,9 @@ For sufficiently cooperative activation ($n \geq 2$), the production curve can b
 
 A push large enough to cross the unstable middle point flips the switch. The positive feedback maintains itself — once a cell commits to the high state, it remains there even after the inducing signal is removed.
 
-[[figure bifurcation-diagram-positive-feedback]]
+[[simulation bifurcation-diagram]]
+
+Drag the degradation rate slider slowly from low to high and watch the stable states appear and disappear. At low degradation, only the high-expression state exists. As you increase $\gamma$, a second stable state appears at low expression — this is the saddle-node bifurcation. Sweep the parameter back and forth to trace the hysteresis loop: the system does not jump back at the same point it jumped forward. This irreversibility is the hallmark of bistable switches in biology.
 
 ## The genetic toggle switch
 
@@ -77,6 +83,12 @@ $$
 
 This toggle switch has two stable steady states (high-$U$/low-$V$ and low-$U$/high-$V$) separated by an unstable saddle point. You can flip it between states by hitting it with a transient pulse of inducer — like flipping a light switch by briefly pushing it.
 
+To see how trajectories flow in two-dimensional systems, the **phase plane** is an invaluable tool. Instead of plotting each variable against time, we plot one variable against the other. Nullclines (curves where one derivative is zero) divide the plane into regions, and their intersections are the fixed points. Arrows show the direction of flow.
+
+[[simulation phase-plane-portrait]]
+
+This phase portrait shows a predator-prey system — the simplest two-variable ODE. The nullclines intersect at the fixed point, and trajectories orbit around it. In more complex systems (like the toggle switch above), the same technique reveals basins of attraction: which initial conditions lead to which steady state.
+
 ## Oscillations: the repressilator
 
 Elowitz and Leibler (2000) asked a daring question: can you build a biological clock from scratch? They constructed a synthetic oscillator — the **repressilator** — from three genes arranged in a ring of repression: $A$ represses $B$, $B$ represses $C$, $C$ represses $A$.
@@ -87,8 +99,6 @@ $$
 
 where $j$ is the upstream repressor of gene $i$.
 
-[[figure repressilator]]
-
 Think of it as **three friends who can never all be happy at once**. When $A$ is high, it represses $B$, so $B$ is low. But with $B$ low, $C$ is free to rise. When $C$ gets high enough, it represses $A$, which releases $B$, and the cycle continues. The system chases its own tail forever.
 
 > *Here is the deep principle: negative feedback loops arranged in odd-numbered rings can generate oscillations. Two mutual repressors give a switch (even number = stable). Three in a ring give a clock (odd number = unstable oscillations). This same principle underlies circadian clocks and cell cycle oscillators across all of life.*
@@ -98,7 +108,9 @@ Sustained oscillations require:
 * Well-matched protein and mRNA lifetimes.
 * Strong repression ($\alpha \gg \alpha_0$).
 
-Use the steady-state regulation simulation above. Increase the Hill coefficient $n$ and watch the oscillations become sharper and more sustained. With $n = 1$, the system may settle to a fixed point. With $n = 4$, you should see clear oscillatory behavior.
+[[simulation repressilator]]
+
+Watch the three protein concentrations chase each other around. Start with a low Hill coefficient ($n = 2$) — the traces may converge to a fixed point. Now increase $n$ to 4 or higher and watch clear oscillations emerge. Adjust the repression strength $\alpha$ and degradation $\gamma$ to see how they affect the period. The "What to notice" box explains the conditions for sustained oscillations.
 
 ## Biological examples
 
@@ -108,13 +120,13 @@ Use the steady-state regulation simulation above. Increase the Hill coefficient 
 
 ## Why does nature do it this way?
 
-Strip away feedback and you strip away everything that makes a cell smart: memory, decision-making, and timekeeping. Feedback is what turns a collection of chemical reactions into a computing machine. Negative feedback provides stability and speed; positive feedback provides commitment and memory; oscillatory circuits provide timing. Together, these are the fundamental building blocks of cellular logic.
+We saw in [differential equations](./differential-equations) that degradation gives a cell speed, and in [transcriptional regulation](./transcriptional-regulation) that the Hill function gives it a switch. Feedback combines both: negative feedback provides stability and speed (the thermostat), positive feedback provides commitment and memory (the switch), and odd-numbered repression rings provide timing (the clock). Together, these are the building blocks of cellular logic.
 
 ## Check your understanding
 
 * Why does negative autoregulation speed up the response time? (Hint: think about what happens at $t = 0$ when $X$ starts from zero.)
 * Draw the production and degradation curves for a positive-feedback gene with $n = 4$. How many intersections do you see?
-* The repressilator has three genes in a ring. What would happen with four genes in a ring? Would you get oscillations or a switch?
+* You just added a fourth gene to the repressilator ring. Are you building a clock or a switch? Why?
 
 ## Challenge
 
@@ -128,4 +140,4 @@ Take the negative autoregulation equation with $\beta = 10$, $K = 1$, $n = 2$, $
 
 ## What comes next
 
-Feedback loops let the cell talk to itself. But a cell also needs to listen to the outside world. In the next lesson, we discover how bacteria read their mail — sensing food gradients with a sensitivity that would make an engineer jealous, and resetting their sensors through a trick called adaptation. We are about to meet the most elegant navigation system in nature: bacterial chemotaxis.
+Feedback loops let the cell talk to itself. But a cell also needs to listen to the outside world. In the next lesson, we discover how bacteria read their mail — sensing food gradients with a sensitivity that would make an engineer jealous, and resetting their sensors through a trick called adaptation. The same negative-feedback trick that speeds up a gene also lets the bacterium forget its absolute ligand concentration and only notice *changes* — exactly what we will see in chemotaxis. We are about to meet the most elegant navigation system in nature.

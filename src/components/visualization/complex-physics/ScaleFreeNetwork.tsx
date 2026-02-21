@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import { Slider } from '@/components/ui/slider';
 import { useTheme } from '@/lib/use-theme';
 import { Canvas, useFrame } from '@react-three/fiber';
@@ -306,7 +307,7 @@ export function ScaleFreeNetwork() {
       </div>
 
       {/* 3D Network Graph */}
-      <div
+      <SimulationMain
         className="w-full rounded-lg overflow-hidden"
         style={{ height: 500, background: isDark ? '#0a0a0f' : '#f0f4ff' }}
       >
@@ -320,7 +321,7 @@ export function ScaleFreeNetwork() {
         >
           <NetworkScene nodes={network.nodes} links={network.links} isDark={isDark} />
         </Canvas>
-      </div>
+      </SimulationMain>
 
       {/* Degree Distribution Histogram */}
       <CanvasChart

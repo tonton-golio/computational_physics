@@ -18,7 +18,7 @@ There are two broad categories:
 
 Not every step in gene expression is equally accurate. The error rates tell a striking story:
 
-* **DNA replication**: $\sim 1$ error per $10^9$ bases — almost unbelievably precise.
+* **DNA replication**: $\sim 1$ error per $10^9$ bases (a commonly cited round number; modern estimates after all correction layers are closer to $10^{-10}$) — almost unbelievably precise.
 * **Transcription**: $\sim 1$ error per $10^6$ bases — good, but a thousand times worse.
 * **Translation**: $\sim 1$ error per $10^4$ bases — the least accurate step.
 
@@ -54,6 +54,12 @@ Now suppose you watch cells divide and count how many carry a new mutation. Each
 ## The binomial distribution
 
 If each of $N$ independent trials has probability $p$ of success, the probability of getting exactly $k$ successes is:
+
+> **Key Equation — The Poisson Distribution**
+> $$
+> P_m(k) = \frac{m^k}{k!} e^{-m}
+> $$
+> When $N$ is large and $p$ is small (with $m = Np$ moderate), the binomial simplifies to the Poisson: the universal distribution for counting rare, independent events.
 
 $$
 P_N(k) = \binom{N}{k} p^k (1-p)^{N-k}.
@@ -93,11 +99,11 @@ If mutations arise *before* exposure (spontaneously, during normal growth), then
 
 Luria and Delbruck found the jackpot pattern — the variance was far larger than the mean, ruling out the directed-mutation hypothesis. Mutations are random, spontaneous events. This experiment won them the Nobel Prize and established one of the foundations of molecular biology.
 
-[[figure jackpot-cultures]]
-
-[[figure lineage-tree]]
-
 > *The jackpot distribution (now called the Luria-Delbruck distribution) has a variance much larger than its mean — a Fano factor far greater than 1. Sound familiar? The same statistical fingerprint that tells us about transcriptional bursting in the noise lesson.*
+
+[[simulation luria-delbruck-comparison]]
+
+Compare the two models side by side. The left histogram shows what you would expect if mutations were directed (Poisson distribution with low variance). The right shows what actually happens — spontaneous mutations create "jackpot" cultures with enormous variance. Adjust the number of cultures and mutation rate, and watch how the Fano factor distinguishes the two models.
 
 ## Check your understanding
 

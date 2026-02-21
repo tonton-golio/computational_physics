@@ -37,6 +37,8 @@ $$
 
 where $\beta_j$ is the block effect. Each treatment appears exactly once in each block.
 
+[[simulation randomization-vs-blocking]]
+
 **Advantage**: removes block-to-block variability from the error term, increasing the F-statistic for the treatment effect. The signal stays the same but the noise goes down.
 
 The **relative efficiency** of blocking compares the precision of RBD to CRD:
@@ -89,6 +91,8 @@ Plugging in Alex's numbers ($\delta = 5$, $\sigma = 12$, $\alpha = 0.05$, power 
 * **Pre-register** the analysis plan to avoid p-hacking — the temptation to try many analyses and report only the significant ones.
 * Consider **multiple testing corrections** when evaluating many endpoints. The more tests you run, the more likely one will be "significant" by chance.
 
+[[simulation interaction-surface]]
+
 ## Simpson's Paradox Revisited
 
 We met Simpson's paradox briefly in [hypothesis testing](./hypothesis-testing), but it deserves special attention here because it's fundamentally a *design* problem. Here's how smart people get fooled by ignoring structure in their data.
@@ -97,7 +101,7 @@ You compare two hospitals. Hospital A has a higher overall survival rate. You co
 
 This is exactly the kind of confounding that randomization prevents. If patients were randomly assigned to hospitals, severity would be balanced across both, and Simpson's paradox couldn't arise. When you can't randomize (observational studies), you must identify and adjust for confounders — which often means recognizing that your data has a grouped or hierarchical structure. That's where [mixed models](./random-effects) come in.
 
-Now you know how to plan data collection. But what happens when the data you collect has a natural grouping structure — students in classrooms, patients in hospitals, cells in experimental plates? Ignoring that structure is one of the most common mistakes in applied statistics. Mixed models fix it, and that's where we go next.
+Now you know how to plan data collection. But once you've collected data from multiple groups — three fertilizers, four teaching methods, a dozen drug doses — you need a tool that compares them all at once without inflating the false-positive rate. That tool is analysis of variance (ANOVA), and it's where we go next.
 
 > **Challenge.** Explain to a friend why you need to decide your sample size *before* running the experiment, not during it. Use the analogy of a fishing trip: if you keep fishing until you catch something, you'll always catch something — even in an empty lake. One minute.
 
@@ -110,9 +114,9 @@ Now you know how to plan data collection. But what happens when the data you col
 
 ## What Comes Next
 
-You now know how to plan data collection systematically: randomize, replicate, block, and compute sample sizes before you start. But what happens when the data you collect has a natural grouping structure that cannot be eliminated by design — students nested within classrooms, patients nested within hospitals?
+You now know how to plan data collection systematically: randomize, replicate, block, and compute sample sizes before you start. The next step is analyzing the multi-group data you've so carefully collected.
 
-Ignoring that structure and treating all observations as independent leads to inflated effective sample sizes and false discoveries. Random effects models fix this by explicitly partitioning the variability between levels of the hierarchy.
+Analysis of variance (ANOVA) is the tool for comparing three or more group means in a single test. The core idea is a signal-to-noise ratio: how much do the group means spread out relative to how much individual measurements scatter within each group? If the spread between groups is large compared to the scatter within, something real is going on.
 
 ## Check Your Understanding
 

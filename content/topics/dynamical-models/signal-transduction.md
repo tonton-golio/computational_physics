@@ -60,15 +60,17 @@ Think of the receptor as a little spring. When attractant binds, the spring rela
 
 The enzyme **CheB** (which removes methyl groups) provides the opposing force, and the balance between CheR and CheB sets the adaptation level.
 
-The equation for methylation dynamics is:
-
-$$
-\frac{\mathrm{d} [E_m]}{\mathrm{d} t} = k^R [\mathrm{CheR}] - \frac{k^B B^{*}(l) \, E_m}{K_M^B + E_m}.
-$$
+> **Key Equation — Adaptation via Methylation**
+> $$
+> \frac{\mathrm{d} [E_m]}{\mathrm{d} t} = k^R [\mathrm{CheR}] - \frac{k^B B^{*}(l) \, E_m}{K_M^B + E_m}
+> $$
+> Methylation rises at a constant rate (CheR) and falls at a rate depending on receptor activity: the balance resets the receptor's baseline, giving the cell perfect adaptation.
 
 > *The first term says CheR adds methyl groups at a constant rate. The second term says CheB removes them at a rate that depends on receptor activity $B^*(l)$, which in turn depends on the ligand concentration $l$. The balance of these two processes is what gives the cell its remarkable ability to adapt.*
 
-[[figure chemotaxis-adaptation]]
+[[simulation chemotaxis-adaptation]]
+
+Step up the ligand concentration and watch receptor activity $A$ spike then return to baseline, while methylation $M$ slowly ramps up to compensate. The "perfect adaptation" label appears when steady-state $A^*$ becomes independent of $L$. Try different step sizes — the transient response changes, but the steady-state activity always returns to the same value. That is perfect adaptation in action.
 
 With adaptation, the bacterium can be sensitive to tiny changes in concentration at *any* background level — from nanomolar to millimolar. It is like having a camera that automatically adjusts its exposure, always keeping the image sharp.
 
@@ -82,13 +84,15 @@ Suppose you are a cell, and your neighbors are producing a signal (the **Delta**
 
 > *The logic: if my neighbor is loud, I shut up. And if I shut up, my other neighbors get louder. The result is a checkerboard pattern — alternating cells with high and low Delta expression.*
 
-[[figure notch-delta-checkerboard]]
+[[simulation notch-delta-checkerboard]]
+
+Watch a checkerboard pattern emerge from random initial conditions. Each cell's Delta production is repressed by the Notch signal from its neighbors' Delta. With a high Hill coefficient (strong cooperativity), cells make sharp decisions: high-Delta or low-Delta, alternating in a striking checkerboard. Try n = 1 to see how the pattern dissolves without cooperativity.
 
 This is **lateral inhibition**, and it is the mechanism behind many beautiful patterns in biology: the regular spacing of bristles on a fly, the alternating fates of cells in the inner ear, and the spacing of hair follicles on your skin. The Notch-Delta system is one of evolution's most reused circuit designs.
 
 ## Why does nature do it this way?
 
-Survival demands awareness. Signal transduction is how a single-celled organism finds food, avoids poison, and coordinates with its neighbors. In multicellular organisms, it is how cells decide their identity during development. The common theme is that cells need to respond to *changes*, not just to absolute levels — and the elegant adaptation mechanisms we see in chemotaxis are nature's solution to this universal problem.
+The recurring theme from [differential equations](./differential-equations) onward is that cells need to respond to *changes*, not absolute levels. Degradation gives speed ([lesson 1](./differential-equations)), feedback gives memory ([feedback loops](./feedback-loops)), and adaptation gives sensitivity across a huge dynamic range. Signal transduction combines all three: the cell detects gradients, filters noise, and resets its baseline through the same methylation feedback we see throughout biology.
 
 ## Check your understanding
 
@@ -99,6 +103,8 @@ Survival demands awareness. Signal transduction is how a single-celled organism 
 ## Challenge
 
 Imagine a simplified adaptation model. The tumbling rate $T$ depends on receptor activity $A$, and activity depends on ligand $L$ and methylation level $M$: $A = (1 + M) / (1 + L)$. Methylation slowly adjusts: $\dot{M} = k_R - k_B \cdot A$. What is the steady-state activity $A^*$? Does it depend on $L$? This is the mathematical essence of perfect adaptation — and the result may surprise you.
+
+*Hint: at steady state, $\dot{M} = 0$ gives $A^* = k_R / k_B$. Does $L$ appear in this expression?*
 
 ## Big ideas
 

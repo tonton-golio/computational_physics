@@ -16,6 +16,11 @@ import {
   LatentInterpolationDemo,
   OptimizerTrajectoryDemo,
 } from './advanced-deep-learning/AttentionAndTrainingDemos';
+import LRFinder from './advanced-deep-learning/LRFinder';
+import ReceptiveFieldGrowth from './advanced-deep-learning/ReceptiveFieldGrowth';
+import FilterEvolution from './advanced-deep-learning/FilterEvolution';
+import SkipConnectionAblation from './advanced-deep-learning/SkipConnectionAblation';
+import AdversarialAttack from './advanced-deep-learning/AdversarialAttack';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 
@@ -33,6 +38,11 @@ export const ADVANCED_DEEP_LEARNING_SIMULATIONS: Record<string, React.ComponentT
   'adl-unet-architecture': UNetArchitecture,
   'adl-double-descent': DoubleDescent,
   'adl-loss-landscape': LossLandscape,
+  'adl-lr-finder': LRFinder,
+  'adl-receptive-field-growth': ReceptiveFieldGrowth,
+  'adl-filter-evolution': FilterEvolution,
+  'adl-skip-connection-ablation': SkipConnectionAblation,
+  'adl-adversarial-attack': AdversarialAttack,
 };
 
 // ============ CO-LOCATED DESCRIPTIONS ============
@@ -51,27 +61,11 @@ export const ADL_DESCRIPTIONS: Record<string, string> = {
   "adl-unet-architecture": "U-Net architecture — the encoder-decoder structure with skip connections used for image segmentation.",
   "adl-double-descent": "Double descent — the phenomenon where test error decreases, rises, then decreases again as model complexity grows.",
   "adl-loss-landscape": "Loss landscape — a topographic view of the optimization surface showing minima, saddle points, and barriers.",
+  "adl-lr-finder": "Learning rate finder — sweeping the learning rate from very small to very large to identify the optimal training range.",
+  "adl-receptive-field-growth": "Receptive field growth — how stacking convolutional layers expands the input region visible to each neuron.",
+  "adl-filter-evolution": "Filter evolution — watching CNN filters transform from random noise into structured edge and texture detectors during training.",
+  "adl-skip-connection-ablation": "Skip connection ablation — comparing training dynamics with and without residual connections in deep networks.",
+  "adl-adversarial-attack": "Adversarial attack (FGSM) — demonstrating how imperceptibly small input perturbations can fool a neural network classifier.",
 };
 
-export const ADL_FIGURES: Record<string, { src: string; caption: string }> = {
-  'adl-mlops-loop': {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/5/59/MLOps_lifecycle.png',
-    caption: 'MLOps lifecycle diagram from data to deployment and monitoring.',
-  },
-  'adl-word2vec-architecture': {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/0/01/Word2vec.png',
-    caption: 'Skip-gram/Word2Vec architecture overview.',
-  },
-  'adl-lstm-architecture': {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/9/93/LSTM_Cell.svg',
-    caption: 'LSTM cell architecture and gating structure.',
-  },
-  'adl-gru-architecture': {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/3/37/GRU.svg',
-    caption: 'GRU architecture highlighting update and reset gates.',
-  },
-  'adl-cnn-feature-map': {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/6/63/Typical_cnn.png',
-    caption: 'CNN feature hierarchy from local kernels to semantic representations.',
-  },
-};
+export const ADL_FIGURES: Record<string, { src: string; caption: string }> = {};

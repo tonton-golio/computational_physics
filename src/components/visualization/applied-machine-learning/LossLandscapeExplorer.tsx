@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import { linspace } from './ml-utils';
 
 type Optimizer = 'gd' | 'momentum' | 'rmsprop' | 'adam';
@@ -353,7 +354,7 @@ export default function LossLandscapeExplorer(): React.ReactElement {
       </div>
 
       <div className={showContour ? 'grid grid-cols-1 gap-4 md:grid-cols-2' : ''}>
-        <div className="relative">
+        <SimulationMain scaleMode="contain" className="relative">
           {/* Heatmap landscape */}
           <CanvasHeatmap
             data={[{
@@ -374,7 +375,7 @@ export default function LossLandscapeExplorer(): React.ReactElement {
           {trail.length > 0 && (
             <TrailOverlay trail={trail} gridRange={RANGE} gridSize={GRID} />
           )}
-        </div>
+        </SimulationMain>
 
         {showContour && lossHistory.length > 0 && (
           <div>

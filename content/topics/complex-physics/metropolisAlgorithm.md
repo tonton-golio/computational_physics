@@ -76,7 +76,7 @@ $$
     w_{ij}P_j = w_{ji}P_i.
 $$
 
-No net current between any two states. No loops. This is the condition we need.
+No net current between any two states. No loops. Think of it like a bar where every pair of tables must exchange customers at exactly the same rate in both directions — if two people per minute walk from table A to table B, then two people per minute must walk from B to A. If this holds for every pair, the bar is in equilibrium even though people are still moving around.
 
 ## Metropolis-Hastings algorithm
 

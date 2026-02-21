@@ -4,7 +4,7 @@
 
 Every algorithm we have built so far assumed the game eventually stops. An episode starts, rewards accumulate, the episode ends, and you get a clean total. But what about a server that runs 24/7? A robot that never shuts down? A factory production line that just keeps going? There is no "end of episode." There is no final score to look back on.
 
-When the game never ends, the discounted return $\sum_{t=0}^{\infty}\gamma^t r_t$ still makes mathematical sense — the geometric discount makes far-future rewards negligible. But the discount factor $\gamma$ becomes an awkward modeling choice. If $\gamma$ is close to 1, you care about the far future but the problem is nearly ill-conditioned. If $\gamma$ is small, you are myopic. There is a more natural way to think about never-ending tasks.
+When the game never ends, the discounted return $\sum_{t=0}^{\infty}\gamma^t r_t$ still makes mathematical sense — the geometric discount makes far-future rewards negligible. But as we discussed in the [MDP lesson](./mdp-and-dp), the discount factor becomes philosophically awkward for continuing tasks: there is no natural reason why tomorrow's reward should be worth less than today's. There is a more natural way to think about never-ending tasks.
 
 ## Discounted RL: a quick recap
 
@@ -16,7 +16,7 @@ $$
 
 The discount factor $\gamma < 1$ ensures this sum is finite. Rewards far in the future are worth exponentially less than immediate rewards. All the value functions, Bellman equations, and algorithms we have discussed work in this framework.
 
-But here is the philosophical issue: in a continuing task, there is no reason why tomorrow's reward should be worth less than today's. The discount factor is a mathematical convenience, not a feature of the world. For many continuing tasks, what you really care about is: over the long run, what is my average reward per step?
+We discussed the philosophical implications of discounting in the [MDP lesson](./mdp-and-dp). The average-reward formulation resolves many of those concerns by removing $\gamma$ entirely. For many continuing tasks, what you really care about is: over the long run, what is my average reward per step?
 
 ## Average-reward RL: the steady-state view
 
@@ -50,28 +50,31 @@ Picture a graph of cumulative reward over time. After a while, the curve becomes
 
 When you bring the online learning perspective to RL, regret compares your cumulative reward to the optimal policy in the same environment class. You do not know the transition probabilities; you have to learn them by exploring. The regret measures how much reward you sacrifice during the learning phase.
 
-Modern methods attack this with **optimism** or **posterior sampling**. **UCRL-style** algorithms build confidence sets for the transition probabilities and plan optimistically within those sets — just like UCB1 was optimistic about arm means, UCRL is optimistic about the MDP dynamics. **PSRL-style** (posterior sampling RL) algorithms maintain a Bayesian posterior over MDPs, sample one, solve it, and follow that policy for a while before re-sampling. Both achieve near-optimal regret scaling in tabular MDPs, closing the loop between the online learning theory from the beginning of the course and the full RL setting.
+Modern methods attack this with **optimism** or **posterior sampling**. **UCRL-style** algorithms build confidence sets for the transition probabilities and plan optimistically within those sets — just like UCB1 was optimistic about arm means, UCRL is optimistic about the MDP dynamics. **PSRL-style** (posterior sampling RL) algorithms maintain a Bayesian posterior over MDPs, sample one, solve it, and follow that policy for a while before re-sampling. Both achieve near-optimal regret scaling in tabular MDPs. These methods — particularly UCRL and PSRL — dominate modern regret analysis for tabular online RL and form the theoretical backbone of model-based RL, with their optimism and posterior-sampling principles extending to continuous and function-approximation settings. This closes the loop between the online learning theory from the beginning of the course and the full RL setting.
 
 [[simulation average-reward-vs-discounted]]
 
 ## Big Ideas
-* The discount factor is a mathematical convenience that smuggles in a philosophical assumption: rewards now matter more than rewards later. Average reward refuses that assumption and asks instead what happens in steady state.
+* The discount factor smuggles in a philosophical assumption (see the [MDP lesson](./mdp-and-dp) for the full discussion). Average reward refuses that assumption and asks instead what happens in steady state.
 * Gain and bias are the MDP analog of mean and variance: the gain captures steady-state performance, the bias captures the transient advantage of good starting positions.
-* Optimism under uncertainty is a unifying principle. UCB1 was optimistic about arm means. UCRL is optimistic about MDP dynamics. The principle is the same: act as if the unknown is as favorable as the data permits, and let reality correct you.
+* The exploration-exploitation trade-off (see the [bandits lesson](./bandits-ucb-exp3)) remains central here — UCRL extends the same optimism principle to MDP dynamics, closing the loop between bandit theory and full RL.
 * The regret framework closes the loop: it takes the online learning question — how much do you lose by not knowing the best policy from the start? — and applies it to the full sequential decision problem. That is the deepest connection in this entire topic.
 
 ## What Comes Next
 
-This lesson marks the end of a long journey. We started with a simple question: how do you measure the cost of not knowing, in a world that gives you one decision at a time? That question led us from the regret framework through bandits and contextual bandits, into the memory-laden world of MDPs, and up through Monte Carlo, TD learning, deep function approximation, and finally continuing tasks with average-reward criteria.
+This lesson closes a long arc. We started with a simple question — how do you measure the cost of not knowing? — and followed it from regret through bandits, contextual bandits, MDPs, Monte Carlo, TD learning, deep function approximation, and finally continuing tasks with average reward.
 
-The thread running through everything is the interplay between exploration and exploitation — between gathering information and using it. In bandits it was literal arm-pulling. In contextual bandits it was policy selection given a clue. In MDPs it was navigating a world whose dynamics you had to learn while also performing well. Every algorithm in this topic is a different answer to the same underlying question: how do you act well under uncertainty, and how fast do you recover as uncertainty shrinks?
+The thread throughout is exploration versus exploitation. Every algorithm in this topic is a different answer to the same question: how do you act well under uncertainty, and how fast do you recover as uncertainty shrinks?
 
-The ideas here do not stop at the textbook. Average-reward RL underlies real-time control systems, UCRL-style optimism is the theoretical spine of modern model-based RL, and the deadly triad still keeps researchers up at night as they scale deep RL to ever larger problems. The best way to consolidate this material is to build something: implement one algorithm end to end, break it deliberately, fix it, and understand in your hands why each design choice matters.
+The ideas do not stop at the textbook. Average-reward RL underlies real-time control, UCRL-style optimism is the theoretical spine of model-based RL, and the deadly triad still keeps researchers up at night. The best way to consolidate is to build something: implement one algorithm end to end, break it, fix it, and understand in your hands why each design choice matters.
 
 ## Check Your Understanding
 1. In a continuing task, why is the discounted objective $\mathbb{E}[\sum_{t=0}^\infty \gamma^t r_t]$ mathematically well-defined but philosophically awkward for a robot that runs indefinitely? What does the average-reward objective $g^\pi$ avoid?
 2. Describe the gain-bias decomposition in your own words. Why does the bias function $h^\pi(s)$ make the Bellman-like equation well-posed even when there is no discount?
 3. UCRL plans optimistically within a confidence set of MDPs. What happens to the size of that confidence set as the number of interactions grows? What does this imply about the policy UCRL follows as $T \to \infty$?
 
-## Challenge
+## Challenge (Advanced)
+
+**Advanced challenge (optional).** This exercise is aimed at students who want to go beyond the core material.
+
 Consider a 3-state ergodic MDP with two actions, where you do not know the transition probabilities. Design a UCRL-style algorithm from scratch: construct a confidence set for the transition probabilities using concentration inequalities, define the "optimistic MDP" as the one inside the confidence set that maximizes the gain, and specify how often you replan. Implement it and run it against a fixed (non-adaptive) policy on your MDP. Plot the regret — cumulative reward of the optimal policy minus your algorithm's cumulative reward — over 10,000 steps. Does it grow sublinearly? What is the empirical exponent, and how does it compare to the theoretical $O(\sqrt{T})$ bound?

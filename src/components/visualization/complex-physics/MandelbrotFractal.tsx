@@ -5,6 +5,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { Slider } from '@/components/ui/slider';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import { useTheme } from '@/lib/use-theme';
 
 // ---------------------------------------------------------------------------
@@ -231,30 +232,35 @@ export function MandelbrotFractal() {
   return (
     <div className="space-y-4">
       {/* Canvas container */}
-      <div
-        ref={containerRef}
+      <SimulationMain
         className="relative w-full rounded-lg overflow-hidden border border-[var(--border-strong)]"
         style={{ height: 600, background: isDark ? '#000' : '#f0f4ff', cursor: 'grab' }}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseLeave}
-        onWheel={handleWheel}
+        scaleMode="fill"
       >
-        <Canvas
-          orthographic
-          camera={{ left: -1, right: 1, top: 1, bottom: -1, near: 0, far: 1 }}
-          gl={{ antialias: false, preserveDrawingBuffer: true }}
-          style={{ width: '100%', height: '100%' }}
-          resize={{ scroll: false }}
+        <div
+          ref={containerRef}
+          className="w-full h-full"
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseLeave}
+          onWheel={handleWheel}
         >
-          <MandelbrotQuad
-            centerRef={centerRef}
-            zoomRef={zoomRef}
-            maxIter={maxIter[0]}
-          />
-        </Canvas>
-      </div>
+          <Canvas
+            orthographic
+            camera={{ left: -1, right: 1, top: 1, bottom: -1, near: 0, far: 1 }}
+            gl={{ antialias: false, preserveDrawingBuffer: true }}
+            style={{ width: '100%', height: '100%' }}
+            resize={{ scroll: false }}
+          >
+            <MandelbrotQuad
+              centerRef={centerRef}
+              zoomRef={zoomRef}
+              maxIter={maxIter[0]}
+            />
+          </Canvas>
+        </div>
+      </SimulationMain>
 
       {/* Controls */}
       <Card>

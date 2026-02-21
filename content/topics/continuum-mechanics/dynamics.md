@@ -106,6 +106,12 @@ This is **Cauchy's equation**, and it's universal. It doesn't care whether you'r
 
 Same heartbeat. Different constitutive law. That's the deep unity of continuum mechanics.
 
+> **Reading Cauchy's equation physically:** The left side, $\rho\,D\mathbf{v}/Dt$, is *how much the velocity of this blob is changing as it rides the flow*. The right side, $\mathbf{f} + \nabla \cdot \sigma$, is *every force that could act on it, per unit volume* — gravity pulling it down, pressure pushing from all sides, viscous stresses dragging on its surfaces. Newton's second law, applied to a smear of matter.
+
+[[simulation deformation-grid]]
+
+[[simulation ps-wave-animation]]
+
 ## Big Ideas
 
 * The continuity equation is just "stuff doesn't disappear," written as a PDE. Every conservation law in continuum mechanics has this same structure: a time derivative plus a divergence of flux equals zero.
@@ -114,7 +120,7 @@ Same heartbeat. Different constitutive law. That's the deep unity of continuum m
 
 ## What Comes Next
 
-Now we know the general equation of motion. Let's see what happens when we specialize to fluids — starting with fluids that aren't moving at all. Pressure, buoyancy, floating icebergs: fluids at rest.
+Now we know the general equation of motion. What's the simplest thing we can do with it? Drop the inertia. When viscosity dominates so completely that acceleration is negligible, Cauchy's equation collapses to the Stokes equation — and we enter the world of creeping flow, where honey, magma, and glaciers live.
 
 ## Check Your Understanding
 

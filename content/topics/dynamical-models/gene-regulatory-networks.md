@@ -37,9 +37,11 @@ A gene activates itself. With strong cooperativity, this creates bistability —
 
 This is the most interesting motif, and it comes in eight flavors (depending on whether each arrow is activation or repression). The most common is the **coherent type-1 feed-forward loop**:
 
-$$
-X \rightarrow Y \rightarrow Z, \qquad X \rightarrow Z.
-$$
+> **Key Equation — Feed-Forward Loop Logic**
+> $$
+> X \rightarrow Y \rightarrow Z, \qquad X \rightarrow Z
+> $$
+> Gene X activates Z through a fast direct path and a slow indirect path via Y; with AND-gate logic, only sustained signals pass through — brief noise is filtered out.
 
 Gene $X$ activates gene $Z$ through two paths: a fast direct path, and a slow indirect path through $Y$. If $Z$ requires *both* $X$ and $Y$ to be present (AND logic), then $Z$ only turns on after $X$ has been on long enough for $Y$ to accumulate. A brief pulse of $X$ does nothing — only a sustained signal gets through.
 
@@ -71,6 +73,10 @@ As $X$ gradually increases, the targets turn on one by one in order of their thr
 
 **Personality: temporal ordering.** This is how *E. coli* builds its flagellum — a single master regulator activates the structural genes in the correct assembly order.
 
+[[simulation motif-gallery]]
+
+Click through the four motifs to see their step responses. Negative autoregulation reaches steady state faster than a gene without feedback. Positive feedback shows two trajectories converging to different steady states — bistability. The feed-forward loop delays its output until the intermediate accumulates, filtering brief noise. The toggle switch flips from one state to the other when hit with a pulse and stays there — biological memory.
+
 ## Identifying feedback sign: the multiplication rule
 
 Given a closed loop, you can determine whether it is positive or negative feedback by a simple trick. Assign $+1$ to each activation arrow ($\rightarrow$) and $-1$ to each repression arrow ($\dashv$), then multiply around the loop. For example:
@@ -82,6 +88,8 @@ $$
 gives $(+1)(+1)(-1) = -1$: **negative feedback loop**.
 
 > *This is the same principle we saw with the repressilator: an odd number of repressions in a loop makes it negative (oscillatory), while an even number makes it positive (bistable).*
+
+In other words, the product gives the **sign of the loop gain**: two negatives make a positive (bistable), while an odd number of negatives makes the loop negative (homeostatic or oscillatory).
 
 ## Simplifying the equations
 
@@ -126,7 +134,7 @@ Now that you can recognize network motifs, look at the biological systems we hav
 
 ## Why does nature do it this way?
 
-Nature builds complex behavior from simple, reusable parts. A handful of network motifs — feedback loops, feed-forward loops, single input modules — can be combined in endless ways to create circuits that switch, oscillate, filter noise, detect patterns, and make decisions. Understanding the motifs is like learning the alphabet: once you know the letters, you can read any word.
+Every principle from earlier lessons — degradation for speed ([lesson 1](./differential-equations)), the Hill function for switching ([transcriptional regulation](./transcriptional-regulation)), feedback for memory and timing ([feedback loops](./feedback-loops)) — reappears here as a motif. Nature builds complex behavior from a small reusable toolkit. Learn the motifs and you can read the wiring diagram of any cell.
 
 ## Check your understanding
 
@@ -136,7 +144,7 @@ Nature builds complex behavior from simple, reusable parts. A handful of network
 
 ## Challenge
 
-Take the simplified positive-feedback equation above and set $\beta = 5$, $K = 1$, $n = 4$. On a single plot, draw the production curve $f(P)$ and the degradation line $\gamma P$ for three values of $\gamma$: $0.5$, $1.0$, and $2.0$. How many steady states does each case have? Can you find the critical value of $\gamma$ where bistability appears or disappears? What does this tell you about how a cell could switch between states just by changing its protein degradation rate?
+For the toggle-switch motif, sketch how the nullclines of the two competing genes intersect. Using the mutual-repression equations $\dot{U} = \alpha_1/(1+V^n) - U$ and $\dot{V} = \alpha_2/(1+U^n) - V$ with $\alpha_1 = \alpha_2 = 5$ and $n = 2$, set $\dot{U}=0$ and $\dot{V}=0$ separately to obtain two nullcline curves in the $(U,V)$ plane. Plot them and find where they cross. Explain why mutual repression creates two stable states and one unstable saddle point, and predict what happens if you break the symmetry by making $\alpha_1 \neq \alpha_2$.
 
 ## Big ideas
 

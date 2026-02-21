@@ -8,17 +8,15 @@ This is our first lesson, and we need a language for talking about how things ch
 
 Imagine you are filling a bathtub. Water flows in at constant rate $k$ (molecules per minute) and drains out at rate proportional to how full it is: $\Gamma n$. The net rate of change is production minus loss:
 
-$$
-\dot{n} = k - \Gamma n.
-$$
+> **Key Equation — The Bathtub Equation**
+> $$
+> \dot{n} = k - \Gamma n
+> $$
+> The rate of change of molecule number equals the production rate minus the degradation rate: what flows in minus what flows out.
 
 At steady state the tub is neither rising nor falling, so $\dot{n} = 0$. Solve: $n_\mathrm{ss} = k / \Gamma$. Every steady state in this entire course is of this form.
 
 This is exactly how molecules work inside a cell. mRNA is produced at some rate by the transcription machinery, and it is degraded at a rate proportional to how much is present. The steady-state concentration is simply the ratio of production to degradation. Nature finds this balance automatically. Let us now derive this step by step.
-
-[[figure bathtub-cartoon]]
-
-[[figure approach-to-steady-state]]
 
 ## Creation: molecules appearing at a constant rate
 
@@ -72,6 +70,10 @@ $$
 
 If you start with zero molecules, the system climbs toward $n_\mathrm{ss}$ on a timescale set by $1/\Gamma$ — fast degradation means the system reaches steady state quickly. If you start above $n_\mathrm{ss}$, the excess decays away on the same timescale.
 
+[[simulation bathtub-dynamics]]
+
+Try varying the production rate $k$ and the degradation rate $\Gamma$. Watch three scenarios: the default parameters, fast degradation, and slow degradation. Notice how the steady-state level $n_{ss} = k/\Gamma$ changes, and how the time to reach steady state depends only on $\Gamma$. Toggle the analytical solution overlay to check the exponential approach.
+
 ## Why does nature do it this way?
 
 You might ask: why does a cell bother degrading its own mRNA? It costs energy to make it, so why destroy it? The answer is speed. A cell that only produces molecules (no degradation) can never reduce their levels — it is stuck. But a cell that both produces and degrades can change its steady state simply by adjusting the production rate. The faster the degradation, the quicker the response. This is why many mRNAs in bacteria have half-lives of just a few minutes.
@@ -91,6 +93,8 @@ Suppose a gene starts producing mRNA at rate $k = 10$ molecules per minute, star
 * **The bathtub equation** $\dot{n} = k - \Gamma n$ is the foundation of almost every model in this course.
 * **Steady state** is where production balances degradation: $n_\mathrm{ss} = k / \Gamma$.
 * **The degradation rate $\Gamma$ sets the response time** — fast turnover means the cell can change its mind quickly.
+
+The bathtub equation gives us the simplest model of a single molecular species. But real cells make proteins from mRNA, introducing a second variable and two very different timescales — that is where we go next.
 
 ## What comes next
 
