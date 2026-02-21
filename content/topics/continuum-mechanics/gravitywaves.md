@@ -46,10 +46,23 @@ $$
 
 With rotation ($f \neq 0$), the minimum wave frequency is $f$ — waves slower than one cycle per half-day (at mid-latitudes) are deflected by the Coriolis force into rotating patterns rather than propagating freely.
 
-## What We Just Learned
+## Big Ideas
 
-Gravity waves are driven by the competition between gravity pulling water back to its equilibrium level and inertia carrying it past. The shallow-water equations describe these waves when the wavelength is much longer than the depth. The wave speed depends on depth, which explains why tsunamis slow down and steepen as they approach shore.
+* Gravity waves exist because two things compete: gravity pulls displaced water back to its resting level, and inertia carries it past. The oscillation between these two tendencies is the wave.
+* In shallow water ($\text{wavelength} \gg \text{depth}$), the wave speed $c = \sqrt{g_0 D}$ depends only on depth — not on wavelength. All frequencies travel at the same speed, so the wave shape is preserved as it propagates.
+* This dispersionless property explains why tsunamis are so dangerous: a pulse of energy crosses entire ocean basins without spreading out, arriving with nearly its original amplitude.
+* Earth's rotation (the Coriolis force, parameterized by $f$) deflects large-scale gravity waves into rotating patterns and sets a minimum frequency below which free propagation is impossible.
 
-## What's Next
+## What Comes Next
 
 We've now covered the main exact solutions and wave phenomena in fluid mechanics. But what about flows where viscosity absolutely dominates — where the fluid is so sticky or slow that inertia plays no role? That's creeping flow, and it describes everything from honey to glaciers.
+
+## Check Your Understanding
+
+1. The deep Pacific Ocean has an average depth of about 4000 m. Estimate the speed of a tsunami in the open ocean in km/h. How long does it take to cross 8000 km of open water?
+2. As a tsunami approaches shore and the water depth decreases from 4000 m to 10 m, by what factor does the wave speed decrease? What must happen to the wave's amplitude to conserve energy flux?
+3. What is the Coriolis parameter $f = 2\Omega\sin\phi$ at your latitude $\phi$? ($\Omega = 7.27 \times 10^{-5}$ rad/s.) What is the minimum wave period that can propagate freely without being deflected into a rotating pattern?
+
+## Challenge
+
+A rectangular harbor of length $L = 500$ m and uniform depth $D = 5$ m is closed at one end and open to the ocean at the other. Model the harbor as a 1D resonator and find the natural resonant frequencies using the shallow-water wave equation with appropriate boundary conditions (zero velocity at the closed end, zero surface elevation perturbation at the open end). At which frequencies will the harbor experience resonance (a "harbor seiche")? If an incoming ocean swell has a period of 100 seconds, is the harbor at risk? What harbor geometry would bring a resonant mode to exactly that period?

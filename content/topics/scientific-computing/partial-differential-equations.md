@@ -1,7 +1,6 @@
 # Partial Differential Equations
-*Painting the whole sky: heat, waves, and everything in between*
 
-> *This is the summit. Everything comes together here: finite differences (Lesson 01's error analysis), linear systems (Lesson 02), eigenvalues (Lesson 07-08 for stability), FFTs (Lesson 09 for spectral methods), and ODE solvers (Lesson 10 via method of lines).*
+> *This is the summit. Everything comes together here: finite differences ([error analysis](./bounding-errors)), [linear systems](./linear-equations), [eigenvalues](./eigen-systems) for stability, the [FFT](./fft) for spectral methods, and [ODE solvers](./initial-value-problems) via method of lines.*
 
 ## Classification
 
@@ -13,9 +12,9 @@ $$
 
 The **discriminant** $B^2 - AC$ determines the type:
 
-- **Elliptic** ($B^2 - AC < 0$): e.g., Laplace equation $\nabla^2 u = 0$. Describes equilibrium states.
-- **Parabolic** ($B^2 - AC = 0$): e.g., heat equation $u_t = \alpha \nabla^2 u$. Describes diffusion processes.
-- **Hyperbolic** ($B^2 - AC > 0$): e.g., wave equation $u_{tt} = c^2 \nabla^2 u$. Describes wave propagation.
+* **Elliptic** ($B^2 - AC < 0$): e.g., Laplace equation $\nabla^2 u = 0$. Describes equilibrium states.
+* **Parabolic** ($B^2 - AC = 0$): e.g., heat equation $u_t = \alpha \nabla^2 u$. Describes diffusion processes.
+* **Hyperbolic** ($B^2 - AC > 0$): e.g., wave equation $u_{tt} = c^2 \nabla^2 u$. Describes wave propagation.
 
 *Think of it this way: elliptic PDEs describe things that have settled down (a rubber sheet draped over a frame), parabolic PDEs describe things that are settling down (heat spreading until everything is the same temperature), and hyperbolic PDEs describe things that are sloshing around (waves in a pond).*
 
@@ -37,7 +36,7 @@ $$
 
 These replace the PDE at each interior grid point with an algebraic equation, producing a system of equations that can be solved by linear algebra techniques.
 
-> **You might be wondering...** "How fine does the grid need to be?" That depends on the solution. Smooth solutions need fewer points; solutions with sharp gradients or boundary layers need more. The error is $O(\Delta x^2)$ for these central differences, so halving the grid spacing quarters the error — but also quadruples the number of equations.
+How fine does the grid need to be? That depends on the solution. Smooth solutions need fewer points; solutions with sharp gradients or boundary layers need more. The error is $O(\Delta x^2)$ for these central differences, so halving the grid spacing quarters the error — but also quadruples the number of equations.
 
 ## The Heat Equation
 
@@ -55,7 +54,7 @@ $$
 
 where $r = \alpha \Delta t / \Delta x^2$. This scheme is **conditionally stable**: the solution blows up unless $r \leq 1/2$ (the **CFL condition** for this problem).
 
-*This says: the ratio $r$ controls everything. Make the time step too big relative to the grid spacing and the solution explodes. It's a direct echo of the truncation-rounding tradeoff from Lesson 01 — you can't be reckless with step sizes.*
+*This says: the ratio $r$ controls everything. Make the time step too big relative to the grid spacing and the solution explodes. It's a direct echo of the truncation-rounding tradeoff from [bounding errors](./bounding-errors) — you can't be reckless with step sizes.*
 
 The **implicit (backward Euler)** scheme evaluates spatial derivatives at the new time level:
 
@@ -89,21 +88,21 @@ $$
 
 This produces a large sparse linear system $A\mathbf{u} = \mathbf{b}$ where boundary values enter through the right-hand side. Direct solvers (LU decomposition) work for moderate grids, but **iterative methods** are preferred for large problems:
 
-- **Jacobi iteration**: Update each point from its neighbors' previous values.
-- **Gauss-Seidel**: Use updated values as soon as available (faster convergence).
-- **Successive over-relaxation (SOR)**: Accelerates Gauss-Seidel with a relaxation parameter $\omega$.
+* **Jacobi iteration**: Update each point from its neighbors' previous values.
+* **Gauss-Seidel**: Use updated values as soon as available (faster convergence).
+* **Successive over-relaxation (SOR)**: Accelerates Gauss-Seidel with a relaxation parameter $\omega$.
 
 For Poisson's equation $\nabla^2 u = f$, the same stencil applies with $f_{i,j}$ on the right-hand side.
 
-> **You might be wondering...** "How big can these linear systems get?" For a 2D grid with $N$ points per side, you have $N^2$ unknowns. For $N = 1000$, that's a million unknowns and a million-by-million matrix. It's sparse (mostly zeros), which is the only reason it's tractable. This is exactly where the iterative methods and sparse solvers from Lesson 02 become essential.
+How big can these linear systems get? For a 2D grid with $N$ points per side, you have $N^2$ unknowns. For $N = 1000$, that's a million unknowns and a million-by-million matrix. It's sparse (mostly zeros), which is the only reason it's tractable. This is exactly where the iterative methods and sparse solvers from [linear equations](./linear-equations) become essential.
 
 ## Boundary Conditions
 
 The three standard types are:
 
-- **Dirichlet**: $u = g$ on $\partial\Omega$. The boundary values are known and directly substituted.
-- **Neumann**: $\partial u / \partial n = g$ on $\partial\Omega$. Discretized using one-sided or ghost-point differences.
-- **Robin (mixed)**: $\alpha u + \beta \partial u / \partial n = g$. Combines the above.
+* **Dirichlet**: $u = g$ on $\partial\Omega$. The boundary values are known and directly substituted.
+* **Neumann**: $\partial u / \partial n = g$ on $\partial\Omega$. Discretized using one-sided or ghost-point differences.
+* **Robin (mixed)**: $\alpha u + \beta \partial u / \partial n = g$. Combines the above.
 
 Ghost points outside the domain are a clean way to implement Neumann conditions: introduce a fictitious point $u_{-1}$ and use the centered difference $u_1 - u_{-1} = 2\Delta x \cdot g$ to eliminate it.
 
@@ -115,7 +114,7 @@ $$
 \frac{\partial u}{\partial x} \longleftrightarrow ik\hat{u}_k.
 $$
 
-*This says: differentiation in physical space becomes multiplication in Fourier space. The FFT from Lesson 09 makes this practical — transform, multiply by $ik$, transform back.*
+*This says: differentiation in physical space becomes multiplication in Fourier space. The [FFT](./fft) makes this practical — transform, multiply by $ik$, transform back.*
 
 The **Fast Fourier Transform** (FFT) makes this approach computationally efficient with $O(N\log N)$ operations. Spectral methods achieve exponential convergence for smooth solutions, far outperforming finite differences.
 
@@ -133,7 +132,7 @@ The **Lax equivalence theorem** states that for a consistent finite difference s
 
 **Von Neumann stability analysis** substitutes a Fourier mode $u_j^n = g^n e^{ij\theta}$ into the difference scheme and requires the **amplification factor** $|g| \leq 1$ for all wave numbers $\theta$. This is the standard tool for determining CFL-type restrictions on the time step.
 
-> **Challenge:** Implement the FTCS scheme for the 1D heat equation with initial condition $u(x,0) = \sin(\pi x)$ on $[0,1]$. Run it with $r = 0.4$ (stable) and $r = 0.6$ (unstable). Watch the stable one smoothly decay to zero while the unstable one explodes into wild oscillations. The CFL condition $r \leq 0.5$ is the thin line between success and chaos.
+> **Challenge.** Implement the FTCS scheme for the 1D heat equation with initial condition $u(x,0) = \sin(\pi x)$ on $[0,1]$. Run it with $r = 0.4$ (stable) and $r = 0.6$ (unstable). Watch the stable one smoothly decay to zero while the unstable one explodes into wild oscillations. The CFL condition $r \leq 0.5$ is the thin line between success and chaos.
 
 ## Summary
 
@@ -145,6 +144,25 @@ The **Lax equivalence theorem** states that for a consistent finite difference s
 
 ---
 
-**What we just learned in one sentence:** PDEs are solved by replacing derivatives with finite differences on a grid, and the Lax equivalence theorem guarantees that consistent + stable = convergent.
+## Big Ideas
 
-**You made it to the summit.** From floating-point lies at base camp to simulating heat, waves, and fluid flow at the top — you now have the tools to make the computer speak the language of the universe. Every lesson built on the last: error analysis gave you humility, linear algebra gave you tools, nonlinear methods gave you courage, eigenvalues gave you insight, the FFT gave you speed, ODE solvers gave you time, and now PDEs give you the whole sky. Go compute something beautiful.
+* PDEs come in three flavors — elliptic (equilibrium), parabolic (diffusion), hyperbolic (waves) — and each flavor demands a different numerical strategy and a different relationship between time step and grid spacing.
+* The CFL condition is not a numerical artifact but a physical constraint: the numerical scheme must be able to "keep up" with information propagating through the domain at physical speeds.
+* Consistency plus stability equals convergence — the Lax equivalence theorem reduces the hard question of whether your answer is right to the tractable question of whether your scheme is stable.
+* Spectral methods are exponentially accurate for smooth problems because they represent the solution in a global basis (Fourier modes), while finite differences accumulate polynomial errors from truncating the Taylor series locally.
+
+## Wrapping Up
+
+Every tool in this topic was built for this moment. Error analysis taught you to distrust your computer just enough to use it wisely. LU decomposition and least squares gave you the machinery to solve the large linear systems that arise when you discretize a PDE. Eigenvalue analysis determines stability. The FFT powers spectral methods. And ODE integrators time-march parabolic and hyperbolic PDEs via the method of lines.
+
+PDEs are the language in which physics writes its deepest laws: heat, sound, light, quantum wavefunctions, fluid flow, and electromagnetic fields are all PDEs. The numerical methods here are not approximations to that language — they are the tools that let you speak it on a finite machine. You now have everything you need to simulate the physical world at whatever resolution your computer can sustain. The rest is physics, imagination, and compute time.
+
+## Check Your Understanding
+
+1. The FTCS scheme for the heat equation is conditionally stable with $r \leq 1/2$. If you halve the grid spacing $\Delta x$ (to get better spatial accuracy), what must happen to $\Delta t$ to maintain stability, and how does this affect the total number of time steps?
+2. For Laplace's equation, the five-point stencil says that every interior point equals the average of its four neighbors. Use this fact to argue that the maximum of the solution over the domain must occur on the boundary.
+3. A finite difference scheme is consistent (truncation error $\to 0$ as $\Delta x, \Delta t \to 0$) but unstable. Does the Lax theorem guarantee convergence? What does it guarantee?
+
+## Challenge
+
+Implement the 2D heat equation $u_t = \alpha(u_{xx} + u_{yy})$ on the unit square with Dirichlet boundary conditions $u = 0$ and initial condition $u(x,y,0) = \sin(\pi x)\sin(\pi y)$. The exact solution is $u(x,y,t) = e^{-2\pi^2\alpha t}\sin(\pi x)\sin(\pi y)$. Implement both the explicit FTCS scheme and the Crank-Nicolson scheme (which requires solving a linear system at each time step). Run both with the same $\Delta x$ and compare: (a) the stability limits, (b) the error at $t = 0.1$ as a function of $\Delta t$, and (c) the wall-clock time to reach a given accuracy. At what accuracy does Crank-Nicolson's implicit cost become worthwhile?

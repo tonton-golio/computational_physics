@@ -2,6 +2,7 @@
 
 import React, { useRef, useEffect, useState } from 'react';
 import { type CanvasTheme, DARK_THEME, getCanvasTheme } from '@/lib/canvas-theme';
+import { useSimulationFullscreen } from '@/lib/simulation-fullscreen-context';
 
 // ── Types (Plotly-compatible for easy migration) ───────────────────────
 
@@ -135,8 +136,7 @@ function genTicks(min: number, max: number, maxTicks = 7): number[] {
 }
 
 function genLogTicks(min: number, max: number): number[] {
-  const safeMin = Math.max(min, 1e-15);
-  const logMin = Math.floor(Math.log10(safeMin));
+  const logMin = Math.floor(Math.log10(min));
   const logMax = Math.ceil(Math.log10(max));
   const ticks: number[] = [];
   for (let e = logMin; e <= logMax; e++) ticks.push(Math.pow(10, e));
@@ -274,28 +274,44 @@ function draw(
   let yMin = layout?.yaxis?.range?.[0] ?? Math.min(...allY);
   let yMax = layout?.yaxis?.range?.[1] ?? Math.max(...allY);
 
-  // Add padding
+  // Add padding (log axes use log-scale padding to avoid pushing min to ~0)
   if (!layout?.xaxis?.range) {
-    const xPad = (xMax - xMin) * 0.04 || 1;
-    xMin -= xPad;
-    xMax += xPad;
+    if (xLog) {
+      const logMin = Math.log10(xMin);
+      const logMax = Math.log10(xMax);
+      const logPad = (logMax - logMin) * 0.05 || 0.5;
+      xMin = Math.pow(10, logMin - logPad);
+      xMax = Math.pow(10, logMax + logPad);
+    } else {
+      const xPad = (xMax - xMin) * 0.04 || 1;
+      xMin -= xPad;
+      xMax += xPad;
+    }
   }
   if (!layout?.yaxis?.range) {
-    const yPad = (yMax - yMin) * 0.06 || 1;
-    yMin -= yPad;
-    yMax += yPad;
+    if (yLog) {
+      const logMin = Math.log10(yMin);
+      const logMax = Math.log10(yMax);
+      const logPad = (logMax - logMin) * 0.05 || 0.5;
+      yMin = Math.pow(10, logMin - logPad);
+      yMax = Math.pow(10, logMax + logPad);
+    } else {
+      const yPad = (yMax - yMin) * 0.06 || 1;
+      yMin -= yPad;
+      yMax += yPad;
+    }
   }
 
-  if (xLog) { xMin = Math.max(xMin, 1e-15); xMax = Math.max(xMax, xMin * 10); }
-  if (yLog) { yMin = Math.max(yMin, 1e-15); yMax = Math.max(yMax, yMin * 10); }
+  if (xLog) { xMax = Math.max(xMax, xMin * 10); }
+  if (yLog) { yMax = Math.max(yMax, yMin * 10); }
 
   // ── Mapping functions ────────────────────────────────────────────
   const mapX = (v: number) => {
-    if (xLog) return mg.l + ((Math.log10(Math.max(v, 1e-15)) - Math.log10(xMin)) / (Math.log10(xMax) - Math.log10(xMin))) * pw;
+    if (xLog) return mg.l + ((Math.log10(Math.max(v, xMin)) - Math.log10(xMin)) / (Math.log10(xMax) - Math.log10(xMin))) * pw;
     return mg.l + ((v - xMin) / (xMax - xMin)) * pw;
   };
   const mapY = (v: number) => {
-    if (yLog) return mg.t + ph - ((Math.log10(Math.max(v, 1e-15)) - Math.log10(yMin)) / (Math.log10(yMax) - Math.log10(yMin))) * ph;
+    if (yLog) return mg.t + ph - ((Math.log10(Math.max(v, yMin)) - Math.log10(yMin)) / (Math.log10(yMax) - Math.log10(yMin))) * ph;
     return mg.t + ph - ((v - yMin) / (yMax - yMin)) * ph;
   };
 
@@ -580,6 +596,7 @@ export function CanvasChart({ data, layout, style }: CanvasChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [themeKey, setThemeKey] = useState(0);
+  const isFullscreen = useSimulationFullscreen();
 
   // Watch for theme changes
   useEffect(() => {
@@ -623,6 +640,7 @@ export function CanvasChart({ data, layout, style }: CanvasChartProps) {
   return (
     <div
       ref={containerRef}
+      data-fs-role={isFullscreen ? 'chart' : undefined}
       style={{ width: style?.width || '100%' }}
     >
       <canvas ref={canvasRef} style={{ display: 'block', borderRadius: '4px' }} />

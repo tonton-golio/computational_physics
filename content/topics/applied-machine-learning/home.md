@@ -1,29 +1,15 @@
 # Applied Machine Learning
 
-## Course overview
+Here is the simplest version of what a machine learning model does: it has a bunch of knobs, and it turns those knobs until a single number -- the loss -- goes down. That is it. Every model you have ever heard of, from a decision tree to a billion-parameter neural network, is doing some version of this. The art is in choosing which knobs, which loss, and how to turn them.
 
-Applied machine learning studies how to design models that generalize well to new data while remaining computationally practical. This module progresses from how models learn, through classical methods and data understanding, to neural network architectures for structured, sequential, and relational data.
+Start with decision trees. You can literally draw one on a napkin. "Is the temperature above 30? Go left. Is the humidity above 80? Go right." Stack a few hundred of these together into a random forest or a gradient-boosted ensemble and you have the most powerful tool in the working data scientist's kit for structured data. It is not glamorous, but it wins competitions.
 
-## Why this order?
+Now suppose your data is not a spreadsheet but an image, a sentence, a molecule, a social network. Flat tables will not cut it. You need neural networks: general-purpose function approximators that learn their own features from raw data. Once you understand the building blocks -- layers, activations, backpropagation -- you can extend them to sequences, graphs, and generative models. The question is always the same: what structure does your data have, and how do you bake that structure into the model?
 
-We start where every ML system starts: with loss functions and optimization. Before you can appreciate any model, you need to understand what "learning" actually means — a model adjusts its knobs to make a number (the loss) go down. Once you feel that in your bones, we move to decision trees and ensembles, which are the most intuitive and practically powerful models for structured data. You can literally draw them on a napkin. Next come neural networks: the general-purpose function approximators behind modern deep learning. With neural networks in hand, we tackle dimensionality reduction — including autoencoders — which makes far more sense once you understand what an encoder actually is. Finally, we offer three taster lessons on specialized architectures — recurrent networks for sequences, graph networks for relational data, and GANs for generative modeling — each of which gets full treatment in the Advanced Deep Learning module.
+## Why This Topic Matters
 
-## What you will learn
-
-- **Loss functions and optimization** — how models learn from data, and why the choice of loss function shapes everything downstream.
-- **Decision trees and ensemble methods** — strong, interpretable baselines for structured data that you should always try before reaching for neural networks.
-- **Neural network fundamentals** — the building blocks (layers, activations, backpropagation, regularization) behind all modern deep learning.
-- **Dimensionality reduction** — how to compress and visualize high-dimensional spaces so you can see what your model sees, including autoencoders that build on neural network ideas.
-- **Recurrent neural networks** (extension) — extending neural networks to sequential data like time series and language.
-- **Graph neural networks** (extension) — extending neural networks to relational data that lives on graphs.
-- **Generative adversarial networks** (extension) — a bridge from classical ML to modern deep generative modeling.
-
-The three extension lessons are tasters — they give you the core intuition and one worked idea, then point you to [Advanced Deep Learning](/topics/advanced-deep-learning) for the full treatment.
-
-## Why this topic matters
-
-Machine learning drives modern scientific discovery, from molecular property prediction to climate modeling. Understanding loss functions and optimization dynamics is essential for training any model effectively. Tree ensembles remain the strongest baselines for tabular data across many domains. Dimensionality reduction is critical for exploratory data analysis and feature engineering. Neural networks are the foundation of nearly all modern architectures, and graph neural networks open ML to relational data that cannot be expressed as flat tables.
-
-## Relation to other modules
-
-The [Applied Statistics](/topics/applied-statistics) module covers some overlapping topics (decision trees, PCA, model evaluation) with a focus on statistical inference rather than ML methodology. For deeper coverage of specific architectures (CNNs, transformers, VAEs), see [Advanced Deep Learning](/topics/advanced-deep-learning).
+- Loss functions and optimization dynamics are essential for training any model effectively.
+- Tree ensembles remain the strongest baselines for tabular data across science and industry.
+- Dimensionality reduction is critical for exploratory data analysis and feature engineering.
+- Neural networks are the foundation of nearly all modern architectures, from vision to language.
+- Machine learning drives scientific discovery in molecular property prediction, climate modeling, and beyond.

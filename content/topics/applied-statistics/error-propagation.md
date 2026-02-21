@@ -14,7 +14,7 @@ But there are caveats. For the CLT to work well, the contributing distributions 
 
 **The practical rule**: if each contribution has finite variance and no single contribution dominates, the sum is approximately Gaussian. This is the foundation on which the rest of the course builds.
 
-> **Try this at home.** Roll a single die and note the result. Now roll five dice and compute the average. Do this twenty times. Plot your twenty averages on a number line. You'll see them clustering around 3.5 in a roughly bell-shaped pattern — even though a single die roll is perfectly uniform. That's the CLT at work.
+> **Challenge.** Roll a single die and note the result. Now roll five dice and compute the average. Do this twenty times. Plot your twenty averages on a number line. You'll see them clustering around 3.5 in a roughly bell-shaped pattern — even though a single die roll is perfectly uniform. That's the CLT at work.
 
 ## Error Propagation
 
@@ -32,7 +32,7 @@ $$
 
 This works when $y$ is smooth around $x_i$ — when the slope is roughly constant over the uncertainty range.
 
-For multiple variables with correlations, the general formula uses the covariance matrix $V_{ij}$ (which we met in lesson 1):
+For multiple variables with correlations, the general formula uses the covariance matrix $V_{ij}$ (which we met in [introduction and concepts](./introduction-concepts)):
 
 $$
 \sigma_y^2 = \sum_{i,j}^n \frac{\partial y}{\partial x_i} \frac{\partial y}{\partial x_j} V_{ij}
@@ -66,8 +66,27 @@ Choose random inputs $x_i$ from their error distributions, compute $y$ for each 
 
 [[simulation applied-stats-sim-8]]
 
----
-
-**What we just learned, and why it matters.** The CLT explains why Gaussian statistics appear everywhere: averages of random quantities converge to a bell curve. Error propagation tells you how uncertainties flow through calculations — steeply varying functions amplify errors, gently varying ones suppress them. Together, these two ideas let you attach meaningful error bars to almost any derived quantity. But when the math gets too complicated for pen and paper, you need to let the computer do the experiment for you. That's simulation — and it's where we go next.
-
 > **Challenge.** Explain error propagation to a friend using only the example of measuring a room's area from its length and width. No equations. One minute.
+
+## Big Ideas
+
+* The central limit theorem is the reason Gaussian error analysis works anywhere: averages of random quantities converge to a bell curve regardless of what those quantities individually look like.
+* Error propagation is really just asking "how steeply does my answer change when I wiggle each input?" — steep functions amplify errors, shallow functions suppress them.
+* Negative covariance between inputs is not a problem; it is an opportunity. Harrison's gridiron pendulum exploited it deliberately to cancel thermal expansion across two centuries before anyone wrote down the covariance formula.
+* When the function is not smooth or the relationship is strongly nonlinear, the derivative formula fails — and simulation is the honest alternative.
+
+## What Comes Next
+
+The CLT and error propagation give you analytical tools for tracking uncertainty through calculations. But these tools assume your function is smooth, your errors are Gaussian, and the relationships are tractable enough to differentiate on paper. In real experiments, none of these conditions are guaranteed.
+
+The next section replaces the pen-and-paper calculation with direct simulation: generate random inputs, push them through the calculation a million times, and look at the spread of the outputs. This Monte Carlo approach handles arbitrary functions, non-Gaussian inputs, and complex correlations — and it connects back to the CLT in a satisfying way.
+
+## Check Your Understanding
+
+1. You measure the sides of a square and find $L = 10.0 \pm 0.2$ cm. What is the uncertainty on the area? Show how the derivative formula gives you a factor of 2 automatically, and explain in words why squaring a measurement amplifies its relative error.
+2. You measure two correlated quantities $x$ and $y$ where $V_{xy} < 0$. How does this correlation affect the uncertainty on $z = x + y$? Can the total uncertainty be smaller than either individual uncertainty?
+3. A classmate claims: "If I average enough measurements, the CLT guarantees my result will be Gaussian, no matter what." Under what conditions is this claim wrong?
+
+## Challenge
+
+Design an experiment to measure the volume of a small irregularly shaped rock using only a ruler and a graduated cylinder of water. Write down the formula for the volume, identify all the input measurements and their uncertainties, and propagate those uncertainties to get an uncertainty on the volume. Now consider: one of your measurements (perhaps the water level before and after) has an uncertainty that enters the formula as a difference. What does this do to the relative uncertainty on the volume compared to measuring a rectangular block?

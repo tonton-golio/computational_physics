@@ -54,6 +54,24 @@ Modern methods attack this with **optimism** or **posterior sampling**. **UCRL-s
 
 [[simulation average-reward-vs-discounted]]
 
----
+## Big Ideas
+* The discount factor is a mathematical convenience that smuggles in a philosophical assumption: rewards now matter more than rewards later. Average reward refuses that assumption and asks instead what happens in steady state.
+* Gain and bias are the MDP analog of mean and variance: the gain captures steady-state performance, the bias captures the transient advantage of good starting positions.
+* Optimism under uncertainty is a unifying principle. UCB1 was optimistic about arm means. UCRL is optimistic about MDP dynamics. The principle is the same: act as if the unknown is as favorable as the data permits, and let reality correct you.
+* The regret framework closes the loop: it takes the online learning question — how much do you lose by not knowing the best policy from the start? — and applies it to the full sequential decision problem. That is the deepest connection in this entire topic.
 
-*We have now covered the full arc: from regret in online learning, through bandits and contextual bandits, to full RL with MDPs, TD methods, deep function approximation, and continuing tasks. The next and final section gives you assignments and project ideas to cement all of these ideas through hands-on practice.*
+## What Comes Next
+
+This lesson marks the end of a long journey. We started with a simple question: how do you measure the cost of not knowing, in a world that gives you one decision at a time? That question led us from the regret framework through bandits and contextual bandits, into the memory-laden world of MDPs, and up through Monte Carlo, TD learning, deep function approximation, and finally continuing tasks with average-reward criteria.
+
+The thread running through everything is the interplay between exploration and exploitation — between gathering information and using it. In bandits it was literal arm-pulling. In contextual bandits it was policy selection given a clue. In MDPs it was navigating a world whose dynamics you had to learn while also performing well. Every algorithm in this topic is a different answer to the same underlying question: how do you act well under uncertainty, and how fast do you recover as uncertainty shrinks?
+
+The ideas here do not stop at the textbook. Average-reward RL underlies real-time control systems, UCRL-style optimism is the theoretical spine of modern model-based RL, and the deadly triad still keeps researchers up at night as they scale deep RL to ever larger problems. The best way to consolidate this material is to build something: implement one algorithm end to end, break it deliberately, fix it, and understand in your hands why each design choice matters.
+
+## Check Your Understanding
+1. In a continuing task, why is the discounted objective $\mathbb{E}[\sum_{t=0}^\infty \gamma^t r_t]$ mathematically well-defined but philosophically awkward for a robot that runs indefinitely? What does the average-reward objective $g^\pi$ avoid?
+2. Describe the gain-bias decomposition in your own words. Why does the bias function $h^\pi(s)$ make the Bellman-like equation well-posed even when there is no discount?
+3. UCRL plans optimistically within a confidence set of MDPs. What happens to the size of that confidence set as the number of interactions grows? What does this imply about the policy UCRL follows as $T \to \infty$?
+
+## Challenge
+Consider a 3-state ergodic MDP with two actions, where you do not know the transition probabilities. Design a UCRL-style algorithm from scratch: construct a confidence set for the transition probabilities using concentration inequalities, define the "optimistic MDP" as the one inside the confidence set that maximizes the gain, and specify how often you replan. Implement it and run it against a fixed (non-adaptive) policy on your MDP. Plot the regret — cumulative reward of the optimal policy minus your algorithm's cumulative reward — over 10,000 steps. Does it grow sublinearly? What is the empirical exponent, and how does it compare to the theoretical $O(\sqrt{T})$ bound?

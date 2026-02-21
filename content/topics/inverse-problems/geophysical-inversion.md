@@ -18,9 +18,9 @@ An earthquake ruptures along a fault buried beneath the surface. The rupture dis
 
 For a vertical strike-slip fault in an elastic half-space, the surface displacement at a point $x$ depends on:
 
-- **Fault depth** $D$: how deep the top of the fault is
-- **Fault slip** $s$: how much the two sides moved past each other
-- **Fault dip** $\delta$: the angle of the fault plane
+* **Fault depth** $D$: how deep the top of the fault is
+* **Fault slip** $s$: how much the two sides moved past each other
+* **Fault dip** $\delta$: the angle of the fault plane
 
 The displacement is a nonlinear function of these parameters. Given the geometry, we can compute what the surface *should* look like — that's the forward model. But given the surface measurements, multiple fault configurations can produce nearly identical displacements.
 
@@ -28,11 +28,11 @@ The displacement is a nonlinear function of these parameters. Given the geometry
 
 Suppose we measured surface displacements at 20 stations along a profile perpendicular to the fault:
 
-- Station 1 (0.5 km from fault): 3.1 cm displacement
-- Station 5 (2.5 km): 2.4 cm
-- Station 10 (5.0 km): 1.2 cm
-- Station 15 (7.5 km): 0.4 cm
-- Station 20 (10.0 km): 0.1 cm
+* Station 1 (0.5 km from fault): 3.1 cm displacement
+* Station 5 (2.5 km): 2.4 cm
+* Station 10 (5.0 km): 1.2 cm
+* Station 15 (7.5 km): 0.4 cm
+* Station 20 (10.0 km): 0.1 cm
 
 The displacements decay with distance — but *how* they decay encodes the fault geometry. A shallow fault produces a sharp near-field signal. A deep fault produces a broader, gentler pattern. A steeply dipping fault looks different from a gently dipping one.
 
@@ -42,10 +42,11 @@ We set up a Metropolis sampler (see [Monte Carlo Methods](./monte-carlo-methods)
 
 [[simulation vertical-fault-mcmc]]
 
-> **What to look for:**
-> - The chain doesn't settle on one answer — it wanders through a cloud of plausible fault configurations
-> - Look for the elongated depth-vs-slip trade-off: shallow+large-slip and deep+small-slip produce similar surface data
-> - The total seismic moment (depth × slip) is tightly constrained even when individual parameters aren't
+Things to look for in the simulation:
+
+* The chain doesn't settle on one answer — it wanders through a cloud of plausible fault configurations
+* Look for the elongated depth-vs-slip trade-off: shallow+large-slip and deep+small-slip produce similar surface data
+* The total seismic moment (depth x slip) is tightly constrained even when individual parameters aren't
 
 ### What the Posterior Tells Us
 
@@ -71,21 +72,22 @@ But the bed is buried under hundreds of meters of ice. We can't see it directly.
 
 We have two types of data:
 
-- **Surface velocity**: ice flows faster where it's thicker — roughly proportional to the fourth power of thickness (for $n = 3$ in Glen's flow law, the shallow-ice approximation gives velocity $\sim h^{n+1} = h^4$). Measured by tracking features in satellite images.
-- **Surface elevation**: precisely measured by GPS or lidar. The bed elevation equals surface elevation minus ice thickness.
+* **Surface velocity**: ice flows faster where it's thicker — roughly proportional to the fourth power of thickness (for $n = 3$ in Glen's flow law, the shallow-ice approximation gives velocity $\sim h^{n+1} = h^4$). Measured by tracking features in satellite images.
+* **Surface elevation**: precisely measured by GPS or lidar. The bed elevation equals surface elevation minus ice thickness.
 
 The forward model connects bed topography to surface observables through the equations of ice flow. It's nonlinear — the relationship between bed shape and surface velocity involves a power law and depends on the local slope.
 
 ### Running the MCMC
 
-We parameterize the bed as a smooth curve (control points with interpolation) and explore the posterior with the same Metropolis algorithm from [Lesson 6](./monte-carlo-methods): propose perturbations to each control point, run the forward model, accept or reject. After 30,000 iterations, we have a family of plausible bed profiles.
+We parameterize the bed as a smooth curve (control points with interpolation) and explore the posterior with the same Metropolis algorithm from [Monte Carlo methods](./monte-carlo-methods): propose perturbations to each control point, run the forward model, accept or reject. After 30,000 iterations, we have a family of plausible bed profiles.
 
 [[simulation glacier-thickness-mcmc]]
 
-> **What to look for:**
-> - The posterior is narrow where ice is thin (good constraint) and wide where ice is thick (poor constraint)
-> - Some sampled beds show an overdeepening; others don't — the data cannot resolve this feature
-> - The smoothness prior prevents geologically absurd bed shapes while the data pulls toward the observations
+Things to look for in the simulation:
+
+* The posterior is narrow where ice is thin (good constraint) and wide where ice is thick (poor constraint)
+* Some sampled beds show an overdeepening; others don't — the data cannot resolve this feature
+* The smoothness prior prevents geologically absurd bed shapes while the data pulls toward the observations
 
 ### A Family of Possible Beds
 
@@ -105,11 +107,11 @@ Notice the trade-off between fit quality and physical plausibility: you could cr
 
 Look at both examples one more time. In neither case did we produce "the answer." We produced a collection of answers — a posterior distribution — and that distribution tells us:
 
-- **What's well-determined:** features that appear in every sample
-- **What's uncertain:** features that vary wildly between samples
-- **What trade-offs exist:** which parameters can compensate for each other
+* **What's well-determined:** features that appear in every sample
+* **What's uncertain:** features that vary wildly between samples
+* **What trade-offs exist:** which parameters can compensate for each other
 
-This is the payoff of the entire course. Regularization (Lesson 2) stabilized the inversion. The Bayesian framework (Lesson 3) gave it probabilistic meaning. Iterative methods (Lesson 4) scaled it up. Tomography (Lesson 5) showed the complete linear workflow. And Monte Carlo (Lesson 6) gave us the computational machinery to explore nonlinear posteriors.
+This is the payoff of the entire course. [Regularization](./regularization) stabilized the inversion. The [Bayesian framework](./bayesian-inversion) gave it probabilistic meaning. [Iterative methods](./tikhonov) scaled it up. [Tomography](./linear-tomography) showed the complete linear workflow. And [Monte Carlo](./monte-carlo-methods) gave us the computational machinery to explore nonlinear posteriors.
 
 The answer to an inverse problem is never a single number. The answer is always a distribution. That distribution is where the science lives.
 
@@ -119,18 +121,30 @@ The answer to an inverse problem is never a single number. The answer is always 
 
 Recall from [Bayesian Inversion](./bayesian-inversion) that Tikhonov regularization corresponds to a Gaussian prior (under Gaussian noise and a quadratic penalty). MCMC generalizes this — instead of finding a single regularized optimum, we explore the full posterior distribution. These examples show why that matters:
 
-- The posterior is **multimodal**: the fault example can have distinct solution families
-- Parameter **trade-offs** create elongated or curved posterior shapes that a point estimate would miss
-- **Uncertainty estimates** are as scientifically important as the best-fit model itself
+* The posterior is **multimodal**: the fault example can have distinct solution families
+* Parameter **trade-offs** create elongated or curved posterior shapes that a point estimate would miss
+* **Uncertainty estimates** are as scientifically important as the best-fit model itself
 
 ---
 
-## Takeaway
+## Big Ideas
+* A trade-off between depth and slip is not a failure of the inversion — it is a fact about the data. The posterior captures it honestly; a point estimate buries it.
+* Well-constrained and poorly-constrained regions coexist in every real inversion. Identifying which is which is as scientifically important as the best-fit model itself.
+* The smoothness prior is not an arbitrary aesthetic preference — it encodes the physical fact that geological structures do not change abruptly at the meter scale. Without it, any inversion becomes a Rorschach test.
+* When two different forward models can explain your data equally well, the right response is not to pick one. The right response is to report both, and to quantify what additional data would break the ambiguity.
 
-For nonlinear inverse problems, uncertainty is not a nuisance to be minimized — it is part of the answer. Monte Carlo methods turn inversion from "find one best model" into "characterize a credible family of models." The examples here — a fault and a glacier — are simple enough to visualize but rich enough to show the essential features: trade-offs, ambiguity, and the irreducible honesty of a posterior distribution.
+## What Comes Next
 
----
+These examples show the posterior distribution as a collection of samples — histograms, scatter plots, families of curves. But how much did the data actually teach us? We can see that the fault depth is uncertain, but is that uncertainty 20% of the prior range or 80%? Is the data worth collecting at all? To answer these questions precisely requires a way to measure information — to quantify the reduction in uncertainty from prior to posterior in consistent units.
 
-## Further Reading
+That measurement is Shannon entropy and KL divergence, and they provide the deepest unifying framework for everything in this topic. They explain why regularization works, how much an experiment can teach you before you run it, and how to compare competing models when residuals alone are insufficient. The language of information theory is the final vocabulary that ties regularization, Bayesian inference, sampling, and geophysical application into a single coherent story.
 
-Mosegaard & Tarantola's *Monte Carlo sampling of solutions to inverse problems* (JGR, 1995) is the classic paper on MCMC in geophysics. Okada's (1985) dislocation model is the standard fault forward model. For glaciers, Gudmundsson's work on inverse methods for ice flow is excellent.
+## Check Your Understanding
+1. In the fault inversion example, the total seismic moment (proportional to depth times slip) is well-constrained while depth and slip individually are not. Explain geometrically why this happens using the shape of the posterior in the depth-slip plane.
+2. In the glacier example, uncertainty in the reconstructed bed is largest where the ice is thickest. What is the physical reason for this — what property of the forward model causes thick ice to be harder to constrain?
+3. The fault inversion uses a nonlinear forward model, which means the posterior cannot be computed analytically. Explain in your own words why nonlinearity of the forward model destroys the possibility of an analytical closed-form posterior, even if the prior and noise model are both Gaussian.
+
+## Challenge
+
+Design a synthetic "survey design" experiment for the glacier problem. Given a fixed budget of $N = 10$ velocity measurement points along the glacier surface, determine the optimal placement of those points to minimize the posterior uncertainty in the bed topography. Define a scalar measure of total uncertainty (for example, the average posterior variance over bed control points), implement the MCMC workflow for each proposed survey design, and compare several designs — uniform spacing, clustering near the glacier center, clustering near the edges. Can you find a placement that substantially outperforms uniform spacing? What does the optimal design tell you about which part of the forward model carries the most information about the bed?
+

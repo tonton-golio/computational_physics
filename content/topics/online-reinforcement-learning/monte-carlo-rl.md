@@ -44,6 +44,22 @@ Monte Carlo is also **naturally episodic**. You have to wait until the episode e
 
 [[simulation monte-carlo-convergence]]
 
----
+## Big Ideas
+* Monte Carlo is the law of large numbers applied to sequential decisions. No equations, no model — just averaging enough experience until the truth emerges from the noise.
+* Low bias and high variance is the fundamental trade-off. Unbiased targets are expensive: you have to wait for the whole episode to finish and then survive the noise of every random decision along the way.
+* The on-policy/off-policy distinction is about whether you are learning what you are doing or what you wish you were doing. Importance sampling bridges the gap but amplifies variance as the two policies diverge.
+* Monte Carlo is episodic by nature. If your task never ends, Monte Carlo does not directly apply — which is exactly the pressure that motivates temporal-difference learning.
 
-*Monte Carlo taught us to learn values from complete episodes, no model required. But waiting until the game ends to learn anything feels wasteful. What if you could update your estimates after every single step? Next lesson, we meet TD learning, SARSA, and Q-learning — methods that bootstrap from their own estimates and learn as they go.*
+## What Comes Next
+
+Monte Carlo methods wait until the episode is over before updating anything. That is clean and unbiased, but it can be maddeningly slow. Every time step that passes is a missed opportunity to refine your estimates.
+
+Temporal-difference learning asks: why wait? After a single transition, you already have a reward and a next state. You can bootstrap — use your current estimate of the next state's value as part of the learning target, and update right away. The next lesson develops this idea into TD(0), SARSA, and Q-learning: the trio of algorithms that learn online, one step at a time, and form the backbone of modern model-free RL.
+
+## Check Your Understanding
+1. Why does first-visit MC produce unbiased estimates of $V^\pi(s)$, while every-visit MC produces biased estimates within an episode? Does every-visit MC still converge to the correct value asymptotically?
+2. Monte Carlo has low bias but high variance. Identify two specific sources of variance in Monte Carlo return estimates and explain how each one grows with episode length.
+3. Off-policy MC uses importance sampling to correct for the mismatch between the behavior and target policies. What happens to the variance of the importance-weighted return when the behavior policy is very different from the target policy?
+
+## Challenge
+Implement first-visit Monte Carlo control on a simple episodic environment (e.g., Blackjack from Sutton and Barto). Compare the learning curves — state-value estimates as a function of episodes — for epsilon-greedy policies with $\epsilon = 0.1$ and $\epsilon = 0.5$. Then implement off-policy MC with a target policy of always hitting below 18 and sticking at 18 or above, using a uniform random behavior policy. How many episodes does off-policy MC need to match the accuracy of on-policy MC? Explain the result in terms of the importance weights.

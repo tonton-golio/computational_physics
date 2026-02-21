@@ -59,9 +59,9 @@ $$
 $$
 
 Strategies to approach the Heisenberg limit include:
-- **Squeezed vacuum** injected into the unused port of the MZI reduces the noise in the measured quadrature. This was implemented in LIGO to improve gravitational wave sensitivity.
-- **NOON states** $|N,0\rangle + |0,N\rangle$ achieve Heisenberg-limited sensitivity but are fragile and difficult to prepare for large $N$.
-- **Twin-Fock states** $|N,N\rangle$ provide robustness against losses compared to NOON states.
+* **Squeezed vacuum** injected into the unused port of the MZI reduces the noise in the measured quadrature. This was implemented in LIGO to improve gravitational wave sensitivity.
+* **NOON states** $|N,0\rangle + |0,N\rangle$ achieve Heisenberg-limited sensitivity but are fragile and difficult to prepare for large $N$.
+* **Twin-Fock states** $|N,N\rangle$ provide robustness against losses compared to NOON states.
 
 ## Sagnac Interferometer
 
@@ -72,3 +72,24 @@ $$
 $$
 
 where $A$ is the enclosed area and $\Omega$ is the rotation rate. Fiber-optic gyroscopes and ring laser gyroscopes exploit this principle for navigation and geophysics.
+
+## Big Ideas
+
+* Any linear-optical network — no matter how complex — is described by a unitary matrix acting on the mode operators, and any unitary can be built from beam splitters and phase shifters alone.
+* Homodyne detection projects the field onto a single quadrature by interfering it with a strong local oscillator; rotating the local oscillator phase rotates the measurement axis in phase space, enabling full state tomography.
+* The shot-noise limit $\Delta\phi = 1/\sqrt{\bar{n}}$ is not fundamental — it is merely the limit for coherent-state inputs with Poissonian noise. Squeezing or entanglement can breach it.
+* The Heisenberg limit $\Delta\phi = 1/\bar{n}$ is the fundamental quantum limit: beating it would require measuring more information than the uncertainty principle permits.
+
+## What Comes Next
+
+Phase measurement is the gateway to understanding why squeezed light matters. The next lesson introduces squeezed states — states where one quadrature has noise below the vacuum level — and shows how they are generated, characterized, and used to push interferometric sensitivity toward the Heisenberg limit.
+
+## Check Your Understanding
+
+1. Homodyne detection measures $\hat{X}_\theta$ by interfering the signal with a strong local oscillator at phase $\theta$. By varying $\theta$, you sample different quadratures. Explain why you cannot measure $\hat{X}$ and $\hat{P}$ simultaneously with a single homodyne setup, and what the uncertainty principle has to say about it.
+2. The shot-noise limit scales as $1/\sqrt{\bar{n}}$: doubling the photon number improves precision by $\sqrt{2}$. The Heisenberg limit scales as $1/\bar{n}$: doubling the photon number doubles the precision. What kind of quantum state achieves Heisenberg-limited sensitivity, and intuitively why do entangled photons do better than independent ones?
+3. The Sagnac interferometer measures rotation using counter-propagating beams in a common path. Why does this configuration make it insensitive to vibrations, mirror imperfections, and slow thermal drifts that would wreck a Mach-Zehnder interferometer, while remaining sensitive to rotation?
+
+## Challenge
+
+For a Mach-Zehnder interferometer with coherent input $|\alpha\rangle$ in one port and vacuum in the other, propagate the state through both beam splitters and the phase shift $\phi$, and compute the photon number difference $\langle\hat{n}_c - \hat{n}_d\rangle$ and its variance at the output. Show that the phase sensitivity obtained from error propagation is $\Delta\phi = 1/|\alpha| = 1/\sqrt{\bar{n}}$ (shot-noise limit). Then repeat the analysis with a squeezed vacuum $|\xi\rangle$ (squeezing parameter $r$) injected into the normally empty port, and show that the sensitivity improves to $\Delta\phi = e^{-r}/\sqrt{\bar{n}}$. This is the principle behind the squeezed-light injection in LIGO.

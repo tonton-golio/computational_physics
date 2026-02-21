@@ -50,12 +50,29 @@ Bagging (random forests) fights variance by averaging many high-variance trees �
 
 ## Model selection notes
 
-- Always use cross-validation for small tabular datasets — a single train/test split is too noisy.
-- Key hyperparameters to tune: `max_depth`, `min_samples_leaf`, `n_estimators`, and learning rate (for boosting).
-- When you use predicted probabilities for decisions (not just class labels), run calibration checks — tree ensembles can produce poorly calibrated probabilities.
+* Always use cross-validation for small tabular datasets — a single train/test split is too noisy.
+* Key hyperparameters to tune: `max_depth`, `min_samples_leaf`, `n_estimators`, and learning rate (for boosting).
+* When you use predicted probabilities for decisions (not just class labels), run calibration checks — tree ensembles can produce poorly calibrated probabilities.
+
+## Big Ideas
+
+* A decision tree is the most interpretable nonlinear model that exists — you can literally read it out loud and explain every prediction. That interpretability is also its weakness: a single tree deep enough to be accurate will memorize the training data.
+* Bagging and boosting are two philosophies for turning weak models into strong ones. Bagging parallelizes imperfect estimators and averages away their independent errors. Boosting serializes them and forces each new one to focus on what the others got wrong.
+* The bias-variance tradeoff is not abstract — trees make it concrete. Depth controls it directly, and ensemble methods are specific prescriptions for manipulating it.
+* On structured tabular data, gradient-boosted trees still routinely outperform deep neural networks. Do not reach for deep learning until you have tried XGBoost.
+
+## What Comes Next
+
+Trees and ensembles are the gold standard for structured, tabular data — the kind that lives in spreadsheets and databases. But they have a fundamental limitation: they cannot learn representations. Given a raw image, they need you to hand-engineer features first. Neural networks remove that requirement by learning their own feature hierarchies directly from data, which is why they dominate unstructured inputs like images, audio, and text.
+
+The ideas you built here — depth versus width, overfitting and regularization, the wisdom of crowds — reappear in neural networks in new forms. Dropout is a kind of random forest for neural networks. Early stopping is the neural network version of limiting tree depth. Understanding ensembles makes the neural network regularization story much easier to reason about.
 
 ## Check your understanding
 
-- Can you explain to a non-technical friend what a decision tree does using the twenty-questions game?
-- What single mental snapshot captures why averaging many noisy predictions reduces error?
-- What experiment would reveal whether your tree ensemble is overfitting?
+* Can you explain to a non-technical friend what a decision tree does using the twenty-questions game?
+* What single mental snapshot captures why averaging many noisy predictions reduces error?
+* What experiment would reveal whether your tree ensemble is overfitting?
+
+## Challenge
+
+Construct a minimal synthetic dataset in two dimensions where a single decision tree with unlimited depth achieves near-perfect training accuracy but poor test accuracy, while a random forest with the same number of total parameters achieves both. Then flip the experiment: find a dataset configuration where boosting outperforms the random forest. What property of the data determines which ensemble approach wins?

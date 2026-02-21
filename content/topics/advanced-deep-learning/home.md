@@ -1,41 +1,14 @@
 # Advanced Deep Learning
 
-## Roadmap
+A single artificial neuron draws a line between two classes. That is all it can do. But stack a few hundred of them together, wire each one's output into the next one's input, and something unreasonable happens: the network can approximate *any* function you throw at it. Any function. That is not a slogan; it is a theorem. And yet the theorem tells you nothing about *why* it actually works in practice, or how to make it work well.
 
-This course takes you on a journey from a single artificial neuron to the cutting edge of deep learning theory. Here is the path:
+That gap between "in principle" and "in practice" is where the real adventure lives. Give the network convolutional filters and it starts to see edges, textures, objects. Replace convolutions with attention and it can read a sentence, translate a language, caption a photograph. Let two networks compete, a forger against a detective, and the forgeries become indistinguishable from reality. Each of these architectures was invented because someone asked a sharper question about what the network should *pay attention to*.
 
-**A single neuron** learns to draw a line between two classes. Stack many of them into a **multilayer network** and you can approximate any function. Give the network **eyes** with convolutional filters and it starts to see edges, textures, and objects. Teach it to label **every pixel** with a U-shaped encoder-decoder, and it can outline a tumor in a brain scan. Now give it the tools to **design and train** properly: the right optimizer, the right initialization, the right regularization. With those tools in hand, let the network **dream**: a variational autoencoder learns a smooth landscape of possibilities, while a GAN pits a forger against a detective until the forgeries become indistinguishable from reality. Replace convolutions with **attention** and the network can read a sentence, translate a language, or caption an image. Finally, step back and ask the deepest question: **why does any of this work at all?** That is the theory.
+The deepest question is still open: why does any of this work at all? These models have billions of parameters, far more than the data points they train on. Classical statistics says they should memorize everything and generalize to nothing. They do the opposite. Understanding that mystery is the frontier.
 
-$$
-\text{Neuron} \;\to\; \text{MLP} \;\to\; \text{CNN} \;\to\; \text{U-Net} \;\to\; \text{Training toolkit} \;\to\; \text{VAE / GAN} \;\to\; \text{Transformer} \;\to\; \text{Theory}
-$$
-
-## Course overview
-
-This course covers **state-of-the-art methods** in deep learning, including modern architectures, training techniques, theoretical foundations, and open research questions. Topics evolve yearly to reflect the rapidly advancing field.
-
-- Architecture: from CNNs and autoencoders to transformers and diffusion models.
-- Design: optimization algorithms, regularization strategies, and hyperparameter tuning.
-- Analysis: generalization bounds, loss landscapes, and interpretability.
-- Theory: approximation theory, neural tangent kernels, and adversarial robustness.
-
-## Why this topic matters
+## Why This Topic Matters
 
 - Deep learning has achieved superhuman performance in vision, language, and game-playing.
 - Understanding *why* these models work (and when they fail) is an active research frontier.
 - Designing training procedures and architectures requires principled methodology, not just trial and error.
 - Adversarial robustness and uncertainty quantification are critical for deploying models safely.
-
-## Key mathematical ideas
-
-- Backpropagation and automatic differentiation.
-- Optimization landscapes: convexity, saddle points, and implicit regularization.
-- Generalization theory: PAC-Bayes bounds, double descent, and overparameterization.
-- Information-theoretic perspectives on representation learning.
-- Attention mechanisms and self-supervised learning objectives.
-
-## Visual and simulation gallery
-
-[[figure adl-mlops-loop]]
-
-[[figure adl-cnn-feature-map]]

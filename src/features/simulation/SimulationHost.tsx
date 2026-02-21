@@ -3,6 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import type { SimulationComponent } from "@/shared/types/simulation";
 import { prefetchSimulationDefinition, resolveSimulationDefinition } from "./simulation-manifest";
+import { useFullscreen } from "@/lib/use-fullscreen";
+import { FullscreenButton } from "@/components/ui/fullscreen-button";
+import { SimulationFullscreenProvider } from "@/lib/simulation-fullscreen-context";
+import { SIMULATION_DESCRIPTIONS } from "@/lib/simulation-descriptions";
 
 type GraphComponent = React.ComponentType<{ type: string; params?: Record<string, number> }>;
 type LoadResult = {
@@ -179,31 +183,63 @@ export function SimulationHost({ id }: { id: string }) {
     );
   }, [id, Simulation, Graph]);
 
+  const { isFullscreen, toggle: toggleFullscreen } = useFullscreen(containerRef);
+
+  const simContent = !isVisible && !hasUserIntent ? (
+    <SimulationLoading />
+  ) : Simulation ? (
+    <Simulation id={id} />
+  ) : Graph ? (
+    <Graph type={id} />
+  ) : hasError ? (
+    <SimulationError id={id} />
+  ) : (
+    <SimulationLoading />
+  );
+
   return (
     <div
       ref={containerRef}
-      className="w-full rounded-xl border border-[var(--border-strong)] bg-[var(--surface-1)] py-4 shadow-[inset_0_1px_2px_rgba(0,0,0,0.04)] overflow-hidden"
+      className={
+        isFullscreen
+          ? "relative w-full h-full bg-[var(--surface-1)] overflow-hidden"
+          : "relative w-full rounded-xl border border-[var(--border-strong)] bg-[var(--surface-1)] py-4 shadow-[inset_0_1px_2px_rgba(0,0,0,0.04)] overflow-hidden"
+      }
       onMouseEnter={() => setHasUserIntent(true)}
       onFocus={() => setHasUserIntent(true)}
       onClick={() => setHasUserIntent(true)}
       onTouchStart={() => setHasUserIntent(true)}
     >
       {/* Accent stripe */}
-      <div
-        className="h-[3px] -mt-4 mb-4"
-        style={{ background: "linear-gradient(90deg, var(--accent), var(--accent-strong))" }}
-      />
-      {!isVisible && !hasUserIntent ? (
-        <SimulationLoading />
-      ) : Simulation ? (
-        <Simulation id={id} />
-      ) : Graph ? (
-        <Graph type={id} />
-      ) : hasError ? (
-        <SimulationError id={id} />
-      ) : (
-        <SimulationLoading />
+      {!isFullscreen && (
+        <div
+          className="h-[3px] -mt-4 mb-4"
+          style={{ background: "linear-gradient(90deg, var(--accent), var(--accent-strong))" }}
+        />
       )}
+
+      <div className={isFullscreen ? "sim-fs-content" : undefined}>
+        <SimulationFullscreenProvider value={isFullscreen}>
+          {simContent}
+        </SimulationFullscreenProvider>
+      </div>
+
+      {/* Fullscreen title overlay */}
+      {isFullscreen && SIMULATION_DESCRIPTIONS[id] && (
+        <div className="sim-fs-title">
+          {SIMULATION_DESCRIPTIONS[id]}
+        </div>
+      )}
+
+      <FullscreenButton
+        isFullscreen={isFullscreen}
+        onClick={toggleFullscreen}
+        className={
+          isFullscreen
+            ? "absolute top-3 right-3 z-20"
+            : "absolute top-5 right-3 z-10"
+        }
+      />
     </div>
   );
 }

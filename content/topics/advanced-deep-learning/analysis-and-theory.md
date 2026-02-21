@@ -26,13 +26,13 @@ where $\sigma_i \in \{-1, +1\}$ are random signs. If your model class can easily
 
 ## Double descent
 
-The **double descent** phenomenon (Belkin et al., 2019) is one of the most surprising empirical discoveries in modern machine learning. As you increase model size, the test error first follows the classic U-shape: it decreases, then increases as the model starts overfitting. But keep going past the point where the model can exactly fit the training data (the interpolation threshold), and something unexpected happens: the test error starts *decreasing again*.
+The **double descent** phenomenon is one of the most surprising empirical discoveries in modern machine learning. As you increase model size, the test error first follows the classic U-shape: it decreases, then increases as the model starts overfitting. But keep going past the point where the model can exactly fit the training data (the interpolation threshold), and something unexpected happens: the test error starts *decreasing again*.
 
 This challenges the classical bias-variance tradeoff and suggests that overparameterization acts as an implicit regularizer. Among all the functions that perfectly fit the training data, gradient descent finds a particularly smooth one. The phenomenon has been observed in three settings:
 
-- Model-wise double descent: varying the number of parameters.
-- Epoch-wise double descent: varying training time.
-- Sample-wise double descent: varying the number of training examples.
+* Model-wise double descent: varying the number of parameters.
+* Epoch-wise double descent: varying training time.
+* Sample-wise double descent: varying the number of training examples.
 
 [[simulation adl-double-descent]]
 
@@ -46,8 +46,8 @@ $$
 
 where $\theta_0$ are the initial parameters. In this infinite-width regime, the network becomes a lazy student who never changes its mind about the shape of the world. The NTK remains approximately constant during training (**lazy training**), meaning the network adjusts its weights linearly without fundamentally reorganizing its internal representations:
 
-- Training dynamics become linear, and convergence to a global minimum is guaranteed.
-- The trained network is equivalent to kernel ridge regression with the NTK.
+* Training dynamics become linear, and convergence to a global minimum is guaranteed.
+* The trained network is equivalent to kernel ridge regression with the NTK.
 
 **Why this matters and why it is not the whole story**: the NTK theory is elegant and provides convergence guarantees, but it describes an idealization. Finite-width networks exhibit **feature learning**, where the internal representations themselves evolve during training. This feature learning — the network discovering new ways to see the data — is believed to be essential for the practical success of deep learning. The lazy regime explains convergence; the rich regime explains performance.
 
@@ -58,9 +58,9 @@ The loss function of a deep network defines a surface in a space with millions o
 **In 10,000 dimensions, almost every critical point is a saddle point, not a local minimum.** A local minimum requires the loss to curve upward in *every* direction simultaneously. In high dimensions, this is astronomically unlikely — at a random critical point, roughly half the directions curve up and half curve down, making it a saddle. This is why deep networks can be trained at all: gradient descent is almost never truly stuck, because there is almost always a direction that leads further downhill.
 
 Key properties of the loss landscape:
-- **Local minima vs saddle points**: Most critical points are saddles. The loss at local minima (when they exist) tends to be close to the global minimum.
-- **Mode connectivity**: Different solutions found by SGD are often connected by paths of nearly constant loss (**linear mode connectivity**). The valleys are not isolated; they form a connected web.
-- **Sharpness and generalization**: Flatter minima tend to generalize better than sharp minima. A sharp minimum means tiny perturbations to the parameters cause large changes in the loss — that fragility usually means the solution does not transfer well to new data. This motivates techniques like sharpness-aware minimization (SAM).
+* **Local minima vs saddle points**: Most critical points are saddles. The loss at local minima (when they exist) tends to be close to the global minimum.
+* **Mode connectivity**: Different solutions found by SGD are often connected by paths of nearly constant loss (**linear mode connectivity**). The valleys are not isolated; they form a connected web.
+* **Sharpness and generalization**: Flatter minima tend to generalize better than sharp minima. A sharp minimum means tiny perturbations to the parameters cause large changes in the loss — that fragility usually means the solution does not transfer well to new data. This motivates techniques like sharpness-aware minimization (SAM).
 
 [[simulation adl-loss-landscape]]
 
@@ -111,21 +111,39 @@ FUNCTION fgsm_attack(model, x, y, epsilon=0.03):
 
 Neural networks are often dangerously overconfident. A classifier might assign 99.9% probability to the wrong class. Methods for calibrating uncertainty:
 
-- **MC Dropout**: Run multiple forward passes with dropout enabled at test time; the variance across predictions estimates uncertainty. If the predictions disagree, the model is unsure.
-- **Deep ensembles**: Train multiple models with different initializations; disagreement indicates uncertainty. Simple and effective, but expensive.
-- **Temperature scaling**: Post-hoc calibration by dividing logits by a learned temperature $T$. Higher temperature softens the predictions.
-- **Bayesian neural networks**: Place a prior over weights and perform approximate posterior inference (variational inference, MCMC). The theoretically principled approach, but computationally demanding.
+* **MC Dropout**: Run multiple forward passes with dropout enabled at test time; the variance across predictions estimates uncertainty. If the predictions disagree, the model is unsure.
+* **Deep ensembles**: Train multiple models with different initializations; disagreement indicates uncertainty. Simple and effective, but expensive.
+* **Temperature scaling**: Post-hoc calibration by dividing logits by a learned temperature $T$. Higher temperature softens the predictions.
+* **Bayesian neural networks**: Place a prior over weights and perform approximate posterior inference (variational inference, MCMC). The theoretically principled approach, but computationally demanding.
 
 ## Interpretability
 
 Understanding what deep networks learn — and why they make specific decisions — is critical for deploying them in high-stakes domains:
 
-- **Gradient-based methods** (saliency maps, Grad-CAM): Highlight input regions that most affect the output. Grad-CAM uses the gradient of the target class score with respect to the final convolutional layer to produce a coarse localization map showing where the network is looking.
-- **Feature visualization**: Optimize an input to maximally activate a specific neuron or layer, revealing the patterns each neuron responds to. The resulting images are often hauntingly beautiful and alien.
-- **Probing classifiers**: Train simple models on intermediate representations to test what information is encoded at each layer. Does layer 5 know about syntax? Does layer 12 know about sentiment?
-- **Mechanistic interpretability**: Reverse-engineer the computations performed by individual circuits within the network, identifying specific algorithmic roles for groups of neurons. The goal is to understand the network as an algorithm, not just a black box.
+* **Gradient-based methods** (saliency maps, Grad-CAM): Highlight input regions that most affect the output. Grad-CAM uses the gradient of the target class score with respect to the final convolutional layer to produce a coarse localization map showing where the network is looking.
+* **Feature visualization**: Optimize an input to maximally activate a specific neuron or layer, revealing the patterns each neuron responds to. The resulting images are often hauntingly beautiful and alien.
+* **Probing classifiers**: Train simple models on intermediate representations to test what information is encoded at each layer. Does layer 5 know about syntax? Does layer 12 know about sentiment?
+* **Mechanistic interpretability**: Reverse-engineer the computations performed by individual circuits within the network, identifying specific algorithmic roles for groups of neurons. The goal is to understand the network as an algorithm, not just a black box.
 
-## Further reading
+## Big Ideas
 
-- Belkin, M., et al. (2019). *Reconciling modern machine learning practice and the bias-variance trade-off*. The paper that identified and explained the double descent phenomenon.
-- Lilian Weng, *Are Deep Neural Networks Dramatically Overfitted?*. An accessible blog post surveying generalization theory, double descent, and the NTK.
+* Double descent is a crack in classical statistics: overparameterized models that interpolate the training data can generalize well, which means "more parameters than data points" is not the disaster a century of theory predicted.
+* In high dimensions, local minima are nearly extinct — almost every critical point is a saddle with at least one direction pointing downhill, which is why gradient descent works even though we never guaranteed it would.
+* Adversarial examples are not a bug to be patched; they reveal that neural networks are solving a different problem than we thought — one that has the right answers on the training distribution but is fragile in ways that are geometrically inevitable given the decision boundary's shape.
+* The NTK regime (infinite width) and the feature learning regime (finite width) are two different theories of the same object — and the success of real deep learning lives entirely in the regime the elegant theory cannot fully explain.
+
+## What Comes Next
+
+This lesson closes the arc of the topic. You started with a single neuron learning to draw a straight line, then stacked them into networks that could classify, segment, generate, and reason over sequences. Along the way you met the practical craft of optimization and regularization, the architectural innovations of convolutions and attention, and the generative frameworks of VAEs and GANs. This final lesson asked what guarantees you can make about any of it — and found that honest theory is still catching up to empirical practice.
+
+The honest summary is this: deep learning works far better than our theories predict, and understanding why is one of the most important open problems in science. The tools here — neural networks, backpropagation, attention, generative models — are not the final word. They are the current best answers to the question of how to extract structure from data. The next generation of ideas will likely come from people who know these foundations deeply enough to question them.
+
+## Check Your Understanding
+
+1. Classical learning theory predicts that a model with more parameters than training examples will overfit. Deep neural networks routinely violate this prediction and still generalize. What does double descent suggest about the mechanism by which overparameterized models generalize, and what property of gradient descent might be responsible?
+2. The neural tangent kernel analysis shows that infinitely wide networks converge to global minima and behave like kernel methods. Why is this a partial victory for theory — and what does "feature learning" mean, and why does its absence in the NTK regime matter?
+3. Adversarial training makes a model robust to small perturbations by including worst-case perturbations in the training set. Why does this generally reduce accuracy on clean, unperturbed inputs, and what does this trade-off reveal about the geometry of the decision boundary?
+
+## Challenge
+
+Design an experiment to test whether flat minima generalize better than sharp minima. Train the same network multiple times with different optimizers or learning rate schedules — some known to converge to sharp minima (large learning rate, sharp decay), some known to favor flatter minima (small learning rate, stochastic noise, or sharpness-aware minimization). For each run, measure the sharpness of the final minimum (e.g., the largest eigenvalue of the Hessian of the loss, or the loss change under random weight perturbations), and measure the test accuracy. Plot sharpness vs. test accuracy. Does the correlation hold? Does it hold equally well across different architectures and datasets, or does the relationship break down in some regime?

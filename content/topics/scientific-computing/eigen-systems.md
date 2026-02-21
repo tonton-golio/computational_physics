@@ -1,5 +1,4 @@
 # Eigenvalue Problems
-*Discovering the secret personalities hiding inside matrices*
 
 > *Every matrix has a set of special directions that it only stretches — never rotates. These are the eigenvectors, and the stretch factors are the eigenvalues. Together, they reveal the DNA of the matrix.*
 
@@ -17,11 +16,11 @@ Where $A$ is the operator (mapping $\mathbb{C}^n \rightarrow \mathbb{C}^n$), $x$
 
 Eigenvalues appear throughout physics and engineering:
 
-- **Quantum mechanics**: Energy levels are eigenvalues of the Hamiltonian
-- **Vibrations**: Natural frequencies of structures
-- **Stability analysis**: System behavior near equilibrium points
-- **Principal Component Analysis**: Dimensionality reduction in data science
-- **Google PageRank**: Largest eigenvector of the web graph
+* **Quantum mechanics**: Energy levels are eigenvalues of the Hamiltonian
+* **Vibrations**: Natural frequencies of structures
+* **Stability analysis**: System behavior near equilibrium points
+* **Principal Component Analysis**: Dimensionality reduction in data science
+* **Google PageRank**: Largest eigenvector of the web graph
 
 *Every time you ask "what are the natural modes of this system?" you're asking an eigenvalue question.*
 
@@ -70,17 +69,17 @@ The characteristic polynomial $P(\lambda) = \det(A-\lambda I)$ is of degree $n$,
 
 ### Defective vs Non-Defective Matrices
 
-- **Non-defective**: $\sum_{\lambda\in Sp(A)} \dim(E_\lambda) = n$ — we have a complete eigenbasis
-- **Defective**: $\sum_{\lambda\in Sp(A)} \dim(E_\lambda) < n$ — not enough eigenvectors
+* **Non-defective**: $\sum_{\lambda\in Sp(A)} \dim(E_\lambda) = n$ — we have a complete eigenbasis
+* **Defective**: $\sum_{\lambda\in Sp(A)} \dim(E_\lambda) < n$ — not enough eigenvectors
 
 **Non-defectiveness is guaranteed if:**
-- $A$ is **normal**: $A^H A = AA^H$
-- All eigenvalues are distinct
-- $A$ is **Hermitian**: $A=A^H$ (best case — guarantees orthonormal eigenbasis)
+* $A$ is **normal**: $A^H A = AA^H$
+* All eigenvalues are distinct
+* $A$ is **Hermitian**: $A=A^H$ (best case — guarantees orthonormal eigenbasis)
 
 For Hermitian matrices: $A = U \Lambda U^H$
 
-> **You might be wondering...** "Why do we care if a matrix is defective?" Because if it's non-defective, we can diagonalize it — write $A = T\Lambda T^{-1}$ — which makes everything easy. Computing $A^{100}$? Just compute $\lambda_i^{100}$. Solving $e^{At}$? Just compute $e^{\lambda_i t}$. Defective matrices are the troublemakers that make life harder.
+Why do we care if a matrix is defective? Because if it's non-defective, we can diagonalize it — write $A = T\Lambda T^{-1}$ — which makes everything easy. Computing $A^{100}$? Just compute $\lambda_i^{100}$. Solving $e^{At}$? Just compute $e^{\lambda_i t}$. Defective matrices are the troublemakers that make life harder.
 
 [[simulation hermitian-demo]]
 
@@ -155,9 +154,9 @@ def power_iterate(A, x0, tol=1e-10, max_iter=1000):
 
 ### Limitations
 
-- Only finds the **dominant eigenvalue** (largest magnitude)
-- Fails if the dominant eigenvalue is not unique
-- Slow convergence when $|\lambda_1| \approx |\lambda_2|$ (small spectral gap)
+* Only finds the **dominant eigenvalue** (largest magnitude)
+* Fails if the dominant eigenvalue is not unique
+* Slow convergence when $|\lambda_1| \approx |\lambda_2|$ (small spectral gap)
 
 [[figure convergence-comparison]]
 
@@ -241,7 +240,7 @@ def rayleigh_quotient_iteration(A, x0, tol=1e-12, max_iter=100):
     return eigenvalue, x, max_iter
 ```
 
-> **You might be wondering...** "How can convergence be *cubic*? That's insane." It is insane — and beautiful. The Rayleigh quotient is an optimally accurate eigenvalue estimate for a given eigenvector approximation. As the eigenvector improves, the shift gets better, which makes the inverse iteration converge faster, which improves the eigenvector faster... It's a virtuous cycle that accelerates explosively.
+How can convergence be *cubic*? It is insane — and beautiful. The Rayleigh quotient is an optimally accurate eigenvalue estimate for a given eigenvector approximation. As the eigenvector improves, the shift gets better, which makes the inverse iteration converge faster, which improves the eigenvector faster... It's a virtuous cycle that accelerates explosively.
 
 [[simulation rayleigh-convergence]]
 
@@ -261,7 +260,7 @@ def rayleigh_quotient_iteration(A, x0, tol=1e-12, max_iter=100):
 
 The **QR algorithm** is the standard method for computing **all eigenvalues** of a matrix. It's the industry workhorse — the method behind `numpy.linalg.eig`.
 
-#### Basic QR Iteration
+### Basic QR Iteration
 
 $$
 \begin{aligned}
@@ -276,7 +275,7 @@ The matrices $A_k$ converge to (quasi-)upper triangular form, with eigenvalues o
 
 [[simulation qr-algorithm-animation]]
 
-#### Why It Works
+### Why It Works
 
 Each iteration is a similarity transformation:
 
@@ -310,11 +309,11 @@ def qr_algorithm(A, max_iter=1000, tol=1e-12):
     return eigenvalues, A_k, i + 1
 ```
 
-#### Practical Improvements
+### Practical Improvements
 
-- **Hessenberg reduction**: Transform to upper Hessenberg form first (saves computation)
-- **Shifts**: Use Wilkinson or Francis shifts for faster convergence
-- **Implicit QR**: Avoid explicit QR factorization for efficiency
+* **Hessenberg reduction**: Transform to upper Hessenberg form first (saves computation)
+* **Shifts**: Use Wilkinson or Francis shifts for faster convergence
+* **Implicit QR**: Avoid explicit QR factorization for efficiency
 
 [[figure qr-convergence-plot]]
 
@@ -324,7 +323,7 @@ def qr_algorithm(A, max_iter=1000, tol=1e-12):
 
 A quick way to **bound eigenvalues** without computing them — like getting a rough map before starting the hike.
 
-#### Theorem
+### Theorem
 
 Every eigenvalue of $A$ lies within at least one **Gershgorin disc**:
 
@@ -342,7 +341,7 @@ $$
 
 [[simulation gershgorin-circles]]
 
-#### Implementation
+### Implementation
 
 ```python
 def gershgorin(A):
@@ -359,7 +358,7 @@ def gershgorin(A):
 
 [[figure gershgorin-example]]
 
-> **Challenge:** Make a random 4x4 matrix, compute its Gershgorin circles, and plot them as circles in the complex plane. Then compute the actual eigenvalues with `np.linalg.eig` and plot them as dots. Are they all inside the circles? (They must be!)
+> **Challenge.** Make a random 4x4 matrix, compute its Gershgorin circles, and plot them as circles in the complex plane. Then compute the actual eigenvalues with `np.linalg.eig` and plot them as dots. Are they all inside the circles? (They must be!)
 
 ---
 
@@ -373,11 +372,11 @@ $$
 
 *This says: to apply a function to a matrix, diagonalize it, apply the function to each eigenvalue separately, and transform back. Want $e^A$? Compute $e^{\lambda_i}$ for each eigenvalue.*
 
-#### Applications
+### Applications
 
-- **Matrix exponential**: $e^{At}$ solves $\frac{dx}{dt} = Ax$
-- **Matrix logarithm**: Used in Lie groups
-- **Matrix square root**: In covariance analysis
+* **Matrix exponential**: $e^{At}$ solves $\frac{dx}{dt} = Ax$
+* **Matrix logarithm**: Used in Lie groups
+* **Matrix square root**: In covariance analysis
 
 $$
 P(A) = \sum_{k=0}^{d} c_k A^k = T \left(\sum_{k=0}^{d} c_k \Lambda^k\right) T^{-1} = T P(\Lambda) T^{-1}
@@ -387,7 +386,7 @@ For defective matrices, the Jordan normal form extends this framework, but the e
 
 Matrix functions connect eigenvalue theory to dynamical systems (via $e^{At}$), quantum mechanics (operator functions of the Hamiltonian), and numerical methods for ODEs (matrix exponential integrators).
 
-> *Remember stability from Lesson 10 (ODEs)? The eigenvalues of the Jacobian determine whether a system is stiff. The matrix exponential $e^{At}$ is exactly how ODE solutions evolve.*
+> *Remember stability from [initial value problems](./initial-value-problems)? The eigenvalues of the Jacobian determine whether a system is stiff. The matrix exponential $e^{At}$ is exactly how ODE solutions evolve.*
 
 [[simulation matrix-exponential]]
 
@@ -418,15 +417,27 @@ Matrix functions connect eigenvalue theory to dynamical systems (via $e^{At}$), 
 
 ---
 
-## References
-
-1. Trefethen & Bau, *Numerical Linear Algebra*, Chapters 24-28
-2. Golub & Van Loan, *Matrix Computations*, Chapter 7
-3. Demmel, *Applied Numerical Linear Algebra*, Chapter 5
-4. 3Blue1Brown: [Eigenvalues and Eigenvectors](https://www.youtube.com/watch?v=PFDu9oVAE-g) — watch this first for visual intuition
-
 ---
 
-**What we just learned in one sentence:** Eigenvalues reveal how matrices stretch space along special directions, and we can find them lazily (power method), precisely (Rayleigh quotient), or all at once (QR algorithm).
+## Big Ideas
 
-**What's next and why it matters:** Now we leave the world of matrices and enter the world of waves and frequencies — the Fast Fourier Transform is the machine that decomposes any signal into its constituent notes, and it's behind everything from music compression to solving PDEs.
+* An eigenvector is a direction the matrix refuses to rotate — it only stretches it. Every stable physical system is whispering its eigenvectors to you through its natural modes.
+* The power method is the laziest possible eigenvalue finder: multiply and normalize until the biggest voice drowns out the rest. Its convergence rate is exactly the ratio of the two largest eigenvalues.
+* Rayleigh quotient iteration achieves cubic convergence by using the current eigenvector estimate to update the shift, which updates the eigenvector estimate — a virtuous feedback loop that accelerates explosively.
+* The QR algorithm is the industry standard because it finds *all* eigenvalues simultaneously via repeated similarity transformations that preserve the spectrum while driving off-diagonal entries to zero.
+
+## What Comes Next
+
+Eigenvalues live in the frequency domain of matrices: they tell you the natural scales of a system. The Fast Fourier Transform lives in the frequency domain of signals: it tells you the natural frequencies of a waveform. The two ideas are more connected than they appear — Fourier analysis is, at heart, the eigenvalue problem for the shift operator, and the FFT is the algorithm that solves it in $O(N \log N)$ time.
+
+From a practical standpoint, eigenvalues will return immediately in the next lesson: the stability of ODE integrators is governed by where the Jacobian's eigenvalues sit in the complex plane, and the stiffness of a system is quantified by the ratio of its largest to smallest eigenvalues.
+
+## Check Your Understanding
+
+1. The power method finds the dominant eigenvalue. Describe a simple modification that would let you find the eigenvalue *closest to a given target* $\sigma$ instead.
+2. A matrix has two eigenvalues of equal magnitude: $\lambda_1 = 3$ and $\lambda_2 = -3$. What happens when you run the power method, and why?
+3. The QR algorithm repeatedly applies the transformation $A_{k+1} = R_k Q_k$. Show that $A_{k+1}$ is similar to $A_k$, i.e., they have the same eigenvalues.
+
+## Challenge
+
+Take a random symmetric $5 \times 5$ matrix $A$ with known eigenvalues (construct it as $A = Q \Lambda Q^T$ where $\Lambda = \text{diag}(1, 2, 5, 10, 50)$ and $Q$ is a random orthogonal matrix). Run all three iterative methods — power iteration, inverse iteration (targeting $\lambda \approx 5$), and Rayleigh quotient iteration starting near $\lambda = 5$ — and track the error $|\lambda_k - \lambda^*|$ at each step. Plot all three convergence curves on a log scale and verify that the power method converges linearly, inverse iteration converges linearly, and Rayleigh quotient iteration converges cubically. How many steps does each method need to reach machine precision?

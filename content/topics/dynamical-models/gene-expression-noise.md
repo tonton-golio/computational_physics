@@ -2,7 +2,7 @@
 
 ## Where we are headed
 
-In the last lesson you saw how the Poisson distribution describes rare mutational events — and you met the Fano factor as a statistical fingerprint. Now we turn those same tools on **gene expression itself**. Remember the bathtub equation from lesson one, with its clean, smooth steady state? That steady state is a *lie*. Or rather, it is the average of something much messier. Inside a real cell, molecules are made and destroyed one at a time by random collisions, and when the numbers are small — tens or hundreds of molecules, not trillions — the randomness matters enormously. Today we find out just how noisy gene expression really is, and why that noise is not just a nuisance but a tool that cells use to make life-or-death decisions.
+In [mutational analysis](./mutational-analysis) you saw how the Poisson distribution describes rare mutational events — and you met the Fano factor as a statistical fingerprint. Now we turn those same tools on **gene expression itself**. Remember the bathtub equation from [differential equations](./differential-equations), with its clean, smooth steady state? That steady state is a *lie*. Or rather, it is the average of something much messier. Inside a real cell, molecules are made and destroyed one at a time by random collisions, and when the numbers are small — tens or hundreds of molecules, not trillions — the randomness matters enormously. Today we find out just how noisy gene expression really is, and why that noise is not just a nuisance but a tool that cells use to make life-or-death decisions.
 
 ## The central dogma, revisited
 
@@ -18,8 +18,8 @@ Two molecular machines drive this process: **RNA polymerase** transcribes DNA in
 
 To see noise in action, biologists fuse a **reporter protein** like GFP (green fluorescent protein) to a gene of interest. The brighter the cell glows, the more protein it has.
 
-- **Bulk measurement** (a tube full of billions of cells): you see the population average. Smooth. Boring.
-- **Single-cell measurement** (microscopy or flow cytometry): you see the full distribution. And it is *wide*. Genetically identical cells, grown in the same conditions, can have two-fold or even ten-fold differences in protein level.
+* **Bulk measurement** (a tube full of billions of cells): you see the population average. Smooth. Boring.
+* **Single-cell measurement** (microscopy or flow cytometry): you see the full distribution. And it is *wide*. Genetically identical cells, grown in the same conditions, can have two-fold or even ten-fold differences in protein level.
 
 This is not measurement error. It is real, biological noise.
 
@@ -29,8 +29,8 @@ The fundamental reason is **small numbers**. A typical *E. coli* cell has one or
 
 This noise has real biological consequences:
 
-- **Competence in *B. subtilis***: noisy expression of the master regulator *comK* causes a small fraction of cells to stochastically flip into a state where they can take up DNA from the environment — a survival strategy under stress.
-- **Persister cells**: in a genetically uniform bacterial population, noise creates rare cells with low metabolic activity that survive antibiotic treatment, even without resistance mutations.
+* **Competence in *B. subtilis***: noisy expression of the master regulator *comK* causes a small fraction of cells to stochastically flip into a state where they can take up DNA from the environment — a survival strategy under stress.
+* **Persister cells**: in a genetically uniform bacterial population, noise creates rare cells with low metabolic activity that survive antibiotic treatment, even without resistance mutations.
 
 ## Quantifying noise: the coefficient of variation
 
@@ -74,7 +74,7 @@ $$
 
 [[simulation gene-expression-noise]]
 
-> **Try this**: Start with a high production rate and watch the protein trace — it should look smooth. Now reduce the production rate by a factor of 10 while keeping the same mean (by reducing degradation too). The trace gets wild and jagged. That is the small-number effect in action. Next, try running two identical genes side by side and watch whether their fluctuations are correlated (extrinsic noise) or independent (intrinsic noise).
+Start with a high production rate and watch the protein trace — it should look smooth. Now reduce the production rate by a factor of 10 while keeping the same mean (by reducing degradation too). The trace gets wild and jagged. That is the small-number effect in action. Next, try running two identical genes side by side and watch whether their fluctuations are correlated (extrinsic noise) or independent (intrinsic noise).
 
 ## The Fano factor
 
@@ -88,9 +88,9 @@ $$
 
 The Fano factor is a fingerprint: it tells you something about the underlying mechanism of gene expression just from measuring the variance and mean of protein levels across cells.
 
-> **Figure: Three noise histograms.** Three-panel histogram side by side: Poisson ($F = 1$), bursty ($F = 5$), and negative-feedback suppressed ($F < 1$). Each panel overlays the CV and Fano number.
+[[figure three-noise-histograms]]
 
-> **Figure: Elowitz two-colour scatter.** Two scatter plots: one panel shows a correlated diagonal cloud (extrinsic noise dominates), the other shows a circular uncorrelated cloud (intrinsic noise dominates).
+[[figure elowitz-two-colour-scatter]]
 
 ## Stochastic simulation: the Gillespie algorithm
 
@@ -102,9 +102,9 @@ You might think noise is a problem cells would want to eliminate. And sometimes 
 
 ## Check your understanding
 
-- If you increase the mean protein level while keeping the variance fixed, what happens to the CV? What does this tell you about noise in highly expressed genes?
-- In the Elowitz two-color experiment, what would the CFP-vs-YFP scatter plot look like if noise were *entirely* intrinsic?
-- A gene has Fano factor $F = 5$. Is transcription happening in bursts, or is it smooth and Poisson-like?
+* If you increase the mean protein level while keeping the variance fixed, what happens to the CV? What does this tell you about noise in highly expressed genes?
+* In the Elowitz two-color experiment, what would the CFP-vs-YFP scatter plot look like if noise were *entirely* intrinsic?
+* A gene has Fano factor $F = 5$. Is transcription happening in bursts, or is it smooth and Poisson-like?
 
 ## Challenge
 
@@ -112,9 +112,9 @@ Imagine a gene with a mean protein level of $\langle N \rangle = 100$ and varian
 
 ## Big ideas
 
-- **Gene expression is inherently noisy** because it involves small numbers of molecules undergoing random reactions.
-- **Intrinsic noise** comes from the randomness of individual molecular events; **extrinsic noise** comes from cell-to-cell variation in shared factors.
-- **The Fano factor** ($F = \text{Var}/\text{mean}$) is a fingerprint that reveals the underlying mechanism — $F = 1$ is Poisson, $F > 1$ is bursty.
+* **Gene expression is inherently noisy** because it involves small numbers of molecules undergoing random reactions.
+* **Intrinsic noise** comes from the randomness of individual molecular events; **extrinsic noise** comes from cell-to-cell variation in shared factors.
+* **The Fano factor** ($F = \text{Var}/\text{mean}$) is a fingerprint that reveals the underlying mechanism — $F = 1$ is Poisson, $F > 1$ is bursty.
 
 ## What comes next
 

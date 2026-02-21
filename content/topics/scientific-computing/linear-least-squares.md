@@ -1,7 +1,6 @@
 # Linear Least Squares
-*When the data doesn't fit, find the closest thing that does*
 
-> *Remember the condition number from Lesson 01? Here's where it bites us — the normal equations square it, and Householder reflections save us.*
+> *Remember the [condition number](./bounding-errors)? Here's where it bites us — the normal equations square it, and Householder reflections save us.*
 
 ## Overdetermined Systems: m > n
 
@@ -37,18 +36,18 @@ With given data and a desired function, determine the parameters of the function
 
 
 ## Least Squares Solution
-- **Always Exists:** the solution to $Ax=\tilde{b}$ is the least squares solution.
+* **Always Exists:** the solution to $Ax=\tilde{b}$ is the least squares solution.
 $\tilde{b}$ is the projection on the image space, and $b^\perp$
 the projection on the orthogonal component.
-- **Unique if Rank(A) = n:** If the rank is less than $n$ (columns are linearly dependent), there are
+* **Unique if Rank(A) = n:** If the rank is less than $n$ (columns are linearly dependent), there are
 infinitely many solutions: you can find one and add the kernel space
 to it to get them all.
-- **Normal equations**:
+* **Normal equations**:
 $A^T_i r=0 \Rightarrow A^T r=0 \implies A^T(b-Ax)=A^Tb-A^TAx=0$.
 The fact that the residual is orthogonal to the image means that
 for all the rows of $A$, the dot product with the residual has to be 0.
-- **$A^TA$ is a small square matrix**
-- The only problem is that this has a large condition number: $\text{COND}(A^TA) = \text{COND}(A)^2$
+* **$A^TA$ is a small square matrix**
+* The only problem is that this has a large condition number: $\text{COND}(A^TA) = \text{COND}(A)^2$
 
 *This says: forming the normal equations squares the condition number. If your matrix was a bit ill-conditioned (say COND = 1000), the normal equations make it horrifically ill-conditioned (COND = 1,000,000). That's like photocopying a blurry photo — every generation makes it worse.*
 
@@ -65,7 +64,7 @@ $\text{COND}(A^TA) = \text{COND}(A)^2$, but $\text{COND}(Q^TA) = \text{COND}(A)$
 
 We just need to construct the effect of multiplying our matrix by $Q^T$. In general, you never want to calculate $Q$ because it can be really large (million x million).
 
-> **You might be wondering...** "Why does multiplying by $Q^T$ not mess up the condition number, but multiplying by $A^T$ does?" Because $Q$ is orthogonal — it's a pure rotation/reflection that doesn't stretch anything. Multiplying by $Q^T$ is like turning your head to look at the problem from a different angle. The problem doesn't change, just your viewpoint. Multiplying by $A^T$ is like squishing the problem through a funnel.
+Why does multiplying by $Q^T$ not mess up the condition number, but multiplying by $A^T$ does? Because $Q$ is orthogonal — it's a pure rotation/reflection that doesn't stretch anything. Multiplying by $Q^T$ is like turning your head to look at the problem from a different angle. The problem doesn't change, just your viewpoint. Multiplying by $A^T$ is like squishing the problem through a funnel.
 
 ## Building a least squares algorithm from scratch
 
@@ -78,9 +77,9 @@ Note: Norm $\left(\,||x||\,\right)$ always refers to the Euclidean Norm $\left(\
 Here's the beautiful part. Imagine you're holding a flashlight (that's your column vector $a$) and you want to redirect all the light so it points straight along the first axis $e_1$ (that's the target direction). How do you do it? **Place a mirror at exactly the right angle between the current direction and the target direction, and bounce the light off it.** That's exactly what a Householder reflection does — it's a mirror that zeros out everything below the diagonal in one bounce.
 
 **Building blocks:** We want to perform _unitary_ operations: i.e., do things that don't change the length of vectors: operations like rotation, reflection (not translations, because although translations don't change lengths, they change the norm).
-- 2D: Rotations and reflections
-- 3D: Rotations, reflections and inversions (like reflection through a point)
-- Higher dimensions: lots more (symmetries of n-spheres), permutations (everywhere)
+* 2D: Rotations and reflections
+* 3D: Rotations, reflections and inversions (like reflection through a point)
+* Higher dimensions: lots more (symmetries of n-spheres), permutations (everywhere)
 
 **What do we want to build?** Similar to LU, we want to take a column and eliminate everything below the diagonal. Construct a reflection operation $H$ (for Householder), which is a reflection. The norm of the entire column must be the same though, and so the top element (the diagonal) must contain $||a||$ concentrated in it.
 
@@ -104,9 +103,9 @@ Thus, $v \propto a - \alpha e_1$. Just subtract $\alpha$ from the first entry in
 
 Now we can plug that into the equation for $H$, and we're done.
 
-> **You might be wondering...** "Why not just use rotations like Givens rotations?" You can! But Householder zeros out an entire column in one shot (one mirror bounce), while Givens rotations zero out one entry at a time (many small rotations). Householder is the sledgehammer; Givens is the scalpel. Use the sledgehammer for dense matrices, the scalpel for sparse ones.
+Why not just use rotations like Givens rotations? You can! But Householder zeros out an entire column in one shot (one mirror bounce), while Givens rotations zero out one entry at a time (many small rotations). Householder is the sledgehammer; Givens is the scalpel. Use the sledgehammer for dense matrices, the scalpel for sparse ones.
 
-> **Challenge:** Take a random 3D vector and compute the Householder reflection vector $v$. Apply $H = I - 2vv^T/(v^Tv)$ and verify the result points along $e_1$ with the same norm. Do it in 5 lines of NumPy.
+> **Challenge.** Take a random 3D vector and compute the Householder reflection vector $v$. Apply $H = I - 2vv^T/(v^Tv)$ and verify the result points along $e_1$ with the same norm. Do it in 5 lines of NumPy.
 
 ## Code
 ```python
@@ -156,10 +155,29 @@ def least_squares(A, b):
     return x, residual
 ```
 
-> **Challenge:** Generate 20 noisy data points from $y = 2x + 3 + \text{noise}$. Fit a line using your `least_squares` function and compare with `np.polyfit`. Plot both. They should agree — but now you understand what's happening under the hood.
+> **Challenge.** Generate 20 noisy data points from $y = 2x + 3 + \text{noise}$. Fit a line using your `least_squares` function and compare with `np.polyfit`. Plot both. They should agree — but now you understand what's happening under the hood.
 
 ---
 
-**What we just learned in one sentence:** When you have more equations than unknowns, project onto the column space with orthogonal reflections (Householder) to find the closest solution without destroying your significant digits.
+## Big Ideas
 
-**What's next and why it matters:** Linear systems are lovely, but nature is mostly nonlinear. Next we enter the wilderness of nonlinear equations — where there are no guarantees, no closed-form solutions, and we'll need every trick we've learned just to survive.
+* When there are more equations than unknowns, the residual inevitably has a component perpendicular to the image of $A$ — that part is irreducible, no matter how clever your solver.
+* Forming the normal equations $A^T A x = A^T b$ squares the condition number, which is like photocopying a blurry photo — every generation loses quality.
+* Householder reflections are orthogonal transformations (pure rotations and reflections), so they never stretch the problem and never amplify the condition number.
+* QR factorization is the right algorithm not because it is elegant (though it is), but because it is the numerically stable way to get what the normal equations give you algebraically.
+
+## What Comes Next
+
+Least squares is the last linear paradise. From here on, the world is nonlinear: equations where you cannot express the solution as a matrix times a vector, where the number of solutions is unknown, and where convergence is a gift rather than a guarantee.
+
+The good news is that nonlinear methods almost always work by *linearizing* at each step — replacing the true problem with a locally linear one and solving that. The tools you built here — LU for the linear solve inside each Newton step, the condition number as a warning light, and the geometric intuition about projections — all carry forward directly into the nonlinear world.
+
+## Check Your Understanding
+
+1. You have 100 measurements of a physical quantity and you want to fit a polynomial of degree 3. How many columns does the matrix $A$ have, how many rows, and why is the system overdetermined?
+2. The normal equations give the same mathematical answer as QR. Why do numerical analysts insist on QR anyway?
+3. The residual of a least-squares solution is always perpendicular to the image of $A$. State this geometrically: what does it mean for the residual vector relative to the columns of $A$?
+
+## Challenge
+
+Fit a degree-10 polynomial to 12 evenly spaced data points sampled from $\sin(x)$ on $[0, \pi]$ using (a) the normal equations and (b) Householder QR. Compute the condition number of $A^T A$ and $R$ separately. Plot both fitted curves and report the residual norm and the condition number for each method. Now repeat with 12 Chebyshev nodes instead of evenly spaced points. What changes, and why does the choice of node locations matter for the condition number?

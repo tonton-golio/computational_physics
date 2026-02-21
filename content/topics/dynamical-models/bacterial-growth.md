@@ -34,7 +34,7 @@ This is a **Michaelis-Menten** function — the same mathematical form we saw in
 
 [[simulation michaelis-menten]]
 
-> **Try this**: Vary the nutrient concentration $S$ and watch the growth rate $\lambda$ respond. At very low $S$, growth is nearly proportional to nutrients. At very high $S$, adding more makes no difference — the cell is growing as fast as its ribosomes allow. Find $K_S$: the concentration where growth is exactly half-maximal.
+Vary the nutrient concentration $S$ and watch the growth rate $\lambda$ respond. At very low $S$, growth is nearly proportional to nutrients. At very high $S$, adding more makes no difference — the cell is growing as fast as its ribosomes allow. Find $K_S$: the concentration where growth is exactly half-maximal.
 
 ## Growth as protein production
 
@@ -60,9 +60,9 @@ where $k$ is the translation rate per ribosome and $N_R^A$ is the total number o
 
 We can divide the cell's protein into three functional categories:
 
-- **Metabolic and transport proteins**: fraction $\phi_\mathrm{P} = M_\mathrm{P}/M$. These bring nutrients in and process them.
-- **Ribosomes** (and associated factors): fraction $\phi_\mathrm{R} = M_\mathrm{R}/M$. These make protein.
-- **Everything else** (housekeeping, DNA replication, etc.): fraction $\phi_\mathrm{Q} = M_\mathrm{Q}/M$.
+* **Metabolic and transport proteins**: fraction $\phi_\mathrm{P} = M_\mathrm{P}/M$. These bring nutrients in and process them.
+* **Ribosomes** (and associated factors): fraction $\phi_\mathrm{R} = M_\mathrm{R}/M$. These make protein.
+* **Everything else** (housekeeping, DNA replication, etc.): fraction $\phi_\mathrm{Q} = M_\mathrm{Q}/M$.
 
 Since these are the only categories:
 
@@ -72,7 +72,7 @@ $$
 
 > *The cell has a fixed budget. Every ribosome it makes is a metabolic enzyme it did not make, and vice versa. Growth physiology is fundamentally a problem of **resource allocation**.*
 
-> **Figure: Proteome pie charts.** Two pie charts side-by-side: slow growth (large housekeeping + metabolic slices, small ribosome slice) vs fast growth (ribosome slice roughly doubles, metabolic slice shrinks).
+[[figure proteome-pie-charts]]
 
 ## The allocation dilemma
 
@@ -102,26 +102,32 @@ where in the last step we used the fact that the ribosome fraction $\phi_\mathrm
 
 > *This is one of the most beautiful quantitative laws in all of biology: the growth rate of a bacterium is directly proportional to the fraction of its protein that is ribosomes. Faster-growing cells are literally "more ribosome." Evolution has tuned the proteome allocation so that every extra ribosome is paid for by faster growth. And indeed, this is exactly what experimentalists observe — it is one of the most robust quantitative relationships in all of microbiology.*
 
-> **Figure: Growth-law plot.** Measured growth rate $\mu$ vs measured ribosome fraction $\phi_R$ (data points from literature), with a straight-line fit showing the linear relationship $\mu \propto \phi_R$.
+[[figure growth-law-plot]]
 
 ## Why does nature do it this way?
 
 A bacterium lives in a feast-or-famine world. In the gut, nutrients arrive in bursts after the host eats, then disappear. The cell that can rapidly ramp up ribosome production when food is abundant — and rapidly shut it down when food runs out — will outcompete its neighbors. The ppGpp system gives bacteria this ability: a single molecule that coordinates the entire proteome in response to nutrient availability. It is a masterpiece of evolutionary engineering.
 
+## Big ideas
+
+* **Bacterial growth is fundamentally a resource allocation problem**: the cell must balance investment in ribosomes (growth machinery) against metabolic enzymes (nutrient acquisition).
+* **ppGpp is the master regulator** that coordinates this balance — it senses nutrient scarcity through ribosome stalling and shuts down ribosome production.
+* **Growth rate is proportional to ribosome fraction** — one of the most robust quantitative laws in microbiology, connecting molecular regulation to whole-cell physiology.
+
+And that, in the end, is how a single cell turns physics into life.
+
+## What Comes Next
+
+This lesson is the final stop in a journey that began with a single differential equation and arrived at a whole cell making decisions in real time. Along the way, you have seen that the same mathematical structures — feedback loops, noise, bistability, oscillations, and network motifs — reappear at every scale, from a single promoter to a signaling cascade to the ribosome allocation problem. The bacterium is not a special case; it is the proof of concept that these tools work.
+
+The same framework extends far beyond bacteria. Cancer cells face a version of the same resource allocation problem: invest in growth, in evasion, or in repair? Immune cells use bistable switches to commit to a response and not waver. Neurons integrate signals from hundreds of synapses through mechanisms that look remarkably like the weighted summation and thresholding in a genetic circuit. If you found the quantitative biology here compelling, the natural next directions are synthetic biology (designing gene circuits from scratch using exactly these principles), systems biology (applying the same ODE and stochastic tools to larger networks), and, if you are drawn to the physics side, the statistical mechanics of biological systems, where the same feedback logic plays out at the scale of whole tissues and organisms.
+
 ## Check your understanding
 
-- If you grow *E. coli* in a rich medium where the doubling time is 20 minutes, and then switch to a poor medium where the doubling time is 60 minutes, what happens to the ribosome fraction $\phi_\mathrm{R}$?
-- Why is it important that ppGpp targets ribosomal RNA *promoters* specifically, rather than slowing down all transcription equally?
-- A cell devotes 50% of its protein to ribosomes and 30% to metabolic enzymes. Is it likely growing fast or slow? Why?
+* If you grow *E. coli* in a rich medium where the doubling time is 20 minutes, and then switch to a poor medium where the doubling time is 60 minutes, what happens to the ribosome fraction $\phi_\mathrm{R}$?
+* Why is it important that ppGpp targets ribosomal RNA *promoters* specifically, rather than slowing down all transcription equally?
+* A cell devotes 50% of its protein to ribosomes and 30% to metabolic enzymes. Is it likely growing fast or slow? Why?
 
 ## Challenge
 
 Suppose the housekeeping fraction is fixed at $\phi_\mathrm{Q} = 0.4$, so $\phi_\mathrm{P} + \phi_\mathrm{R} = 0.6$. Imagine that nutrient influx is proportional to $\phi_\mathrm{P}$ and growth rate is proportional to $\phi_\mathrm{R}$. What allocation maximizes growth? Now add a constraint: the cell needs *at least* $\phi_\mathrm{P} = 0.1$ to survive. How does the optimal $\phi_\mathrm{R}$ change? Plot growth rate versus $\phi_\mathrm{R}$ and see the tradeoff for yourself.
-
-## Big ideas
-
-- **Bacterial growth is fundamentally a resource allocation problem**: the cell must balance investment in ribosomes (growth machinery) against metabolic enzymes (nutrient acquisition).
-- **ppGpp is the master regulator** that coordinates this balance — it senses nutrient scarcity through ribosome stalling and shuts down ribosome production.
-- **Growth rate is proportional to ribosome fraction** — one of the most robust quantitative laws in microbiology, connecting molecular regulation to whole-cell physiology.
-
-And that, in the end, is how a single cell turns physics into life.

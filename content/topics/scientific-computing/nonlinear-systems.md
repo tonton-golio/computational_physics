@@ -1,7 +1,6 @@
 # Nonlinear Systems
-*Newton goes to higher dimensions and brings friends*
 
-> *Everything we learned about Newton's method in 1D carries over — but now the derivative is a Jacobian matrix, and we solve a linear system at every step. Remember Lesson 02? You'll need it here.*
+> *Everything we learned about Newton's method in 1D carries over — but now the derivative is a Jacobian matrix, and we solve a linear system at every step. Remember [linear equations](./linear-equations)? You'll need them here.*
 
 ## Nonlinear solvers
 
@@ -76,10 +75,10 @@ Observe quadratic convergence near the root and potential overshoots or divergen
 ### 2D Nonlinear Optimization: Contour Descent and Basins of Attraction
 
 The Himmelblau function has four minima:
-- ≈ (3.0, 2.0)
-- ≈ (-2.8, 3.1)
-- ≈ (-3.8, -3.3)
-- ≈ (3.6, -1.8)
+* ≈ (3.0, 2.0)
+* ≈ (-2.8, 3.1)
+* ≈ (-3.8, -3.3)
+* ≈ (3.6, -1.8)
 
 Compare Gradient Descent (GD) and Newton's method. Toggle basins to see attraction regions from initial points grid. Newton's method has smaller, more precise basins due to curvature info.
 
@@ -91,10 +90,10 @@ import Himmelblau2D from '@/components/visualization/nonlinear-equations/Himmelb
 <Himmelblau2D />
 
 **Research Insights & Gaps Filled:**
-- **Basin Attractors**: Visualizes fractal-like boundaries in practice, sensitive to method.
-- **Contour Descent**: Paths show GD zigzagging (Rosenbrock-like valley), Newton direct.
-- **Interactivity**: Sliders for params/init, animation reveals dynamics.
-- **Gaps**: Few web interactives compare Newton/secant(quasi) in 2D basins; this adds Newton vs GD proxy for secant ideas.
+* **Basin Attractors**: Visualizes fractal-like boundaries in practice, sensitive to method.
+* **Contour Descent**: Paths show GD zigzagging (Rosenbrock-like valley), Newton direct.
+* **Interactivity**: Sliders for params/init, animation reveals dynamics.
+* **Gaps**: Few web interactives compare Newton/secant(quasi) in 2D basins; this adds Newton vs GD proxy for secant ideas.
 
 For secant methods like Broyden/BFGS, paths approximate Newton without exact derivs/Hessians.
 
@@ -118,11 +117,11 @@ To go to the next step, we don't divide by $f'(x)$ like we do in the 1D case, bu
 $$F'(x_k) \Delta x_{k+1} = - F(x)$$
 where we know the first and last terms and want to find $\Delta x_{k+1}$
 
-*This is the key connection: each Newton step in n dimensions requires solving a linear system (Lesson 02). The Jacobian plays the role of the coefficient matrix, and $-F(x_k)$ is the right-hand side.*
+*This is the key connection: each Newton step in n dimensions requires solving a [linear system](./linear-equations). The Jacobian plays the role of the coefficient matrix, and $-F(x_k)$ is the right-hand side.*
 
 In the secant method, we just use $\hat{F}'(x)$ instead. This raises an extra problem: We need to find a good $\hat{F}'$
 
-> **You might be wondering...** "How expensive is computing the Jacobian?" For $n$ unknowns, the Jacobian has $n^2$ entries. If each partial derivative requires a function evaluation, that's $n$ extra evaluations per step (using finite differences). For $n = 1000$, that's 1000 extra function evaluations — which is why quasi-Newton methods that avoid this cost are so valuable.
+How expensive is computing the Jacobian? For $n$ unknowns, the Jacobian has $n^2$ entries. If each partial derivative requires a function evaluation, that's $n$ extra evaluations per step (using finite differences). For $n = 1000$, that's 1000 extra function evaluations — which is why quasi-Newton methods that avoid this cost are so valuable.
 
 ## Broyden's Secant Method
 
@@ -166,7 +165,7 @@ Let's build $\tilde{B}_{k+1}$ (which does the effect of the inverse, I think?) b
 
 What do we start out with? We could start out with an approximation to the Jacobian, but there's no reason to: if we start out with the identity, we'll get a reasonable step that'll converge slowly, and as we gain information it'll get better and better.
 
-> **You might be wondering...** "Why start with the identity instead of a better initial guess?" Because it works! The identity gives you a gradient-descent-like first step. After a few iterations, Broyden's update will have learned enough about the curvature that it starts to look like the real Jacobian. It's like learning to drive — you start cautiously and get bolder as you learn the road.
+Why start with the identity instead of a better initial guess? Because it works! The identity gives you a gradient-descent-like first step. After a few iterations, Broyden's update will have learned enough about the curvature that it starts to look like the real Jacobian. It's like learning to drive — you start cautiously and get bolder as you learn the road.
 
 ## n-D to 1-D: Constrained equations on a curve
 
@@ -184,10 +183,31 @@ where $d$ is a vector with the direction of the line.
 $$\gamma(t)' =d$$
 $$\implies F_\gamma (t) = F(\gamma(t))^T d$$
 
-> **Challenge:** Implement 2D Newton's method: solve $F(x,y) = (x^2 + y^2 - 1, \; x - y) = 0$ (intersection of circle and line). Start from $(2, 2)$ and watch it converge in ~5 steps. Print the Jacobian at each step to see how it guides you.
+> **Challenge.** Implement 2D Newton's method: solve $F(x,y) = (x^2 + y^2 - 1, \; x - y) = 0$ (intersection of circle and line). Start from $(2, 2)$ and watch it converge in ~5 steps. Print the Jacobian at each step to see how it guides you.
 
 ---
 
-**What we just learned in one sentence:** Newton's method in $n$ dimensions solves a linear system at every step using the Jacobian, and Broyden's method fakes the Jacobian using only the information you pick up along the way.
+## Big Ideas
 
-**What's next and why it matters:** Finding zeros is one thing, but what if you want to find the *minimum* of a function? That's optimization — and it turns out the same quasi-Newton ideas (like BFGS) become the workhorses of machine learning and scientific computing.
+* Multidimensional Newton's method is just one-dimensional Newton's method with division replaced by solving a linear system — the structure is identical, only the cost changes.
+* Computing the full Jacobian costs $O(n^2)$ function evaluations via finite differences; for large $n$, this alone is prohibitive, which is why quasi-Newton methods matter.
+* Broyden's update is the principle of minimum change: update the Jacobian approximation only along the direction where you just learned something, and leave everything else alone.
+* The secant condition is not enough to determine the new Jacobian uniquely — you have $n$ equations and $n^2$ unknowns — so every quasi-Newton method encodes an assumption about what to do with the remaining freedom.
+
+## What Comes Next
+
+Root-finding and optimization look like different problems, but they share the same engine: at every step, linearize around the current point, solve the linear problem, and take the step. The difference is whether you are chasing a zero of $F(x)$ or a zero of $\nabla f(x)$.
+
+Optimization adds one more ingredient: a *scalar* objective function, which means you can use line searches to guarantee that each step actually improves the solution. The BFGS algorithm is exactly Broyden's method adapted for this setting, and the quasi-Newton approximation of the Hessian plays the same role as Broyden's approximate Jacobian — building curvature knowledge one step at a time.
+
+## Check Your Understanding
+
+1. Newton's method in $n$ dimensions requires solving a linear system $F'(x_k)\Delta x = -F(x_k)$ at every step. Why is it better to *solve* this system rather than explicitly compute $[F'(x_k)]^{-1}$ and multiply?
+2. Broyden's update satisfies the secant equation $B_{k+1}\Delta x_k = \Delta F_k$ but changes $B_k$ minimally. In what sense is "minimally"? What is being minimized?
+3. If you start Broyden's method with $B_0 = I$ (the identity), the first step is identical to gradient descent. Why, and what does this say about how much information the identity encodes about the problem?
+
+## Challenge
+
+Solve the system of nonlinear equations $F(x, y) = (x^2 - y - 1, \; x - y^3 + 1) = 0$ using both full Newton's method (computing the exact Jacobian at each step) and Broyden's method (starting from $B_0 = I$). Start from three different initial points. For each run, record the error $\|F(x_k)\|$ at each iteration and plot convergence curves on a log scale. Compare the number of *function evaluations* used by each method, not just the number of iterations, and explain which method is more efficient and under what circumstances.
+
+

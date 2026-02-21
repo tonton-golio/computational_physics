@@ -1,7 +1,7 @@
 # Glauber-Sudarshan P Function
 
-# 3.7 Density operators and phase-space probability distributions
-#### $P$ function
+## Density operators and phase-space probability distributions
+### $P$ function
 As we learned in Topic 3.5, the *completeness* of coherent state is
 $$
     \frac{1}{\pi}
@@ -96,7 +96,7 @@ $$
 Thus, $P$ function satisfies normalization condition.
 $P$ function is analogous to probability distribution function.
 
-#### Calculate $P$ function
+### Calculate $P$ function
 But how do we calculate $P(\alpha)$?
 We need to use Fourier transform in the complex plane.
 By using coherent states $\Ket{u}$ and $\Ket{-u}$, the density operator as $P$
@@ -250,7 +250,7 @@ $$
     }
 $$
 
-#### Example of $P$ function
+### Example of $P$ function
 Let's see the $P$ function of pure coherent state $\Ket{\beta}$.
 $$
 \begin{aligned}
@@ -274,7 +274,7 @@ $$
     e^{-|\beta|^2}
     e^{-|u|^2}
     e^{
-    - u^* \beta
+    * u^* \beta
     + \beta^* u
     }
 \end{aligned}
@@ -293,7 +293,7 @@ $$
     e^{-|\beta|^2}
     e^{-|u|^2}
     e^{
-    - u^* \beta
+    * u^* \beta
     + \beta^* u
     }
     \cdot
@@ -361,7 +361,7 @@ $$
     \delta^2 \left( \alpha-\beta \right)
 $$
 
-#### Optical equivalence theorem
+### Optical equivalence theorem
 Suppose we have "normally ordered" function of the operators
 $\hat{a}$ and $\hat{a}^\dag$, $G^{(N)}(\hat{a}, \hat{a}^\dag)$ which is
 $$
@@ -423,3 +423,24 @@ We showed the **optical equivalence theorem** in the last line.
 This is, interestingly, we can calculate average of
 normally ordered operator by just replacement
 $\hat{a} \rightarrow \alpha$ and $\hat{a}^\dag \rightarrow \alpha^*$
+
+## Big Ideas
+
+* The Glauber-Sudarshan P function represents any quantum state as a weighted average over coherent states — the weights $P(\alpha)$ play the role of a probability distribution on phase space.
+* For a coherent state itself, $P(\alpha) = \delta^2(\alpha - \beta)$: a single point in phase space, the maximally classical picture.
+* The optical equivalence theorem is a profound shortcut: expectation values of normally ordered operators can be computed by replacing operators with complex numbers and integrating against $P(\alpha)$, just as in classical statistical mechanics.
+* The P function is what separates classical from non-classical light: if $P(\alpha)$ cannot be interpreted as a genuine probability distribution (i.e., it goes negative or is more singular than a delta function), the state has no classical analogue.
+
+## What Comes Next
+
+The P function is the most "classical-friendly" of the three phase-space distributions, but it becomes highly singular or negative for non-classical states like number states. The next lesson introduces the Wigner function, which is smoother and more symmetric, and which provides one of the most direct visual signatures of non-classicality: regions where the Wigner function is negative.
+
+## Check Your Understanding
+
+1. The P function for a coherent state is a delta function, which is a perfectly well-defined probability distribution (concentrated at one point). What must be true about the P function for a state to be considered "classical," and why does thermal light qualify?
+2. The optical equivalence theorem says that expectation values of normally ordered operators can be computed by treating $\hat{a}$ as a complex number $\alpha$ weighted by $P(\alpha)$. Why does the normal ordering matter — what goes wrong if you try the same trick with an anti-normally ordered operator?
+3. The P function is obtained from $\langle -u|\hat{\rho}|u\rangle$ by a Fourier-like transform. Why is it natural that the density matrix element between two coherent states (rather than, say, two Fock states) appears in this formula?
+
+## Challenge
+
+Compute the P function for a number state $|n\rangle$ with $n \geq 1$. You will find that the result involves derivatives of the delta function and is therefore more singular than a delta function itself. Show that this P function cannot be a probability distribution, and explain what this mathematical conclusion means physically about the photon statistics of a number state compared to any classical light source.

@@ -72,3 +72,24 @@ $$
 where $d$ is the transition dipole moment. The excited-state population decays exponentially: $P_e(t) = e^{-\Gamma t}$.
 
 In a cavity, spontaneous emission is modified by the density of states. When the cavity is resonant, the enhanced rate is $\Gamma_{\text{cav}} = 4g^2/\kappa$ (where $\kappa$ is the cavity decay rate), leading to the **Purcell effect** discussed in the Cavity QED topic.
+
+## Big Ideas
+
+* The Jaynes-Cummings model is exactly solvable because the total excitation number $\hat{N} = \hat{a}^\dagger\hat{a} + \hat{\sigma}_+\hat{\sigma}_-$ is conserved, breaking the full Hilbert space into independent two-dimensional subspaces.
+* The $\sqrt{n+1}$ scaling of the Rabi frequency with photon number is a purely quantum effect: a classical field would drive oscillations at a fixed frequency independent of field strength at fixed amplitude, not this square-root dependence.
+* Collapse and revival of Rabi oscillations with a coherent field input is the clearest signature of field quantization: different photon-number components oscillate at incommensurable frequencies, dephase, then rephase with quantum periodicity.
+* The dispersive regime ($|\Delta| \gg g$) turns the atom into a phase meter for the cavity photon number, enabling quantum non-demolition measurements without ever absorbing the photons.
+
+## What Comes Next
+
+The Jaynes-Cummings model describes a perfect, isolated atom-cavity system. Real experiments face photon loss from the cavity and atomic decay into unwanted modes. The next lesson examines cavity QED — the regime where coherent coupling competes with dissipation — and shows how this competition determines whether you observe reversible Rabi oscillations or irreversible Purcell-enhanced decay.
+
+## Check Your Understanding
+
+1. The dressed states $|\pm, n\rangle$ are superpositions of $|n, e\rangle$ and $|n+1, g\rangle$ — entangled atom-field states. On resonance ($\Delta = 0$), what are the dressed states explicitly, and what does the splitting $2g\sqrt{n+1}$ between them tell you experimentally if you sweep a probe laser through the resonance?
+2. For a coherent state input with mean photon number $\bar{n}$, the Rabi oscillations collapse on a timescale $t_c \sim 1/(g\sqrt{\bar{n}})$ and revive at $t_r \sim 2\pi\sqrt{\bar{n}}/g$. Show that $t_r/t_c \sim 2\pi\sqrt{\bar{n}}$, which grows with photon number. What does this imply about the possibility of observing revivals for very bright (large $\bar{n}$) coherent states?
+3. In the dispersive regime, the atom shifts the cavity frequency by $\pm\chi = \pm g^2/\Delta$ depending on whether the atom is in $|e\rangle$ or $|g\rangle$. Explain how you would use this frequency shift to measure the atomic state without ever absorbing a photon from the cavity, and what makes this a quantum non-demolition measurement.
+
+## Challenge
+
+Starting from the Jaynes-Cummings Hamiltonian and the conserved total excitation number, derive the time evolution operator within each two-dimensional subspace $\{|n,e\rangle, |n+1,g\rangle\}$ at resonance. Use this to compute $\langle\hat{\sigma}_z(t)\rangle$ when the initial state is $|\psi(0)\rangle = |\alpha\rangle \otimes |e\rangle$ (coherent field, excited atom). Show that the result involves an incoherent sum over photon-number components, leading to the collapse and revival formula. Estimate the revival time $t_r$ for $g/2\pi = 50$ kHz and $\bar{n} = 25$ photons.

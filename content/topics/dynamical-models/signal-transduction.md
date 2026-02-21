@@ -4,13 +4,13 @@
 
 Watch this tiny bug. An *E. coli* bacterium — no brain, no eyes, no map — is swimming through a sugar gradient, and it is doing calculus with its body. It detects a concentration change of one extra molecule per cell volume per micron, across five orders of magnitude of background concentration, all while being hammered by Brownian motion. It is the most sensitive navigation system in nature, and today you are going to understand exactly how it works.
 
-Last time we saw how feedback loops create switches and oscillators *inside* the cell. Today we zoom out and ask: how does the cell sense what is happening *outside*? The answer — **signal transduction** — is how cells read their mail, and it involves some of the most elegant molecular engineering in all of biology.
+In [feedback loops](./feedback-loops) we saw how feedback creates switches and oscillators *inside* the cell. Now we zoom out and ask: how does the cell sense what is happening *outside*? The answer — **signal transduction** — is how cells read their mail, and it involves some of the most elegant molecular engineering in all of biology.
 
 ## What is a signal?
 
 A signal is anything the cell can detect:
-- **Chemical**: food molecules, quorum-sensing signals, hormones, ions, gases.
-- **Physical**: pressure, temperature, light.
+* **Chemical**: food molecules, quorum-sensing signals, hormones, ions, gases.
+* **Physical**: pressure, temperature, light.
 
 The signal binds to a specific **receptor** on the cell surface, triggering a cascade of events inside the cell. This cascade is signal transduction.
 
@@ -18,11 +18,11 @@ The signal binds to a specific **receptor** on the cell surface, triggering a ca
 
 You might ask: why not just have the signal directly flip a gene on or off? Why the elaborate chain of intermediate molecules? Because intermediate steps give the cell superpowers:
 
-- **Amplification**: a single receptor event can activate thousands of downstream molecules.
-- **Noise filtering**: intermediate steps smooth out random fluctuations.
-- **Integration**: the cell can combine information from multiple signals.
-- **Memory**: some signaling states persist after the signal is gone.
-- **Adaptation**: the cell can reset its sensitivity, responding to *changes* rather than absolute levels.
+* **Amplification**: a single receptor event can activate thousands of downstream molecules.
+* **Noise filtering**: intermediate steps smooth out random fluctuations.
+* **Integration**: the cell can combine information from multiple signals.
+* **Memory**: some signaling states persist after the signal is gone.
+* **Adaptation**: the cell can reset its sensitivity, responding to *changes* rather than absolute levels.
 
 Very often, these intermediate steps involve a chain of **phosphorylation** events — one protein adds a phosphate group to the next, passing the signal along like a bucket brigade.
 
@@ -34,8 +34,8 @@ Bacterial chemotaxis is one of the best-understood signaling systems in all of b
 
 Suppose you are a bacterium. You are about 2 micrometers long, and you have several flagella — helical propellers driven by molecular motors embedded in your membrane.
 
-- When the motors spin **counterclockwise**, the flagella bundle together into a single propeller and you swim in a straight line. This is a **run**.
-- When one or more motors switch to **clockwise**, the bundle flies apart and you tumble randomly, reorienting in a new direction. This is a **tumble**.
+* When the motors spin **counterclockwise**, the flagella bundle together into a single propeller and you swim in a straight line. This is a **run**.
+* When one or more motors switch to **clockwise**, the bundle flies apart and you tumble randomly, reorienting in a new direction. This is a **tumble**.
 
 A run lasts about 1 second, then you tumble and pick a new direction at random. On average, you go nowhere — it is a random walk. But here is the trick nature discovered: **if things are getting better (more food), you run longer. If things are getting worse, you tumble sooner.** This bias turns a random walk into a directed climb up the food gradient.
 
@@ -43,8 +43,8 @@ A run lasts about 1 second, then you tumble and pick a new direction at random. 
 
 The switch between running and tumbling is controlled by a small signaling network:
 
-- **CheA** is a kinase (an enzyme that adds phosphate groups) associated with the receptor. When the receptor detects *less* attractant, CheA becomes more active.
-- **CheY** receives a phosphate from CheA. Phosphorylated CheY (CheY-P) binds to the flagellar motor and makes it switch to clockwise rotation (tumble).
+* **CheA** is a kinase (an enzyme that adds phosphate groups) associated with the receptor. When the receptor detects *less* attractant, CheA becomes more active.
+* **CheY** receives a phosphate from CheA. Phosphorylated CheY (CheY-P) binds to the flagellar motor and makes it switch to clockwise rotation (tumble).
 
 > *So the logic is: less food → more CheA activity → more CheY-P → more tumbling. More food → less CheA activity → less CheY-P → longer runs toward the food. Simple and beautiful.*
 
@@ -68,7 +68,7 @@ $$
 
 > *The first term says CheR adds methyl groups at a constant rate. The second term says CheB removes them at a rate that depends on receptor activity $B^*(l)$, which in turn depends on the ligand concentration $l$. The balance of these two processes is what gives the cell its remarkable ability to adapt.*
 
-> **Figure: Chemotaxis adaptation.** Time course showing a step increase in ligand concentration, followed by a brief spike in CheA activity (tumbling), then methylation level slowly rising, and activity returning to the pre-stimulus baseline (perfect adaptation).
+[[figure chemotaxis-adaptation]]
 
 With adaptation, the bacterium can be sensitive to tiny changes in concentration at *any* background level — from nanomolar to millimolar. It is like having a camera that automatically adjusts its exposure, always keeping the image sharp.
 
@@ -82,7 +82,7 @@ Suppose you are a cell, and your neighbors are producing a signal (the **Delta**
 
 > *The logic: if my neighbor is loud, I shut up. And if I shut up, my other neighbors get louder. The result is a checkerboard pattern — alternating cells with high and low Delta expression.*
 
-> **Figure: Notch-Delta checkerboard emergence.** A 4x4 grid of cells at $t = 0$ (uniform Delta expression) next to the same grid at $t_\mathrm{final}$ (alternating high/low Delta in a checkerboard pattern).
+[[figure notch-delta-checkerboard]]
 
 This is **lateral inhibition**, and it is the mechanism behind many beautiful patterns in biology: the regular spacing of bristles on a fly, the alternating fates of cells in the inner ear, and the spacing of hair follicles on your skin. The Notch-Delta system is one of evolution's most reused circuit designs.
 
@@ -92,9 +92,9 @@ Survival demands awareness. Signal transduction is how a single-celled organism 
 
 ## Check your understanding
 
-- Why does the bacterium respond to *changes* in concentration rather than absolute levels? What would go wrong without adaptation?
-- In the chemotaxis circuit, what happens if you delete the gene for CheR (the methyltransferase)?
-- How does lateral inhibition via Notch-Delta create a regular pattern from an initially uniform population of cells?
+* Why does the bacterium respond to *changes* in concentration rather than absolute levels? What would go wrong without adaptation?
+* In the chemotaxis circuit, what happens if you delete the gene for CheR (the methyltransferase)?
+* How does lateral inhibition via Notch-Delta create a regular pattern from an initially uniform population of cells?
 
 ## Challenge
 
@@ -102,9 +102,9 @@ Imagine a simplified adaptation model. The tumbling rate $T$ depends on receptor
 
 ## Big ideas
 
-- **Bacterial chemotaxis** achieves extraordinary sensitivity across a huge dynamic range by responding to concentration *changes* through adaptation.
-- **Adaptation works through methylation** — a slow chemical modification that resets the receptor's baseline, giving the cell a form of molecular memory.
-- **Lateral inhibition** (Notch-Delta) creates spatial patterns by having neighboring cells mutually repress each other's signaling.
+* **Bacterial chemotaxis** achieves extraordinary sensitivity across a huge dynamic range by responding to concentration *changes* through adaptation.
+* **Adaptation works through methylation** — a slow chemical modification that resets the receptor's baseline, giving the cell a form of molecular memory.
+* **Lateral inhibition** (Notch-Delta) creates spatial patterns by having neighboring cells mutually repress each other's signaling.
 
 ## What comes next
 

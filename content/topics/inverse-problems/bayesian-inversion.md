@@ -70,12 +70,24 @@ But before we sample — we need to scale up. When the model has millions of par
 
 ---
 
-## Takeaway
+## Big Ideas
+* Every regularization choice is secretly a prior. The penalty $\epsilon^2\|\mathbf{m}\|^2$ says "I believe the model parameters are small and Gaussian-distributed." Own that belief rather than hiding it in notation.
+* Data covariance and model covariance are not bookkeeping details — they encode everything you know about measurement quality and geological plausibility before the inversion starts.
+* The MAP estimate is one number extracted from a distribution. For linear-Gaussian problems, it is sufficient. For everything else, it is a starting point, not the answer.
+* Asking "how much did the data teach me?" is a well-posed question with a precise mathematical answer — and the framework to compute it lives in information theory.
 
-The Bayesian viewpoint unifies regularization, uncertainty quantification, and model comparison into a single framework. Regularization is not a trick — it is the deterministic shadow of a probabilistic prior. And the posterior distribution, not the point estimate, is the honest answer to an inverse problem.
+## What Comes Next
 
----
+Finding the peak of the posterior is tractable for Gaussian problems, but inverse problems in the real world are rarely that clean. The model might have a million parameters, making the closed-form Tikhonov matrix too large to even store in memory. The answer to this is iterative optimization: rather than solving the system in one shot, you walk toward the solution step by step, using only matrix-vector products with $\mathbf{G}$ and $\mathbf{G}^T$.
 
-## Further Reading
+These iterative strategies carry forward the same prior encoded by the regularization term, now expressed as gradient updates rather than a matrix inverse. Understanding how to apply them efficiently — and when to stop early as a form of implicit regularization — opens the door to the large-scale inversions that appear in seismology, climate science, and medical imaging.
 
-Tarantola's *Inverse Problem Theory* develops the probabilistic viewpoint with real physical intuition. Stuart's *Inverse Problems: A Bayesian Perspective* (Acta Numerica, 2010) is an excellent survey.
+## Check Your Understanding
+1. Show explicitly why minimizing the Tikhonov objective $\|\mathbf{d} - \mathbf{Gm}\|^2 + \epsilon^2\|\mathbf{m}\|^2$ is equivalent to maximizing a posterior probability with a zero-mean Gaussian prior on $\mathbf{m}$ and Gaussian noise on $\mathbf{d}$. What assumptions are required?
+2. In the weighted formulation, why is it important to whiten the data before solving the standard Tikhonov problem? What goes wrong if you ignore the off-diagonal structure in $\mathbf{C}_D$?
+3. The posterior distribution over a model with a million parameters cannot be visualized directly. How would you extract useful scientific conclusions from it?
+
+## Challenge
+
+Consider an inverse problem where the noise on your data is not Gaussian but Laplacian (double-exponential). Derive the regularized objective that corresponds to MAP estimation under this noise model with a Gaussian prior on the model. How does this objective differ from the standard Tikhonov problem, and what computational challenges arise when solving it? Implement a simple 1D example and compare the recovered models under Gaussian vs. Laplacian noise assumptions when the data actually contains outliers.
+

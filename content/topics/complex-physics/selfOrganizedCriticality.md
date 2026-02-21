@@ -14,10 +14,10 @@ SOC is different. These systems spontaneously evolve toward a critical state wit
 
 Key signatures of SOC:
 
-- Power-law distributed event sizes (avalanches of all scales).
-- $1/f$ noise in temporal fluctuations.
-- Fractal spatial structure (just like the percolation clusters from the Percolation and Fractals section).
-- Separation of time scales: slow driving (one grain at a time) and fast relaxation (avalanches).
+* Power-law distributed event sizes (avalanches of all scales).
+* $1/f$ noise in temporal fluctuations.
+* Fractal spatial structure (just like the percolation clusters from the Percolation and Fractals section).
+* Separation of time scales: slow driving (one grain at a time) and fast relaxation (avalanches).
 
 ## The sandpile model (BTW)
 
@@ -80,26 +80,39 @@ SOC systems are fundamentally different from the equilibrium systems we studied 
 
 This distinguishes SOC from equilibrium critical phenomena:
 
-- No detailed balance.
-- No free energy or partition function.
-- The steady state is maintained by the balance of driving and dissipation.
-- Fluctuations (avalanches) are the mechanism of transport, not just noise around an average.
+* No detailed balance.
+* No free energy or partition function.
+* The steady state is maintained by the balance of driving and dissipation.
+* Fluctuations (avalanches) are the mechanism of transport, not just noise around an average.
 
 ## Power laws in nature
 
 SOC has been proposed as an explanation for power-law distributions observed in:
 
-- **Earthquakes**: the Gutenberg-Richter law $\log N(M) = a - bM$ relates earthquake magnitude $M$ to frequency. Small quakes happen all the time; huge ones are rare but inevitable.
-- **Forest fires**: fire size distributions in some models follow power laws. A single spark can burn one tree or an entire forest.
-- **Neuronal avalanches**: cascades of neural activity in cortical circuits show power-law size distributions. Your brain may operate near a critical point.
-- **Solar flares**: the energy distribution of solar flares follows a power law over several decades.
+* **Earthquakes**: the Gutenberg-Richter law $\log N(M) = a - bM$ relates earthquake magnitude $M$ to frequency. Small quakes happen all the time; huge ones are rare but inevitable.
+* **Forest fires**: fire size distributions in some models follow power laws. A single spark can burn one tree or an entire forest.
+* **Neuronal avalanches**: cascades of neural activity in cortical circuits show power-law size distributions. Your brain may operate near a critical point.
+* **Solar flares**: the energy distribution of solar flares follows a power law over several decades.
 
 A word of caution: not all power laws indicate SOC. Alternative mechanisms include preferential attachment (which we will see in the Networks section), multiplicative processes, and finite-size effects. Careful statistical testing is needed to distinguish true power laws from other heavy-tailed distributions.
 
-> **Key Intuition.** Self-organized criticality is nature's way of reaching the critical point without anyone turning a knob. Through the balance of slow driving and fast relaxation, systems like sandpiles tune themselves to the edge where tiny perturbations can cause avalanches of any size. This is why power laws are so common in nature — many natural systems are self-organized critical systems.
+## Big Ideas
 
-> **Challenge.** Build a real sandpile. Slowly drop grains of rice (one at a time) onto a small plate. After the pile reaches a steady state, count how many grains fall off after each addition. Do you see mostly small avalanches with occasional large ones? Can you estimate the power-law exponent from your data?
+* SOC systems tune themselves to criticality automatically — the sandpile finds the critical slope the same way water finds its own level, through the balance of driving and dissipation.
+* Power laws without fine-tuning: the hallmark of SOC is that avalanche sizes follow $P(s) \sim s^{-\tau}$ over many decades, with no characteristic scale, without anyone setting a parameter.
+* SOC is fundamentally out of equilibrium — there is no partition function, no free energy, no detailed balance; the steady state is maintained by the constant flow of sand in and out.
+* Not every power law comes from SOC: preferential attachment, multiplicative noise, and finite-size effects can also produce heavy tails. Distinguishing them requires careful statistical work.
 
----
+## What Comes Next
 
-*The sandpile and the Bak-Sneppen model are systems of interacting agents on a spatial grid. But many real-world systems have a much more complex structure of interactions — they form networks. The internet, social networks, protein interactions. The topology of these connections turns out to matter enormously. That is next.*
+The sandpile and the Bak-Sneppen model live on regular spatial grids, where each site interacts only with its immediate neighbors. But many real systems — the internet, social networks, protein interaction networks — have a much more complex topology: a few nodes with enormously many connections, surrounded by a vast majority with very few. [Networks](Networks) introduces the mathematics of these scale-free networks and shows how the same power laws we saw in avalanches appear in degree distributions, arising from a completely different mechanism: preferential attachment, where the rich get richer.
+
+## Check Your Understanding
+
+1. In the BTW sandpile model, the slope of the pile self-organizes to just below the toppling threshold. Why does the pile not simply grow steeper and steeper indefinitely? What mechanism prevents this?
+2. The Bak-Sneppen model produces a fitness threshold $f_c \approx 0.667$, above which most species sit in the steady state. Explain qualitatively why this threshold emerges — why does the system not simply evolve all species to maximum fitness?
+3. SOC requires a separation of time scales: slow driving (adding one grain) and fast relaxation (avalanches). What would happen to the power-law behavior if you added grains faster than avalanches could propagate?
+
+## Challenge
+
+The connection between SOC avalanches and random walks is deeper than it might appear. For the 1D sandpile model, it can be shown that the avalanche size distribution is exactly related to the first-return time distribution of a random walk. Map out this correspondence explicitly: define a random walk whose step at each time corresponds to one toppling event in the sandpile, and show that the avalanche ends when the walk first returns to the origin. Use the known result $P(T = 2n) \sim n^{-3/2}$ for random walk return times to predict the avalanche size exponent. Does your prediction match the BTW value $\tau \approx 1.5$ in 1D?

@@ -1,22 +1,13 @@
 # Quantization of Single Mode Field
- __Topic 1 keywords__
-- Maxwell equations
-- Single mode fields
-- Creation/annihilation operators
-- Number state
-- Field fluctuations
 
-# Readings
-Ch. 2.1-3
+## Why do we need to quantize?
+* So far, we learned that electron in high-energy state decays back to ground state with the emission of light.
+* However, according to the Schrödinger equation $$\hat{H} \Ket{\psi_m} = E_m \Ket{\psi_m}$$, electron is stable in excited state i.e. *electron stays in high energy state*.
+* How do the decay? Something goes wrong. Why does spontaneous emission happen?
+* The answer is **fluctuations**. 
+* The new question is *what kind of fluctuations do they have*?
 
-# Why do we need to quantize?
-- So far, we learned that electron in high-energy state decays back to ground state with the emission of light.
-- However, according to the Schrödinger equation $$\hat{H} \Ket{\psi_m} = E_m \Ket{\psi_m}$$, electron is stable in excited state i.e. *electron stays in high energy state*.
-- How do the decay? Something goes wrong. Why does spontaneous emission happen?
-- The answer is **fluctuations**. 
-- The new question is *what kind of fluctuations do they have*?
-
-# Can classical electromagnetic describe this fluctuations?
+## Can classical electromagnetism describe these fluctuations?
 In classical electromagnetic, energy of electron in electric field $E(t)$ is 
 $$ e \cdot E(t) $$
 Thus, when there is no light, there is no fluctuation.
@@ -24,18 +15,18 @@ However, it is known that even without light, there is a fluctuation i.e. quantu
 mechanical fluctuation.
 We need to use quantum mechanics.
 
-# 2.1 Quantization of Single Mode Field
-#### Motivation
+## Quantization of Single Mode Field
+### Motivation
 Let's start our quantization of electromagnetic waves.
-What are we gonna quantize? Of course, as you know, it is **energy**.
-#### Situation
+The quantity we quantize is **energy**.
+### Situation
 Imagine a three-dimensional box and there are perfectly conducting walls at 
 $z=0$ and $z=L$. 
 We consider **single mode field** i.e. we only take care one mode.
 Boundary conditions are
-- $\vec{E}(z=0)=0$
-- $\vec{E}(z=L)=0$
-#### Energy
+* $\vec{E}(z=0)=0$
+* $\vec{E}(z=L)=0$
+### Energy
 Electromagnetic energy is
 $$
     H 
@@ -48,7 +39,7 @@ $$
         \frac{1}{\mu_0} \left| \vec{B}(z, t) \right|^2
     \right]^2
 $$
-#### Electric field
+### Electric field
 From boundary condition, we can determine the spatial part of electric field.
 $$
     \vec{E}(z, t)
@@ -56,10 +47,10 @@ $$
     A \cdot q(t) \cdot \sin(kz) \cdot \vec{e_x}
 $$
 Here, parameters are described as follows.
-- $A$ is a constant and we can decide. 
-- $q(t)$ is the time dependent part and we will see why we use $q$ as symbol.
-- $k=\frac{2\pi}{\lambda}=\frac{\pi}{L}m$ is a wave vector and $m$ is integer ($m=0, \pm1, \pm2, \cdots$).
-- $\vec{e_x}$ is an unit vector of $x$-direction (we decide the electric field has component on $x$ direction).
+* $A$ is a constant and we can decide. 
+* $q(t)$ is the time dependent part and we will see why we use $q$ as symbol.
+* $k=\frac{2\pi}{\lambda}=\frac{\pi}{L}m$ is a wave vector and $m$ is integer ($m=0, \pm1, \pm2, \cdots$).
+* $\vec{e_x}$ is an unit vector of $x$-direction (we decide the electric field has component on $x$ direction).
 We decide $A$ as follows.
 $$
     A
@@ -67,8 +58,8 @@ $$
     \sqrt{\frac{2\omega^2}{\epsilon_0 V}}
 $$
 Here, $\omega=kc$ is frequency.
-#### Magnetic field
-So, we got electric field. How can we get magnetic field? Yea, we use **Maxwell equations**.
+### Magnetic field
+So, we got electric field. How can we get magnetic field? We use **Maxwell equations**.
 $$
     \vec{\nabla} \times \vec{B}
     =
@@ -86,14 +77,14 @@ $$
 $$
 Physicist can typically notice that
 we need to take care only $y$ direction of magnetic field..
-You know we set electric field on $x$ direction.
+Recall that we set the electric field along the $x$ direction.
 Thus, 
 $$
     \vec{\nabla} \times \vec{B}
     =
     -\frac{\partial B_y}{\partial z} \vec{e_x}
 $$
-Gotcha. Right-hand side is easy.
+The right-hand side is straightforward.
 $$
     \mu_0 \epsilon_0 \frac{\partial \vec{E}}{\partial t}
     =
@@ -117,8 +108,8 @@ $$
     A \cdot p(t) \cdot \cos(kz) \cdot \vec{e_y}
 \end{aligned}
 $$
-Here, we introduced $p(t)=\dot{q}(t)$. Again we gonna see why we use symbol $p$.
-#### Finally, let's calculate energy!
+Here, we introduced $p(t)=\dot{q}(t)$. The reason for this choice of symbol will become clear shortly.
+### Finally, let's calculate energy!
 We have electric field and magnetic field so we can calculate energy.
 
 [[simulation wigner-number-state]]
@@ -165,12 +156,11 @@ $$
 As you notice this energy function is same as that of unit mass classical 
 harmonic oscillator.
 And our way of symbolizing make sense.
-#### Warning
+### Warning
 Can we say $q$ as position of photon and $p$ as momentum of photon? No, we can't.
 This is just mathematical formulation and analogy to classical harmonic oscillator.
-#### Quantization
-Phew. It was a long journey to get energy function. 
-Let's go back to quantum world.
+### Quantization
+Now we return to the quantum description.
 To quantize the energy function, we need to use operators.
 We introduce three operators $\hat{H}, \hat{q}, \hat{p}$.
 $$
@@ -189,7 +179,7 @@ $$
     i\hbar
 $$
 Notice that $\hat{q}$ and $\hat{p}$ are Hermitian i.e. observable.
-#### New operators
+### New operators
 In addition to these operators, we introduce other two non-Hermitian operators.
 Namely, **annihilation operator** $\hat{a}$ 
 and **creation operator** $\hat{a}^\dag$ .
@@ -209,11 +199,11 @@ $$
     \frac{1}{2\hbar\omega}
     \left(
         \omega \hat{q} 
-        - 
+        * 
         i\hat{p} 
     \right)
 $$
-These operators have cool commutation relation.
+These operators satisfy the commutation relation
 $$
     \left[
         \hat{a}, \hat{a}^\dag
@@ -221,8 +211,8 @@ $$
     =
     1
 $$
-Wow it is $1$. It makes our life easier.
-#### Quantized electric field, magnetic fields and Hamiltonian using $\hat{a}$ and $\hat{a}^\dag$
+The result is simply $1$, which greatly simplifies calculations.
+### Quantized electric field, magnetic fields and Hamiltonian using $\hat{a}$ and $\hat{a}^\dag$
 Using new operators, electric and magnetic field are quantized.
 $$
     \hat{\vec{E}}(z, t)
@@ -256,7 +246,7 @@ $$
         \frac{1}{2}
     \right)
 $$
-#### Time evolution of EM field
+### Time evolution of EM field
 As we see above, the time evolution of EM filed is 
 time evolution of $\hat{a}(t)$ and $\hat{a}^\dag(t)$.
 To see the time evolutions of these operators, we consider them in Heisenberg
@@ -287,7 +277,7 @@ By taking complex conjugate, we can obtain the $\hat{a}^\dag(t)$.
 $$
     \hat{a}^\dag(t) = \hat{a}^\dag(0)e^{i\omega t}
 $$
-#### Photon number operator and its eigenstate
+### Photon number operator and its eigenstate
 We can say 
 $$
     \hat{n} 
@@ -368,7 +358,7 @@ $\left[ \hat{a}, \hat{a}^\dag \right]=\hat{a}\hat{a}^\dag-\hat{a}^\dag\hat{a}=1$
 
 We can notice that $\hat{a}^\dag \Ket{n}$ is eigenstate of 
 eigenvalue $E_n + \hbar\omega$. 
-Aha. That's why it is called
+This is why it is called the
 creation operator.
 
 Similarly we can show why annihilation operator is so called.
@@ -379,7 +369,7 @@ $$
     =
     \left( 
         E_n 
-        - 
+        * 
         \hbar \omega 
     \right)
     \hat{a} 
@@ -392,7 +382,7 @@ $$
     =
     0
 $$
-#### Vacuum energy 
+### Vacuum energy 
 $$
     \hat{H} 
     \Ket{0} 
@@ -402,7 +392,7 @@ $$
     \Ket{0} 
 $$
 So $\frac{1}{2} \hbar \omega$ is vacuum energy.
-#### Number of photon
+### Number of photon
 When vacuum, there is no light. Thus we can interpret $n$ as number of photon.
 $$
     E_n
@@ -414,7 +404,7 @@ $$
     \frac{1}{2} 
     \right)
 $$
-#### Eigenvalue of annihilation and creation operators
+### Eigenvalue of annihilation and creation operators
 We know 
 $$
     \hat{n}
@@ -462,7 +452,7 @@ $$
     =
     \sqrt{n}
 $$
-Gotcha.
+Therefore
 $$
     \hat{a}
     \Ket{n}
@@ -523,6 +513,27 @@ $$
     \sqrt{n+1}
     \Ket{n}
 $$
-#### Properties of eigenstate of number state
-- Orthogonal $\Braket{n|n^\prime} = \delta_{nn^\prime}$
-- Complete $\sum_{n=0}^\infty\Ket{n}\Bra{n} = 1$
+### Properties of eigenstate of number state
+* Orthogonal $\Braket{n|n^\prime} = \delta_{nn^\prime}$
+* Complete $\sum_{n=0}^\infty\Ket{n}\Bra{n} = 1$
+
+## Big Ideas
+
+* The electromagnetic field in a cavity has the same mathematical structure as a harmonic oscillator — quantizing the field is just quantizing that oscillator.
+* Photons are not little particles flying through space; they are excitation quanta of a field mode, counted by the number operator $\hat{n} = \hat{a}^\dagger \hat{a}$.
+* Even with zero photons, the field carries an irreducible energy $\frac{1}{2}\hbar\omega$ — the vacuum is not empty.
+* The creation and annihilation operators encode the entire ladder of energy levels, and their commutation relation $[\hat{a}, \hat{a}^\dagger] = 1$ is the seed of everything non-classical that follows.
+
+## What Comes Next
+
+The number states $|n\rangle$ we just built have a strange property: the electric field averages to zero, yet the field still fluctuates. The next lesson makes this precise by computing those fluctuations explicitly and introducing the quadrature operators that let us track both "quadrature components" of the field — the quantum analogs of position and momentum in phase space.
+
+## Check Your Understanding
+
+1. The Hamiltonian of the single-mode field is formally identical to that of a unit-mass harmonic oscillator. What physical quantity plays the role of "position" and what plays the role of "momentum" in this analogy, and why can those variables not be interpreted as the photon's actual position and momentum?
+2. The annihilation operator satisfies $\hat{a}|0\rangle = 0$ but $\hat{a}^\dagger|n\rangle = \sqrt{n+1}|n+1\rangle$. Why does the ladder stop at the bottom but never at the top?
+3. The vacuum energy $\frac{1}{2}\hbar\omega$ per mode is a consequence of the commutation relation $[\hat{a}, \hat{a}^\dagger] = 1$. If you tried to set this commutator to zero (classical limit), what would happen to the vacuum energy and what would that imply physically?
+
+## Challenge
+
+The derivation assumed a one-dimensional cavity of length $L$ with a single mode. Generalize the argument to a three-dimensional cubic cavity and sum the zero-point energies over all allowed modes up to some cutoff wavevector $k_{\max}$. Show that the total vacuum energy density diverges as $k_{\max}^4$. This ultraviolet divergence is real and shows up in the Casimir effect — but think about how you would physically regularize it in a measurable quantity.

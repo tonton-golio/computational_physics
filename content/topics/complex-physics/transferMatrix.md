@@ -148,10 +148,23 @@ This is the exact confirmation of what we suspected: in one dimension, thermal f
 
 Mean-field theory predicted a phase transition in 1D — and that prediction is wrong. This is a concrete example of why mean-field theory fails in low dimensions: it ignores the fluctuations that matter most.
 
-> **Key Intuition.** The transfer matrix converts the partition function into a trace of a matrix power: $Z = \mathrm{Tr}(T^N)$. In the thermodynamic limit, only the largest eigenvalue matters. If the largest eigenvalue is analytic (no singularity), there is no phase transition. In 1D, the largest eigenvalue is always smooth — so there is no phase transition at finite temperature. Entropy always wins over energy in one dimension.
+## Big Ideas
 
-> **Challenge.** For the 1D Ising model with $h = 0$, compute the average energy per spin $\langle E \rangle / N = -\partial \ln \lambda_+ / \partial \beta$. You should get $-J\tanh(\beta J)$. Check that this interpolates between $0$ (high $T$) and $-J$ (low $T$). Does it make physical sense?
+* The transfer matrix converts a statistical mechanics sum over $2^N$ configurations into a linear algebra problem — the partition function is just $\mathrm{Tr}(T^N)$.
+* In the thermodynamic limit, only the largest eigenvalue $\lambda_+$ survives: $Z \approx \lambda_+^N$, so all thermodynamics comes from a single number.
+* A phase transition requires a singularity in the free energy, which requires a singularity in $\lambda_+$. In 1D, $\lambda_+$ is always smooth — so no phase transition exists at any finite temperature, ever.
+* This is not a failure of the model but a deep truth: in 1D, the entropy of domain walls always beats the energy cost of making them, so ordered regions are always destroyed.
 
----
+## What Comes Next
 
-*We solved the one-dimensional case exactly — beautiful, but it has no phase transition. In real life, things are higher-dimensional and messy. So now we zoom out and ask a much deeper question: what do all critical points have in common, regardless of the system? That is the subject of critical phenomena and universality.*
+The transfer matrix gave us an exact result, but it was a small-system trick — it works beautifully in 1D but does not straightforwardly generalize to 2D or 3D. The next natural question is bigger and more mysterious: why do completely different systems — magnets, fluids, alloys — behave *identically* near their critical points? [Critical Phenomena](criticalPhenomena) introduces universality classes and the renormalization group, which explain this miracle by showing that microscopic details become irrelevant at the critical point.
+
+## Check Your Understanding
+
+1. The transfer matrix method converts the partition function into $Z = \mathrm{Tr}(T^N)$. Explain in words why summing over intermediate spin values is equivalent to matrix multiplication.
+2. The absence of a phase transition in 1D comes from an entropy argument: a domain wall costs energy $2J$ but gains entropy $k_\mathrm{B} \ln N$. For finite $N$, at what temperature does the entropy term dominate? What happens as $N \to \infty$?
+3. The transfer matrix eigenvalues for $h = 0$ are $\lambda_+ = 2\cosh(\beta J)$ and $\lambda_- = 2\sinh(\beta J)$. Both are real and positive for all $T > 0$. Why does the positivity and analyticity of $\lambda_+$ immediately imply no phase transition?
+
+## Challenge
+
+For the 1D Ising model with $h = 0$, compute the spin-spin correlation function $\langle s_0 s_r \rangle$ using the transfer matrix method. You should find that it decays exponentially: $\langle s_0 s_r \rangle = \tanh^r(\beta J)$. Extract the correlation length $\xi$ from this result. How does $\xi$ behave as $T \to 0$? Does it diverge? What does this tell you about why there is no phase transition — even though the spins want to align at low temperature?

@@ -1,15 +1,15 @@
 # Vacuum Fluctuations and Observable Effects
 
-# 2.6 Vacuum fluctuations and the zero-point energy
+## Vacuum fluctuations and the zero-point energy
 Vacuum energy and fluctuations actually give rise to observable effects such as:
-- Spontaneous emission
-- Lamb shift
-- Casimir effect
-#### Lamb shift
+* Spontaneous emission
+* Lamb shift
+* Casimir effect
+### Lamb shift
 The lamb shift is a discrepancy between experiment and the Dirac relativistic
 theory of the hydrogen atom.
-- The theory predicts that the $2^2S_{1/2}$ and $2^2P_{1/2}$ levels should be degenerate.
-- Optical experiment suggest that these states were not degenerate.
+* The theory predicts that the $2^2S_{1/2}$ and $2^2P_{1/2}$ levels should be degenerate.
+* Optical experiment suggest that these states were not degenerate.
 
 This discrepancy explained by Bethe. Here we use the Welton's intuitive
 interpretation.
@@ -221,7 +221,7 @@ $$
     \infty
 $$
 
-#### Casimir effect
+### Casimir effect
 From the vacuum electric field, we can show that two conducting plane attract
 each other.
 Consider the box of dimension $L\times L \times d$.
@@ -249,11 +249,11 @@ $$
     }
 $$
 We will conduct several approximations listed below:
-- Calculate $E_0(d)$. We are interested in $L \gg d$, so we can replace the sums of $l$ and $m$ by integrals.
-- Calculate $E(\infty)$. We assume that $d$ is arbitrarily large, so we can replace the sum by integral.
-- Calculate $U(d)=E_0(d)-E_0(\infty)$, which is energy required to bring the plates from infinity to a distance $d$.
-- To transform $U(d)$ further, we need to introduce polar coordinates in the $x$-$y$ plane.
-- To estimate the sum and integral, we use Euler-Maclaurin formulae. We keep the terms until third order.
+* Calculate $E_0(d)$. We are interested in $L \gg d$, so we can replace the sums of $l$ and $m$ by integrals.
+* Calculate $E(\infty)$. We assume that $d$ is arbitrarily large, so we can replace the sum by integral.
+* Calculate $U(d)=E_0(d)-E_0(\infty)$, which is energy required to bring the plates from infinity to a distance $d$.
+* To transform $U(d)$ further, we need to introduce polar coordinates in the $x$-$y$ plane.
+* To estimate the sum and integral, we use Euler-Maclaurin formulae. We keep the terms until third order.
 
 From these intensive calculations, we can show
 $$
@@ -268,3 +268,24 @@ $$
     {d^3}
 $$
 which means there is an attractive force (Casimir force) between two plates.
+
+## Big Ideas
+
+* The vacuum is not nothing — zero-point fluctuations of the electromagnetic field jiggle electrons inside atoms, shifting energy levels in ways that Dirac's otherwise exact theory cannot predict.
+* The Lamb shift tells us that the $2S_{1/2}$ and $2P_{1/2}$ levels of hydrogen, predicted to be degenerate, are split by roughly 1 GHz because the electron "trembles" in the vacuum field.
+* Two neutral, uncharged conducting plates attract each other simply because the vacuum modes between them are restricted to a discrete set while the modes outside are continuous — energy imbalance produces a force.
+* Observable effects of zero-point energy are always differences: absolute vacuum energies are not measurable, but relative changes (Lamb shift, Casimir force) are strikingly real.
+
+## What Comes Next
+
+Vacuum fluctuations show that the quantum field has irreducible noise even when it contains no photons. The natural next question is: what does the quietest possible field with actual photons in it look like? That brings us to coherent states — the states of the field that most closely mimic a classical electromagnetic wave, saturating the uncertainty relation and carrying Poissonian photon noise.
+
+## Check Your Understanding
+
+1. The Lamb shift calculation diverges when integrating over all vacuum mode frequencies, yet the physical shift is finite and well measured. What physical cutoff makes the integral converge in practice, and what does this tell you about the range of vacuum modes that actually matter for the electron in hydrogen?
+2. The Casimir force between two parallel plates depends on plate separation as $U(d) \propto -d^{-3}$. What does the sign tell you (attractive or repulsive?), and how does the force scale with separation? Would you expect the effect to be easier or harder to measure as the plates are brought closer together?
+3. Spontaneous emission occurs because the excited atom can interact with vacuum fluctuations, even in the absence of any real photons. If you could somehow block all electromagnetic modes at the atomic transition frequency (for example, by placing the atom in a photonic crystal bandgap), what would happen to the spontaneous emission rate?
+
+## Challenge
+
+The Casimir calculation uses the Euler-Maclaurin formula to regularize the difference between the discrete sum and the continuous integral. Work through this regularization explicitly: write the vacuum energy $E_0(d)$ as a sum over discrete $n$ and the free-space energy as an integral, take their difference, and apply the Euler-Maclaurin formula keeping terms through third order to extract the finite result $U(d) = -\pi^2\hbar c L^2/(720 d^3)$. At what step does the regularization feel like "throwing away infinity," and why is the physical result nonetheless unambiguous?

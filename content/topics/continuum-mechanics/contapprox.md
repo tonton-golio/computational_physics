@@ -89,10 +89,23 @@ where $L$ is the characteristic length of your problem and Kn is the **Knudsen n
 
 When Kn $\sim 1$ or larger (like for gas flow through nanoscale pores, or spacecraft re-entering the upper atmosphere), the continuum approximation breaks down and you need kinetic theory.
 
-## What We Just Learned
+## Big Ideas
 
-The continuum approximation lets us replace $10^{25}$ bouncing atoms with smooth, differentiable fields. It works whenever our length scales are much larger than molecular spacing and the mean free path. For everyday materials at everyday scales, this is almost always the case.
+* The continuum approximation replaces $10^{25}$ bouncing atoms with smooth, differentiable fields — a trade you can make whenever your length scales dwarf the molecular spacing.
+* The Knudsen number $\text{Kn} = \ell/L$ is the universal validity check: if Kn $\ll 1$, you're safe; if Kn $\sim 1$, atoms are talking to each other across your "smooth" domain and the approximation fails.
+* Surfaces and sharp interfaces can't be smoothed — they're handled separately as boundary conditions, not as continuous fields.
+* Slow-moving flows need *larger* averaging volumes than fast ones, because the thermal noise (500 m/s) swamps the bulk signal.
 
-## What's Next
+## What Comes Next
 
 Now that we've agreed to pretend the world is smooth, we need a *language* for describing how smooth things push, pull, stretch, and squish. That language is tensor algebra — and it's where we're headed next.
+
+## Check Your Understanding
+
+1. The mean free path in air at sea level is about 68 nm. A microchip has features down to ~7 nm. Does the continuum approximation hold inside those features? What number would you compute to decide?
+2. Why do slow-moving flows require a *larger* spatial averaging volume than fast-moving flows to achieve the same relative precision in the velocity field?
+3. The continuum approximation treats density as a smooth field. At a water–air interface, density changes by a factor of about 800 over a few molecular diameters. How do we handle this without abandoning the continuum picture?
+
+## Challenge
+
+Estimate the minimum length scale at which the continuum approximation holds for (a) air at sea level and (b) the upper atmosphere at 100 km altitude, where the mean free path is roughly 100 mm. At what altitude does the Knudsen number for a 1-meter spacecraft first exceed 0.1? What changes about the physics of drag at that altitude?

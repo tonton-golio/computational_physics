@@ -139,10 +139,23 @@ For domains more complex than rectangles, Gmsh generates high-quality finite ele
 
 If you're curious about FEM in Julia, Gridap offers a similar high-level interface. The syntax and workflow are analogous to FEniCS, which is reassuring: the *concepts* transfer across languages. See [gridap.github.io](https://gridap.github.io).
 
-## What We Just Learned
+## Big Ideas
 
-Modern computational tools let you express the physics in code that closely mirrors the math. FEniCS handles FEM problems, SymPy handles symbolic tensor calculations, and Plotly/Rasterio handle visualization and real-world data. These tools will be your companions for the rest of the course.
+* FEniCS lets you write a PDE in weak form almost exactly as you'd write it on paper — the code mirrors the math, so bugs are easy to spot and physics is easy to change.
+* SymPy closes the gap between pencil-and-paper tensor algebra and numerical computation: derive the expression symbolically, then `lambdify` it for fast array evaluation.
+* The workflow from physical problem to simulation is now a closed loop: write the PDE, express it in weak form (by hand), encode the weak form in FEniCS, mesh the domain (Gmsh), and visualize the result (Plotly).
+* The same conceptual structure — domain, function space, trial/test functions, bilinear form, linear form, boundary conditions, solve — appears in every FEM problem regardless of the physics.
 
-## What's Next
+## What Comes Next
 
 We've covered solids, fluids, and the computational tools to simulate them. Now it's time to bring everything together in the grand finale: a review of every major idea, told through stories and real-world examples.
+
+## Check Your Understanding
+
+1. In the FEniCS code example, `TrialFunction` and `TestFunction` play different roles despite looking similar. What is the difference, and why does FEM need both?
+2. The weak form in FEniCS is written as `a = inner(grad(u), grad(w)) * dx`. How does this correspond to the integral $\int_\Omega \nabla u \cdot \nabla w\,dx$ you derived by hand? What would you add to handle a nonzero body force $f$?
+3. SymPy's `lambdify` converts a symbolic expression into a numerical function. When would you use symbolic differentiation rather than finite differences to evaluate a gradient, and what are the trade-offs?
+
+## Challenge
+
+Use FEniCS to solve the 2D elasticity problem of a rectangular plate ($1\,\text{m} \times 0.2\,\text{m}$) clamped at its left edge and loaded by a uniform downward body force of $10^4$ N/m³ (representing gravity). Use $E = 10$ GPa and $\nu = 0.3$. Plot the vertical displacement field and find the maximum deflection at the free end. Now parameterize over plate thickness from 0.1 m to 0.5 m and plot maximum deflection versus thickness — does it follow the $t^{-3}$ scaling predicted by Euler-Bernoulli beam theory? At what thickness does the beam approximation break down?

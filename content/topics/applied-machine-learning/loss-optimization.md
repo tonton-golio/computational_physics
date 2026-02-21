@@ -84,13 +84,30 @@ Both approaches prevent data leakage by never letting future information contami
 
 ## Practical checklist
 
-- Start with a simple baseline model and a conservative learning rate.
-- Monitor both training and validation metrics every epoch.
-- Use early stopping when validation loss starts climbing — that is your model telling you it has learned enough.
-- Tune one hyperparameter family at a time before doing broad sweeps.
+* Start with a simple baseline model and a conservative learning rate.
+* Monitor both training and validation metrics every epoch.
+* Use early stopping when validation loss starts climbing — that is your model telling you it has learned enough.
+* Tune one hyperparameter family at a time before doing broad sweeps.
+
+## Big Ideas
+
+* The loss function is not an arbitrary scorecard — it encodes your assumptions about what kinds of errors hurt most. MSE hates outliers; MAE forgives them; Huber compromises. Choosing the wrong loss means optimizing for the wrong thing.
+* Gradient descent is remarkably universal: the same blindfolded hiker algorithm, with minor variations, trains a logistic regression, a 100-layer neural network, and everything in between.
+* Overfitting is not a failure of the model — it is a message. The model learned something real, then kept going and started learning noise. The job of the practitioner is to know when to stop listening.
+* Cross-validation is the discipline that separates honest estimates from wishful thinking. Every shortcut you take here comes back to haunt you when the model meets the real world.
+
+## What Comes Next
+
+Loss functions and optimization are the engine room. Everything else in machine learning is built on top of this foundation. The next step is to think about *what kind of model* that engine is driving. Decision trees and ensemble methods approach learning from a completely different angle — instead of differentiating a smooth loss, they ask a series of yes-or-no questions and combine the answers. Understanding why ensembles work requires the same bias-variance thinking you just developed here.
+
+Further out, neural networks take the optimization idea seriously in the extreme — millions of parameters, all adjusted together by the same gradient descent you just studied. The questions of regularization, learning rate schedules, and validation strategy that feel abstract in the toy setting become urgent engineering decisions when the loss landscape has ten million dimensions.
 
 ## Check your understanding
 
-- Can you explain to a friend who has never seen calculus why gradient descent works, using only the blindfolded hiker analogy?
-- If you could sketch one mental image that distinguishes MSE from MAE, what would it show?
-- What experiment would you run to show that your validation strategy is trustworthy?
+* Can you explain to a friend who has never seen calculus why gradient descent works, using only the blindfolded hiker analogy?
+* If you could sketch one mental image that distinguishes MSE from MAE, what would it show?
+* What experiment would you run to show that your validation strategy is trustworthy?
+
+## Challenge
+
+Your colleague insists on using a single 80/20 train-test split instead of k-fold cross-validation, arguing it is "good enough." Design an experiment using a small synthetic dataset (you choose the distribution and the model) that either vindicates or refutes their claim. Specifically: generate data with a known ground truth, compare the single-split estimate of generalization error to the k-fold estimate, and measure how often each one is closer to the true error. Under what conditions does the single split fail most dramatically?

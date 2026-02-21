@@ -16,7 +16,7 @@ First, the training data is **correlated**. Consecutive transitions in an episod
 
 Second, the **targets move**. In supervised learning, the labels are fixed — a cat is always a cat. But in Q-learning, the target depends on the network's own parameters. When you update the weights, the targets change, which changes the loss, which changes the gradients. You are chasing a moving target, and the target moves because you are chasing it.
 
-Third, we are combining function approximation, bootstrapping, and off-policy learning — the **deadly triad** from last lesson. Without careful engineering, the system explodes.
+Third, we are combining function approximation, bootstrapping, and off-policy learning — the **deadly triad** from [TD learning](./td-sarsa-qlearning). Without careful engineering, the system explodes.
 
 ## DQN: engineering away the instability
 
@@ -40,6 +40,22 @@ For **continuous control** — robotics, motor control, anything where the actio
 [[simulation activation-functions]]
 [[simulation cartpole-learning-curves]]
 
----
+## Big Ideas
+* The replay buffer is not just an optimization trick — it is the key to breaking temporal correlations that would otherwise prevent the neural network from generalizing.
+* The target network is a deliberate act of self-deception: you pretend the target is fixed even though it is not, because that pretense is stable enough for gradient descent to make progress.
+* DQN's success on Atari was not about the algorithm being perfect — it was about identifying exactly which instabilities were fatal and engineering specific fixes for each one.
+* The gap between value-based and policy-based methods is not just technical. Policy gradients optimize what you care about directly; value methods optimize a proxy. Each approach trades off computation, variance, and credit assignment differently.
 
-*We have scaled RL to huge state spaces with neural networks. But we have been assuming the game eventually ends — each episode terminates and resets. What happens when the game never ends? Next lesson, we tackle average-reward RL and the question of continuing tasks, where there is no natural endpoint and you have to think about long-run steady-state performance.*
+## What Comes Next
+
+DQN made deep RL work for episodic tasks with discrete actions. But many continuing tasks never end, and the discount factor $\gamma$ feels artificial when there is no natural episode boundary. A factory robot does not "reset" at the end of a shift — it just keeps running.
+
+The next lesson closes the loop between the online learning perspective that opened this topic and the full RL framework. It introduces the average-reward formulation — where you optimize long-run reward per step rather than discounted cumulative reward — and connects it to regret-based guarantees. Algorithms like UCRL show that the optimism-under-uncertainty principle from bandits carries all the way up to MDPs with unknown dynamics.
+
+## Check Your Understanding
+1. Without the replay buffer, consecutive training samples are highly correlated. Why does correlation in training data hurt neural network learning, and why does sampling uniformly from a replay buffer break that correlation?
+2. The target network is updated every $C$ steps rather than continuously. What happens to training stability as $C \to 1$ (update every step)? What happens as $C \to \infty$ (never update)? Where is the right trade-off?
+3. Double-Q learning uses two networks — one to select the best action and another to evaluate it. What specific bias does standard Q-learning have that Double-Q learning corrects, and why does the standard single-network approach produce that bias?
+
+## Challenge
+Implement a minimal DQN on CartPole-v1 (available in Gymnasium). Train two versions: one with a replay buffer and target network (standard DQN) and one without either (naive neural Q-learning). Plot the training curves for both and measure how many episodes each needs to reach a score of 195 averaged over 100 episodes. Then ablate: add back one component at a time (buffer only, then target only) and show empirically which component contributes more to stability on this environment. Write a one-paragraph explanation of what your ablation reveals about the deadly triad.

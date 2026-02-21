@@ -64,6 +64,22 @@ These methods are elegant and exact, but they require knowing $P$ and $R$. In th
 [[simulation dp-convergence]]
 [[simulation mdp-simulation]]
 
----
+## Big Ideas
+* The Markov property is a compression miracle: all the history of how you got here is irrelevant; the current state contains everything you need to act optimally. That is not always true of the real world, but it is a useful lie.
+* The Bellman equation is a self-consistency condition. The value of a state must equal what you get now plus the discounted value of where you end up. Any other assignment is unstable and will correct itself under iteration.
+* Dynamic programming requires a perfect map. The moment you do not know the transition probabilities, the whole edifice becomes learning rather than planning. The next lessons are about learning without a map.
+* The discount factor $\gamma$ is not just a mathematical convenience — it shapes behavior. A small $\gamma$ produces a myopic agent; $\gamma$ close to 1 produces a far-sighted one, but also a harder optimization problem.
 
-*We just learned how to plan in a world with memory — MDPs and dynamic programming give us the tools to compute optimal policies when we know the model. But what if we do not know the model? Next lesson, we learn Monte Carlo methods: play the game until it ends, write down the score, and learn from experience. No model required.*
+## What Comes Next
+
+Dynamic programming solves MDPs perfectly, but only when you already know the model — the transition probabilities and rewards. In the real world, you almost never have that. You have to learn by interacting.
+
+The next lesson introduces Monte Carlo methods: run complete episodes, observe the total reward, and use those returns to estimate value functions. No model needed, no Bellman backup — just the law of large numbers applied to full trajectories. It is the simplest possible way to learn from experience in a sequential decision problem, and understanding its trade-offs — low bias, high variance, requires episode termination — sets up the more sophisticated TD methods that follow.
+
+## Check Your Understanding
+1. The Bellman optimality operator is a contraction with factor $\gamma$ under the max-norm. What does this mean geometrically, and why does it guarantee that value iteration converges to $V^*$?
+2. Policy iteration alternates evaluation and greedy improvement. Why is the improved policy guaranteed to be at least as good as the old one after each improvement step?
+3. Suppose you have a 100-state MDP and you want to compute $V^\pi$ for a fixed policy $\pi$. When would you prefer matrix inversion over iterative policy evaluation, and when would you prefer iteration?
+
+## Challenge
+Design a small MDP (5 states, 2 actions) where policy iteration converges in exactly 2 improvement steps but value iteration requires many sweeps to achieve the same accuracy. Compute both the exact optimal policy and the number of value-iteration sweeps needed to get within $\epsilon = 0.01$ of $V^*$ in the $\ell^\infty$ norm. What does this reveal about the relationship between policy and value convergence rates?

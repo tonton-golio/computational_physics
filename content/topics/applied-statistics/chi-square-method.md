@@ -2,7 +2,7 @@
 
 Alex has a model and some data. The model predicts a straight line; the data scatter around it. The question is sharp: *how well does this model actually describe the data?* And what are the best-fit parameters?
 
-You now have the tools to describe data (lesson 1), model it with distributions (lesson 2), understand why errors are Gaussian (lesson 3), and simulate complex scenarios (lesson 4). The next step is to connect models to data quantitatively. This is the domain of the **chi-square method** — the workhorse of model fitting in the physical sciences.
+You now have the tools to describe data ([introduction](./introduction-concepts)), model it with distributions ([PDFs](./probability-density-functions)), understand why errors are Gaussian ([error propagation](./error-propagation)), and simulate complex scenarios ([simulation](./simulation-fitting)). The next step is to connect models to data quantitatively. This is the domain of the **chi-square method** — the workhorse of model fitting in the physical sciences.
 
 ## Linear Regression
 
@@ -18,7 +18,7 @@ where $\beta_0$ is the intercept, $\beta_1$ is the slope, and $\epsilon$ is the 
 
 ## The Chi-Square Statistic
 
-Remember the likelihood function from lesson 2? You learned to find the parameters that make the data most probable. For Gaussian errors, that's equivalent to minimizing this:
+Remember the likelihood function from [probability density functions](./probability-density-functions)? You learned to find the parameters that make the data most probable. For Gaussian errors, that's equivalent to minimizing this:
 
 $$
 \chi^2(\theta) = \sum_i^N \frac{(y_i - f(x_i,\theta))^2}{\sigma_i^2}
@@ -52,7 +52,7 @@ Plot the **residuals** $\frac{y_i-f(x_i, \theta)}{\sigma_i}$ — these should sc
 chi2_prob = stats.chi2.sf(chi2_value, N_dof)
 ```
 
-Note: the weighted mean from lesson 1 is actually a special case of chi-squared fitting — it is just fitting a constant to the data.
+Note: the weighted mean from [introduction and concepts](./introduction-concepts) is actually a special case of chi-squared fitting — it is just fitting a constant to the data.
 
 ### Chi-Square for Binned Data
 
@@ -72,7 +72,7 @@ The power of $\chi^2$ comes from its geometry. Near the minimum, the $\chi^2$ su
 
 ### Uncertainties in $x$
 
-So far you've assumed errors only in $y$. If both $x$ and $y$ have uncertainties, the procedure is iterative: fit without $x$ errors first, then fold them in using error propagation (from lesson 3):
+So far you've assumed errors only in $y$. If both $x$ and $y$ have uncertainties, the procedure is iterative: fit without $x$ errors first, then fold them in using [error propagation](./error-propagation):
 
 $$
 \sigma_{y_i}^{\text{new}} = \sqrt{\sigma_{y_i}^2 + \left( \frac{\partial y}{\partial x}\bigg|_{x_i} \sigma_{x_i} \right)^2}
@@ -88,8 +88,27 @@ $$
 a = (0.24 \pm 0.05_\text{stat} \pm 0.07_\text{syst}) \times 10^4 \; \text{kg}
 $$
 
-## Looking Ahead
-
-The chi-square method tells you how well a model fits the data and gives you parameter uncertainties. But it doesn't directly answer the question: *is there a real effect, or is what I see just noise?* That's the territory of **hypothesis testing**, which we take up next. There, you'll formalize the idea of comparing competing explanations — building directly on the likelihood and $\chi^2$ framework developed here.
-
 > **Challenge.** Explain chi-square fitting to a friend using only the analogy of a target and arrows. Each arrow lands somewhere near the bullseye; closer arrows get more "credit." One minute.
+
+## Big Ideas
+
+* Minimizing $\chi^2$ and maximizing the likelihood are the same thing when errors are Gaussian — two descriptions of one operation, not two different methods.
+* A good fit has $\chi^2 \approx N_\text{dof}$; a reduced $\chi^2$ much greater than 1 means the model is wrong *or* the error bars are too small — and you must figure out which.
+* Precise measurements don't just give better answers — they demand better models. When your error bars shrink, defects in the model that were invisible before become glaring.
+* Residuals are not a formality: a pattern in the residuals tells you that the model is missing something, even if the overall $\chi^2$ looks acceptable.
+
+## What Comes Next
+
+The chi-square method tells you how well a model fits the data and what the best-fit parameters are. But it doesn't directly answer a different question: *is there a real effect at all, or is what you see just noise?*
+
+That question leads to hypothesis testing — the formal framework for deciding between competing explanations. The likelihood and $\chi^2$ tools you just learned are the engine that drives it, and the connection between them runs deeper than it first appears.
+
+## Check Your Understanding
+
+1. You fit a straight line to 20 data points (with 2 free parameters) and obtain $\chi^2 = 36$. Is this a good fit? Compute the reduced $\chi^2$ and explain what it tells you.
+2. A fit gives $\chi^2_\nu = 0.3$. A classmate concludes "great fit — even better than expected!" What does this actually suggest about the error bars, and why should you be suspicious?
+3. You plot the residuals of your fit and see a clear sinusoidal pattern, even though the overall $\chi^2 / N_\text{dof} \approx 1$. What does this tell you, and what would you do next?
+
+## Challenge
+
+You have two datasets measuring the same physical quantity. Dataset A has 50 precise measurements ($\sigma_i \approx 0.1$). Dataset B has 200 less precise measurements ($\sigma_i \approx 1.0$). You fit the same linear model to both. Compare: which fit has more degrees of freedom? Which is more likely to reveal model defects? If both fits give $\chi^2_\nu \approx 1$, does that mean the model is equally good for both? Argue for or against, being precise about what $\chi^2_\nu \approx 1$ actually means in each case.

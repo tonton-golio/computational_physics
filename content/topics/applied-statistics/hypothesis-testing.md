@@ -36,12 +36,12 @@ Every test in this section follows this same skeleton. Learn it once, and you ca
 
 ### Student's t-Test
 
-In practice, you estimate the standard deviation from the data itself, which introduces extra uncertainty. The **t-test** accounts for this by using the heavier-tailed $t$-distribution (from lesson 2) instead of the Gaussian.
+In practice, you estimate the standard deviation from the data itself, which introduces extra uncertainty. The **t-test** accounts for this by using the heavier-tailed $t$-distribution (from [probability density functions](./probability-density-functions)) instead of the Gaussian.
 
 There are two flavors:
 
-- **One-sample t-test**: Is this batch of lightbulbs lasting the claimed 1000 hours? Compares the mean of a sample to a known value.
-- **Two-sample t-test**: Do patients on drug A recover faster than patients on drug B? Compares the means of two independent groups.
+* **One-sample t-test**: Is this batch of lightbulbs lasting the claimed 1000 hours? Compares the mean of a sample to a known value.
+* **Two-sample t-test**: Do patients on drug A recover faster than patients on drug B? Compares the means of two independent groups.
 
 The test assumes approximately normal data and (for the two-sample version) equal variances. The test statistic is the difference between the sample mean and the hypothesized mean, divided by the standard error, compared against a $t$-distribution with the appropriate degrees of freedom.
 
@@ -61,7 +61,7 @@ it counts the number of "runs" (consecutive sequences of the same value). Too fe
 
 ## Comparing Models: The Likelihood Ratio Test
 
-The tests above compare data to a single hypothesis. But often you want to compare two competing models: does adding an extra parameter significantly improve the fit? This is where the **likelihood ratio test** connects hypothesis testing to the chi-square framework from lesson 5.
+The tests above compare data to a single hypothesis. But often you want to compare two competing models: does adding an extra parameter significantly improve the fit? This is where the **likelihood ratio test** connects hypothesis testing to the [chi-square framework](./chi-square-method).
 
 The test statistic is:
 
@@ -75,7 +75,7 @@ Under $H_0$, this follows a $\chi^2$ distribution with degrees of freedom equal 
 
 A p-value gives a binary answer: reject or not. A **confidence interval** gives something richer — a range of plausible values for the parameter.
 
-A 95% confidence interval means: if you repeated the entire experiment many times, 95% of the intervals you compute would contain the true parameter. It is *not* a statement about the probability that the true value lies in this particular interval — that's the Bayesian interpretation, which we'll see in lesson 11.
+A 95% confidence interval means: if you repeated the entire experiment many times, 95% of the intervals you compute would contain the true parameter. It is *not* a statement about the probability that the true value lies in this particular interval — that's the Bayesian interpretation, which we'll see in [Bayesian statistics](./bayesian-statistics).
 
 The interval is constructed from the point estimate, the standard error, and the desired confidence level. Wider intervals give more confidence but less precision — there is always a trade-off.
 
@@ -91,6 +91,25 @@ A famous example: in 1973, UC Berkeley was accused of gender bias in graduate ad
 
 The lesson is fundamental: aggregated data can tell a completely different story than disaggregated data. Whenever you run a hypothesis test, ask yourself whether a lurking variable — one you haven't accounted for — could be confounding the results. Simpson's paradox is the strongest argument for careful experimental design, which is exactly where we go next. Your fertilizer worked... or did it? Three fields look different — but is it real or just soil noise? That's ANOVA.
 
----
+## Big Ideas
 
-**What we just learned, and why it matters.** Hypothesis testing gives you a formal framework for asking "is this real?" The p-value quantifies surprise under the null hypothesis. Confidence intervals give you a range of plausible values. The likelihood ratio test lets you compare competing models. And Simpson's paradox reminds you that the answer can depend entirely on how you slice the data. With these tools, you can now ask rigorous questions about your data — but so far, only for one or two groups at a time. ANOVA, up next, handles the case where you have many groups to compare simultaneously.
+* A p-value is not the probability that your hypothesis is true — it is the probability of seeing data this extreme if the hypothesis *were* true. These are not the same statement, and confusing them is one of the most widespread errors in published science.
+* The t-test and the z-test are the same test, except the t-test honestly admits that you estimated the standard deviation from the data instead of knowing it exactly.
+* A confidence interval and a hypothesis test are secretly the same thing: if the hypothesized value falls outside the 95% interval, you would reject it at the 5% level.
+* Simpson's paradox is not a curiosity — it is a warning that aggregated data can reverse the true trend, and only randomization or careful stratification can prevent it.
+
+## What Comes Next
+
+So far you can compare one group to a standard, or two groups to each other. But experiments often involve three, four, or a dozen groups — and running t-tests on every pair creates a dangerous multiplicity problem: with enough comparisons, you will find "significant" differences by pure chance.
+
+Analysis of variance solves this with a single test. The core idea is the same ratio you already understand from hypothesis testing: signal relative to noise. But now the signal is the spread of group means and the noise is the scatter within each group.
+
+## Check Your Understanding
+
+1. You run a hypothesis test and get $p = 0.04$. A colleague says "there is a 4% chance the null hypothesis is true." Explain precisely why this interpretation is wrong, and give the correct interpretation.
+2. You construct a 95% confidence interval for a mean and find it runs from 12.3 to 18.7. A friend asks: "does this mean the true value is almost certainly in there?" How do you answer correctly?
+3. A medical study combines data from two hospitals and finds Drug A outperforms Drug B. When broken down by disease severity, Drug B outperforms Drug A in both severity categories. What is happening, and what does this imply about the study design?
+
+## Challenge
+
+You are testing whether a new fertilizer increases crop yield. You plant 30 plots, randomly assigning 15 to the new fertilizer and 15 to the control. After the growing season, you find a mean yield difference of 8 kg/plot with a pooled standard deviation of 15 kg/plot. Set up the two-sample t-test formally, compute the t-statistic, and determine whether the result is significant at $\alpha = 0.05$. Now consider: suppose you learned after the fact that the 30 plots were split across two farms with very different soil quality. How might this affect your conclusion, and what test or design feature would have been better?

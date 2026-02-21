@@ -6,8 +6,8 @@ Imagine two kids locked in an arms race. One is a forger who paints fake banknot
 
 A GAN trains two neural networks simultaneously:
 
-- A **generator** $G$ takes random noise $z$ and produces a synthetic sample $G(z)$. Its goal is to fool the discriminator.
-- A **discriminator** $D$ receives both real samples from the training data and fakes from the generator. Its goal is to tell them apart.
+* A **generator** $G$ takes random noise $z$ and produces a synthetic sample $G(z)$. Its goal is to fool the discriminator.
+* A **discriminator** $D$ receives both real samples from the training data and fakes from the generator. Its goal is to tell them apart.
 
 The two play a min-max game:
 
@@ -45,8 +45,25 @@ This page gives you the intuition for adversarial training. GANs are a bridge fr
 
 [[simulation aml-gan-forger-arena]]
 
+## Big Ideas
+
+* A GAN is a machine for turning a simple, known distribution (random noise) into a complex, unknown one (real data), with no explicit density to fit — only a critic that says "real" or "fake."
+* Mode collapse reveals the core tension in adversarial training: the generator is rewarded for fooling the discriminator, not for being diverse. A clever forger who specializes in one convincing fake will beat an honest forger who tries to cover everything.
+* The Wasserstein distance is not a technical detail — it is a qualitatively different training signal. Log-probability games can saturate and give zero gradient; earth-mover distance gives the generator useful information even when it is far from the real distribution.
+* GANs are historically important not just for what they produce, but for the idea they introduced: you can define a loss function by training a neural network to evaluate it. That idea reappears in reinforcement learning from human feedback, learned metrics, and many other places.
+
+## What Comes Next
+
+GANs mark the boundary of this module and the entrance to deep generative modeling. The natural next step is the broader landscape of generative approaches: variational autoencoders impose a structured latent space and allow explicit density estimation; diffusion models reverse a noise process and have largely displaced GANs for high-quality image synthesis; and normalizing flows learn exact invertible transformations between simple and complex distributions. Each of these is a different answer to the same question GANs asked: how do you define "looks like the data" without writing down the density?
+
+The adversarial principle itself travels further than image generation. Adversarial training for robustness, adversarial examples as a security concern, and discriminator-based reward shaping in reinforcement learning all trace back to the same two-player game you just learned. Once you have internalized the forger-and-detective story, you will recognize it operating quietly in places that do not call themselves GANs at all.
+
 ## Check your understanding
 
-- Can you explain the GAN training loop to a friend using the forger-and-detective story?
-- If you had to explain mode collapse in one drawing, what would it look like?
-- What experiment would tell you whether your GAN is suffering from mode collapse rather than simply needing more training?
+* Can you explain the GAN training loop to a friend using the forger-and-detective story?
+* If you had to explain mode collapse in one drawing, what would it look like?
+* What experiment would tell you whether your GAN is suffering from mode collapse rather than simply needing more training?
+
+## Challenge
+
+Mode collapse is easier to demonstrate than to fix. Build a toy GAN that tries to learn a mixture of five well-separated Gaussians in 2D (this is small enough to train on a laptop in minutes). First, train it with the standard binary cross-entropy objective and observe whether it collapses to fewer than five modes. Then implement the Wasserstein objective with gradient penalty and retrain. Measure diversity quantitatively: fit a Gaussian mixture to the generator's samples and count how many modes it recovers. What hyperparameters (learning rate ratio between G and D, number of discriminator steps per generator step) most influence whether collapse occurs?

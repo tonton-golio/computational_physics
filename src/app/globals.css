@@ -148,6 +148,115 @@ body {
   }
 }
 
+/* Fullscreen simulation background */
+:fullscreen {
+  background-color: var(--surface-1);
+}
+:-webkit-full-screen {
+  background-color: var(--surface-1);
+}
+
+/* ── Fullscreen simulation layout ─────────────────────────────────── */
+
+/* Wrapper fills the fullscreen container */
+.sim-fs-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/*
+ * Simulation root becomes a flex column pushed to the bottom.
+ * Visual children (with canvas/video) are pulled out via position:absolute
+ * so they fill the entire screen behind the flow content.
+ */
+.sim-fs-content > * {
+  width: 100%;
+  height: 100%;
+  display: flex !important;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: 8px !important;
+  padding: 12px;
+  position: relative;
+}
+
+/* ── Visual children: fill the screen behind everything ── */
+.sim-fs-content > * > *:has(canvas),
+.sim-fs-content > * > *:has(video) {
+  position: absolute !important;
+  top: 44px; /* leave room for title */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 0;
+  max-width: 100%;
+  max-height: calc(100% - 44px);
+  border-radius: 0 !important;
+  border: none !important;
+  overflow: hidden;
+}
+
+/* ── Non-visual, non-labeled children: overlay bottom-left ── */
+.sim-fs-content > * > *:not(:has(canvas)):not(:has(video)):not([data-fs-role]) {
+  position: relative;
+  z-index: 5;
+  max-width: min(360px, calc(100% - 24px));
+  background: color-mix(in srgb, var(--surface-1) 80%, transparent);
+  backdrop-filter: blur(12px);
+  border-radius: 12px !important;
+  border: 1px solid var(--border-strong);
+  padding: 12px;
+  pointer-events: auto;
+  flex-shrink: 0;
+}
+
+/* ── Controls (Card, SimulationPanel): overlay bottom-left ── */
+.sim-fs-content [data-fs-role="controls"] {
+  position: relative;
+  z-index: 5;
+  max-width: min(360px, calc(100% - 24px));
+  background: color-mix(in srgb, var(--surface-1) 80%, transparent) !important;
+  backdrop-filter: blur(12px);
+  pointer-events: auto;
+  flex-shrink: 0;
+}
+
+/* ── Charts (CanvasChart): overlay bottom-right ── */
+.sim-fs-content [data-fs-role="chart"] {
+  position: absolute !important;
+  bottom: 12px;
+  right: 12px;
+  z-index: 6;
+  width: min(520px, 45vw) !important;
+  background: color-mix(in srgb, var(--surface-1) 80%, transparent);
+  backdrop-filter: blur(12px);
+  border-radius: 12px !important;
+  border: 1px solid var(--border-strong);
+  padding: 8px;
+  pointer-events: auto;
+}
+
+/* ── Fullscreen title overlay ── */
+.sim-fs-title {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-strong);
+  background: color-mix(in srgb, var(--surface-1) 70%, transparent);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  padding: 6px 16px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
 /* Shimmer animation for loading skeletons */
 @keyframes shimmer {
   0% {

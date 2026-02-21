@@ -1,6 +1,6 @@
 # Quantum Fluctuations and Quadrature Operators
 
-# 2.2 Quantum fluctuations
+## Quantum fluctuations
 Time average of electric field is
 $$
 \begin{aligned}
@@ -47,7 +47,7 @@ $$
 $$
 Wow! Even in the vacuum state ($n=0$), electric field fluctuates!!
 
-# 2.3 Quadrature Operators
+## Quadrature Operators
 Similar to $\hat{q}$ and $\hat{p}$ operators, we introduce quadrature operators
 $\hat{X_1}$ and $\hat{X_2}$..
 $$
@@ -144,3 +144,23 @@ $$
     \ge
     \frac{1}{16}
 $$
+
+## Big Ideas
+
+* A number state has zero average electric field but non-zero variance — the field is fluctuating even when its mean is completely silent.
+* The quadrature operators $\hat{X}_1$ and $\hat{X}_2$ decompose the field into two orthogonal oscillation components; measuring one unavoidably disturbs the other.
+* The uncertainty product $\langle(\Delta\hat{X}_1)^2\rangle\langle(\Delta\hat{X}_2)^2\rangle \geq \frac{1}{16}$ is not a limitation of our instruments — it is a structural feature of the quantum field.
+
+## What Comes Next
+
+We now know that number states fluctuate in both quadratures, and that those fluctuations cannot be reduced below the uncertainty bound. The next lesson asks: are there states of the field that look as classical as possible — states that achieve the minimum uncertainty and whose average field behaves like a classical sine wave? The answer is yes, and they are called coherent states.
+
+## Check Your Understanding
+
+1. For a number state $|n\rangle$ the mean electric field is zero, yet the mean-square field grows with $n$. Explain physically what is fluctuating and why more photons produce larger fluctuations rather than a more definite field value.
+2. The quadrature operators are defined as specific linear combinations of $\hat{a}$ and $\hat{a}^\dagger$. Why do we call them quadratures, and what is the physical interpretation of measuring $\hat{X}_1$ versus $\hat{X}_2$?
+3. The Heisenberg uncertainty product $\langle(\Delta\hat{X}_1)^2\rangle\langle(\Delta\hat{X}_2)^2\rangle \geq \frac{1}{16}$ holds for all states. Which states saturate the inequality, and what special property does that saturation imply?
+
+## Challenge
+
+The vacuum state $|0\rangle$ satisfies $\hat{a}|0\rangle = 0$. Use this to prove directly that $\langle(\Delta\hat{X}_1)^2\rangle = \langle(\Delta\hat{X}_2)^2\rangle = \frac{1}{4}$ for the vacuum, confirming it is a minimum-uncertainty state with equal noise in both quadratures. Then construct any state of the form $|\psi\rangle = c_0|0\rangle + c_1|1\rangle$ (normalized) and compute both quadrature variances. Under what conditions on $c_0, c_1$ does the state achieve minimum uncertainty?

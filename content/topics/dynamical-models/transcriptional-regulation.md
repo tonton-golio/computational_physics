@@ -52,18 +52,18 @@ $$
 P_\mathrm{free} = \frac{1}{1 + (c_\mathrm{p}/K)^n}.
 $$
 
-> **Figure: Hill function overlay.** Four Hill functions ($n = 1, 2, 4, 8$) plotted on the same axes. Shaded vertical bands show the 10--90% switching window narrowing dramatically with increasing $n$.
+[[figure hill-function-overlay]]
 
 Play with this in your head:
-- **$n = 1$**: a gentle, hyperbolic curve. The gene gradually turns off as repressor concentration increases.
-- **$n = 2$**: steeper. The transition sharpens.
-- **$n = 4$**: very steep. The gene is either fully on or fully off, with a narrow transition zone around $c_\mathrm{p} = K$.
+* **$n = 1$**: a gentle, hyperbolic curve. The gene gradually turns off as repressor concentration increases.
+* **$n = 2$**: steeper. The transition sharpens.
+* **$n = 4$**: very steep. The gene is either fully on or fully off, with a narrow transition zone around $c_\mathrm{p} = K$.
 
 > *Look how nature turns a gentle slope into a switch! The higher the Hill coefficient, the more "all-or-nothing" the response. This is the mathematical heart of biological decision-making.*
 
 [[simulation hill-function]]
 
-> **Try this**: Set the Hill coefficient to $n = 1$ and slowly increase the repressor concentration. Watch how gradually the gene turns off. Now crank $n$ up to 4 and repeat. See how the transition sharpens into a switch? Find the concentration where the gene is exactly at 50% — that is $K$, the dissociation constant. The cell has just invented a tunable amplifier.
+Set the Hill coefficient to $n = 1$ and slowly increase the repressor concentration. Watch how gradually the gene turns off. Now crank $n$ up to 4 and repeat. See how the transition sharpens into a switch? Find the concentration where the gene is exactly at 50% — that is $K$, the dissociation constant. The cell has just invented a tunable amplifier.
 
 ## Repression
 
@@ -111,9 +111,9 @@ Why not just make every gene constitutive — always on at a fixed rate? Because
 
 ## Check your understanding
 
-- At what concentration of repressor is a gene with Hill coefficient $n$ repressed to exactly half its maximal rate?
-- Why does dimerization (or higher-order multimerization) increase the effective Hill coefficient?
-- An sRNA and an mRNA are produced at equal rates. What is the steady-state mRNA level? What happens if you double the sRNA production rate?
+* At what concentration of repressor is a gene with Hill coefficient $n$ repressed to exactly half its maximal rate?
+* Why does dimerization (or higher-order multimerization) increase the effective Hill coefficient?
+* An sRNA and an mRNA are produced at equal rates. What is the steady-state mRNA level? What happens if you double the sRNA production rate?
 
 ## Challenge
 
@@ -121,9 +121,9 @@ Plot the Hill function $f(c) = 1/(1 + (c/K)^n)$ for $K = 1$ and $n = 1, 2, 4, 8$
 
 ## Big ideas
 
-- **The Hill function** $1/(1 + (c/K)^n)$ is the universal model for cooperative binding and regulation in biology.
-- **The Hill coefficient** $n$ controls the steepness of the response: $n = 1$ is gentle, $n \geq 4$ is switch-like.
-- **The dissociation constant** $K$ sets the midpoint: the concentration at which the response is half-maximal.
+* **The Hill function** $1/(1 + (c/K)^n)$ is the universal model for cooperative binding and regulation in biology.
+* **The Hill coefficient** $n$ controls the steepness of the response: $n = 1$ is gentle, $n \geq 4$ is switch-like.
+* **The dissociation constant** $K$ sets the midpoint: the concentration at which the response is half-maximal.
 
 ## What comes next
 

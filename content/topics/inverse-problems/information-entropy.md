@@ -24,10 +24,11 @@ A fair coin: $H = \log 2 \approx 0.693$ nats. A loaded coin (99% heads): $H \app
 
 [[simulation entropy-demo]]
 
-> **What to look for:**
-> - Drag the distribution toward uniform — entropy climbs to its maximum (maximum ignorance)
-> - Concentrate probability on a single outcome — entropy drops toward zero (you know the answer)
-> - Every inverse problem starts somewhere on this curve, and data moves you toward the minimum
+Things to look for in the simulation:
+
+* Drag the distribution toward uniform — entropy climbs to its maximum (maximum ignorance)
+* Concentrate probability on a single outcome — entropy drops toward zero (you know the answer)
+* Every inverse problem starts somewhere on this curve, and data moves you toward the minimum
 
 Drag the probability slider and watch entropy change. The maximum is at uniform distribution (maximum ignorance). The minimum is at a spike (you know the answer). Every inverse problem starts somewhere on this curve — and data moves you toward the minimum.
 
@@ -47,16 +48,17 @@ If your model $Q$ matches reality $P$ perfectly, there's no extra surprise: $D_{
 
 Three things to remember:
 
-- $D_{\mathrm{KL}} = 0$ *only* when the distributions match exactly
-- It's always non-negative (you can't be *less* surprised by using the wrong model)
-- It's **asymmetric**: $D_{\mathrm{KL}}(P \| Q) \neq D_{\mathrm{KL}}(Q \| P)$. Being wrong about likely events costs more than being wrong about rare ones.
+* $D_{\mathrm{KL}} = 0$ *only* when the distributions match exactly
+* It's always non-negative (you can't be *less* surprised by using the wrong model)
+* It's **asymmetric**: $D_{\mathrm{KL}}(P \| Q) \neq D_{\mathrm{KL}}(Q \| P)$. Being wrong about likely events costs more than being wrong about rare ones.
 
 [[simulation kl-divergence]]
 
-> **What to look for:**
-> - Make the two distributions identical and verify $D_{\mathrm{KL}} = 0$
-> - Shift one distribution's mean and watch the divergence grow — the "surprise tax" increases
-> - Swap $P$ and $Q$ and notice the asymmetry: $D_{\mathrm{KL}}(P \| Q) \neq D_{\mathrm{KL}}(Q \| P)$
+Things to look for in the simulation:
+
+* Make the two distributions identical and verify $D_{\mathrm{KL}} = 0$
+* Shift one distribution's mean and watch the divergence grow — the "surprise tax" increases
+* Swap $P$ and $Q$ and notice the asymmetry: $D_{\mathrm{KL}}(P \| Q) \neq D_{\mathrm{KL}}(Q \| P)$
 
 ---
 
@@ -98,25 +100,37 @@ When running [MCMC](./monte-carlo-methods), the entropy of the sampled posterior
 
 Step back and look at the entire course through this lens:
 
-1. **Foundations** (Lesson 1): inverse problems are ill-posed — entropy of the naive solution is all wrong
-2. **Regularization** (Lesson 2): stabilize by controlling model complexity — limiting how much "information" (real + noise) you extract
-3. **Bayesian framework** (Lesson 3): the prior sets the entropy floor, the data reduces it
-4. **Iterative methods** (Lesson 4): find the MAP efficiently when the problem is huge
-5. **Tomography** (Lesson 5): the complete linear workflow
-6. **Monte Carlo** (Lesson 6): explores the posterior, whose entropy tells you what you actually know
-7. **Geophysical examples** (Lesson 7): the answer is always a distribution
+1. **Foundations**: inverse problems are ill-posed — entropy of the naive solution is all wrong
+2. **[Regularization](./regularization)**: stabilize by controlling model complexity — limiting how much "information" (real + noise) you extract
+3. **[Bayesian framework](./bayesian-inversion)**: the prior sets the entropy floor, the data reduces it
+4. **[Iterative methods](./tikhonov)**: find the MAP efficiently when the problem is huge
+5. **[Tomography](./linear-tomography)**: the complete linear workflow
+6. **[Monte Carlo](./monte-carlo-methods)**: explores the posterior, whose entropy tells you what you actually know
+7. **[Geophysical examples](./geophysical-inversion)**: the answer is always a distribution
 8. **Information theory** (here): quantifies all of this precisely
 
 Entropy is not a footnote. It's the thread that runs through the entire course.
 
 ---
 
-## Takeaway
+## Big Ideas
+* Entropy measures ignorance — not mystery, not complexity, but precisely how spread-out your probability distribution is. More spread means more ignorance, and the uniform distribution is total ignorance.
+* KL divergence is the surprise tax you pay for using the wrong model. It is always non-negative, it is zero only when your model matches reality, and its asymmetry is not a defect — it reflects the real asymmetry between truth and approximation.
+* Regularization is information control: too little regularization extracts noise as if it were signal; too much leaves the prior unchanged. The right amount extracts exactly what the data knows.
+* The answer to an inverse problem is always a distribution, not a number — and entropy is the one quantity that tells you how wide that distribution really is.
 
-Information-theoretic tools — entropy, KL divergence, mutual information — quantify what the data taught you and what remains unknown. They explain *why* regularization works (it controls information extraction), *how much* the data helped (KL divergence between posterior and prior), and *whether* your sampling explored the full answer (posterior entropy). They provide the deepest justification for everything we've done.
+## What Comes Next
 
----
+This is the end of the arc. Start from a broken, ill-posed problem — one where direct inversion amplifies noise into nonsense. Regularize to stabilize it, and you have made an implicit prior. Make the prior explicit through the Bayesian framework, and you have a posterior distribution. When the posterior is too complex or too large for closed-form solutions, you walk toward it iteratively or sample from it with Markov chains. Apply all of this to linear imaging problems and nonlinear geophysical field cases, and you find that uncertainty is not an embarrassment to be swept under the rug — it is a precise, quantifiable object. Information theory closes the circle: entropy and KL divergence give you the vocabulary to ask, and answer, how much any experiment can possibly teach you.
 
-## Further Reading
+The tools here — regularization, Bayesian inference, iterative optimization, tomography, Monte Carlo sampling, information theory — are not a menu of separate techniques. They are facets of a single idea: science is the process of updating beliefs in proportion to evidence. Everything in this course is a rigorous way to do that.
 
-Shannon's original 1948 paper is surprisingly readable. Cover & Thomas's *Elements of Information Theory* is the standard textbook. MacKay's *Information Theory, Inference, and Learning Algorithms* beautifully bridges information theory and Bayesian inference.
+## Check Your Understanding
+1. A fair six-sided die has Shannon entropy $H = \log 6$. A loaded die that always lands on 4 has $H = 0$. What is the entropy of a die that lands on 4 with probability 0.9 and on each other face with probability 0.02? Is this closer to the fair or the loaded die, and does that match your intuition?
+2. Explain in words why $D_{\mathrm{KL}}(P \| Q) \neq D_{\mathrm{KL}}(Q \| P)$. Give a concrete example of two distributions where the asymmetry is large and explain what makes it so.
+3. If the KL divergence from posterior to prior is nearly zero after running an inversion, what does this tell you about the experiment? List two different causes that could produce this result and explain how you would distinguish between them.
+
+## Challenge
+
+Design an "experiment value" calculator for a simple linear inverse problem $\mathbf{d} = \mathbf{Gm} + \boldsymbol{\eta}$. Before collecting data, use the prior $p(\mathbf{m})$ and the noise model to compute the expected KL divergence from the posterior to the prior — this is the expected information gain. Implement this for a 1D deconvolution problem as a function of the number of observations $N$ and the noise level $\sigma$. Plot expected information gain vs. $N$ and vs. $\sigma$. At what point does adding more data yield diminishing returns — and how does this threshold shift as you change the regularization strength? Does the optimal regularization (in the sense of maximizing genuine information gain while penalizing overfitting) correspond to the L-curve corner from the very first lesson?
+

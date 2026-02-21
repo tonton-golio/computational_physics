@@ -5,7 +5,7 @@ import { logger } from "@/infra/observability/logger";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { suggestion, page } = body;
+    const { suggestion, page, context } = body;
 
     if (!suggestion || typeof suggestion !== "string") {
       return NextResponse.json({ error: "Suggestion is required" }, { status: 400 });
@@ -25,6 +25,7 @@ export async function POST(request: Request) {
         suggestion: suggestion.slice(0, 2000),
         page: page || "/",
         user_id: user.id,
+        ...(context && { context: String(context).slice(0, 100) }),
       });
 
     if (error) {

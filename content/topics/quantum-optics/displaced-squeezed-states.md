@@ -86,7 +86,28 @@ For a TMSV state, this sum equals $e^{-2r} < 1$ for any $r > 0$, confirming enta
 
 Displaced squeezed states and two-mode squeezing are central to:
 
-- **Quantum teleportation**: The TMSV provides the shared entangled resource for continuous-variable teleportation of coherent states.
-- **Quantum dense coding**: Entangled beams allow transmission of classical information at rates exceeding the classical channel capacity.
-- **Quantum illumination**: Entangled signal-idler pairs improve target detection in noisy environments.
-- **Cluster state generation**: Large entangled states for measurement-based quantum computation can be deterministically produced using squeezed light and linear optics.
+* **Quantum teleportation**: The TMSV provides the shared entangled resource for continuous-variable teleportation of coherent states.
+* **Quantum dense coding**: Entangled beams allow transmission of classical information at rates exceeding the classical channel capacity.
+* **Quantum illumination**: Entangled signal-idler pairs improve target detection in noisy environments.
+* **Cluster state generation**: Large entangled states for measurement-based quantum computation can be deterministically produced using squeezed light and linear optics.
+
+## Big Ideas
+
+* A displaced squeezed state is the most general single-mode Gaussian state: it has an elliptical noise blob in phase space centered at $\alpha$, with the tilt and eccentricity set by the squeezing parameter $\xi$.
+* Whether a displaced squeezed state is amplitude-squeezed or phase-squeezed depends on how the ellipse is oriented relative to the coherent amplitude — a choice that matters enormously for the intended application.
+* Two-mode squeezing creates Einstein-Podolsky-Rosen-type entanglement: each mode individually looks thermal, yet their joint quadratures are correlated far beyond any classical limit.
+* The entanglement criterion $\Delta(X_a - X_b)^2 + \Delta(P_a + P_b)^2 < 1$ is a practical measurement: it can be checked with homodyne detectors and tells you directly whether the two modes are quantum-correlated.
+
+## What Comes Next
+
+We now have a full toolkit of quantum states of light — from Fock states and coherent states through squeezed and entangled Gaussian states. The question naturally arises: how does a quantum field interact with matter? The next lesson begins the atom-field interaction story, showing how a two-level atom couples to the quantized electromagnetic field and the subtleties of that coupling through the dipole approximation.
+
+## Check Your Understanding
+
+1. For a displaced squeezed state $|\alpha, \xi\rangle$, the ordering of operations matters: $\hat{D}(\alpha)\hat{S}(\xi)|0\rangle \neq \hat{S}(\xi)\hat{D}(\alpha)|0\rangle$ in general. Describe physically what each ordering produces, and explain why the difference between the two states shrinks when $|\alpha| \gg |\sinh r|$.
+2. Amplitude-squeezed light has sub-Poissonian photon statistics ($Q < 0$), while phase-squeezed light has super-Poissonian statistics ($Q > 0$). Explain physically why reducing intensity noise necessarily inflates the photon count variance in phase-squeezed light and vice versa.
+3. The two-mode squeezed vacuum has $\langle n_a \rangle = \langle n_b \rangle = \sinh^2 r$ and each individual mode is in a thermal state. Yet the joint state is pure and entangled. How is it possible for the reduced state of each subsystem to be mixed (thermal) while the joint state is pure?
+
+## Challenge
+
+Starting from the two-mode squeezing operator $\hat{S}_2(\xi) = \exp(\xi^*\hat{a}\hat{b} - \xi\hat{a}^\dagger\hat{b}^\dagger)$, derive the Bogoliubov transformation for the two output modes and show that $\langle n_a \rangle = \sinh^2 r$. Then compute the joint photon-number state expansion and verify the TMSV state form $|\text{TMSV}\rangle \propto \sum_n (-e^{i\theta}\tanh r)^n |n\rangle_a|n\rangle_b$. Calculate the Duan criterion $\Delta(X_a - X_b)^2 + \Delta(P_a + P_b)^2$ and show it equals $e^{-2r}$, confirming entanglement for all $r > 0$.

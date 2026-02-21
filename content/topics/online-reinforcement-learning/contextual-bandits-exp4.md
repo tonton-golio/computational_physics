@@ -28,6 +28,22 @@ Compare this to what would happen if you tried each expert one at a time. With a
 
 [[simulation contextual-bandit-exp4]]
 
----
+## Big Ideas
+* Context is the difference between one-size-fits-all and actually useful. The same action can be optimal for one patient and harmful for another; the context is what tells the algorithm which is which.
+* Logarithmic dependence on the policy class size is the exponential weights miracle again. It means you can define an astronomically large space of possible policies and still compete with the best one at almost no extra cost.
+* Importance weighting is the universal bridge between what you observed and what you needed to know. It appears in Monte Carlo estimation, causal inference, and off-policy evaluation — all for the same reason.
+* EXP4 reveals that "learning with experts" and "learning with contexts" are the same problem viewed from different angles: experts are just policies, and policies are just functions from contexts to actions.
 
-*We have now covered the full spectrum of online learning, from full-information to bandits to contextual bandits. But in all these settings, the world had no memory — your action today did not change what happens tomorrow. Next lesson, everything changes. We enter the world of Markov Decision Processes, where your actions shape the future state of the world. That is where reinforcement learning really begins.*
+## What Comes Next
+
+Every setting so far — full-information, bandit, contextual bandit — has one thing in common: your action today does not change what happens tomorrow. The world is memoryless. You pick an action, you observe an outcome, and the next round starts fresh.
+
+That assumption is about to break. In a Markov Decision Process, actions reshape the state of the world, and the state determines future rewards. A bad move today can trap you in bad states for many rounds. A good move today can unlock better states later. The next lesson introduces MDPs and dynamic programming: the mathematical framework for planning when your decisions have consequences that ripple through time.
+
+## Check Your Understanding
+1. In EXP4, each expert proposes a distribution over actions (not just a single action). Why is this generality necessary for the contextual setting, and what would go wrong if experts were forced to be deterministic?
+2. Why does EXP4's regret scale with $\sqrt{T \log |\mathcal{E}|}$ rather than $\sqrt{T |\mathcal{E}|}$? Trace back to where the logarithm enters the analysis.
+3. Compare the contextual bandit problem to supervised classification. What does the contextual bandit setting have that supervised learning does not, and what does it lack?
+
+## Challenge
+EXP4 requires the ability to compute the mixture distribution over actions induced by the expert weights. When the expert class $\mathcal{E}$ is a large function class (e.g., all linear classifiers over a $d$-dimensional context), this computation may be expensive. Describe the computational bottleneck precisely, then propose an approximation scheme (such as epsilon-greedy on the highest-weighted expert, or sampling a single expert to follow) and analyze how it changes the regret bound.

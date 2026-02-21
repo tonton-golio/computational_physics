@@ -1,66 +1,14 @@
 # Inverse Problems
 
-You measure something. You want to know what caused it. That's an inverse problem — and it's one of the hardest, most beautiful challenges in computational science.
+You drop a stone into a pond and ripples spread outward. That is a forward problem — given the cause, predict the effect. Easy enough. Now imagine you are standing at the edge of the pond and all you see are ripples. Can you figure out where the stone landed? That is an inverse problem. You observe effects and try to work backwards to the cause.
 
-The catch? The answer is almost never unique, and the obvious approach (just invert the equations) almost always blows up. This module gives you the tools to handle that — to stabilize inversion, quantify uncertainty, and extract honest answers from noisy, incomplete data.
+The catch is that the obvious approach — just invert the equations — almost always blows up. A tiny amount of noise in your measurements can send the reconstructed answer flying off to absurd values. One hundredth of a percent perturbation at the boundary of a heat problem can produce interior temperatures of ten to the forty-first power. That is not an exaggeration; it is a standard result, and the queasy feeling it produces is the reason the entire field exists.
 
-[[figure mri-scan]]
+Inverse problems show up everywhere that matters. In MRI, you measure electromagnetic responses at the surface of the body and reconstruct what is happening inside. In seismology, earthquake waves travel through the Earth and you record the wiggles at the surface, then try to image the interior. In remote sensing, radar, acoustics, and materials science, the pattern is always the same: indirect, noisy measurements and the question "what caused this?" The answer is almost never unique, but with the right tools — regularization, Bayesian inference, iterative solvers, Monte Carlo sampling — you can tame the instability and extract honest answers from incomplete data.
 
-[[figure spect-scan]]
+## Why This Topic Matters
 
-[[figure seismic-tomography]]
-
----
-
-## The Journey
-
-Here's where we're going. Think of it as a subway map — each stop builds on the last:
-
-```
- ╔══════════════╗     ╔═══════════════════╗     ╔════════════════════╗
- ║  1. WHY IT'S ║────▶║  2. REGULARIZATION ║────▶║  3. BAYESIAN       ║
- ║    HARD      ║     ║  The First Rescue  ║     ║  INVERSION         ║
- ╚══════════════╝     ╚═══════════════════╝     ╚════════════════════╝
-                                                          │
-       ╔════════════════════╗     ╔══════════════════╗    │
-       ║  5. LINEAR         ║◀────║  4. ITERATIVE    ║◀───╯
-       ║  TOMOGRAPHY        ║     ║  METHODS         ║
-       ╚════════════════════╝     ╚══════════════════╝
-                │
-                ▼
- ╔══════════════════╗     ╔══════════════════╗     ╔═══════════════════╗
- ║  6. MONTE CARLO  ║────▶║  7. GEOPHYSICAL  ║────▶║  8. INFORMATION   ║
- ║  METHODS         ║     ║  CASE STUDIES    ║     ║  & ENTROPY        ║
- ╚══════════════════╝     ╚══════════════════╝     ╚═══════════════════╝
-```
-
-**Ill-posed → Stabilize → Probabilistic meaning → Scale up → Full workflow → Explore the posterior → Real applications → How much did we really learn?**
-
-The key move: Bayesian inversion comes right after regularization. Once you see that the Tikhonov penalty *is* a Gaussian prior, everything else clicks — iterative methods become "how to find the MAP when the matrix is huge," and Monte Carlo becomes "how to explore beyond the MAP."
-
----
-
-## What You'll Be Able to Do
-
-By the end of this module, you will be able to:
-
-- Formulate any inverse problem as parameter estimation from indirect measurements
-- Recognize ill-posedness and choose appropriate regularization
-- Explain *why* regularization works (it's a prior, not a trick)
-- Set up and solve linear tomographic inversions
-- Run MCMC to explore nonlinear posteriors
-- Quantify what the data can and cannot resolve
-- Look at any inverse problem and say, calmly, "I know how to tame you"
-
----
-
-## Interactive Simulations
-
-Each lesson includes hands-on simulations. Drag sliders, watch posteriors breathe, break things on purpose:
-
-- Optimization: `steepest-descent`, `tikhonov-regularization`
-- Linear inverse problems: `linear-tomography`
-- Monte Carlo inversion: `monte-carlo-integration`, `sphere-in-cube-mc`, `vertical-fault-mcmc`, `glacier-thickness-mcmc`
-- Information theory: `entropy-demo`, `kl-divergence`
-
-Short theory bursts, then interactive exploration. That's the rhythm.
+- Medical imaging (MRI, CT, SPECT) is an inverse problem: reconstructing internal structure from external measurements.
+- Seismic tomography maps the Earth's interior by inverting travel-time and waveform data from earthquakes.
+- Regularization and Bayesian inversion provide principled ways to stabilize ill-posed problems and quantify uncertainty in the solution.
+- The same mathematical framework applies across remote sensing, materials characterization, radar, acoustics, and any field where you must infer causes from indirect observations.

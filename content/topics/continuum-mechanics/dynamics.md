@@ -48,8 +48,8 @@ This is the **continuity equation**. It says: the rate at which density changes 
 
 Here's a subtlety that trips up everyone the first time. There are two ways to watch a flowing river:
 
-- **Stand on the bank** (Eulerian view): you watch the water flow past you. At your fixed location, the velocity changes over time as different parcels of water arrive.
-- **Jump in a boat** (Lagrangian view): you ride along with the water. The velocity you experience changes because you're moving to new locations.
+* **Stand on the bank** (Eulerian view): you watch the water flow past you. At your fixed location, the velocity changes over time as different parcels of water arrive.
+* **Jump in a boat** (Lagrangian view): you ride along with the water. The velocity you experience changes because you're moving to new locations.
 
 The **material derivative** $D/Dt$ captures the boat-rider's perspective:
 $$
@@ -95,21 +95,33 @@ $$
 
 That's it. That's the heartbeat equation. Let's unpack it:
 
-- **Left side**: mass per unit volume times acceleration (in the material derivative sense — following the flow).
-- **$\mathbf{f}$**: body forces, like gravity ($\rho \, \mathbf{g}$).
-- **$\nabla \cdot \sigma$**: the divergence of the stress tensor — the net force per unit volume from all the internal stresses acting on the material.
+* **Left side**: mass per unit volume times acceleration (in the material derivative sense — following the flow).
+* **$\mathbf{f}$**: body forces, like gravity ($\rho \, \mathbf{g}$).
+* **$\nabla \cdot \sigma$**: the divergence of the stress tensor — the net force per unit volume from all the internal stresses acting on the material.
 
 This is **Cauchy's equation**, and it's universal. It doesn't care whether you're dealing with a solid, a liquid, or anything in between. The difference between solids and fluids comes in *later*, when you specify what $\sigma$ looks like:
 
-- **For an elastic solid**: $\sigma = \lambda \, \text{tr}(\varepsilon) \, \mathbf{I} + 2\mu \, \varepsilon$ → you get the **Navier-Cauchy equation**.
-- **For a viscous fluid**: $\sigma = -p\,\mathbf{I} + 2\eta \, \dot{\varepsilon}$ → you get the **Navier-Stokes equation**.
+* **For an elastic solid**: $\sigma = \lambda \, \text{tr}(\varepsilon) \, \mathbf{I} + 2\mu \, \varepsilon$ → you get the **Navier-Cauchy equation**.
+* **For a viscous fluid**: $\sigma = -p\,\mathbf{I} + 2\eta \, \dot{\varepsilon}$ → you get the **Navier-Stokes equation**.
 
 Same heartbeat. Different constitutive law. That's the deep unity of continuum mechanics.
 
-## What We Just Learned
+## Big Ideas
 
-Conservation of mass gives the continuity equation. The material derivative lets us track quantities while riding along with the flow. Cauchy's equation is Newton's second law for continua — and it's the same equation for both solids and fluids. The only thing that changes is the constitutive relation between stress and strain.
+* The continuity equation is just "stuff doesn't disappear," written as a PDE. Every conservation law in continuum mechanics has this same structure: a time derivative plus a divergence of flux equals zero.
+* The material derivative $D/Dt = \partial/\partial t + (\mathbf{v} \cdot \nabla)$ is the derivative that rides along with the fluid — it's what an observer in a boat experiences, versus a stationary observer on the bank.
+* Cauchy's equation $\rho\,D\mathbf{v}/Dt = \mathbf{f} + \nabla\cdot\sigma$ is the universal heartbeat. It's Newton's second law for a smear of matter. Solids and fluids are just different choices of what $\sigma$ looks like.
 
-## What's Next
+## What Comes Next
 
 Now we know the general equation of motion. Let's see what happens when we specialize to fluids — starting with fluids that aren't moving at all. Pressure, buoyancy, floating icebergs: fluids at rest.
+
+## Check Your Understanding
+
+1. The material derivative has two terms: $\partial/\partial t$ and $(\mathbf{v} \cdot \nabla)$. Give a physical example where the local term is zero but the advective term is nonzero. Then give an example of the reverse.
+2. For an incompressible material, $D\rho/Dt = 0$. Show that this implies $\nabla \cdot \mathbf{v} = 0$ using the continuity equation.
+3. Cauchy's equation for an elastic solid and a viscous fluid look structurally identical. Where exactly is the difference hiding, and why does that difference matter so enormously for real-world behavior?
+
+## Challenge
+
+Consider a one-dimensional flow where density varies: $\rho(x,t)$ and $v(x,t)$ both depend on position and time. Start from the integral form of mass conservation (rate of change of mass in a control volume equals net flux through its boundaries), apply the divergence theorem, and derive the continuity equation in differential form. Then show that for the special case of steady flow ($\partial/\partial t = 0$), the continuity equation implies $\rho v = \text{const}$ along a streamline. Interpret this result for a converging pipe where the cross-section decreases.

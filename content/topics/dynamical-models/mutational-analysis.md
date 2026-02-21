@@ -9,8 +9,8 @@ In the last two lessons you learned to write differential equations for producti
 There are two broad categories:
 
 **Spontaneous mutations** arise from chemical mistakes during DNA replication. Even under perfect conditions, about 5,000 potentially mutagenic events happen per day in a human cell:
-- **Depurination**: an adenine or guanine base simply falls off the sugar backbone.
-- **Deamination**: cytosine spontaneously converts to uracil.
+* **Depurination**: an adenine or guanine base simply falls off the sugar backbone.
+* **Deamination**: cytosine spontaneously converts to uracil.
 
 **Induced mutations** are caused by external agents — UV light, ionizing radiation, or chemical mutagens. These account for roughly 100 additional DNA lesions per day in a human cell.
 
@@ -18,9 +18,9 @@ There are two broad categories:
 
 Not every step in gene expression is equally accurate. The error rates tell a striking story:
 
-- **DNA replication**: $\sim 1$ error per $10^9$ bases — almost unbelievably precise.
-- **Transcription**: $\sim 1$ error per $10^6$ bases — good, but a thousand times worse.
-- **Translation**: $\sim 1$ error per $10^4$ bases — the least accurate step.
+* **DNA replication**: $\sim 1$ error per $10^9$ bases — almost unbelievably precise.
+* **Transcription**: $\sim 1$ error per $10^6$ bases — good, but a thousand times worse.
+* **Translation**: $\sim 1$ error per $10^4$ bases — the least accurate step.
 
 > *Think about what this means: evolution has invested enormous machinery into keeping DNA replication faithful, because errors there are permanent and heritable. Errors in transcription and translation are temporary — the bad mRNA or protein will be degraded soon enough.*
 
@@ -44,8 +44,8 @@ During meiosis (in sexually reproducing organisms), chromosomes exchange segment
 
 Bacteria are a geneticist's dream: you can grow a billion of them overnight in a single milliliter. To find mutants in this ocean of cells, we use:
 
-- **Genetic selection**: design conditions where only mutants survive. For example, grow bacteria on a plate containing an antibiotic — only resistant mutants form colonies.
-- **Genetic screens**: check every colony individually for the phenotype of interest. More labor-intensive, but necessary when there is no way to select directly.
+* **Genetic selection**: design conditions where only mutants survive. For example, grow bacteria on a plate containing an antibiotic — only resistant mutants form colonies.
+* **Genetic screens**: check every colony individually for the phenotype of interest. More labor-intensive, but necessary when there is no way to select directly.
 
 ## The statistics of rare events
 
@@ -77,11 +77,11 @@ This connects directly to what we learned about noise: if gene expression events
 
 [[simulation binomial-distribution]]
 
-> **Try this**: Start with $N = 20$ trials and $p = 0.5$ — this is like flipping a fair coin 20 times. The distribution looks like a nice bell curve centered at 10. Now keep $N = 20$ but reduce $p$ to $0.05$. The distribution becomes skewed and piles up near zero. This is what mutation counts look like: rare events in many trials.
+Start with $N = 20$ trials and $p = 0.5$ — this is like flipping a fair coin 20 times. The distribution looks like a nice bell curve centered at 10. Now keep $N = 20$ but reduce $p$ to $0.05$. The distribution becomes skewed and piles up near zero. This is what mutation counts look like: rare events in many trials.
 
 [[simulation poisson-distribution]]
 
-> **Try this**: Set the mean $m = 3$ and compare the Poisson distribution to the binomial with $N = 1000$ and $p = 0.003$. They should be nearly identical — this is the Poisson limit in action. Now increase $m$ to 10 or 20 and watch the distribution become more and more bell-shaped. Even the Poisson distribution looks Gaussian when the mean is large enough.
+Set the mean $m = 3$ and compare the Poisson distribution to the binomial with $N = 1000$ and $p = 0.003$. They should be nearly identical — this is the Poisson limit in action. Now increase $m$ to 10 or 20 and watch the distribution become more and more bell-shaped. Even the Poisson distribution looks Gaussian when the mean is large enough.
 
 ## The Luria-Delbruck experiment: jackpot cultures
 
@@ -93,17 +93,17 @@ If mutations arise *before* exposure (spontaneously, during normal growth), then
 
 Luria and Delbruck found the jackpot pattern — the variance was far larger than the mean, ruling out the directed-mutation hypothesis. Mutations are random, spontaneous events. This experiment won them the Nobel Prize and established one of the foundations of molecular biology.
 
-> **Figure: Jackpot cultures.** Bar graph of 10 independent cultures: nine bars showing 0--5 colonies, one bar showing ~200. Side-by-side with a Poisson simulation for the same mean, showing the dramatically different variance.
+[[figure jackpot-cultures]]
 
-> **Figure: Lineage tree.** A branching lineage tree: an early mutation (large red clone filling most of the $10^9$ cells) versus a late mutation (tiny clone of a few cells). Illustrates why variance is so much larger than the mean.
+[[figure lineage-tree]]
 
 > *The jackpot distribution (now called the Luria-Delbruck distribution) has a variance much larger than its mean — a Fano factor far greater than 1. Sound familiar? The same statistical fingerprint that tells us about transcriptional bursting in the noise lesson.*
 
 ## Check your understanding
 
-- Why is DNA replication so much more accurate than translation? What would happen to the organism if the error rates were reversed?
-- You plate 10 independent cultures of bacteria on antibiotic plates. Nine have 0--5 colonies, but one has 200. Is this consistent with random spontaneous mutation? Why?
-- If the mutation rate is $10^{-9}$ per base per replication, and a gene is 1000 bases long, what is the probability of a mutation in that gene in one replication?
+* Why is DNA replication so much more accurate than translation? What would happen to the organism if the error rates were reversed?
+* You plate 10 independent cultures of bacteria on antibiotic plates. Nine have 0--5 colonies, but one has 200. Is this consistent with random spontaneous mutation? Why?
+* If the mutation rate is $10^{-9}$ per base per replication, and a gene is 1000 bases long, what is the probability of a mutation in that gene in one replication?
 
 ## Challenge
 
@@ -111,9 +111,9 @@ A bacterial gene is 1,200 bases long. The mutation rate is $10^{-9}$ per base pe
 
 ## Big ideas
 
-- **DNA replication achieves extraordinary fidelity** ($10^{-9}$ errors per base) through three layers: base-pairing selectivity, polymerase proofreading, and mismatch repair.
-- **The Poisson distribution** emerges naturally when many rare, independent events are counted — it is the universal distribution for rare events in biology.
-- **The Luria-Delbruck experiment** proved that mutations arise spontaneously, and the "jackpot" pattern of high variance is the statistical signature of random events occurring at different times during growth.
+* **DNA replication achieves extraordinary fidelity** ($10^{-9}$ errors per base) through three layers: base-pairing selectivity, polymerase proofreading, and mismatch repair.
+* **The Poisson distribution** emerges naturally when many rare, independent events are counted — it is the universal distribution for rare events in biology.
+* **The Luria-Delbruck experiment** proved that mutations arise spontaneously, and the "jackpot" pattern of high variance is the statistical signature of random events occurring at different times during growth.
 
 ## What comes next
 

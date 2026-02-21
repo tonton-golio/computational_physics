@@ -1,14 +1,11 @@
 # Phase-Space Pictures
 __Topic 4 keywords__
-- Quasi-probability distributions
-- Characteristic functions
-- Phase-space picture
+* Quasi-probability distributions
+* Characteristic functions
+* Phase-space picture
 
-# Readings
-Ch. 3.6-8
-
-# 3.6 Phase-space pictures of coherent states
-#### Coherent state on a complex plane
+## Phase-space pictures of coherent states
+### Coherent state on a complex plane
 Recall quadrature operators are
 $$
     \hat{X_1}
@@ -99,7 +96,7 @@ the uncertainty of theta $\Delta \theta$ become
 maximum $2\pi$ when $\left|\alpha\right|=0$ and minimum $0$ when
 $\left|\alpha\right| \rightarrow \infty$.
 
-#### Number state on a complex plane
+### Number state on a complex plane
 How about number state $\Ket{n}$?
 Let's calculate!
 
@@ -237,8 +234,8 @@ $$
     \left(
         \hat{a}^2
         + {\hat{a}^\dag}^2
-        - \hat{a} \hat{a}^\dag
-        - \hat{a}^\dag \hat{a}
+        * \hat{a} \hat{a}^\dag
+        * \hat{a}^\dag \hat{a}
     \right)
     |n}
     \\&=
@@ -248,17 +245,17 @@ $$
     \left(
         \hat{a}^2
         + {\hat{a}^\dag}^2
-        - 1
-        - \hat{a}^\dag \hat{a}
-        - \hat{a}^\dag \hat{a}
+        * 1
+        * \hat{a}^\dag \hat{a}
+        * \hat{a}^\dag \hat{a}
     \right)
     |n}
     \\&=
     -
     \frac{1}{4}
     \left(
-        - 1
-        - 2n
+        * 1
+        * 2n
     \right)
     \\&=
     \frac{1}{2}
@@ -280,3 +277,24 @@ $\sqrt{
     \right)
 }$
 become larger than that of coherent state.
+
+## Big Ideas
+
+* A coherent state $|\alpha\rangle$ is a fuzzy dot centered at the complex number $\alpha$ in the quadrature plane, with uncertainty circle of radius $\frac{1}{2}$ — distance from origin equals $\sqrt{\bar{n}}$.
+* A number state $|n\rangle$ has no well-defined phase and is represented as a ring centered at the origin with radius growing as $\sqrt{n+\frac{1}{2}}$ — it knows how many photons it has but not where in the oscillation cycle it is.
+* Phase-space pictures make the Heisenberg uncertainty principle geometric: the uncertainty "blob" can be stretched and rotated but its area cannot be reduced below the vacuum value.
+* The phase uncertainty of a coherent state shrinks as $1/|\alpha|$ for large amplitude — this is why strong laser fields behave classically with well-defined phase.
+
+## What Comes Next
+
+The phase-space picture invites a deeper question: can we assign a genuine probability distribution to points in this plane? The next lesson introduces the Glauber-Sudarshan P function, which is the closest thing to a phase-space probability density for quantum states — and which reveals the strange fact that some quantum states require a "probability" distribution that goes negative.
+
+## Check Your Understanding
+
+1. A coherent state $|\alpha\rangle$ is centered at $\alpha$ in the quadrature plane and has uncertainty radius $\frac{1}{2}$. A number state $|n=0\rangle$ (vacuum) is also centered at the origin with the same uncertainty radius. Why do these two descriptions represent physically different states if they look the same in the diagram?
+2. The number state $|n\rangle$ is represented as a ring of radius $\sqrt{n + \frac{1}{2}}$, centered at the origin. What does it mean physically that the ring has no angular localization — that all phases are equally represented?
+3. As $|\alpha| \to \infty$ for a coherent state, the angular uncertainty $\Delta\theta \to 0$. Explain why this means very bright coherent light has a well-defined phase, and connect this to the correspondence principle.
+
+## Challenge
+
+Consider a superposition of two coherent states $|\psi\rangle = \mathcal{N}(|\alpha\rangle + |-\alpha\rangle)$ where $\alpha$ is real and large. Compute the mean and variance of both quadrature operators $\hat{X}_1$ and $\hat{X}_2$ for this state. How does the picture in phase space differ from either a single coherent state or their classical mixture? This state is the simplest "Schrödinger cat" — sketch what its phase-space representation reveals that is invisible in either the number-state or coherent-state basis alone.

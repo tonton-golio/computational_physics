@@ -67,3 +67,24 @@ $$
 $$
 
 arising from the trade-off between measurement imprecision and radiation-pressure back-action. Beating the SQL requires correlating the measurement and back-action noise, achievable with squeezed light or back-action evasion techniques.
+
+## Big Ideas
+
+* Measurement in quantum optics is not passive reading — every detection event irreversibly alters the state of the field, and the post-measurement state is as important as the probability of each outcome.
+* POVMs (positive operator-valued measures) capture the full range of realistic detectors: threshold detectors, homodyne receivers, and heterodyne detectors each correspond to a different set of POVM elements.
+* Quantum state tomography reconstructs the full density matrix from quadrature histograms using the inverse Radon transform — the same mathematics that reconstructs a CT scan from X-ray projections.
+* Back-action is unavoidable: learning about $\hat{X}$ necessarily disturbs $\hat{P}$, and beating the standard quantum limit requires cleverly correlating that disturbance rather than trying to eliminate it.
+
+## What Comes Next
+
+This is where the quantum optics journey culminates. The thread that began with a single field mode in a box has led us through vacuum fluctuations, coherent and squeezed states, photon statistics, atom-field coupling, and cavity QED — all converging on the fundamental question of how information is extracted from a quantum field. The ideas here — POVM measurement, back-action, tomography, quantum jumps — are the operating principles of quantum sensing, quantum communication, and quantum computing built on light.
+
+## Check Your Understanding
+
+1. A threshold detector has POVM elements $\hat{E}_0 = |0\rangle\langle 0|$ and $\hat{E}_\text{click} = \hat{I} - |0\rangle\langle 0|$. It cannot distinguish $|1\rangle$ from $|2\rangle$ from $|10\rangle$. What information is completely lost by using a threshold detector instead of a photon-number-resolving detector, and why does this matter for reconstructing the Wigner function?
+2. Homodyne tomography measures the quadrature $\hat{X}_\theta$ for many values of $\theta$ and uses the inverse Radon transform to reconstruct $W(x, p)$. How many different phase angles $\theta$ do you need in principle, and what fundamentally limits the precision of the reconstruction for a finite number of measurement trials?
+3. A quantum non-demolition measurement of photon number must satisfy $[\hat{n}, \hat{H}_\text{int}] = 0$. Explain why this condition guarantees that the photon number is undisturbed by the measurement, and give an example of a QND observable and a non-QND observable for the electromagnetic field.
+
+## Challenge
+
+Model a realistic photon detector with efficiency $\eta < 1$ as a beam splitter that mixes the signal with a vacuum mode, followed by an ideal detector. Derive the POVM elements for this lossy detector and compute the probability $p(n_\text{click})$ of registering $n_\text{click}$ clicks when the input state is a Fock state $|N\rangle$. Show that this gives a binomial distribution with success probability $\eta$. Then consider the post-measurement state: if $n_\text{click}$ clicks are registered from $|N\rangle$, what is the state of the field after detection? This calculation reveals the fundamental distinction between a destructive measurement and a QND measurement of the same photon number.

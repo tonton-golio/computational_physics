@@ -1,16 +1,13 @@
 # Multimode Fields
 __Topic 2 keywords__
-- Multi-mode fields
-- Thermal states-density of states
-- Planck formula
-- Density operators
-- Lamb shift
-- Casimir forces
+* Multi-mode fields
+* Thermal states-density of states
+* Planck formula
+* Density operators
+* Lamb shift
+* Casimir forces
 
-# Readings
-Ch. 2.4-6, App. A.
-
-# 2.4 Multimode fields
+## Multimode fields
 In the textbook, they use the vector potential. 
 We can do same things in different way.
 Consider the Hamiltonian of multi-mode wave.
@@ -37,9 +34,9 @@ $$
 \end{aligned}
 $$
 Here, paramters are follows.
-- $\omega_k=kc$ is frequency
-- $\vec{k}$ is the wave vetor
-- $s$ is the polarization index
+* $\omega_k=kc$ is frequency
+* $\vec{k}$ is the wave vetor
+* $s$ is the polarization index
 
 By using index $j$ we can simply write the eigenstate of this Hamiltonian.
 The eigenstate would be product of number states.
@@ -59,8 +56,8 @@ $$
     \Ket{n_1, n_2, \cdots, n_i-1, \cdots}
 $$
 
-# 2.5 Thermal fields
-#### Thermal light
+## Thermal fields
+### Thermal light
 So far we consider the zero-temperature box.
 We can think interaction between photon and thermal wall.
 In thermal equilibrium, the density matrix is
@@ -77,7 +74,7 @@ $$
     e^{ -\hat{H} / k_\mathrm{B}T}
     =
     1 
-    - 
+    * 
     \frac{\hat{H}}{k_\mathrm{B}T}
     +
     \frac{1}{2}
@@ -148,7 +145,7 @@ $$
 \end{aligned}
 $$
 This is super-Poisonian distribution. Variance is larger than that of Poisonian.
-#### Planck's radiation law
+### Planck's radiation law
 Consider the light in the box with each length $L$ in thermal equilibrium.
 From boundary condition,
 $$
@@ -223,4 +220,25 @@ $$
     {\pi^2 c^3}
 \end{aligned}
 $$
+
+## Big Ideas
+
+* A realistic field is a superposition of infinitely many modes; quantizing each independently gives a multimode Fock state labeled by how many photons occupy each mode.
+* Thermal light at room temperature contains essentially zero photons per visible mode — temperature is irrelevant for optical quantum optics in a way it is not for microwave quantum computing.
+* Planck's blackbody law emerges directly from the quantum statistics of photons: each mode contributes its Bose-Einstein average $\bar{n} = 1/(e^{\hbar\omega/k_\mathrm{B}T}-1)$ weighted by the density of states.
+* Thermal photon fluctuations are super-Poissonian, with variance $\bar{n} + \bar{n}^2$ — noisier than a coherent laser.
+
+## What Comes Next
+
+We have seen that the quantum vacuum is not empty: every mode carries zero-point energy $\frac{1}{2}\hbar\omega$. The next lesson takes this seriously and asks what observable consequences that vacuum energy has — because it turns out you can measure it directly in the lab, in phenomena ranging from spontaneous emission shifts to forces between uncharged metal plates.
+
+## Check Your Understanding
+
+1. At optical frequencies ($\hbar\omega \sim 1$ eV) and room temperature ($k_\mathrm{B}T \sim \frac{1}{40}$ eV), the mean photon number is essentially zero. What does this tell you about the usefulness of cooling an optical experiment versus a microwave experiment for eliminating thermal photons?
+2. Thermal light has $\langle(\Delta n)^2\rangle = \bar{n} + \bar{n}^2$. Explain why the $\bar{n}^2$ term is a signature of photon bunching, and what it implies about the probability of detecting two photons close together in time.
+3. The density of states $\rho(\omega) = \omega^2/(\pi^2 c^3)$ grows as $\omega^2$. What would happen to the total energy of blackbody radiation if the photon were not subject to Bose-Einstein statistics (suppose instead it obeyed Boltzmann statistics)? This is the ultraviolet catastrophe — why does quantization fix it?
+
+## Challenge
+
+Derive the Planck formula by computing the spectral energy density in a cubic cavity of side $L$, starting only from the allowed mode frequencies and the Bose-Einstein distribution. Then take the thermodynamic limit $L \to \infty$ and show you recover $\bar{U}(\omega) = \hbar\omega\rho(\omega)/({e^{\hbar\omega/k_\mathrm{B}T}-1})$. Finally, integrate over all frequencies to show that the total energy density is proportional to $T^4$ (Stefan-Boltzmann law), identifying the Stefan-Boltzmann constant in terms of fundamental constants.
 

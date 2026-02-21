@@ -16,7 +16,7 @@ $$
 
 where $\boldsymbol{\eta}$ is measurement noise. We want to recover $\mathbf{m}$ from $\mathbf{d}$.
 
-When $\mathbf{G}$ is well-conditioned, you just solve a least-squares problem and go home. But when $\mathbf{G}$ is ill-conditioned or rank-deficient — and in inverse problems, it almost always is — direct inversion amplifies noise into garbage. You saw this in the [Hadamard example](./foundations). The mathematics is trying to fit noise as if it were signal, and the result is catastrophic.
+When $\mathbf{G}$ is well-conditioned, you just solve a least-squares problem and go home. But when $\mathbf{G}$ is ill-conditioned or rank-deficient — and in inverse problems, it almost always is — direct inversion amplifies noise into garbage. You saw this in the [Hadamard example](./home). The mathematics is trying to fit noise as if it were signal, and the result is catastrophic.
 
 ---
 
@@ -45,8 +45,8 @@ $$
 
 Two terms, fighting:
 
-- **First term**: make the model explain the data
-- **Second term**: keep the model from going wild
+* **First term**: make the model explain the data
+* **Second term**: keep the model from going wild
 
 The parameter $\epsilon$ is the referee. Small $\epsilon$: the data dominates, noise gets amplified. Large $\epsilon$: the penalty dominates, you get a boring model that ignores the data. Just right: you extract the signal and leave the noise behind.
 
@@ -75,10 +75,11 @@ Other approaches exist: the discrepancy principle (choose $\epsilon$ so the resi
 
 [[simulation tikhonov-regularization]]
 
-> **What to look for:**
-> - Drag $\epsilon$ toward zero and watch the solution go wild — that's noise amplification in action
-> - Find the "sober" region where the model captures real structure without oscillating
-> - Compare the residual norm at different $\epsilon$ values — the corner of the L-curve is where the trade-off bends
+Things to look for in the simulation:
+
+* Drag $\epsilon$ toward zero and watch the solution go wild — that's noise amplification in action
+* Find the "sober" region where the model captures real structure without oscillating
+* Compare the residual norm at different $\epsilon$ values — the corner of the L-curve is where the trade-off bends
 
 ---
 
@@ -96,16 +97,24 @@ Drunk. Sober. Dead. Your job is to find the sober one.
 
 ---
 
-## Takeaway
+## Big Ideas
+* Noise amplification is not bad luck — it is the mathematical signature of an ill-conditioned problem. Regularization is how you fight back.
+* The L-curve is a geometric picture of a tug-of-war: data fit on one side, model sanity on the other. The corner is where the two forces reach a truce.
+* Small $\epsilon$ is drunk (fits noise), large $\epsilon$ is dead (ignores data). Your job is to find the sober one in between.
+* Regularization is not a numerical patch applied after the physics is done — it is where your beliefs about the world enter the computation.
 
-Regularization is not an optional tweak or a mathematical convenience. It is the core mechanism that turns an ill-posed problem into a solvable one. Without it, noise eats your answer alive. With too much of it, you miss the signal entirely.
+## What Comes Next
 
-The art is in the balance — and the L-curve is your guide.
+The Tikhonov formula gives you a solvable system, but it raises a nagging question: why exactly that penalty? Why $\|\mathbf{m}\|^2$ and not something else? The answer turns out to be deeply satisfying — the penalty term is a prior probability distribution in disguise. When you rewrite the regularized objective as a posterior probability, every choice of $\epsilon$ and every choice of penalty corresponds to a precise probabilistic statement about what you believe before seeing the data.
 
-Next up: [Bayesian Inversion](./bayesian-inversion) reveals that the penalty term $\epsilon^2\|\mathbf{m}\|^2$ is not a hack — it's a Gaussian prior in disguise. Once you see this, regularization becomes honest science.
+That reframing — from optimization problem to inference problem — is what Bayesian inversion is about. Once you make the connection, regularization stops feeling like a trick and starts feeling like honest scientific reasoning.
 
----
+## Check Your Understanding
+1. Why does an ill-conditioned matrix $\mathbf{G}$ cause direct inversion to fail catastrophically when the data contains even a small amount of noise?
+2. If you sweep $\epsilon$ from very small to very large and plot the L-curve, describe qualitatively what you expect to see in the model $\hat{\mathbf{m}}$ at each extreme. What feature of the plot indicates the best compromise?
+3. Why does adding $\epsilon^2\mathbf{I}$ to $\mathbf{G}^T\mathbf{G}$ stabilize the inversion? What does this operation do to the eigenvalues of the matrix?
 
-## Further Reading
+## Challenge
 
-Aster, Borchers & Thurber give an excellent treatment of the L-curve and parameter choice methods. Hansen's *Rank-Deficient and Discrete Ill-Posed Problems* is the definitive reference.
+Design a controlled numerical experiment to compare two regularization parameter selection methods — the L-curve corner and the discrepancy principle — on the same ill-conditioned system. Generate synthetic data with known noise level $\sigma$, apply both methods across a range of noise realizations, and measure how often each method lands within a factor of 2 of the "oracle" $\epsilon$ (the one that minimizes true model error, which you can compute because you know the truth). Under what noise conditions does the discrepancy principle outperform the L-curve, and why?
+

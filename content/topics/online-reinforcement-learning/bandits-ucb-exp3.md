@@ -48,6 +48,22 @@ The lower bound for adversarial bandits is $\Omega(\sqrt{KT})$, so EXP3 is near-
 [[simulation bandit-regret-comparison]]
 [[simulation bernoulli-trials]]
 
----
+## Big Ideas
+* UCB1's "optimism in the face of uncertainty" is not just a heuristic — it is the right Bayesian instinct. Treat unknown arms as potentially great, try them, and let data correct you.
+* The gap-dependent regret bound reveals a truth: pulling an arm that is only slightly suboptimal is the expensive part, because you need many samples to distinguish it from the best.
+* EXP3's importance-weighted loss estimate is an act of statistical imagination: you never saw the loss of the arm you did not pull, so you construct an unbiased proxy. The noise is the cost of that imagination.
+* Stochastic and adversarial bandits require completely different algorithms. Importing UCB1 into an adversarial environment, or using EXP3 in a stochastic one, leaves significant regret on the table.
 
-*We now have two powerful bandit algorithms — UCB1 for stochastic worlds and EXP3 for adversarial ones. But both of them treat every round the same. What if you get a clue before each decision — a context that tells you something about the current situation? Next lesson, we add context to the bandit problem with EXP4, and suddenly the problem starts looking like real-world personalization.*
+## What Comes Next
+
+Both UCB1 and EXP3 treat every round as if it were identical — there is no side information that distinguishes one round from the next. But in almost every real application, you do have a clue before you act: a user profile, a patient chart, the current state of a system.
+
+Adding that context transforms the bandit problem into something richer. The next lesson introduces EXP4, which combines the exploration-exploitation logic of EXP3 with a pool of policies that each map contexts to action distributions. The key payoff: whether you have ten policies or a million, the regret only grows logarithmically in the policy count.
+
+## Check Your Understanding
+1. UCB1 uses the bonus term $\sqrt{2 \log t / n_a(t)}$. What happens to this term as $n_a(t) \to \infty$? What happens when $n_a(t) = 1$? Interpret both limits intuitively.
+2. Explain why EXP3 divides the observed loss by the sampling probability in its importance-weighted estimate. What property does this give the estimate, and why is that property essential?
+3. Why does the stochastic bandit setting permit gap-dependent regret bounds of the form $O(\sum_a \log T / \Delta_a)$, while the adversarial setting only permits $O(\sqrt{KT \log K})$? What assumption does the stochastic setting have that the adversarial one lacks?
+
+## Challenge
+EXP3 achieves $O(\sqrt{KT \log K})$ regret. A lower bound shows adversarial bandits require $\Omega(\sqrt{KT})$ regret. The gap is $\sqrt{\log K}$. Design an argument (or find one in the literature) for why this gap might or might not be closable. Then implement EXP3 computationally on a synthetic adversarial instance where the adversary cycles through arms, and plot the cumulative regret against the $O(\sqrt{KT \log K})$ upper bound. How tight is the bound in practice?

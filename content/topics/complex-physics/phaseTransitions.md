@@ -59,7 +59,7 @@ $$
 
 **Second term:**
 $$
-    - J \sum_{\langle i j \rangle} m(s_i + s_j) = - J z m \sum_{i} s_i.
+    * J \sum_{\langle i j \rangle} m(s_i + s_j) = - J z m \sum_{i} s_i.
 $$
 
 **Mean-field Hamiltonian:**
@@ -68,16 +68,29 @@ $$
     \mathcal{H}_\mathrm{MF}
     &=
     \frac{J N z}{2} m^2
-    - (Jzm + h) \sum_i s_i.
+    * (Jzm + h) \sum_i s_i.
 \end{align*}
 $$
 
 Look at what happened: the spins have decoupled! Each spin $s_i$ now sees an effective field $(Jzm + h)$ that depends on the *average* magnetization $m$, not on the actual values of its neighbors. This makes the problem exactly solvable — each spin is independent, and we just need to find $m$ self-consistently.
 
-> **Key Intuition.** A phase transition is the moment when a system collectively chooses an ordered state. The order parameter measures the degree of this collective choice. Mean-field theory captures the essential physics by replacing the complicated many-body problem with a simpler one where each particle feels only the average effect of all the others.
+## Big Ideas
 
-> **Challenge.** Here is a thought experiment. Imagine 100 people in a room, each trying to decide whether to stand or sit. If they make the decision independently, roughly half will stand and half will sit. But now add a rule: each person looks at their two nearest neighbors and feels a slight urge to do the same thing. Can you convince yourself that below some "critical level of conformity," the crowd splits 50/50, but above it, nearly everyone stands (or sits)? That is a phase transition in a social system.
+* An order parameter is a number that is zero above the transition and nonzero below it — it is the system's way of "announcing" that it has chosen a preferred state.
+* Phase transitions are collective phenomena: no single spin decides to align, yet the whole system snaps into order through purely local interactions.
+* Mean-field theory tames the many-body problem by replacing all the messy neighbor-neighbor interactions with a single average field — the "wisdom of the crowd" acting on each individual.
+* Dropping the fluctuation-fluctuation term $\delta s_i \, \delta s_j$ is the mean-field approximation: it works well when each spin has many neighbors, and fails badly in low dimensions where fluctuations dominate.
 
----
+## What Comes Next
 
-*We have the mean-field Hamiltonian, and it looks clean and solvable. But what actually comes out of it? What is the critical temperature? What does the free energy look like? And what goes wrong with the stability analysis near the transition? Let us find out in the mean-field results.*
+We have derived the mean-field Hamiltonian, but the real payoff comes from solving it. [Mean-Field Results](meanFieldResults) works through the partition function, the self-consistency equation for magnetization, and the Landau free energy expansion. The punchline is a family of **critical exponents** — the power laws that describe how the magnetization, susceptibility, and heat capacity behave as you approach $T_c$. These exponents will turn out to be the same for a huge class of systems, hinting at a deep universality that we will explain later.
+
+## Check Your Understanding
+
+1. The order parameter of a magnet is the magnetization $m$, which is zero above $T_c$ and nonzero below. Can you think of an order parameter for the liquid-gas phase transition? Why does it go to zero at the critical point?
+2. The mean-field approximation drops the term $\delta s_i \, \delta s_j$ (correlated fluctuations). In a 1D chain where each spin has only two neighbors, why would you expect this approximation to be especially poor?
+3. When a ferromagnet is cooled below $T_c$, it spontaneously picks one direction — all up or all down — even though both states have the same energy. What "breaks" this symmetry in a real experiment?
+
+## Challenge
+
+Imagine a mean-field model of opinion dynamics: $N$ people each hold an opinion $s_i = \pm 1$ (agree/disagree with some proposition). Each person is influenced by the average opinion of the whole group. Write down the self-consistency equation for the average opinion $m = \langle s_i \rangle$ as a function of the "social coupling" $J$ and the "temperature" $T$ (representing noise/uncertainty). Find the critical coupling $J_c$ at which a consensus can first emerge. What happens as $N \to \infty$? Does this match your intuition about how social consensus forms?

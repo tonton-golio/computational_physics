@@ -7,6 +7,7 @@ import { CodeToggleBlock } from "../ui/CodeToggleBlock";
 import { SimulationHost } from "@/features/simulation/SimulationHost";
 import { FIGURE_DEFS } from "@/lib/figure-definitions";
 import { markdownToHtml } from "@/lib/markdown-to-html";
+import { FigureLightbox } from "../ui/figure-lightbox";
 
 interface MarkdownContentProps {
   content: string;
@@ -23,6 +24,71 @@ function SimulationError({ id, type }: { id: string; type: string }) {
   );
 }
 
+// Reusable figure wrapper with lightbox expand support
+function FigureBlock({
+  src,
+  alt,
+  caption,
+  isVideo,
+  children,
+}: {
+  src: string;
+  alt: string;
+  caption: string;
+  isVideo?: boolean;
+  children: React.ReactNode;
+}) {
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+
+  return (
+    <>
+      <div className="group relative w-full rounded-xl border border-[var(--border-strong)] bg-[var(--surface-2)] p-4">
+        <div
+          className={isVideo ? undefined : "cursor-zoom-in"}
+          onClick={isVideo ? undefined : () => setLightboxOpen(true)}
+        >
+          {children}
+        </div>
+        <div className="mt-2 text-xs text-[var(--text-soft)]">{caption}</div>
+
+        {!isVideo && (
+          <button
+            type="button"
+            onClick={() => setLightboxOpen(true)}
+            aria-label="View full size"
+            className="absolute top-6 right-6 flex h-8 w-8 items-center justify-center rounded-md bg-[var(--surface-2)]/70 backdrop-blur-sm border border-[var(--border-strong)] text-[var(--text-soft)] hover:text-[var(--text-strong)] hover:bg-[var(--surface-3)]/80 transition-all opacity-0 group-hover:opacity-100 cursor-pointer"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="15 3 21 3 21 9" />
+              <polyline points="9 21 3 21 3 15" />
+              <line x1="21" y1="3" x2="14" y2="10" />
+              <line x1="3" y1="21" x2="10" y2="14" />
+            </svg>
+          </button>
+        )}
+      </div>
+
+      {lightboxOpen && (
+        <FigureLightbox
+          src={src}
+          alt={alt}
+          isVideo={isVideo}
+          onClose={() => setLightboxOpen(false)}
+        />
+      )}
+    </>
+  );
+}
+
 // Render simulation based on type and id
 function renderPlaceholder(type: string, id: string): React.ReactNode {
   if (type === "simulation") {
@@ -33,7 +99,7 @@ function renderPlaceholder(type: string, id: string): React.ReactNode {
     const knownFigure = FIGURE_DEFS[id];
     if (knownFigure) {
       return (
-        <div className="w-full rounded-xl border border-[var(--border-strong)] bg-[var(--surface-2)] p-4">
+        <FigureBlock src={knownFigure.src} alt={knownFigure.caption} caption={knownFigure.caption}>
           <Image
             src={knownFigure.src}
             alt={knownFigure.caption}
@@ -41,8 +107,7 @@ function renderPlaceholder(type: string, id: string): React.ReactNode {
             height={700}
             className="max-h-[440px] w-full rounded border border-[var(--border-strong)] bg-[var(--surface-1)] object-contain"
           />
-          <div className="mt-2 text-xs text-[var(--text-soft)]">{knownFigure.caption}</div>
-        </div>
+        </FigureBlock>
       );
     }
 
@@ -53,17 +118,16 @@ function renderPlaceholder(type: string, id: string): React.ReactNode {
 
     if (isVideo) {
       return (
-        <div className="w-full rounded-xl border border-[var(--border-strong)] bg-[var(--surface-2)] p-4">
+        <FigureBlock src={src} alt={`Figure ${id}`} caption={`Figure: ${id}`} isVideo>
           <video controls className="w-full rounded" src={src}>
             Your browser does not support embedded video.
           </video>
-          <div className="mt-2 text-xs text-[var(--text-soft)]">Figure: {id}</div>
-        </div>
+        </FigureBlock>
       );
     }
 
     return (
-      <div className="w-full rounded-xl border border-[var(--border-strong)] bg-[var(--surface-2)] p-4">
+      <FigureBlock src={src} alt={`Figure ${id}`} caption={`Figure: ${id}`}>
         <Image
           src={src}
           alt={`Figure ${id}`}
@@ -71,8 +135,7 @@ function renderPlaceholder(type: string, id: string): React.ReactNode {
           height={700}
           className="w-full rounded border border-[var(--border-strong)]"
         />
-        <div className="mt-2 text-xs text-[var(--text-soft)]">Figure: {id}</div>
-      </div>
+      </FigureBlock>
     );
   }
 

@@ -46,6 +46,22 @@ There are additional complications that make the problem harder still. **Delayed
 
 Each of these variants changes the concentration arguments you can use, the variance of your estimators, and the final regret bounds. But they all build on the same foundation: the type of feedback determines the type of algorithm.
 
----
+## Big Ideas
+* Feedback is the fundamental resource in online learning. More feedback means faster learning and tighter regret bounds — but the world rarely hands you a free lunch.
+* The bandit problem is not just a harder version of full-information learning; it requires a qualitatively different approach because you cannot distinguish between "this arm is bad" and "I have not tried it enough."
+* Context is leverage. Knowing something about the current situation before you act is what turns raw bandits into a tool for personalization.
+* Delayed, noisy, and non-stationary feedback are not exotic edge cases — they are the normal condition of most real systems. The clean textbook feedback model is the exception.
 
-*We now understand the three feedback models that govern online learning. Next lesson, we are going to build our first real algorithm — Follow the Leader and its much smarter cousin, Hedge — and see how exponential weights can achieve no-regret guarantees in the full-information setting. That is our first weapon.*
+## What Comes Next
+
+Now that we know what feedback looks like, it is time to build something that uses it. The full-information setting — where you see every outcome after each round — is the friendliest place to start. It is also where the deepest algorithmic ideas first appear.
+
+The next lesson introduces Follow the Leader, which sounds right but fails badly, and then Hedge, which fixes FTL's instability using exponential weights. Hedge is the blueprint for virtually every no-regret algorithm that follows, so understanding why it works — and why the potential function argument is so elegant — pays dividends throughout the rest of the topic.
+
+## Check Your Understanding
+1. Why does full-information feedback lead to better regret bounds than bandit feedback? Identify the specific structural property that makes the difference.
+2. A recommendation system shows users one movie at a time and observes only whether they watch it. Which feedback model applies, and what are the practical consequences for the learning algorithm?
+3. Explain the exploration-exploitation dilemma in your own words. Why does it only appear in the bandit and contextual bandit settings, not in the full-information setting?
+
+## Challenge
+Consider a hybrid feedback model: after each round, you see the outcome of your chosen action, and you also see the outcomes of $m$ other randomly chosen actions (not all $K$). Analyze how the regret bound should scale with $m$, interpolating between the bandit case ($m = 0$) and the full-information case ($m = K - 1$). Can you sketch a modified importance-weighting scheme that exploits the extra $m$ observations?

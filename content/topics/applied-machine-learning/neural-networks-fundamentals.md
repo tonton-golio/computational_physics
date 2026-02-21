@@ -58,7 +58,7 @@ Neural networks have many parameters, and given enough capacity they will happil
 
 ## Universal approximation
 
-A remarkable theorem (Cybenko, 1989) says that a single hidden layer with enough neurons can approximate any continuous function on a compact set. So why use deep networks? Because a single wide layer can approximate anything in theory, but it may need an astronomically large number of neurons. Depth is a Swiss Army knife — deep networks with fewer neurons per layer learn more efficiently, because each layer composes features hierarchically. Width is a sledgehammer; depth is elegance.
+A remarkable theorem (the universal approximation theorem) says that a single hidden layer with enough neurons can approximate any continuous function on a compact set. So why use deep networks? Because a single wide layer can approximate anything in theory, but it may need an astronomically large number of neurons. Depth is a Swiss Army knife — deep networks with fewer neurons per layer learn more efficiently, because each layer composes features hierarchically. Width is a sledgehammer; depth is elegance.
 
 ## Architecture landscape
 
@@ -81,14 +81,31 @@ The remaining pages in this module cover RNNs and GNNs. For CNNs, transformers, 
 
 ## Practical checklist
 
-- Start with a small network and increase capacity if underfitting.
-- Use ReLU activations and Adam optimizer as defaults.
-- Apply dropout (0.1–0.5) and monitor train vs. validation loss.
-- Normalize inputs and consider batch normalization for deeper networks.
-- Visualize learned features and gradients to diagnose training issues.
+* Start with a small network and increase capacity if underfitting.
+* Use ReLU activations and Adam optimizer as defaults.
+* Apply dropout (0.1–0.5) and monitor train vs. validation loss.
+* Normalize inputs and consider batch normalization for deeper networks.
+* Visualize learned features and gradients to diagnose training issues.
+
+## Big Ideas
+
+* Backpropagation is just the chain rule, applied systematically and automatically. The mystery dissolves once you see it as "blame propagating backward through a chain of decisions."
+* Nonlinearity is not a detail — it is the entire point. Without an activation function, you have an expensive way to do linear regression. With one, you have a universal function approximator.
+* Regularization and capacity are two sides of the same dial. Before you make the network bigger, ask whether regularization is already failing; before you add dropout, ask whether the model has enough capacity to fit the training data at all.
+* Depth buys efficiency in representation: what an exponentially wide single-layer network can represent, a polynomial-depth network can represent with far fewer parameters. That is why the field went deep.
+
+## What Comes Next
+
+Feedforward networks are the foundation, but the most interesting architectures emerge when you specialize the connectivity for a particular structure in the data. Recurrent neural networks bend the feedforward graph into a loop, giving the network memory — the ability to carry information from one timestep to the next. That single change is what lets a model handle sequences, and it brings with it a new set of training challenges, chief among them the vanishing gradient problem.
+
+After that, graph neural networks generalize message-passing to arbitrary relational structure, and generative adversarial networks set two networks against each other in a training game that produces entirely new data. Each of these architectures is built from the same primitive operations — linear transformation, nonlinearity, gradient descent — that you just learned.
 
 ## Check your understanding
 
-- Can you explain backpropagation to a non-technical friend using the "passing blame backward" analogy?
-- What is the mental image that makes clear why depth beats width?
-- What experiment would you run to determine if your network needs more capacity or more regularization?
+* Can you explain backpropagation to a non-technical friend using the "passing blame backward" analogy?
+* What is the mental image that makes clear why depth beats width?
+* What experiment would you run to determine if your network needs more capacity or more regularization?
+
+## Challenge
+
+Build a two-layer MLP by hand (on paper or in a few lines of NumPy) and train it on the XOR problem — four input points, four labels, no library. Derive the backpropagation updates yourself using the chain rule, implement gradient descent by hand, and verify that the network converges. Then ask: what is the minimum number of hidden neurons required? What happens if you use a linear activation instead of ReLU? Can you prove, not just observe, why the linear version fails?

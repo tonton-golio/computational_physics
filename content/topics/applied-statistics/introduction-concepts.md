@@ -83,7 +83,7 @@ def truncated_mean(arr, k):
     return np.mean(arr_sorted[k:-k])
 ```
 
-> **Try this at home.** Take ten measurements of anything — your walking time to class, the temperature outside, the number of words per sentence in a book. Compute the mean and the median. Are they close? If not, you probably have outliers or a skewed distribution. That's already telling you something about the data.
+> **Challenge.** Take ten measurements of anything — your walking time to class, the temperature outside, the number of words per sentence in a book. Compute the mean and the median. Are they close? If not, you probably have outliers or a skewed distribution. That's already telling you something about the data.
 
 ## Measures of Spread
 
@@ -117,7 +117,7 @@ $$
 \hat{\sigma}_\mu = \hat{\sigma}/\sqrt{N}.
 $$
 
-Alex has three measurements of the same length: $10.2 \pm 0.1$, $10.5 \pm 0.5$, and $10.1 \pm 0.2$ cm. The weighted mean pulls toward 10.2, because that measurement is the most precise. This is your first taste of a powerful idea: *let the data tell you how much to trust each piece of information*. You'll see this idea again when we meet likelihood in lesson 2 and chi-square fitting in lesson 5.
+Alex has three measurements of the same length: $10.2 \pm 0.1$, $10.5 \pm 0.5$, and $10.1 \pm 0.2$ cm. The weighted mean pulls toward 10.2, because that measurement is the most precise. This is your first taste of a powerful idea: *let the data tell you how much to trust each piece of information*. You'll see this idea again when we meet likelihood in [probability density functions](./probability-density-functions) and [chi-square fitting](./chi-square-method).
 
 ## From Individual Variables to Relationships
 
@@ -164,16 +164,35 @@ $$
 
 Pearson catches linear relationships. Spearman and Kendall catch monotonic ones. But what about truly complex dependencies — where $y$ might go up, then down, then up again as $x$ increases? For these, you need more powerful tools:
 
-- **Maximal Information Coefficient (MIC)**: Scans across many possible grids to find the strongest relationship of any shape. High MIC means the variables are related somehow, even if the pattern is complex.
-- **Mutual Information (MI)**: Borrowed from information theory, MI measures how much knowing $x$ reduces your uncertainty about $y$. It captures any kind of dependency, linear or not.
-- **Distance Correlation (DC)**: Unlike Pearson, distance correlation equals zero *only* when the variables are truly independent. It provides a rigorous test for any form of association.
+* **Maximal Information Coefficient (MIC)**: Scans across many possible grids to find the strongest relationship of any shape. High MIC means the variables are related somehow, even if the pattern is complex.
+* **Mutual Information (MI)**: Borrowed from information theory, MI measures how much knowing $x$ reduces your uncertainty about $y$. It captures any kind of dependency, linear or not.
+* **Distance Correlation (DC)**: Unlike Pearson, distance correlation equals zero *only* when the variables are truly independent. It provides a rigorous test for any form of association.
 
 These measures are more computationally expensive, so they are typically reserved for exploratory analysis when you suspect non-trivial structure. The progression from Pearson to Spearman to MIC/MI/DC mirrors a trade-off: each step captures more general relationships, at the cost of simplicity and interpretability.
 
-> **A note on what's coming.** Everything in this section describes data you already have. But the deeper question is: what *process* generated that data? If you can describe the underlying mechanism with a mathematical function, you unlock the ability to predict, extrapolate, and quantify uncertainty. That's the idea of a probability density function — and it's where we go next.
+Everything in this section describes data you already have. But the deeper question is: what *process* generated that data? If you can describe the underlying mechanism with a mathematical function, you unlock the ability to predict, extrapolate, and quantify uncertainty. That's the idea of a probability density function — and it's where we go next.
 
 > **Challenge.** Explain to a friend, using only words a 12-year-old would understand, why the average can be misleading when there's an outlier. You have one minute.
 
----
+## Big Ideas
 
-**What we just learned.** You now have a toolkit for describing data: means (arithmetic, geometric, harmonic, truncated) for the center; standard deviation and weighted mean for spread; and correlation coefficients (Pearson, Spearman, Kendall, MIC) for relationships between variables. The key insight is that no single summary captures everything — always plot the data, always ask what kind of structure you're looking for, and always consider whether the "obvious" summary is actually the right one.
+* The "right" average depends on the structure of your data: arithmetic means for additive quantities, geometric means for multiplicative ones, harmonic means for rates — there is no universal champion.
+* Bessel's correction ($N-1$ instead of $N$) exists because the sample mean is always closer to the data than the true mean is, so the naive formula systematically underestimates spread.
+* A correlation of zero does not mean independence — a perfect circle has Pearson's $\rho = 0$. Always plot before you summarize.
+* Giving imprecise measurements equal weight with precise ones throws away information; the weighted mean is how you let uncertainty tell you how much to trust each reading.
+
+## What Comes Next
+
+Everything in this section describes data you already have — summaries, centers, spreads, relationships. But the deeper question is: what *process* generated that data? If you can describe the underlying mechanism with a mathematical function, you unlock the ability to predict, extrapolate, and quantify uncertainty in a principled way.
+
+That function is the probability density function, and it is where the course goes next. The weighted mean you computed here will reappear there as a special case of maximum likelihood estimation — the same idea, made general.
+
+## Check Your Understanding
+
+1. You have salary data for a company where the CEO earns 200 times the median worker's salary. Which measure of central tendency gives a more honest picture of what a typical employee earns, and why?
+2. Two datasets have identical means and standard deviations but very different shapes. What does this tell you about what the mean and standard deviation do and do not capture?
+3. Two variables have a Pearson correlation of $\rho = 0$. A classmate concludes they are independent. What example would you use to show this conclusion is wrong?
+
+## Challenge
+
+Design a measurement scheme for estimating the average commute time in a city. Your dataset will inevitably include some extreme outliers (people who commute three hours each way). Write down: which measure of central tendency you would report and why, how you would quantify the spread, and what a "weighted" version of your estimate might look like if some respondents kept more careful time logs than others. Then consider: if a journalist reports the arithmetic mean and a union reports the median, and the numbers are very different, who is lying?

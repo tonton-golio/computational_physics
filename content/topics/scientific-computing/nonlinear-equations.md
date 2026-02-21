@@ -1,5 +1,4 @@
 # Nonlinear Equations
-*Welcome to the jungle where anything is possible*
 
 > *We just mastered linear systems where everything was guaranteed. Now those guarantees vanish. Welcome to the real world.*
 
@@ -17,16 +16,16 @@ Complex numbers are complicated, so we'll only work with reals.
 Emergent macroscopic behaviour comes out of high dimensionality of linear systems. For example, you don't figure out the aerodynamics of a plane by using the schrodinger equation for every atom. You can make a simpler theory based on the emergent behaviour, which could be non-linear despite the underlying rules being linear. You could also just make up a non-linear problem, like in economics.
 
 **Linear Systems:**
-- We know exactly how many solutions exist (by looking at the matrix's rank)
-- We have methods to find exact solutions (if they exist) or approximate solutions (if they don't exist)
-- We can find the full solution space of the problem by adding the kernel
-- We can routinely solve for billions of dimensions: it's very efficient
+* We know exactly how many solutions exist (by looking at the matrix's rank)
+* We have methods to find exact solutions (if they exist) or approximate solutions (if they don't exist)
+* We can find the full solution space of the problem by adding the kernel
+* We can routinely solve for billions of dimensions: it's very efficient
 
 **Non-linear systems:**
-- No idea how many (if any) solutions. All we can hope for is rules of thumb, heuristics, and we can look for something that works as much as possible and fails rarely. We won't get great results in a finite number of steps; sometimes it gets closer and sometimes it doesn't.
-- No fail-proof solvers
-- No way of knowing if we've found all the solutions
-- Even 1 dimensional solutions can take ages
+* No idea how many (if any) solutions. All we can hope for is rules of thumb, heuristics, and we can look for something that works as much as possible and fails rarely. We won't get great results in a finite number of steps; sometimes it gets closer and sometimes it doesn't.
+* No fail-proof solvers
+* No way of knowing if we've found all the solutions
+* Even 1 dimensional solutions can take ages
 
 ## How many solutions?
 
@@ -53,9 +52,9 @@ Let's use this to build an equation solver on a bracket. (A *bracket* is an inte
 **Step 2:** Cut the interval in half: set $m = \frac{a+b}{2}$ and evaluate $S_m = \text{sign}(f(m))$
 
 **Step 3:** Keep the half that still brackets the root:
-- If $S_m == S_a$: the root is in the right half, so $a=m$
-- If $S_m == S_b$: the root is in the left half, so $b=m$
-- If $S_m == 0$: We've found the root
+* If $S_m == S_a$: the root is in the right half, so $a=m$
+* If $S_m == S_b$: the root is in the left half, so $b=m$
+* If $S_m == 0$: We've found the root
 
 Note: you should not use $m = \frac{a+b}{2}$ because of floating point error: use  $m = a + \frac{b-a}{2}$
 
@@ -106,9 +105,9 @@ $$
 If $\lim_{k\to 0} \frac{\vert e_{k+1}\vert}{\vert e_k\vert^r} = c$, and $0 \leq c \lt 1$, method converges with rate r=1 $\implies$ linear, r=2 $\implies$ quadratic, etc
 
 **How fast is fast?** Think of convergence rates like this:
-- **Linear (r=1):** Like earning simple interest — you gain a fixed number of correct digits each step. Bisection does this: one bit per step, steady and reliable.
-- **Quadratic (r=2):** Like compound interest on steroids — the number of correct digits *doubles* each step. Start with 3 good digits, then 6, then 12, then 24. Newton's method does this.
-- **Cubic (r=3):** Even wilder — correct digits *triple* each step. Rayleigh quotient iteration achieves this for eigenvalue problems.
+* **Linear (r=1):** Like earning simple interest — you gain a fixed number of correct digits each step. Bisection does this: one bit per step, steady and reliable.
+* **Quadratic (r=2):** Like compound interest on steroids — the number of correct digits *doubles* each step. Start with 3 good digits, then 6, then 12, then 24. Newton's method does this.
+* **Cubic (r=3):** Even wilder — correct digits *triple* each step. Rayleigh quotient iteration achieves this for eigenvalue problems.
 
 ## Fixed point solvers
 
@@ -129,7 +128,7 @@ Question: Can we transform "$f(x)=0$" to "$g(x)=x$"? The answer is yes, it's eas
 
 For example, if you pick $g(x) = x - f(x)$, you usually repel solutions. Look at example 5-8 in the book, it gives 4 different ways of rewriting, some are repulsors and some attracters.
 
-> **You might be wondering...** "How do I know which rewriting will converge?" Check the derivative at the fixed point! If $|g'(x^*)| < 1$, it converges. If $|g'(x^*)| > 1$, it diverges. If $|g'(x^*)| = 0$, you've hit the jackpot — quadratic convergence.
+How do you know which rewriting will converge? Check the derivative at the fixed point! If $|g'(x^*)| < 1$, it converges. If $|g'(x^*)| > 1$, it diverges. If $|g'(x^*)| = 0$, you've hit the jackpot — quadratic convergence.
 
 How can we make it attractive? Let's analyze the error (in 1D, because it's easier):
 
@@ -176,10 +175,29 @@ Watch the beautiful part: at the root where $f(x^*) = 0$, we get $g'(x^*) = 0$, 
 
 Which is Newton's method: you have to start close enough, but once you do it converges rapidly.
 
-> **Challenge:** Implement Newton's method in 3 lines of Python and find $\sqrt{2}$ by solving $f(x) = x^2 - 2 = 0$. Start from $x_0 = 1$. Print the error at each step and verify it roughly squares each time.
+> **Challenge.** Implement Newton's method in 3 lines of Python and find $\sqrt{2}$ by solving $f(x) = x^2 - 2 = 0$. Start from $x_0 = 1$. Print the error at each step and verify it roughly squares each time.
 
 ---
 
-**What we just learned in one sentence:** Nonlinear equations have no guarantees, but bisection always works (slowly) and Newton's method works brilliantly (if you start close enough) because it doubles your correct digits every step.
+## Big Ideas
 
-**What's next and why it matters:** One dimension was scary enough — now imagine navigating this nonlinear jungle in $n$ dimensions. The derivative becomes a Jacobian matrix, and we'll need our linear algebra tools from Lesson 02 to survive each Newton step.
+* Nonlinear equations offer none of the guarantees of linear ones — you may have zero solutions, one, many, or infinitely many, and there is no formula that tells you which.
+* Bisection is the tortoise: it always converges if a bracket exists, gains exactly one bit per step, and cannot be fooled.
+* Newton's method is the hare: it doubles your correct digits every step near a root, but it can diverge catastrophically if you start too far away.
+* The condition number of root-finding is the reciprocal of the slope — a root where the function barely grazes zero is genuinely hard to locate precisely.
+
+## What Comes Next
+
+One-dimensional root-finding already reveals the full drama of nonlinear computation: the tension between global reliability and local speed, and the role of the derivative as the key to fast convergence. In $n$ dimensions, the derivative becomes a Jacobian matrix — an $n \times n$ object — and each Newton step requires solving a linear system rather than performing a simple division.
+
+This is where linear algebra pays its debts. Every Newton step in higher dimensions is exactly the kind of problem studied in the linear equations lesson: a known matrix, a known right-hand side, and an unknown step to compute. The condition number of the Jacobian will determine how trustworthy each step is.
+
+## Check Your Understanding
+
+1. Bisection on $[0, 10]$ has already run for 20 steps. What is the maximum possible distance between the current midpoint and the true root?
+2. Newton's method achieves quadratic convergence because $g'(x^*) = 0$ at the root. Explain in your own words why this derivative being zero leads to the error squaring each step.
+3. A function has a double root: $f(x) = (x - r)^2$. What happens to Newton's method near $r$, and why does convergence degrade?
+
+## Challenge
+
+Implement both bisection and Newton's method to find all roots of $f(x) = x^5 - 5x^3 + 4x$ on $[-3, 3]$. First plot the function to identify brackets for bisection. Then experiment with different starting points for Newton's method, recording whether each starting point leads to convergence and which root it finds. Map out the basins of attraction: which starting points lead to which roots? Are there starting points where Newton's method diverges entirely?

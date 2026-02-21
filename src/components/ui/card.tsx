@@ -1,11 +1,19 @@
+"use client";
+
+import { useSimulationFullscreen } from "@/lib/simulation-fullscreen-context";
+
 interface CardProps {
   children: React.ReactNode;
   className?: string;
 }
 
 export function Card({ children, className = "" }: CardProps) {
+  const isFullscreen = useSimulationFullscreen();
   return (
-    <div className={`rounded-xl border border-[var(--border-strong)] bg-[var(--surface-1)] p-6 shadow-sm ${className}`}>
+    <div
+      data-fs-role={isFullscreen ? "controls" : undefined}
+      className={`rounded-xl border border-[var(--border-strong)] bg-[var(--surface-1)] p-6 shadow-sm ${className}`}
+    >
       {children}
     </div>
   );

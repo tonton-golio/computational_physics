@@ -1,7 +1,6 @@
 # Initial Value Problems
-*Teaching the computer to march through time without tripping*
 
-> *The eigenvalues from Lesson 07-08 show up again here — the eigenvalues of the Jacobian determine whether your problem is stiff, and stiffness determines which solver you need.*
+> *The [eigenvalues](./eigen-systems) show up again here — the eigenvalues of the Jacobian determine whether your problem is stiff, and stiffness determines which solver you need.*
 
 ## Introduction
 
@@ -45,7 +44,7 @@ $$
 
 This is an **implicit** method since $y_{n+1}$ appears on both sides and generally requires solving a nonlinear equation at each step. The payoff is greatly improved stability for stiff systems.
 
-> **You might be wondering...** "If backward Euler needs to solve a nonlinear equation at every step, isn't that expensive?" Yes, it is! You typically need Newton's method (Lesson 04) at each time step. But for stiff problems, forward Euler would need *billions* of tiny steps to stay stable, so solving one nonlinear equation per large step is a bargain.
+If backward Euler needs to solve a nonlinear equation at every step, isn't that expensive? Yes, it is! You typically need [Newton's method](./nonlinear-equations) at each time step. But for stiff problems, forward Euler would need *billions* of tiny steps to stay stable, so solving one nonlinear equation per large step is a bargain.
 
 ## Runge-Kutta Methods
 
@@ -72,7 +71,7 @@ RK4 has a local truncation error of $O(h^5)$ and a global error of $O(h^4)$, off
 
 A general $s$-stage Runge-Kutta method is defined by a **Butcher tableau** specifying the coefficients $a_{ij}$, $b_i$, and $c_i$. The method is explicit if $a_{ij} = 0$ for $j \geq i$ and implicit otherwise.
 
-> **You might be wondering...** "Why is RK4 so popular instead of, say, RK8?" Diminishing returns. Going from order 1 to order 4 is a huge accuracy gain for moderate extra work. Going from order 4 to order 8 requires many more function evaluations per step, and you usually get better results by using RK4 with a smaller step size instead.
+Why is RK4 so popular instead of, say, RK8? Diminishing returns. Going from order 1 to order 4 is a huge accuracy gain for moderate extra work. Going from order 4 to order 8 requires many more function evaluations per step, and you usually get better results by using RK4 with a smaller step size instead.
 
 ## Multistep Methods
 
@@ -154,7 +153,7 @@ All the methods above apply to vector-valued systems $\mathbf{y}' = \mathbf{f}(t
 
 For Hamiltonian systems (where energy conservation matters), **symplectic integrators** like the Stormer-Verlet method preserve the geometric structure of phase space and give bounded energy errors over long times, unlike general-purpose methods which may exhibit secular energy drift.
 
-> **Challenge:** Implement forward Euler and RK4. Solve the simple pendulum $\theta'' + \sin\theta = 0$ (rewrite as a 2D system). Integrate for 100 periods. Plot the energy $E = \frac{1}{2}\dot\theta^2 - \cos\theta$ over time. Watch Euler's energy drift grow while RK4 stays much more stable.
+> **Challenge.** Implement forward Euler and RK4. Solve the simple pendulum $\theta'' + \sin\theta = 0$ (rewrite as a 2D system). Integrate for 100 periods. Plot the energy $E = \frac{1}{2}\dot\theta^2 - \cos\theta$ over time. Watch Euler's energy drift grow while RK4 stays much more stable.
 
 ## Summary
 
@@ -169,6 +168,25 @@ For Hamiltonian systems (where energy conservation matters), **symplectic integr
 
 ---
 
-**What we just learned in one sentence:** ODE solvers march through time step by step, and the choice between explicit (fast but fragile) and implicit (robust but expensive) depends on whether your problem's eigenvalues make it stiff.
+## Big Ideas
 
-**What's next and why it matters:** We've been solving ODEs — equations in time. At the summit of our mountain, we'll paint the whole sky with **partial differential equations** — equations in both space and time — using everything we've learned: finite differences, linear systems, eigenvalues, FFTs, and ODE solvers all come together.
+* Every ODE solver is a trade-off: explicit methods are cheap per step but require tiny steps near stiff eigenvalues; implicit methods pay per step to solve a nonlinear equation, but can take arbitrarily large steps.
+* Stiffness is not a property of the equation alone — it is a property of the equation relative to the time scale you care about. A problem is stiff when the fast modes are irrelevant but still force your step size.
+* RK4 achieves fourth-order accuracy by sampling the slope four times within each step and combining them with carefully chosen weights — it is the weighted average of four local slopes, not just an improved guess.
+* Adaptive step-size control is simply a real-time error estimator: embed two methods of different orders, measure their disagreement, and use that disagreement to set the next step size.
+
+## What Comes Next
+
+ODEs describe how a system evolves in time when the state lives at a single point. The final topic extends this to systems where the state is a field — a function of both space and time. Partial differential equations require everything built so far: finite differences for derivatives, linear algebra for the implicit solves, eigenvalue analysis for stability, the FFT for spectral discretization, and ODE integrators for the time-marching.
+
+The method of lines makes this explicit: discretize space to get a system of ODEs, then apply the integrators from this lesson. Stiffness, stability, and step-size control all reappear, but now the eigenvalues come from the spatial discretization, and making the grid finer makes the problem more stiff.
+
+## Check Your Understanding
+
+1. Forward Euler is unstable for $y' = -100y$ unless $h < 0.02$. Backward Euler is stable for any $h$. Why does backward Euler cost more per step, and in what sense is paying that cost worthwhile?
+2. RK4 has global error $O(h^4)$. If you halve the step size, by what factor does the error decrease, and how many more function evaluations does this require per unit of simulated time?
+3. A problem has Jacobian eigenvalues ranging from $-1$ to $-10^6$. Is it stiff? Which solver would you choose, and why?
+
+## Challenge
+
+Implement the Lorenz system $\dot{x} = \sigma(y-x)$, $\dot{y} = x(\rho - z) - y$, $\dot{z} = xy - \beta z$ with $\sigma=10$, $\rho=28$, $\beta=8/3$. Integrate from $t=0$ to $t=50$ using (a) forward Euler with $h=0.01$, (b) RK4 with $h=0.01$, and (c) an adaptive solver from SciPy. Start two trajectories with initial conditions differing by $10^{-8}$ and measure the divergence over time. Plot the 3D trajectories and the separation on a log scale. Identify the Lyapunov time from your data, and explain why the error in the forward Euler solution diverges faster than the physical separation of the two trajectories.

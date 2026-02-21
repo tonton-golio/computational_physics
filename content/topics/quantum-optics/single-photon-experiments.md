@@ -60,3 +60,24 @@ $$
 This demonstrates single-photon interference: the photon interferes with itself as it traverses both paths simultaneously in superposition. The which-path information determines whether interference is observed, illustrating the complementarity principle.
 
 For $N$-photon states or squeezed light inputs, the interferometer can achieve phase sensitivity beyond the **shot-noise limit** $\Delta\phi \sim 1/\sqrt{N}$, approaching the **Heisenberg limit** $\Delta\phi \sim 1/N$.
+
+## Big Ideas
+
+* A single photon at a beam splitter never splits: one detector clicks, never both. This anticorrelation ($g^{(2)}(0) = 0$ across the two output ports) is proof that light comes in discrete quanta.
+* A coherent state, by contrast, gives independent Poissonian clicks at both outputs — it is the closest classical behavior possible, with no photon-photon correlations.
+* The Hong-Ou-Mandel effect is bunching with a vengeance: two indistinguishable photons entering separate ports always exit together, making the coincidence rate vanish. The HOM dip is the most sensitive tool we have for measuring photon indistinguishability.
+* A Mach-Zehnder interferometer reveals wave-particle duality in the starkest form: close the interferometer and the photon shows wave-like interference; ask which path it took and the fringes disappear.
+
+## What Comes Next
+
+Single-photon experiments demonstrate the quantum limits of detecting and routing light. The next lesson zooms out to ask how precisely we can measure a phase with many photons — and how quantum resources like squeezing and entangled states push the fundamental limits of interferometric sensitivity far beyond what classical light can achieve.
+
+## Check Your Understanding
+
+1. In the single-photon beam-splitter experiment, the two output detectors never click simultaneously ($P_{cd} = 0$). For a classical wave of the same average intensity, what would $P_{cd}$ be, and why does the quantum result differ so dramatically?
+2. The Hong-Ou-Mandel dip depth (visibility of the zero-coincidence feature) measures photon indistinguishability. If two photons are identical in every degree of freedom, visibility = 1. What would reduce the visibility, and why does any partial distinguishability (in frequency, polarization, or arrival time) restore some coincidences?
+3. In a Mach-Zehnder interferometer with a single photon, the detection probabilities at the two outputs are $\cos^2(\phi/2)$ and $\sin^2(\phi/2)$. There is no "which-path" information available at either output. If you inserted a detector inside the interferometer to determine which path the photon took, what would happen to the output probabilities, and why?
+
+## Challenge
+
+Consider three beam splitters arranged so that two photons undergo two successive HOM interactions (a "cluster state" circuit). Work out the output state when two photons enter the input modes of this network, assuming perfect indistinguishability and balanced (50:50) beam splitters. Identify which output-mode occupation patterns have non-zero probability and which are forbidden by destructive two-photon interference. This computation is the core of linear-optical quantum computing: show that the pattern of coincidences cannot be efficiently simulated by sampling from a classical probability distribution (you do not need to prove hardness formally, but sketch the argument).

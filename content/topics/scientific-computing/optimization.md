@@ -1,7 +1,6 @@
 # Optimization Methods
-*Finding the best answer when "best" is all you've got*
 
-> *The quasi-Newton ideas from Lesson 05 (Broyden) show up again here as BFGS — the same trick of building up curvature knowledge step by step, but now for finding minima instead of zeros.*
+> *The quasi-Newton ideas from [Broyden's method](./nonlinear-systems) show up again here as BFGS — the same trick of building up curvature knowledge step by step, but now for finding minima instead of zeros.*
 
 ## Non-linear Optimization
 
@@ -30,7 +29,7 @@ The big question is always: **How much do you know about the landscape, and how 
    1. Low to medium dimensions: If the energy landscape is simple, BFGS. Even if you have a complicated energy landscape, your search area is small enough that you can use BFGS with exploration.
    2. High dimensions: Simple energy landscape, use conjugate gradients. When it's expensive to evaluate the function, and you're in a high-dimensional complex landscape, the search space is too big for you to get anywhere. Here you need to think, and tailor your solution to fit your problem. Generally, you can try to use some sort of symmetry or structure of your problem and then use a metaheuristic to guide your solutions
 
-> **You might be wondering...** "Why can't I just use gradient descent for everything?" Because gradient descent is like always walking downhill in the steepest direction — it zigzags in narrow valleys and takes forever to converge. BFGS and conjugate gradients are smarter: they learn the shape of the valley and take much better steps.
+Why can't you just use gradient descent for everything? Because gradient descent is like always walking downhill in the steepest direction — it zigzags in narrow valleys and takes forever to converge. BFGS and conjugate gradients are smarter: they learn the shape of the valley and take much better steps.
 
 ## BFGS (Broyden-Fletcher-Goldfarb-Shanno)
 
@@ -82,7 +81,7 @@ The Polak-Ribiere variant uses $\beta_{k+1} = \frac{g_{k+1}^T(g_{k+1}-g_k)}{g_k^
 
 CG converges slower than BFGS per iteration, but each iteration is $O(n)$ instead of $O(n^2)$, making it the method of choice for high-dimensional problems (up to millions of dimensions).
 
-> **You might be wondering...** "If conjugate gradients only uses $O(n)$ storage and works in millions of dimensions, why not always use it?" Because BFGS converges faster per step — it has more information (the approximate Hessian). It's a classic speed-memory tradeoff.
+If conjugate gradients only uses $O(n)$ storage and works in millions of dimensions, why not always use it? Because BFGS converges faster per step — it has more information (the approximate Hessian). It's a classic speed-memory tradeoff.
 
 ## Metaheuristics
 
@@ -158,10 +157,29 @@ Note that $\delta$, the free will step, can also be tweaked. The simplest thing 
 
 Ideas $f:\mathbb{R}^{3N}\to\mathbb{R}$ representing $N$ particle position in space $\mathbb{R}^3$
 
-> **Challenge:** Implement simulated annealing in 20 lines of Python. Minimize the Rastrigin function $f(x) = 10n + \sum(x_i^2 - 10\cos(2\pi x_i))$ in 2D. Start at temperature $T=100$, cool with $\alpha=0.999$. Plot the path — watch it jump around at first, then settle down.
+> **Challenge.** Implement simulated annealing in 20 lines of Python. Minimize the Rastrigin function $f(x) = 10n + \sum(x_i^2 - 10\cos(2\pi x_i))$ in 2D. Start at temperature $T=100$, cool with $\alpha=0.999$. Plot the path — watch it jump around at first, then settle down.
 
 ---
 
-**What we just learned in one sentence:** BFGS learns the landscape's curvature as it goes, conjugate gradients work in huge dimensions with tiny memory, and metaheuristics let you escape local minima by embracing randomness.
+## Big Ideas
 
-**What's next and why it matters:** All these methods have been about solving equations and finding optima. But sometimes the most important thing about a matrix isn't how to solve it — it's what its *eigenvalues* reveal about the system's personality. That's next.
+* Gradient descent follows the steepest local slope, which is almost never the most efficient direction to travel — it zigzags in valleys and wastes effort.
+* BFGS builds a running portrait of the landscape's curvature from gradient differences alone, converging superlinearly without ever computing a Hessian explicitly.
+* Conjugate gradients trade convergence speed for memory: $O(n)$ storage instead of $O(n^2)$, making million-dimensional problems tractable.
+* Metaheuristics (simulated annealing, particle swarms, genetic algorithms) are not algorithms — they are frameworks for inventing problem-specific heuristics that can escape local minima at the cost of convergence guarantees.
+
+## What Comes Next
+
+Optimization brings us to the boundary between deterministic and stochastic computation. All the methods here — gradient descent, BFGS, conjugate gradients — are designed to find minima of scalar functions. But behind many of those functions lurks a matrix, and the matrix's eigenvalues govern everything: the shape of the bowl, the stiffness of the descent, the speed of convergence.
+
+Eigenvalue problems are the next stop. They answer a different question: not "what input minimizes this output?" but "what directions does this transformation preserve?" The answer controls natural frequencies in structures, energy levels in quantum systems, and the stability of every dynamical system we will encounter in the rest of the course.
+
+## Check Your Understanding
+
+1. Why does steepest descent zigzag in an elongated valley, and how does BFGS fix this? Answer in terms of what information each method uses at each step.
+2. Simulated annealing occasionally accepts a step that *worsens* the objective. Why is this feature, not a bug, when searching a landscape with many local minima?
+3. Conjugate gradient directions satisfy $d_i^T H d_j = 0$ for $i \neq j$. Why does this property guarantee that progress made in one direction is not destroyed by subsequent steps?
+
+## Challenge
+
+Minimize the 2D Rosenbrock function $f(x, y) = (1-x)^2 + 100(y - x^2)^2$ using (a) gradient descent with a fixed learning rate, (b) BFGS via `scipy.optimize.minimize`, and (c) simulated annealing with a hand-rolled implementation. For each method, plot the trajectory of iterates overlaid on a contour plot of $f$. Record the number of function evaluations and the final error. Then increase the dimension to 10 and repeat with gradient descent and BFGS only. At what dimension does the memory cost of BFGS become problematic, and what would you switch to?

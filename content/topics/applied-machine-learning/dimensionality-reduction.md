@@ -45,10 +45,10 @@ Unlike PCA, autoencoders can capture curved, nonlinear manifolds. Architecture c
 
 Here is a practical decision guide:
 
-- **You need speed and linear interpretability** — use PCA. It is deterministic, fast, and gives you explained-variance scores to decide how many dimensions to keep.
-- **You need detailed 2D cluster visualizations** — use t-SNE. Set perplexity carefully and run it multiple times with different seeds to check that the clusters are stable.
-- **You need a fast nonlinear embedding that scales** — use UMAP. It handles large datasets well and often gives clearer global structure than t-SNE.
-- **PCA underperforms and you need a learnable, nonlinear embedding** — use autoencoders. Especially valuable when you want to train the embedding end-to-end with a downstream model.
+* **You need speed and linear interpretability** — use PCA. It is deterministic, fast, and gives you explained-variance scores to decide how many dimensions to keep.
+* **You need detailed 2D cluster visualizations** — use t-SNE. Set perplexity carefully and run it multiple times with different seeds to check that the clusters are stable.
+* **You need a fast nonlinear embedding that scales** — use UMAP. It handles large datasets well and often gives clearer global structure than t-SNE.
+* **PCA underperforms and you need a learnable, nonlinear embedding** — use autoencoders. Especially valuable when you want to train the embedding end-to-end with a downstream model.
 
 [[figure aml-dimred-comparison]]
 
@@ -62,13 +62,30 @@ Here is a practical decision guide:
 
 ## Practical warnings
 
-- Standardize features before PCA — otherwise the component with the largest scale dominates.
-- t-SNE and UMAP output can vary with random seed and hyperparameters. Always run multiple times.
-- Do not over-interpret apparent distances between far-apart clusters in t-SNE.
-- Autoencoder embeddings depend on architecture and training. Validate that the bottleneck dimension captures meaningful structure before trusting the embedding.
+* Standardize features before PCA — otherwise the component with the largest scale dominates.
+* t-SNE and UMAP output can vary with random seed and hyperparameters. Always run multiple times.
+* Do not over-interpret apparent distances between far-apart clusters in t-SNE.
+* Autoencoder embeddings depend on architecture and training. Validate that the bottleneck dimension captures meaningful structure before trusting the embedding.
+
+## Big Ideas
+
+* High-dimensional data is almost always much lower-dimensional in practice — the interesting structure lives on a curved surface embedded in the full space. Dimensionality reduction is the act of finding that surface.
+* PCA is linear, deterministic, and interpretable, which makes it the right first move. When PCA's explained-variance curve has a sharp elbow, pay attention — that is the data telling you its intrinsic dimension.
+* t-SNE and UMAP are visualization tools, not measurement tools. They will show you clusters, but you cannot trust the distances between them. Beautiful pictures can be deeply misleading if you forget this.
+* Autoencoders close the loop between dimensionality reduction and representation learning: the same compression idea, but now the embedding can be trained end-to-end with any downstream task.
+
+## What Comes Next
+
+Dimensionality reduction is often a means to an end rather than a destination. PCA as a preprocessing step improves the conditioning of everything downstream. Autoencoder embeddings feed into classifiers, clustering algorithms, and generative models. And the latent-space idea — compressing a complex object into a compact code — is the conceptual bridge to the generative architectures that follow.
+
+Generative adversarial networks, covered next, take a compressed noise vector and learn to expand it into realistic data. That generator is essentially a decoder with no corresponding encoder — and understanding autoencoders first makes the GAN architecture much easier to reason about. The deeper question they all share is the same: what is the true geometry of the data, and how do we navigate it?
 
 ## Check your understanding
 
-- Can you explain PCA to a friend using the "photographs of a 3D object" analogy?
-- Can you draw the one diagram that explains why t-SNE cluster distances are misleading?
-- If you had a new dataset, how would you decide which dimensionality reduction method to try first?
+* Can you explain PCA to a friend using the "photographs of a 3D object" analogy?
+* Can you draw the one diagram that explains why t-SNE cluster distances are misleading?
+* If you had a new dataset, how would you decide which dimensionality reduction method to try first?
+
+## Challenge
+
+Take a dataset of your choice with at least 10 features. Run PCA and plot the explained-variance curve to identify the intrinsic dimensionality. Then train a classifier on the full feature set and on the PCA-reduced feature set, and compare accuracy. At what number of retained components does classification performance stop improving? Now run t-SNE and UMAP on the same data and compare their layouts: do the same clusters appear? Are there apparent clusters in the 2D visualization that do not correspond to real class boundaries in the original space? Diagnose what went wrong and what went right in each method.

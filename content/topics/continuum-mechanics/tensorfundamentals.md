@@ -23,8 +23,8 @@ $$
 
 What do the entries mean?
 
-- **Diagonal elements** ($\sigma_{11}$, $\sigma_{22}$, $\sigma_{33}$) are the **normal stresses** — they push or pull straight into each face of the cube. Positive means tension (pulling apart), negative means compression (squeezing together).
-- **Off-diagonal elements** ($\sigma_{12}$, $\sigma_{13}$, etc.) are the **shear stresses** — they slide the faces sideways, like rubbing your hands together.
+* **Diagonal elements** ($\sigma_{11}$, $\sigma_{22}$, $\sigma_{33}$) are the **normal stresses** — they push or pull straight into each face of the cube. Positive means tension (pulling apart), negative means compression (squeezing together).
+* **Off-diagonal elements** ($\sigma_{12}$, $\sigma_{13}$, etc.) are the **shear stresses** — they slide the faces sideways, like rubbing your hands together.
 
 The columns of $\sigma$ are the **traction vectors**: the force per unit area on each face. Every element has units of Pascal ($\text{N/m}^2$).
 
@@ -138,10 +138,23 @@ $$
 
 The strain tensor tells you how the material *deforms*. The spin tensor tells you how it *rotates*. Together, they give the complete first-order picture of motion in a continuum.
 
-## What We Just Learned
+## Big Ideas
 
-Tensors are the language of continuum mechanics. The stress tensor tells you about forces, the strain tensor tells you about deformation, and the spin tensor tells you about rotation. The stress deviator and invariants let you make predictions that don't depend on your arbitrary choice of coordinates. We're now equipped to talk precisely about how materials respond to being pushed and pulled.
+* A tensor is a machine that converts one vector (like a surface normal) into another (like the force on that surface) in a way that works correctly in any coordinate system.
+* The stress tensor has only six independent components — not nine — because angular momentum conservation forces it to be symmetric.
+* The stress deviator strips away uniform pressure and isolates what actually changes shape; invariants like $J_2$ let you predict failure regardless of how you've drawn your coordinate axes.
+* Every velocity field decomposes cleanly into two pieces: a strain part (deformation) and a spin part (rotation) — and only the strain part does mechanical work.
 
-## What's Next
+## What Comes Next
 
 We have the language. Now let's use it. In the next section, we'll connect stress and strain through Hooke's law, explore Mohr's circle as a tool for visualizing stress states, and start to see how real materials behave when you push on them.
+
+## Check Your Understanding
+
+1. Why must the stress tensor be symmetric? What physical catastrophe would occur if $\sigma_{12} \neq \sigma_{21}$?
+2. You rotate your coordinate system by 45°. The numerical entries of the stress tensor change. Yet the von Mises stress $\sqrt{3J_2}$ stays the same. Why?
+3. The spin tensor $\omega$ is antisymmetric. What physical quantity does it represent, and why does it carry no energy?
+
+## Challenge
+
+For a 2D velocity field $v_x = Ay$, $v_y = 0$ (simple shear at rate $A$), compute the strain tensor $\varepsilon$ and the spin tensor $\omega$. Find the principal strains and the angle of the principal axes. Now imagine you double the shear rate. How do the principal strains change, and how does the principal axis orientation change? What does this tell you about the relationship between shear rate and the direction of maximum extension?

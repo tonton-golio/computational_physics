@@ -27,11 +27,11 @@ Near the critical temperature $T_c$, thermodynamic quantities diverge or vanish 
 
 Key critical exponents:
 
-- **Order parameter**: $m \sim |t|^\beta$ for $T < T_c$.
-- **Susceptibility**: $\chi \sim |t|^{-\gamma}$.
-- **Heat capacity**: $C \sim |t|^{-\alpha}$.
-- **Correlation length**: $\xi \sim |t|^{-\nu}$.
-- **Correlation function at $T_c$**: $G(r) \sim r^{-(d-2+\eta)}$.
+* **Order parameter**: $m \sim |t|^\beta$ for $T < T_c$.
+* **Susceptibility**: $\chi \sim |t|^{-\gamma}$.
+* **Heat capacity**: $C \sim |t|^{-\alpha}$.
+* **Correlation length**: $\xi \sim |t|^{-\nu}$.
+* **Correlation function at $T_c$**: $G(r) \sim r^{-(d-2+\eta)}$.
 
 These exponents are not independent. **Scaling relations** connect them:
 
@@ -119,10 +119,23 @@ $$
 
 where $\tilde{\chi}$ is a universal scaling function. By plotting data for different system sizes as a function of $t L^{1/\nu}$, all curves collapse onto a single master curve when the correct exponents are used. This **data collapse** is a powerful method for extracting critical exponents from numerical simulations — and it is deeply satisfying when it works.
 
-> **Key Intuition.** At a critical point, the correlation length diverges and the system becomes scale-invariant: it looks the same whether you zoom in or zoom out. This is why microscopic details do not matter — the system has "forgotten" them. Universality is not a coincidence; it is a mathematical consequence of scale invariance, explained by the renormalization group.
+## Big Ideas
 
-> **Challenge.** Verify the Rushbrooke scaling relation $\alpha + 2\beta + \gamma = 2$ using the 2D Ising exponents: $\alpha = 0$ (logarithmic), $\beta = 1/8$, $\gamma = 7/4$. Does it work? Now try the mean-field exponents. Does it still work?
+* Universality is the miracle that systems made of completely different stuff — iron atoms, water molecules, copper alloys — behave identically near their critical points, because the diverging correlation length erases all memory of microscopic details.
+* The renormalization group explains universality by showing that "irrelevant" directions in coupling-constant space flow to zero, leaving only symmetry and dimensionality to determine the critical exponents.
+* At the critical point, the correlation length diverges to infinity — the system has structure at every scale simultaneously, which is why it looks the same whether you zoom in or out.
+* Finite-size scaling and data collapse are the computational signatures of criticality: when you rescale simulation data from different system sizes and they all fall on one curve, you have found the critical exponents.
 
----
+## What Comes Next
 
-*We have seen that phase transitions involve correlations growing to infinity and systems forgetting their details. But there is a whole class of phase transitions that are geometric rather than energetic — where connectivity, not temperature, is the control parameter. That is percolation, and its critical clusters are fractals. Let us explore them next.*
+Critical phenomena are driven by thermal fluctuations tuned by temperature. But there is an entirely different kind of phase transition where temperature plays no role at all: the connectivity transition of [Percolation](percolation). Fill a lattice randomly with occupied sites at probability $p$, and at a critical $p_c$ a giant connected cluster suddenly spans the entire system. The same power-law scaling, universality classes, and critical exponents appear — in a completely different context. The comparison will sharpen your understanding of what is truly universal about critical phenomena.
+
+## Check Your Understanding
+
+1. Two systems belong to the same universality class if they have the same spatial dimensionality and the same symmetry of the order parameter. The 3D Ising magnet and the liquid-gas critical point are in the same class, even though one involves quantum spins and the other involves classical molecules. What is the shared symmetry?
+2. The renormalization group says that "irrelevant" coupling constants flow to zero under coarse-graining. If irrelevant couplings (like next-nearest-neighbor interactions) do not affect the critical exponents, why do they matter at all for real experiments?
+3. The correlation function decays exponentially away from $T_c$ ($G(r) \sim e^{-r/\xi}$) but as a power law at $T_c$ ($G(r) \sim r^{-(d-2+\eta)}$). What does the switch from exponential to power-law decay reveal about the structure of the system at criticality?
+
+## Challenge
+
+The finite-size scaling ansatz states that the susceptibility of a finite system of size $L$ obeys $\chi(t, L) = L^{\gamma/\nu} \tilde{\chi}(t L^{1/\nu})$. Design a numerical experiment to extract the critical exponents $\gamma$ and $\nu$ for the 2D Ising model from this relation. Specifically: what simulations would you run, how would you plot the data to achieve "collapse," and what systematic errors would you need to worry about? Estimate how large $L$ needs to be for the finite-size effects to be smaller than 10%.

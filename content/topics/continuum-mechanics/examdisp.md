@@ -178,3 +178,26 @@ $$
 We started by pretending matter is smooth. We learned the language of tensors. We pushed on things and watched them push back (stress and strain). We discovered that the same Cauchy equation governs everything from steel beams to ocean currents. We solved beautiful exact problems for pipes and channels, then learned FEM for everything else. And along the way, Rosie stretched, Harry dripped, and Gladys kept grinding slowly toward the sea.
 
 That's continuum mechanics. Now go pass the exam — and never look at a river, a rubber tire, or a cube of cheese the same way again.
+
+## Big Ideas
+
+* One equation — $\rho\,D\mathbf{v}/Dt = \mathbf{f} + \nabla\cdot\sigma$ — governs every continuous material. Glaciers, arteries, earthquake waves, and ocean tides all dance to the same heartbeat. What distinguishes them is the constitutive law: the material's personal recipe for turning deformation into stress.
+* Tensors are not intimidating bookkeeping — they are the language that makes physical statements independent of your arbitrary choice of axes. Invariants, principal stresses, the von Mises criterion: these are quantities nature actually cares about.
+* The route from a differential equation to a computer solution runs through weak form → Galerkin projection → sparse linear system → FEM solve. Every step has a physical justification, not just a mathematical one.
+* The continuum approximation is the silent foundation beneath all of this. It is worth revisiting: everything above rests on the claim that matter is smooth at the scale of your problem. When that claim fails — in nanoscale flows, in the upper atmosphere, in granular media — you need a different theory.
+
+## What Comes Next
+
+This is the end of the continuum mechanics arc — from the audacious claim that matter is smooth, through the language of tensors, through the heartbeat of Cauchy's equation, all the way to a working FEM simulation of a glacier. You've traveled from abstract principles to executable code.
+
+Where do you go from here? The tools you now hold — weak formulations, FEM, dimensional analysis, the Reynolds number — transfer directly to heat transfer, electromagnetic field equations, geophysical modeling, and biomechanics. The constitutive law is what changes; the scaffolding stays the same. Pick a physical system you care about, write down what $\sigma$ looks like for it, and you already know how to solve the problem.
+
+## Check Your Understanding
+
+1. Cauchy's equation is the same for elastic solids and viscous fluids. Write down the two constitutive relations that turn it into the Navier-Cauchy equation (for solids) and the Navier-Stokes equation (for fluids). What is the fundamental physical difference between the two?
+2. A tsunami travels across the open Pacific at $\approx 200$ m/s and slows to $\approx 10$ m/s as it approaches a shoreline where the depth has decreased to 10 m. By what factor does its amplitude increase, assuming energy flux is conserved?
+3. The weak form of a PDE requires less smoothness from the solution than the strong form. Give a concrete example of a physical situation where the true solution has a kink or discontinuity — and explain why weak form is the right framework for handling it numerically.
+
+## Challenge
+
+Design a complete computational study of Gladys the Glacier. Her cross-section is a parabolic valley: $y = x^2/W$ for $-W \leq x \leq W$, with $W = 500$ m and maximum depth 60 m. Ice obeys Glen's flow law (power-law rheology with $n = 3$, $K \approx 2 \times 10^{-24}$ Pa$^{-3}$ s$^{-1}$) under the driving stress of a surface slope of $\theta = 3°$. Formulate the 2D Stokes problem in weak form, identify the appropriate boundary conditions (no-slip at the bedrock, stress-free at the surface), and outline the FEniCS implementation. Without computing, predict qualitatively how the velocity profile across the valley will differ from a Newtonian Poiseuille flow — then explain why that difference matters for predicting how fast icebergs calve from the glacier's terminus.

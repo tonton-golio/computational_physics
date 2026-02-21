@@ -16,9 +16,9 @@ For ordinary solid objects in $d$ dimensions, $d_f = d$ (a square has $d_f = 2$,
 
 Examples:
 
-- Koch snowflake: $d_f = \log 4 / \log 3 \approx 1.26$.
-- Sierpinski triangle: $d_f = \log 3 / \log 2 \approx 1.58$.
-- Percolation cluster at $p_c$ in 2D: $d_f = 91/48 \approx 1.896$.
+* Koch snowflake: $d_f = \log 4 / \log 3 \approx 1.26$.
+* Sierpinski triangle: $d_f = \log 3 / \log 2 \approx 1.58$.
+* Percolation cluster at $p_c$ in 2D: $d_f = 91/48 \approx 1.896$.
 
 [[simulation fractal-dimension]]
 
@@ -50,8 +50,23 @@ The **box-counting method** provides a practical way to estimate the fractal dim
 
 In practice, $\log N(\epsilon)$ is plotted against $\log(1/\epsilon)$, and $d_f$ is estimated from the slope of the linear region.
 
-> **Key Intuition.** Fractals are the geometry of critical phenomena. At a critical point — whether in percolation, magnetism, or any other phase transition — the system has structure at every scale. The fractal dimension quantifies exactly how much structure: it tells you whether the critical object is closer to a line, a surface, or something in between. This is not a coincidence: the same scaling laws that produce power-law divergences in thermodynamic quantities also produce fractal geometry in real space.
+## Big Ideas
 
----
+* Fractal dimension is non-integer because fractals are "too thin" to fill a plane but "too thick" to be a line — they occupy the twilight zone between dimensions.
+* The Mandelbrot set is the most complex object you can define with a one-line formula: $z \to z^2 + c$ produces infinite self-similar detail from pure mathematics.
+* Critical clusters are fractals because scale invariance at the critical point means the same kind of structure repeats at every length scale — the same reason power laws appear in thermodynamic quantities.
+* The box-counting dimension is a practical tool: you can measure the fractal dimension of any real-world object (coastlines, trees, blood vessels) by counting boxes at different scales and fitting a slope.
 
-*In percolation, we had to tune a parameter ($p$) to reach the critical point. But there are systems in nature that drive themselves to criticality without any external tuning. Drop sand on a pile, and it self-organizes to the exact slope where tiny inputs can cause huge avalanches. That is self-organized criticality, and it is next.*
+## What Comes Next
+
+Fractals appear at critical points because you must tune a control parameter — temperature to $T_c$, or occupation probability to $p_c$ — to arrive there. But some systems reach the critical point on their own, without anyone turning a knob. [Self-Organized Criticality](selfOrganizedCriticality) introduces the sandpile model, where adding sand grain by grain drives the pile to the critical slope automatically. Once there, the avalanche sizes follow a power law — and the avalanche shapes are fractal. You have seen all the ingredients; SOC brings them together into a single mechanism that may explain why power laws are everywhere in nature.
+
+## Check Your Understanding
+
+1. The Koch snowflake is built by repeatedly replacing each line segment with four segments of one-third the length. Use this self-similarity to derive the fractal dimension $d_f = \log 4 / \log 3$. Why does this formula work — what is the general principle for computing $d_f$ from a self-similar construction rule?
+2. The Mandelbrot set boundary has fractal dimension 2 (it is a curve that fills area). Yet when you zoom in, you see thin tendrils and spirals, not a solid region. How can a curve have dimension 2?
+3. The percolation cluster at $p_c$ in 2D has fractal dimension $d_f = 91/48 \approx 1.896$, which is close to but less than 2. What does it mean physically that the spanning cluster almost — but not quite — fills the 2D plane?
+
+## Challenge
+
+Measure the fractal dimension of a real-world object using box counting. Take a digital image of a coastline, a tree silhouette, or a lightning bolt. Convert it to black and white. Then, systematically cover it with grids of boxes of side length $\epsilon = 1, 2, 4, 8, \ldots$ pixels and count the number of boxes $N(\epsilon)$ that contain any black pixels. Plot $\log N$ against $\log(1/\epsilon)$ and extract the slope. Compare your measured fractal dimension to the theoretical values for similar objects (coastlines are typically $d_f \approx 1.2$–$1.5$, depending on how rugged they are). What are the main sources of error in your measurement?

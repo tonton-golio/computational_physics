@@ -16,9 +16,9 @@ At steady state the tub is neither rising nor falling, so $\dot{n} = 0$. Solve: 
 
 This is exactly how molecules work inside a cell. mRNA is produced at some rate by the transcription machinery, and it is degraded at a rate proportional to how much is present. The steady-state concentration is simply the ratio of production to degradation. Nature finds this balance automatically. Let us now derive this step by step.
 
-> **Figure: Bathtub cartoon.** A bathtub with a faucet labelled "production $k$" and a drain labelled "degradation $\Gamma$." The water level represents the molecule count $n$. An arrow pointing to the water surface is labelled "$1/\Gamma$ = response time."
+[[figure bathtub-cartoon]]
 
-> **Figure: Approach to steady state.** Time-course plot with two curves: one starting at $n = 0$ rising toward the horizontal steady-state line $n_\mathrm{ss}$, and one starting above $n_\mathrm{ss}$ decaying down to it. Vertical arrows on both curves labelled "time constant $1/\Gamma$."
+[[figure approach-to-steady-state]]
 
 ## Creation: molecules appearing at a constant rate
 
@@ -78,9 +78,9 @@ You might ask: why does a cell bother degrading its own mRNA? It costs energy to
 
 ## Check your understanding
 
-- If you double the production rate $k$ while keeping $\Gamma$ fixed, what happens to the steady-state level?
-- A certain mRNA has a half-life of 3 minutes. What is its degradation rate $\Gamma$?
-- Why does faster degradation lead to faster response, even though it seems wasteful?
+* If you double the production rate $k$ while keeping $\Gamma$ fixed, what happens to the steady-state level?
+* A certain mRNA has a half-life of 3 minutes. What is its degradation rate $\Gamma$?
+* Why does faster degradation lead to faster response, even though it seems wasteful?
 
 ## Challenge
 
@@ -88,9 +88,9 @@ Suppose a gene starts producing mRNA at rate $k = 10$ molecules per minute, star
 
 ## Big ideas
 
-- **The bathtub equation** $\dot{n} = k - \Gamma n$ is the foundation of almost every model in this course.
-- **Steady state** is where production balances degradation: $n_\mathrm{ss} = k / \Gamma$.
-- **The degradation rate $\Gamma$ sets the response time** — fast turnover means the cell can change its mind quickly.
+* **The bathtub equation** $\dot{n} = k - \Gamma n$ is the foundation of almost every model in this course.
+* **Steady state** is where production balances degradation: $n_\mathrm{ss} = k / \Gamma$.
+* **The degradation rate $\Gamma$ sets the response time** — fast turnover means the cell can change its mind quickly.
 
 ## What comes next
 

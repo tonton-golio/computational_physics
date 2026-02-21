@@ -32,11 +32,11 @@ $$
 \mathbf{d} = \mathbf{Gm}.
 $$
 
-- **Rows** of $\mathbf{G}$: one per ray (measurement)
-- **Columns** of $\mathbf{G}$: one per grid cell (unknown)
-- **Entry** $G_{ij}$: the length of ray $i$ inside cell $j$ (zero if the ray misses that cell)
-- $\mathbf{m}$: unknown slowness anomalies in each cell
-- $\mathbf{d}$: measured travel-time anomalies
+* **Rows** of $\mathbf{G}$: one per ray (measurement)
+* **Columns** of $\mathbf{G}$: one per grid cell (unknown)
+* **Entry** $G_{ij}$: the length of ray $i$ inside cell $j$ (zero if the ray misses that cell)
+* $\mathbf{m}$: unknown slowness anomalies in each cell
+* $\mathbf{d}$: measured travel-time anomalies
 
 Most entries of $\mathbf{G}$ are zero — each ray only crosses a small fraction of the grid. This sparsity is what makes large-scale tomography computationally feasible.
 
@@ -82,18 +82,19 @@ $$
 
 The target is a model that:
 
-- fits the data within its uncertainty
-- stays stable under noise
-- avoids unrealistic spatial oscillations
+* fits the data within its uncertainty
+* stays stable under noise
+* avoids unrealistic spatial oscillations
 
 If you've been following along, this should feel familiar — it's exactly the Tikhonov formula from the [regularization lesson](./regularization), applied to a concrete problem.
 
 [[simulation linear-tomography]]
 
-> **What to look for:**
-> - Compare the true anomaly pattern with the recovered image — where does the reconstruction succeed? Where does it smear?
-> - Change the regularization parameter and watch the image sharpen (small $\epsilon$) or blur (large $\epsilon$)
-> - Notice which cells are well-resolved (crossed by many rays) and which are ghostly (sparse coverage)
+Things to look for in the simulation:
+
+* Compare the true anomaly pattern with the recovered image — where does the reconstruction succeed? Where does it smear?
+* Change the regularization parameter and watch the image sharpen (small $\epsilon$) or blur (large $\epsilon$)
+* Notice which cells are well-resolved (crossed by many rays) and which are ghostly (sparse coverage)
 
 ---
 
@@ -101,8 +102,8 @@ If you've been following along, this should feel familiar — it's exactly the T
 
 Here's something that trips up beginners: the quality of your tomographic image depends as much on your **acquisition geometry** as on your inversion algorithm.
 
-- Dense, cross-cutting rays → high local resolution, sharp features
-- Sparse, one-directional rays → elongated blobs, poor depth resolution
+* Dense, cross-cutting rays → high local resolution, sharp features
+* Sparse, one-directional rays → elongated blobs, poor depth resolution
 
 Two stress tests reveal this:
 
@@ -124,12 +125,24 @@ When the forward model is nonlinear, we can no longer find the answer with a sin
 
 ---
 
-## Takeaway
+## Big Ideas
+* The sensitivity matrix $\mathbf{G}$ is not just a computational object — each row is the literal geometric footprint of one measurement on the model. Building it forces you to think carefully about what your data actually sees.
+* Resolution depends on geometry, not just algorithm. Dense, cross-cutting rays produce sharp images; sparse, unidirectional coverage produces elongated blobs. No amount of clever inversion fixes bad survey design.
+* Always validate on synthetic data first. If you cannot recover a known model from clean synthetic data, your inversion workflow has a bug. If you can't recover it from noisy synthetic data, you don't have enough coverage.
+* The checkerboard test is honest in a way that best-fit metrics are not: it shows you the spatial structure of what the data can and cannot resolve.
 
-Linear tomography turns geometry plus physics into a matrix inverse problem. The quality of reconstruction depends as much on ray coverage and regularization as on numerical solvers. And the checkerboard test is your best friend — it tells you honestly what the data can and cannot resolve.
+## What Comes Next
 
----
+Linear tomography succeeds by assuming that travel time is a linear function of the slowness field — the sensitivity matrix $\mathbf{G}$ does not depend on the model you are trying to find. In the real Earth, this assumption breaks down: wave paths bend as they pass through heterogeneous material, and the forward model becomes a nonlinear function of the unknowns. When linearization fails, a single inversion pass is not enough.
 
-## Further Reading
+For nonlinear problems, instead of solving once for a best model, you must explore a family of plausible models — characterizing the posterior rather than optimizing it. The computational machinery for doing that at scale is Monte Carlo sampling, which connects the geometric intuition of tomography to the probabilistic framework developed in the Bayesian lessons.
 
-Nolet's *A Breviary of Seismic Tomography* is compact and insightful. Natterer's *The Mathematics of Computerized Tomography* covers the mathematical foundations.
+## Check Your Understanding
+1. In the matrix $\mathbf{G}$ for 2D tomography, what is the physical meaning of the entry $G_{ij}$? Why are most entries zero for typical ray geometries, and why is this sparsity computationally useful?
+2. You run a delta-function spike test and find that the recovered image is a horizontal smear rather than a compact blob. What does this tell you about the ray geometry in that region of the model?
+3. Explain why a checkerboard pattern that recovers cleanly in the top-left of your image but degrades into a homogeneous gray in the bottom-right is useful information, even if you are primarily interested in a different part of the model.
+
+## Challenge
+
+Design a cross-borehole tomography survey in 2D with a $20 \times 20$ cell grid. Place sources on the left borehole and receivers on the right, then add a second set with sources on the top and receivers on the bottom. Construct $\mathbf{G}$ for each configuration and compute the resolution matrix $\mathbf{R} = \mathbf{G}(\mathbf{G}^T\mathbf{G} + \epsilon^2\mathbf{I})^{-1}\mathbf{G}^T$ for a fixed $\epsilon$. Compare the diagonal of $\mathbf{R}$ (which measures local resolution) between the single-geometry and combined-geometry surveys. How much does adding the second acquisition direction improve resolution in the center versus the edges of the model?
+

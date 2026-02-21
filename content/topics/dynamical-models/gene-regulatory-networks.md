@@ -8,8 +8,8 @@ Over the past several lessons you have built up a toolkit: differential equation
 
 Every regulatory interaction falls into one of two categories:
 
-- **Positive regulation**: Gene A activates gene B, symbolized as $A \rightarrow B$. More of A means more of B.
-- **Negative regulation**: Gene A represses gene B, symbolized as $A \dashv B$. More of A means less of B.
+* **Positive regulation**: Gene A activates gene B, symbolized as $A \rightarrow B$. More of A means more of B.
+* **Negative regulation**: Gene A represses gene B, symbolized as $A \dashv B$. More of A means less of B.
 
 That is the entire alphabet. Every regulatory network, no matter how complex, is spelled with just these two letters. The magic is in the combinations.
 
@@ -105,24 +105,24 @@ $$
 
 To see what the network does without solving the equation, plot the production rate and the degradation rate on the same graph:
 
-- **Production curve**: $f(P) = \beta \, (P/K)^n / (1 + (P/K)^n)$ — an S-shaped curve for activation.
-- **Degradation line**: $g(P) = \gamma \, P$ — a straight line through the origin.
-- **Where they cross is where the system is happy and stays put.** The number of crossings tells you whether the system is monostable (one crossing) or bistable (three crossings).
+* **Production curve**: $f(P) = \beta \, (P/K)^n / (1 + (P/K)^n)$ — an S-shaped curve for activation.
+* **Degradation line**: $g(P) = \gamma \, P$ — a straight line through the origin.
+* **Where they cross is where the system is happy and stays put.** The number of crossings tells you whether the system is monostable (one crossing) or bistable (three crossings).
 
 > *With negative regulation the production curve always decreases while the degradation line increases — they cross exactly once, giving a single stable steady state. With positive regulation the S-shaped production curve can cross the line up to three times, giving bistability. Try it in the simulation below.*
 
 [[simulation hill-function]]
 
-> **Try this**: Switch between positive and negative regulation modes. For negative regulation, you should always see exactly one crossing — one stable steady state. For positive regulation with high Hill coefficient, try adjusting the degradation rate $\gamma$ until you see three crossings appear. The outer two are stable; the middle one is unstable. You have just found bistability.
+Switch between positive and negative regulation modes. For negative regulation, you should always see exactly one crossing — one stable steady state. For positive regulation with high Hill coefficient, try adjusting the degradation rate $\gamma$ until you see three crossings appear. The outer two are stable; the middle one is unstable. You have just found bistability.
 
 ## Biological examples revisited
 
 Now that you can recognize network motifs, look at the biological systems we have encountered throughout this course:
 
-- **Phage lambda**: CI and Cro form a mutual repression toggle switch (the "memory bank" motif). The phage remembers whether to kill or hide.
-- **Competence in *B. subtilis***: ComK activates its own expression (the "commitment device" motif), creating a bistable switch for entering the competent state.
-- **ppGpp signaling**: the ribosome senses amino acid scarcity and triggers ppGpp production, which represses ribosomal RNA synthesis (the "thermostat" motif for resource allocation).
-- **Flagellar assembly**: a single input module coordinates dozens of structural genes through one master regulator (the "temporal program" motif).
+* **Phage lambda**: CI and Cro form a mutual repression toggle switch (the "memory bank" motif). The phage remembers whether to kill or hide.
+* **Competence in *B. subtilis***: ComK activates its own expression (the "commitment device" motif), creating a bistable switch for entering the competent state.
+* **ppGpp signaling**: the ribosome senses amino acid scarcity and triggers ppGpp production, which represses ribosomal RNA synthesis (the "thermostat" motif for resource allocation).
+* **Flagellar assembly**: a single input module coordinates dozens of structural genes through one master regulator (the "temporal program" motif).
 
 ## Why does nature do it this way?
 
@@ -130,9 +130,9 @@ Nature builds complex behavior from simple, reusable parts. A handful of network
 
 ## Check your understanding
 
-- Given the loop $A \dashv B \dashv C \rightarrow A$, is this positive or negative feedback? Will it tend to oscillate or switch?
-- Why does the coherent feed-forward loop filter out brief, spurious signals? What would happen if you replaced the AND gate with an OR gate?
-- A single input module controls 10 genes involved in flagellar assembly. What is the advantage of coordinating them through one master regulator instead of activating each independently?
+* Given the loop $A \dashv B \dashv C \rightarrow A$, is this positive or negative feedback? Will it tend to oscillate or switch?
+* Why does the coherent feed-forward loop filter out brief, spurious signals? What would happen if you replaced the AND gate with an OR gate?
+* A single input module controls 10 genes involved in flagellar assembly. What is the advantage of coordinating them through one master regulator instead of activating each independently?
 
 ## Challenge
 
@@ -140,9 +140,9 @@ Take the simplified positive-feedback equation above and set $\beta = 5$, $K = 1
 
 ## Big ideas
 
-- **Gene regulatory networks are built from a small toolkit of recurring motifs**, each with a distinct computational personality: thermostats, commitment devices, delay timers, memory banks, and temporal programs.
-- **The multiplication rule** (multiply $+1$ and $-1$ around a loop) instantly tells you whether a feedback loop is positive (bistable) or negative (homeostatic/oscillatory).
-- **Graphical analysis** (plotting production vs. degradation curves) reveals the number and stability of steady states for any motif.
+* **Gene regulatory networks are built from a small toolkit of recurring motifs**, each with a distinct computational personality: thermostats, commitment devices, delay timers, memory banks, and temporal programs.
+* **The multiplication rule** (multiply $+1$ and $-1$ around a loop) instantly tells you whether a feedback loop is positive (bistable) or negative (homeostatic/oscillatory).
+* **Graphical analysis** (plotting production vs. degradation curves) reveals the number and stability of steady states for any motif.
 
 ## What comes next
 

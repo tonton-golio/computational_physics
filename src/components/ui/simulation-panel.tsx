@@ -1,5 +1,8 @@
+"use client";
+
 import * as React from "react"
 import { cn } from "@/lib/utils"
+import { useSimulationFullscreen } from "@/lib/simulation-fullscreen-context"
 
 interface SimulationPanelProps extends React.HTMLAttributes<HTMLDivElement> {
   title?: string
@@ -14,8 +17,10 @@ function SimulationPanel({
   className,
   ...props
 }: SimulationPanelProps) {
+  const isFullscreen = useSimulationFullscreen();
   return (
     <div
+      data-fs-role={isFullscreen ? "controls" : undefined}
       className={cn(
         "w-full rounded-lg border border-[var(--border-strong)] bg-[var(--surface-1)]/80 backdrop-blur-sm p-6 mb-8 shadow-[0_1px_3px_rgba(0,0,0,0.06),0_1px_2px_rgba(0,0,0,0.04)] overflow-hidden",
         className,

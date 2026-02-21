@@ -44,13 +44,30 @@ This page gives you the core intuition for sequence modeling. For full architect
 
 ## Practical checklist
 
-- Normalize and window your sequence data carefully — sequence models are sensitive to scale and length.
-- Always use chronological validation splits, never random shuffling.
-- Start with an LSTM or GRU. Switch to a transformer if sequences are long and you have enough data.
-- Track both short-horizon and long-horizon error metrics to understand where your model struggles.
+* Normalize and window your sequence data carefully — sequence models are sensitive to scale and length.
+* Always use chronological validation splits, never random shuffling.
+* Start with an LSTM or GRU. Switch to a transformer if sequences are long and you have enough data.
+* Track both short-horizon and long-horizon error metrics to understand where your model struggles.
+
+## Big Ideas
+
+* Sequential data has an arrow of time, and that arrow matters. An architecture that ignores order is not just suboptimal — it is fundamentally misspecified for the problem.
+* The vanishing gradient problem is not a quirk of bad implementation; it is a mathematical inevitability when you multiply the same matrix hundreds of times. LSTM gates are a structural solution, not a patch.
+* Gating is the key idea: instead of trying to pass all information through a bottleneck, let the network learn *what* to pass. The same idea reappears in attention mechanisms and transformers.
+* Chronological validation is non-negotiable for time-series data. Random shuffling is data leakage in disguise.
+
+## What Comes Next
+
+Recurrent networks are powerful but carry a fundamental limitation: they process sequences one step at a time, making parallelization difficult and long-range dependencies hard to maintain even with gating. The transformer architecture, covered in the advanced sequence modeling materials, replaces recurrence entirely with attention — every token can directly attend to every other token in a single parallel operation. Understanding why LSTM gates work is the best preparation for understanding why attention works even better.
+
+Within this module, graph neural networks take a complementary view: instead of ordering data along a time axis, they organize it by relational structure. The message-passing idea in GNNs and the hidden-state idea in RNNs are both answers to the same question — how do you propagate information across a structured input? — and seeing them side by side sharpens your intuition for both.
 
 ## Check your understanding
 
-- Can you explain the vanishing gradient problem using the telephone game analogy?
-- Sketch the scene that shows how an LSTM gate decides what to remember.
-- What experiment would reveal whether your sequence model is actually using long-range context or just predicting from the last few tokens?
+* Can you explain the vanishing gradient problem using the telephone game analogy?
+* Sketch the scene that shows how an LSTM gate decides what to remember.
+* What experiment would reveal whether your sequence model is actually using long-range context or just predicting from the last few tokens?
+
+## Challenge
+
+Design an experiment to isolate how much long-range context an LSTM actually uses versus how much it relies on recent tokens. Concretely: construct synthetic sequences where the correct prediction at the last position depends on a token at position 1, with 50 irrelevant tokens in between. Train an LSTM and a baseline model that can only see the last 5 tokens. Compare their accuracy. Then systematically vary the gap length and plot how LSTM accuracy degrades. At what gap length does the LSTM stop being better than the short-context baseline? What does that tell you about the effective memory horizon of a trained LSTM?

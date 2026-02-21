@@ -16,9 +16,9 @@ At the Nash equilibrium, the generator produces samples indistinguishable from r
 
 A basic GAN for image generation uses:
 
-- **Generator**: Takes a latent vector $\mathbf{z} \in \mathbb{R}^{d}$ (typically $d = 100$) and maps it through fully connected or transposed convolutional layers to produce an image. Batch normalization and ReLU activations are standard in intermediate layers, with a tanh output.
+* **Generator**: Takes a latent vector $\mathbf{z} \in \mathbb{R}^{d}$ (typically $d = 100$) and maps it through fully connected or transposed convolutional layers to produce an image. Batch normalization and ReLU activations are standard in intermediate layers, with a tanh output.
 
-- **Discriminator**: Takes an image and outputs a single scalar (real/fake probability) through convolutional layers with LeakyReLU activations and a sigmoid output.
+* **Discriminator**: Takes an image and outputs a single scalar (real/fake probability) through convolutional layers with LeakyReLU activations and a sigmoid output.
 
 **DCGAN** (Deep Convolutional GAN) established key architectural guidelines: replace pooling with strided convolutions, use batch normalization in both networks, remove fully connected hidden layers, and use ReLU in the generator but LeakyReLU in the discriminator.
 
@@ -105,21 +105,38 @@ If we gave the discriminator an oracle that perfectly distinguished real from fa
 
 GANs have found applications across science and engineering:
 
-- **Image synthesis**: StyleGAN generates photorealistic faces by controlling style at different spatial scales.
-- **Data augmentation**: Generating synthetic training data when real samples are scarce.
-- **Super-resolution**: SRGAN recovers high-resolution images from low-resolution inputs.
-- **Physics simulations**: Fast surrogate generators for expensive Monte Carlo simulations in particle physics and cosmology.
-- **Anomaly detection**: The discriminator score identifies out-of-distribution samples.
+* **Image synthesis**: StyleGAN generates photorealistic faces by controlling style at different spatial scales.
+* **Data augmentation**: Generating synthetic training data when real samples are scarce.
+* **Super-resolution**: SRGAN recovers high-resolution images from low-resolution inputs.
+* **Physics simulations**: Fast surrogate generators for expensive Monte Carlo simulations in particle physics and cosmology.
+* **Anomaly detection**: The discriminator score identifies out-of-distribution samples.
 
 ## Evaluation metrics
 
 Evaluating generative models is inherently difficult since we lack ground truth for the generated distribution. Common metrics include:
 
-- **Frechet Inception Distance** (FID): Measures the distance between feature distributions of real and generated images using the Inception network. It computes the Frechet distance between two multivariate Gaussians fitted to the features: $\text{FID} = \|\mu_r - \mu_g\|^2 + \text{Tr}(\Sigma_r + \Sigma_g - 2(\Sigma_r \Sigma_g)^{1/2})$. Lower is better.
-- **Inception Score** (IS): Evaluates both quality (sharp class predictions) and diversity (uniform class distribution). Higher is better.
-- **Visual inspection**: Remains important for catching artifacts that quantitative metrics may miss. Numbers lie; your eyes usually do not.
+* **Frechet Inception Distance** (FID): Measures the distance between feature distributions of real and generated images using the Inception network. It computes the Frechet distance between two multivariate Gaussians fitted to the features: $\text{FID} = \|\mu_r - \mu_g\|^2 + \text{Tr}(\Sigma_r + \Sigma_g - 2(\Sigma_r \Sigma_g)^{1/2})$. Lower is better.
+* **Inception Score** (IS): Evaluates both quality (sharp class predictions) and diversity (uniform class distribution). Higher is better.
+* **Visual inspection**: Remains important for catching artifacts that quantitative metrics may miss. Numbers lie; your eyes usually do not.
 
-## Further reading
+## Big Ideas
 
-- Goodfellow, I., et al. (2014). *Generative Adversarial Nets*. The paper that started it all, introducing the adversarial framework.
-- Lilian Weng, *From GAN to WGAN*. A clear blog post walking through the evolution of GAN loss functions and training stability improvements.
+* Mode collapse is what happens when the forger discovers a single forgery that reliably fools the detective and stops trying anything else — the game has a Nash equilibrium in principle, but practice offers many worse equilibria to fall into first.
+* The original GAN loss measures JS divergence between distributions, which saturates to a constant when the distributions do not overlap — Wasserstein GAN fixes this by using a distance that keeps providing signal even when the two distributions are far apart.
+* The discriminator's job is not to win — it is to be helpful to the generator. A discriminator that destroys the generator too quickly leaves no gradient; a weak discriminator teaches nothing. The useful regime is always in between.
+* FID captures both quality and diversity in one number, but it measures them in the feature space of a pre-trained classifier — which means it inherits all the biases of that classifier about what counts as realistic.
+
+## What Comes Next
+
+GANs introduced the idea of learning through adversarial competition, but they are notoriously difficult to train and provide no way to measure how good the model actually is — you cannot compute the likelihood of your test data under a GAN. The next lesson moves to **transformers and attention mechanisms**, where a completely different architecture revolution happened: instead of competing networks or convolutional locality, every position in the input attends directly to every other position. Attention turned out to be so powerful that it eventually displaced not just recurrence but, in many domains, convolutions too.
+
+## Check Your Understanding
+
+1. Mode collapse occurs when the generator produces only a few distinct outputs. Why does the standard GAN loss not directly penalize this lack of diversity? What property of the minimax objective allows a generator to "win" by collapsing to a single mode?
+2. In WGAN, the discriminator is replaced by a "critic" that outputs an unbounded real number rather than a probability. The critic must satisfy a Lipschitz constraint. Why does relaxing the output to be unbounded help, and what would happen without the Lipschitz constraint?
+3. Evaluating GANs is hard because we cannot compute the likelihood of test data. FID measures the distance between real and generated feature distributions. What kind of generator failure would FID fail to detect?
+
+## Challenge
+
+Design a physics-motivated application for a GAN. Suppose you are simulating particle physics collisions: the full simulator takes minutes per event, but you need millions of events. Train a GAN to be a fast surrogate generator — the generator replaces the simulator, and the discriminator is trained on real simulation outputs. Think carefully about: how do you condition the GAN on input physics parameters (energy, collision type)? How do you validate that the generated events match the physics of the simulator, not just the visual appearance? What does mode collapse look like in this physical context, and how would you detect it?
+

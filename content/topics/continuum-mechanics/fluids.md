@@ -9,8 +9,8 @@ That's the fundamental difference between solids and fluids. A solid resists bei
 More precisely: a **fluid** is a material with zero shear modulus. It deforms continuously under any applied shear stress. Fluids resist compression (you can't easily squeeze water into a smaller volume), but they don't resist shearing.
 
 This means fluids respond to stress in a very particular way:
-- **Normal stress** (compression/tension) → yes, fluids push back through **pressure**.
-- **Shear stress** → no resistance in equilibrium. Any shear causes flow.
+* **Normal stress** (compression/tension) → yes, fluids push back through **pressure**.
+* **Shear stress** → no resistance in equilibrium. Any shear causes flow.
 
 At rest, the only stress a fluid can sustain is pressure — equal in all directions, like being squeezed uniformly from all sides. The stress tensor for a fluid at rest is:
 $$
@@ -100,10 +100,23 @@ $$
 
 For stability, this moment must be *restoring*: tilting the body should create a moment that pushes it back upright. This is why ships have heavy keels (to lower $\mathbf{x}_G$) and wide hulls (to raise $\mathbf{x}_B$ when tilted).
 
-## What We Just Learned
+## Big Ideas
 
-A fluid at rest sustains only pressure — no shear. The hydrostatic equation relates pressure to depth. Archimedes' principle tells us the buoyancy force, and the relative positions of the centers of gravity and buoyancy determine whether a floating body is stable.
+* A fluid is defined by what it cannot do: resist shear. Any shear stress, no matter how small, causes continuous flow. At rest, the only allowed stress is isotropic pressure.
+* The hydrostatic equation $\nabla p = \rho\mathbf{g}$ is just Cauchy's equation with all velocities set to zero. Every 10 meters of water adds roughly one atmosphere of pressure.
+* Archimedes' principle is surprisingly deep: a floating body displaces its own weight of fluid — full stop. You don't need to know the body's shape, just its mass and the fluid's density.
+* Stability of a floating body comes down to geometry: the center of buoyancy must shift outward faster than the center of gravity when the body tilts.
 
-## What's Next
+## What Comes Next
 
 We've studied fluids sitting still. Now we set them in motion. What happens when you turn on a hose, stir a cup of tea, or watch the wind blow? The next section brings us to ideal flows, Euler's equations, and Bernoulli's theorem.
+
+## Check Your Understanding
+
+1. A submarine descends from the surface to 300 m depth in seawater ($\rho \approx 1025$ kg/m³). By how much does the external pressure on the hull increase?
+2. A hollow steel sphere has an outer radius of 10 cm and wall thickness of 2 mm ($\rho_{\text{steel}} \approx 7800$ kg/m³). Does it float in water? Show your calculation.
+3. A tall ship has its center of gravity high up in the mast. Is this good or bad for stability? What would ship designers do to compensate?
+
+## Challenge
+
+A rectangular barge (length $L$, width $W$, height $H$) is made of material with uniform density $\rho_b < \rho_w$. It floats with draft $d$ (depth below waterline). Derive an expression for $d$ in terms of the given quantities. Now tilt the barge by a small angle $\theta$ about its long axis. Find the new centers of gravity and buoyancy as functions of $\theta$, compute the restoring moment, and determine the condition on $H$, $W$, and $d$ for the barge to be stable. What happens to stability as you load the barge with cargo (increasing $\rho_b$ toward $\rho_w$)?

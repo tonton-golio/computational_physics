@@ -1,13 +1,12 @@
 # Linear Equations
-*The one family of problems we can solve perfectly (almost)*
 
-> *Remember the condition number from Lesson 01? Watch how it shows up again here — this time deciding whether your linear system's answer is trustworthy or garbage.*
+> *Remember the [condition number](./bounding-errors)? Watch how it shows up again here — this time deciding whether your linear system's answer is trustworthy or garbage.*
 
 ## Why Linear Systems Matter
 Linear systems are special: they're something we can solve really well, and they cover an enormous amount of problems. Even when you've got a non-linear system, you can isolate the linearity and solve that, and treat the non-linearity in another way.
 
 ## From Abstract Linear Systems to Matrices
-#### Going from abstract linear systems to matrices
+### Going from abstract linear systems to matrices
 
 A **linear function** is anything that behaves in the way we call linear. They exist in vector spaces: A mapping $F: X \rightarrow Y$ (abstract, eg: wave functions) is linear if $F(ax + bx') = aF(x) + bF(x')$.
 
@@ -31,7 +30,7 @@ For example, $\int f_i(\alpha)(Fe_j)(\alpha) d\alpha$, if $Y$ is a space of func
 
 **Punch Line:** The actions of $F: X\rightarrow Y$ are exactly the same as $F: \mathbb{C}^m \rightarrow \mathbb{C}^n$.
 
-#### How to solve linear systems of equations
+### How to solve linear systems of equations
 
 Find all $x \in X$ such that $F(x) = y$ (some known $y\in Y$)
 1. Pick basis sets $\{e_1, \dots, e_n\}$ for $X$, $\{f_1, \dots, f_m\}$ for $Y$
@@ -40,7 +39,7 @@ Find all $x \in X$ such that $F(x) = y$ (some known $y\in Y$)
 4. Dot result $x$ with $e$ basis to get the result in the problem domain $x=x_1e_1+\dots+x_ne_n$
 
 ## Existence of Solutions
-#### Can we solve $F(x)=y$?
+### Can we solve $F(x)=y$?
 Yes, when solutions exist!
 
 Today, we'll use the case where $m=n$, i.e, matrix $\underline{F}$ is square.
@@ -73,7 +72,7 @@ That was the mathematical part: Now we're going to look at a case where we have 
 
 ## Condition Number Interactive Demo
 
-<ConditionNumberDemo />
+[[simulation condition-number-demo]]
 
 ## Sensitivity of a Linear System of Equations
 
@@ -81,9 +80,9 @@ The more orthogonal the matrix is, the lower the condition number. It's ~1 for o
 
 ## Interactive Gaussian Elimination and LU Decomposition
 
-<GaussianElimDemo />
+[[simulation gaussian-elim-demo]]
 
-<LUDecompDemo />
+[[simulation lu-decomp-demo]]
 
 ## How to build the algorithms from scratch
 
@@ -103,7 +102,7 @@ What we know:
 
 We can use 5. and 6. together: just scale the rows (if the leading term is nonzero) and subtract
 
-> **You might be wondering...** "Why not just compute $A^{-1}$ directly?" Because computing an inverse is like photocopying a photocopy — each generation loses quality. With floating-point arithmetic, the rounding errors in computing $A^{-1}$ get amplified when you multiply by it. LU factorization avoids this by never forming the inverse explicitly.
+Why not just compute $A^{-1}$ directly? Because computing an inverse is like photocopying a photocopy — each generation loses quality. With floating-point arithmetic, the rounding errors in computing $A^{-1}$ get amplified when you multiply by it. LU factorization avoids this by never forming the inverse explicitly.
 
 ## lu_factorize
 ```python
@@ -166,7 +165,7 @@ def solve_lin_eq(M, z):
     return backward_substitute(U, y)
 ```
 
-> **Challenge:** Build a 5x5 random matrix in NumPy. Solve $Ax = b$ using your own `solve_lin_eq` and compare with `np.linalg.solve`. How many digits agree? Now make the matrix nearly singular (e.g., make two rows almost identical) and try again. Watch the digits evaporate.
+> **Challenge.** Build a 5x5 random matrix in NumPy. Solve $Ax = b$ using your own `solve_lin_eq` and compare with `np.linalg.solve`. How many digits agree? Now make the matrix nearly singular (e.g., make two rows almost identical) and try again. Watch the digits evaporate.
 
 ## Conditioning and Error Analysis
 Consider the matrix equation $Ax=b$.
@@ -179,9 +178,9 @@ In two dimensions, these define lines, we can find the slope and y-intercepts. T
 
 Assume that there's an error or uncertainty in the data, so that $||\Delta b||_\infty < \delta$. You'll have a region of uncertainity around the lines, transforming them into rectangles. Now, your solution can be anywhere in the shape that's made from the intersection of the rectangles. If we had an error in the matrix, we should have a skew (and a shift in slopes) and not a vertical shift like we do if the error is in $b$.
 
-> **You might be wondering...** "What does this look like geometrically?" Picture two lines crossing at a sharp angle — the intersection point is well-defined, even if the lines wiggle a bit. Now picture two lines that are almost parallel — a tiny wiggle moves the intersection point wildly. That's what a high condition number looks like in 2D.
+What does this look like geometrically? Picture two lines crossing at a sharp angle — the intersection point is well-defined, even if the lines wiggle a bit. Now picture two lines that are almost parallel — a tiny wiggle moves the intersection point wildly. That's what a high condition number looks like in 2D.
 
-#### Error bounds:
+### Error bounds:
 
 1. RHS: Assume $A \hat{x} = \hat{b} \implies A(x+\Delta x) = (b+\Delta b)$. That implies:
 	* $||\hat{b}|| = ||A\hat{x}|| \leq ||A||\; ||\hat{x} ||$ and so $||\hat{x}|| \geq \frac{||\hat{b}||}{||A||}$
@@ -192,10 +191,29 @@ Assume that there's an error or uncertainty in the data, so that $||\Delta b||_\
 
 2. Nothing here depends on matrix $A$ being exact, and we can replace $A$ here with $\hat{A}$ everywhere so we can get a calculation even if it's not exact
 
-> **You might be wondering...** "So how do I know if my answer is any good?" Compute the condition number! In NumPy: `np.linalg.cond(A)`. If it's near 1, relax. If it's $10^{10}$, panic (or at least be very suspicious of your answer).
+So how do you know if your answer is any good? Compute the condition number! In NumPy: `np.linalg.cond(A)`. If it's near 1, relax. If it's $10^{10}$, panic (or at least be very suspicious of your answer).
 
 ---
 
-**What we just learned in one sentence:** We can solve linear systems exactly by splitting the matrix into triangles (LU), but the condition number decides how much we should trust the answer.
+## Big Ideas
 
-**What's next and why it matters:** Now that we can solve linear systems perfectly, imagine the data itself is noisy and there are more equations than unknowns — that's where least squares comes in, and it's the same trick astronomers use to find planets from messy telescope data.
+* In finite dimensions, every linear map *is* a matrix — the abstract and the concrete are secretly the same thing once you pick a basis.
+* LU decomposition works by recording the steps of Gaussian elimination; solving then costs almost nothing compared to the factorization itself.
+* Never compute $A^{-1}$ explicitly — it amplifies rounding errors. Factorize instead, and solve by substitution.
+* The condition number of the matrix is the multiplier that turns input uncertainty into output uncertainty; a large condition number means the answer is geometrically fragile.
+
+## What Comes Next
+
+Linear systems are the paradise of numerical methods: existence and uniqueness are decided by a single rank check, and the LU algorithm reaches the exact answer in a fixed number of steps. But real data is noisy, and real experiments give you *more* equations than unknowns. When no exact solution exists, you need the best approximate solution — and that is the least-squares problem.
+
+The Householder reflections used to solve least squares are close relatives of the orthogonal operations that appear throughout the rest of the course. The condition-number intuition you built here will return immediately: forming the normal equations squares the condition number, and that single fact motivates everything about how least squares is actually computed.
+
+## Check Your Understanding
+
+1. A matrix has $\det(A) = 10^{-15}$. Does this mean the matrix is ill-conditioned? Explain using the definition of the condition number.
+2. You solve $Ax = b$ using LU decomposition and get a residual $\|b - A\hat{x}\|$ that is nearly zero, yet the true error $\|x - \hat{x}\|$ is large. What property of $A$ makes this possible?
+3. Forward substitution solves $Ly = b$ from top to bottom; backward substitution solves $Ux = y$ from bottom to top. Why does the triangular structure make each step a one-liner rather than another full linear system?
+
+## Challenge
+
+Construct a family of $n \times n$ matrices parameterized by an angle $\theta$ whose rows are unit vectors that all point nearly in the same direction (make the angle between adjacent rows equal to $\theta$). Compute the condition number and the relative error in the solution $x$ as a function of $\theta$ for $\theta \in [0.01°, 90°]$. At what angle does the system become effectively unsolvable in double precision? Plot both curves on the same axes and explain the connection between the geometry (nearly parallel rows) and the algebra (large condition number).

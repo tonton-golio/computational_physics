@@ -41,8 +41,8 @@ $$
 
 The entries have clear physical meanings:
 
-- **Normal strain** ($\varepsilon_{ii}$): fractional change in length along axis $i$. Positive means stretching, negative means compressing.
-- **Shear strain** ($\varepsilon_{ij}$, $i \neq j$): change in angle between two originally perpendicular lines. It measures how much the material *skews*.
+* **Normal strain** ($\varepsilon_{ii}$): fractional change in length along axis $i$. Positive means stretching, negative means compressing.
+* **Shear strain** ($\varepsilon_{ij}$, $i \neq j$): change in angle between two originally perpendicular lines. It measures how much the material *skews*.
 
 ## Hooke's Law — The Simplest Possible Relationship
 
@@ -60,8 +60,8 @@ $$
 
 What do these constants mean physically?
 
-- **Young's modulus** $E$: how stiff is the material? Pull on it — $E$ tells you how much force per unit area you need to stretch it by a given fraction. Steel: $E \approx 200$ GPa. Rubber: $E \approx 0.01$ GPa.
-- **Poisson's ratio** $\nu$: when you stretch something in one direction, how much does it thin in the other directions? For most materials, $\nu \approx 0.3$. For incompressible materials (like rubber), $\nu \approx 0.5$.
+* **Young's modulus** $E$: how stiff is the material? Pull on it — $E$ tells you how much force per unit area you need to stretch it by a given fraction. Steel: $E \approx 200$ GPa. Rubber: $E \approx 0.01$ GPa.
+* **Poisson's ratio** $\nu$: when you stretch something in one direction, how much does it thin in the other directions? For most materials, $\nu \approx 0.3$. For incompressible materials (like rubber), $\nu \approx 0.5$.
 
 [[simulation stress-strain-curve]]
 
@@ -87,10 +87,23 @@ No eigenvalue calculation needed. Just draw the circle, read off the answer. Eng
 
 [[simulation mohr-circle]]
 
-## What We Just Learned
+## Big Ideas
 
-The stress tensor describes internal forces, the strain tensor describes deformation, and Hooke's law connects them linearly for elastic materials. Mohr's circle gives us a graphical shortcut to understand stress transformations without grinding through matrix algebra. These tools work for any material that obeys linear elasticity.
+* The stress tensor is a machine: feed it a surface orientation, get back the force per unit area on that surface. Its symmetry is not a coincidence — it's angular momentum conservation.
+* Principal stresses are the eigenvalues of the stress tensor; they represent the stress state in the "sweet spot" basis where all shear vanishes.
+* Hooke's law in 3D requires two material constants ($E$ and $\nu$, or equivalently $\lambda$ and $\mu$) because a 3D material has two independent ways to store elastic energy.
+* Mohr's circle is not a trick — it's a geometric picture of how stress components rotate under a change of basis, giving you the maximum shear stress for free.
 
-## What's Next
+## What Comes Next
 
 We've been treating materials as though they bounce back perfectly — pure elasticity. But real materials have limits. In the next section, we'll push further into elasticity: Young's modulus, Poisson's ratio, energy, vibrations, and what happens when you stretch a block of gouda cheese.
+
+## Check Your Understanding
+
+1. A material has $\sigma_{11} = 100$ MPa and all other stress components zero. What are the principal stresses? What does Mohr's circle look like?
+2. Normal strain $\varepsilon_{ii}$ is dimensionless — it's a ratio of lengths. What does it mean physically if $\varepsilon_{11} = -0.003$?
+3. Hooke's law says $\sigma_{ij} = \lambda\varepsilon_{kk}\delta_{ij} + 2\mu\varepsilon_{ij}$. What is the role of the $\lambda\varepsilon_{kk}\delta_{ij}$ term? What would happen to the stress if the material were incompressible?
+
+## Challenge
+
+A thin steel plate is loaded with $\sigma_{11} = 200$ MPa, $\sigma_{22} = -100$ MPa, and $\sigma_{12} = 80$ MPa (plane stress, all other components zero). Draw Mohr's circle, find the principal stresses, find the maximum shear stress, and determine the orientation of the principal axes. Then apply the von Mises criterion: will this stress state cause yielding if the yield strength is 300 MPa?

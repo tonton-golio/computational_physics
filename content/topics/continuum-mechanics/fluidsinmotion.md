@@ -81,10 +81,23 @@ $$
 
 Circulation is the "total spin" enclosed by a loop. Kelvin's theorem says that for an ideal fluid, the circulation around a material loop (one that moves with the fluid) is conserved. Vorticity isn't created or destroyed — it's just transported and stretched by the flow.
 
-## What We Just Learned
+## Big Ideas
 
-Ideal flows obey the Euler equations. Bernoulli's theorem provides energy conservation along streamlines. Vorticity measures local rotation, and in ideal flows, an irrotational state is preserved. These are the building blocks for understanding everything from airplane wings to ocean currents.
+* An ideal (inviscid, incompressible, irrotational) flow is governed by the Euler equations — four equations for four unknowns. Pressure becomes non-local: it instantly adjusts everywhere because incompressibility makes pressure waves travel infinitely fast.
+* Bernoulli's theorem is energy conservation along a streamline: fast flow means low pressure, slow flow means high pressure. It explains garden hoses, airplane wings, and venturi meters.
+* Vorticity $\omega = \nabla \times \mathbf{v}$ measures local spin; Kelvin's theorem says vorticity can't spontaneously appear in an ideal fluid — you need viscosity or boundaries to create it.
+* Circulation $\Gamma = \oint \mathbf{v} \cdot d\mathbf{l}$ is the global version of vorticity: the total "spin" enclosed by a loop, conserved in ideal flow.
 
-## What's Next
+## What Comes Next
 
 Ideal flows are elegant but incomplete — they can't explain why the water in your cup eventually stops spinning after you stir it. That's because real fluids have *viscosity*: internal friction that dissipates energy. The next section introduces viscous flow and the Navier-Stokes equation.
+
+## Check Your Understanding
+
+1. Water flows through a pipe that narrows from diameter 4 cm to diameter 2 cm. If the velocity in the wide section is 1 m/s, what is the velocity in the narrow section? What is the pressure difference between the two sections? (Use Bernoulli's theorem and $\rho = 1000$ kg/m³.)
+2. An ideal flow starts with zero vorticity everywhere. Kelvin's theorem says vorticity can't be created. Yet we observe vorticity in real flows past obstacles. What is the resolution to this apparent paradox?
+3. The Bernoulli function $H = \frac{1}{2}v^2 + gz + p/\rho$ is constant along a streamline in steady flow. Under what stronger condition is it constant throughout the entire flow field?
+
+## Challenge
+
+A wing profile creates faster flow over the top surface than the bottom. Model the wing as a 2D flat plate of chord length $c$ in a uniform flow of speed $U_\infty$. Using Bernoulli's theorem, if the top-surface velocity is $U_\infty + \Delta v$ and the bottom-surface velocity is $U_\infty - \Delta v$ (for small $\Delta v \ll U_\infty$), derive the lift force per unit span. Express the answer in terms of $\rho$, $U_\infty$, $c$, and $\Delta v/U_\infty$. Now consider: Kelvin's theorem says total circulation is conserved. If the wing generates positive circulation, where must an equal and opposite circulation appear?

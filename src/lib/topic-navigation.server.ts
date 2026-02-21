@@ -24,11 +24,11 @@ const TOPIC_LESSON_ORDER: Record<string, string[]> = {
   ],
   "advanced-deep-learning": [
     "ann",
-    "cnn",
     "design-and-optimization",
+    "cnn",
+    "unet",
     "vae",
     "gan",
-    "unet",
     "transformers",
     "analysis-and-theory",
   ],
@@ -85,7 +85,6 @@ const TOPIC_LESSON_ORDER: Record<string, string[]> = {
     "bacterial-growth",
   ],
   "inverse-problems": [
-    "foundations",
     "regularization",
     "bayesian-inversion",
     "tikhonov",
@@ -221,7 +220,6 @@ export const LESSON_SUMMARIES: Record<string, Record<string, string>> = {
     "bacterial-growth": "Resource allocation, ribosome regulation, and how a cell turns physics into life",
   },
   "inverse-problems": {
-    foundations: "Why inverse problems are hard — ill-posedness, instability, and non-uniqueness",
     regularization: "The L-curve, Tikhonov penalty, and the art of balancing data fit against model simplicity",
     "bayesian-inversion": "Regularization is a prior in disguise — the probabilistic viewpoint that unifies everything",
     tikhonov: "Steepest descent, conjugate gradients, and iterative tricks for million-parameter problems",

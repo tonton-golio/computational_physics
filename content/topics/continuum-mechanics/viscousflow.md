@@ -79,9 +79,9 @@ $$
 
 where $U$ is a characteristic velocity and $L$ is a characteristic length.
 
-- **Re $\ll$ 1**: Viscosity dominates. The flow is smooth, predictable, and *creeping*. Think of bacteria swimming through mucus, or honey pouring off a spoon. Harry the Honey Drop lives here.
-- **Re $\sim$ 1**: A fair fight. Inertia and viscosity are comparable.
-- **Re $\gg$ 1**: Inertia dominates. The flow becomes chaotic, turbulent, unpredictable. Think of smoke rising from a campfire, or the wake behind a fast boat.
+* **Re $\ll$ 1**: Viscosity dominates. The flow is smooth, predictable, and *creeping*. Think of bacteria swimming through mucus, or honey pouring off a spoon. Harry the Honey Drop lives here.
+* **Re $\sim$ 1**: A fair fight. Inertia and viscosity are comparable.
+* **Re $\gg$ 1**: Inertia dominates. The flow becomes chaotic, turbulent, unpredictable. Think of smoke rising from a campfire, or the wake behind a fast boat.
 
 Some examples:
 
@@ -98,15 +98,28 @@ Some examples:
 
 Everything above assumes the fluid is **Newtonian**: the stress is linearly proportional to the strain rate. But many fluids don't play by these rules.
 
-- **Shear-thinning** (pseudoplastic, $n < 1$): viscosity *decreases* under shear. Examples: ketchup, blood, paint. This is why you shake the ketchup bottle — the shearing makes it flow.
-- **Shear-thickening** (dilatant, $n > 1$): viscosity *increases* under shear. Examples: cornstarch in water (oobleck), wet sand at the beach.
+* **Shear-thinning** (pseudoplastic, $n < 1$): viscosity *decreases* under shear. Examples: ketchup, blood, paint. This is why you shake the ketchup bottle — the shearing makes it flow.
+* **Shear-thickening** (dilatant, $n > 1$): viscosity *increases* under shear. Examples: cornstarch in water (oobleck), wet sand at the beach.
 
 The power-law model captures this: $\sigma = K \dot{\gamma}^n$, where $n$ is the flow behavior index. The Navier-Stokes equation as written above is the special case $n = 1$.
 
-## What We Just Learned
+## Big Ideas
 
-Viscosity is internal friction that resists shearing. The Navier-Stokes equation describes the full dynamics of incompressible viscous flow. The Reynolds number tells you the relative importance of inertia versus viscosity — and it's the single most important dimensionless number in fluid mechanics.
+* Viscosity is momentum diffusion: just as heat diffuses from hot to cold, momentum diffuses from fast-moving fluid to slow-moving fluid, smoothing out velocity gradients.
+* The Navier-Stokes equation adds a viscous diffusion term $\nu\nabla^2\mathbf{v}$ to Euler's equation. That single term is the difference between ideal and real fluids — and it contains multitudes.
+* The Reynolds number $\text{Re} = UL/\nu$ is the single most important dimensionless number in fluid mechanics: it tells you the ratio of inertial to viscous forces, and whether the flow will be smooth or turbulent.
+* Non-Newtonian fluids (ketchup, blood, glacial ice) break the proportionality between stress and strain rate — and they're far more common in nature than the Newtonian ideal.
 
-## What's Next
+## What Comes Next
 
 Armed with the Navier-Stokes equation and the Reynolds number, we can now solve some beautiful exact problems: flow through channels and pipes. These are cases where the geometry is simple enough that we can find analytical solutions — and they give deep insight into how flows behave.
+
+## Check Your Understanding
+
+1. Viscosity has units of Pa·s. Show dimensionally that the viscous term $\nu\nabla^2\mathbf{v}$ in the Navier-Stokes equation has the same units as the acceleration term $\partial\mathbf{v}/\partial t$.
+2. The kinematic viscosity of air ($\nu \approx 1.5 \times 10^{-5}$ m²/s) is actually *larger* than that of water ($\nu \approx 10^{-6}$ m²/s), even though air is far less "sticky." How is this possible, and what does it mean physically?
+3. A bacterium ($L \sim 2\,\mu$m, $U \sim 30\,\mu$m/s) swims in water. Estimate its Reynolds number and describe qualitatively what its flow environment looks like. What swimming strategy would be useless at this Re?
+
+## Challenge
+
+Consider a one-dimensional unsteady flow where a flat plate is suddenly set in motion at speed $U_0$ at time $t = 0$. The velocity $v_x(y,t)$ satisfies the diffusion equation $\partial v_x/\partial t = \nu\,\partial^2 v_x/\partial y^2$ with $v_x(0,t) = U_0$ and $v_x(\infty,t) = 0$. Use dimensional analysis to argue that the solution must take the form $v_x = U_0\,f(\eta)$ where $\eta = y/\sqrt{\nu t}$. Derive the ODE for $f(\eta)$, identify what boundary conditions it satisfies, and explain physically why the "thickness" of the viscous layer grows as $\sqrt{\nu t}$ rather than linearly in time.

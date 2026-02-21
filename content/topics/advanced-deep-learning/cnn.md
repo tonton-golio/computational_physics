@@ -10,9 +10,9 @@ The key insight: a neural network can *learn* what kernels to use. Instead of ha
 
 Fully connected networks treat each pixel independently, ignoring the spatial structure of images. **Convolutional neural networks** (CNNs) exploit three key properties:
 
-- **Translation equivariance**: A pattern detected in one part of the image can be recognized elsewhere without learning separate weights for each position. An edge is an edge, whether it appears in the top-left corner or the bottom-right.
-- **Parameter sharing**: The same kernel weights are applied at every spatial location, dramatically reducing the parameter count.
-- **Locality**: Each output depends only on a small region of the input, capturing local patterns before combining them into global features.
+* **Translation equivariance**: A pattern detected in one part of the image can be recognized elsewhere without learning separate weights for each position. An edge is an edge, whether it appears in the top-left corner or the bottom-right.
+* **Parameter sharing**: The same kernel weights are applied at every spatial location, dramatically reducing the parameter count.
+* **Locality**: Each output depends only on a small region of the input, capturing local patterns before combining them into global features.
 
 These inductive biases make CNNs far more efficient than MLPs for image tasks. A fully connected layer connecting two 28x28 feature maps would require $784^2 \approx 600{,}000$ parameters; a 3x3 convolutional layer needs only 9.
 
@@ -25,42 +25,43 @@ $$
 $$
 
 Key parameters that control the sliding:
-- **Stride**: The step size when sliding the kernel. Stride 2 halves the spatial dimensions.
-- **Padding**: Adding zeros around the border. "Same" padding preserves spatial dimensions; "valid" padding shrinks them.
-- **Dilation**: Inserting gaps between kernel elements to increase the receptive field without adding parameters.
+* **Stride**: The step size when sliding the kernel. Stride 2 halves the spatial dimensions.
+* **Padding**: Adding zeros around the border. "Same" padding preserves spatial dimensions; "valid" padding shrinks them.
+* **Dilation**: Inserting gaps between kernel elements to increase the receptive field without adding parameters.
 
 [[simulation adl-convolution-demo]]
 
 ## Kernel types
 
 Different kernels detect different things:
-- **Averaging**: A uniform kernel that blurs the image by averaging nearby pixels.
-- **Gaussian blur**: A weighted average with Gaussian falloff, producing smoother blurring.
-- **Edge detection**: Kernels like Sobel or Laplacian that highlight intensity changes — exactly what we did by hand above.
-- **Dilated (atrous) convolution**: Expands the receptive field without increasing parameters or pooling.
+* **Averaging**: A uniform kernel that blurs the image by averaging nearby pixels.
+* **Gaussian blur**: A weighted average with Gaussian falloff, producing smoother blurring.
+* **Edge detection**: Kernels like Sobel or Laplacian that highlight intensity changes — exactly what we did by hand above.
+* **Dilated (atrous) convolution**: Expands the receptive field without increasing parameters or pooling.
 
 In a CNN, the network learns its own kernels through training. Early kernels tend to look like edge and texture detectors; deeper kernels respond to increasingly complex patterns.
 
 ## Feature hierarchies
 
-Deep CNNs learn a hierarchy of features, building complexity layer by layer the way a painter builds a picture:
-- **Early layers** detect low-level features: edges, corners, color gradients. These are the brushstrokes.
-- **Middle layers** combine these into mid-level patterns: textures, object parts, shapes. An ear, a wheel, a petal.
-- **Deep layers** recognize high-level concepts: objects, scenes, semantic categories. A face, a car, a flower.
+Evolution spent millions of years wiring V1 to IT in the ventral visual stream. A modern CNN rediscovers the same strategy in a few hours of training:
 
-This progression from simple to complex is analogous to the ventral visual stream in the brain, where visual processing progresses from V1 (edges) to IT cortex (object recognition). The network rediscovers a strategy that evolution took millions of years to build.
+* **Early layers** learn edges and color gradients — much like V1.
+* **Middle layers** combine these into textures, object parts, and shapes.
+* **Deep layers** recognize whole objects and scenes — much like IT cortex.
+
+That is why transfer learning works: the lowest layers are basically universal visual primitives. Swap out the final classification head and the same edge detectors, texture filters, and part detectors serve a completely different task.
 
 ## What if we didn't have convolutions?
 
-Without convolutions, you would need a fully connected layer for every pixel-to-pixel connection. A single layer processing a modest 224x224 RGB image would need $224 \times 224 \times 3 \times 224 \times 224 \times 3 \approx 7$ billion parameters — for *one* layer. And the network would have to learn separately that an edge in the top-left is the same concept as an edge in the bottom-right. Convolutions give you parameter sharing and spatial awareness for free.
+Without convolutions, you would need a fully connected layer for every pixel-to-pixel connection. A single layer processing a modest 224x224 RGB image would need $224 \times 224 \times 3 \times 224 \times 224 \times 3 \approx 23$ billion parameters — for *one* layer. And the network would have to learn separately that an edge in the top-left is the same concept as an edge in the bottom-right. Convolutions give you parameter sharing and spatial awareness for free.
 
 ## Pooling layers
 
 **Pooling** reduces spatial dimensions and provides a degree of translation invariance:
 
-- **Max pooling**: Takes the maximum value in each window. Preserves the strongest activation — the most prominent feature in each region.
-- **Average pooling**: Takes the mean value. Smoother but may lose sharp features.
-- **Global average pooling** (GAP): Averages each entire feature map to a single number. Replaces fully connected layers at the end of modern architectures, reducing parameters and overfitting.
+* **Max pooling**: Takes the maximum value in each window. Preserves the strongest activation — the most prominent feature in each region.
+* **Average pooling**: Takes the mean value. Smoother but may lose sharp features.
+* **Global average pooling** (GAP): Averages each entire feature map to a single number. Replaces fully connected layers at the end of modern architectures, reducing parameters and overfitting.
 
 A 2x2 max pool with stride 2 halves both spatial dimensions, reducing the feature map size by 4x while keeping the strongest signals.
 
@@ -109,10 +110,10 @@ CLASS ConvolutionalNetwork:
 
 The evolution of CNN architectures brought key innovations:
 
-- **LeNet** (1998): Pioneered the conv-pool-conv-pool-fc pattern. Demonstrated CNNs for handwritten digit recognition.
-- **AlexNet** (2012): Scaled to ImageNet with deeper networks, ReLU activations, and dropout. Won the ImageNet challenge by a large margin and launched the deep learning revolution.
-- **VGGNet** (2014): Showed that using small 3x3 kernels stacked deeply (16-19 layers) outperforms larger kernels. Two 3x3 layers have the same receptive field as one 5x5 layer but with fewer parameters.
-- **ResNet** (2015): Introduced **residual connections** (skip connections) that enabled training of networks with 100+ layers.
+* **LeNet** (1998): Pioneered the conv-pool-conv-pool-fc pattern. Demonstrated CNNs for handwritten digit recognition.
+* **AlexNet** (2012): Scaled to ImageNet with deeper networks, ReLU activations, and dropout. Won the ImageNet challenge by a large margin and launched the deep learning revolution.
+* **VGGNet** (2014): Showed that using small 3x3 kernels stacked deeply (16-19 layers) outperforms larger kernels. Two 3x3 layers have the same receptive field as one 5x5 layer but with fewer parameters.
+* **ResNet** (2015): Introduced **residual connections** (skip connections) that enabled training of networks with 100+ layers.
 
 ## Residual connections
 
@@ -132,10 +133,10 @@ Skip connections also improve gradient flow: the gradient can flow directly thro
 
 The **receptive field** of a neuron is the region of the input image that can influence its activation. It grows with depth:
 
-- A single 3x3 conv layer has a 3x3 receptive field.
-- Two stacked 3x3 layers have a 5x5 receptive field.
-- Three stacked 3x3 layers have a 7x7 receptive field.
-- Pooling and strided convolutions increase the receptive field more aggressively.
+* A single 3x3 conv layer has a 3x3 receptive field.
+* Two stacked 3x3 layers have a 5x5 receptive field.
+* Three stacked 3x3 layers have a 7x7 receptive field.
+* Pooling and strided convolutions increase the receptive field more aggressively.
 
 The **effective receptive field** is typically much smaller than the theoretical one, concentrated in the center following a Gaussian distribution. Dilated convolutions and attention mechanisms can expand it efficiently.
 
@@ -143,8 +144,8 @@ The **effective receptive field** is typically much smaller than the theoretical
 
 Training a CNN from scratch on a small dataset often leads to overfitting. **Transfer learning** leverages features learned on large datasets (typically ImageNet):
 
-- **Feature extraction**: Freeze the pre-trained convolutional layers and train only a new classification head. Works well when the target domain is similar to ImageNet.
-- **Fine-tuning**: Unfreeze some or all layers and train with a small learning rate. Allows the network to adapt its features to the new domain while retaining general knowledge.
+* **Feature extraction**: Freeze the pre-trained convolutional layers and train only a new classification head. Works well when the target domain is similar to ImageNet.
+* **Fine-tuning**: Unfreeze some or all layers and train with a small learning rate. Allows the network to adapt its features to the new domain while retaining general knowledge.
 
 Transfer learning is one of the most impactful practical techniques in deep learning, enabling high performance even with limited labeled data. The lower layers (edges, textures) transfer well across almost any image domain; only the higher layers need task-specific adaptation.
 
@@ -152,7 +153,24 @@ Transfer learning is one of the most impactful practical techniques in deep lear
 
 The CNN achieves approximately 97.5% accuracy on the MNIST test set, with a network about 1/8th the size of the fully connected MLP (which achieved 95.5%). This demonstrates the power of exploiting spatial structure through convolutions — fewer parameters, better results.
 
-## Further reading
+## Big Ideas
 
-- He, K., et al. (2016). *Deep Residual Learning for Image Recognition*. The ResNet paper that made 100+ layer networks trainable.
-- CS231n Stanford, *Convolutional Neural Networks for Visual Recognition*. Comprehensive course notes with excellent visualizations of feature hierarchies and receptive fields.
+* Translation equivariance is the kernel of the idea: the same edge detector works in every corner of the image, so there is no reason to learn a separate one for each location.
+* Stacking small 3x3 kernels achieves the same receptive field as a large kernel but with fewer parameters and more nonlinearities in between — depth is cheaper than width for capturing long-range spatial context.
+* Residual connections reframe the problem: instead of asking the network to learn a transformation, ask it to learn a correction to the identity, which turns out to be a much easier problem.
+* Transfer learning works because the visual hierarchy discovered on one task (edges → textures → parts → objects) is genuinely universal — the same filters that recognize dog fur recognize cat fur.
+
+## What Comes Next
+
+The CNN you have built so far tells you *what* is in an image, but not *where* every pixel belongs. The next lesson introduces the U-Net architecture, which takes the CNN's ability to extract features and augments it with a symmetric decoder that puts those features back onto the original spatial canvas. The result is a network that produces a full segmentation mask — assigning a class label to every single pixel. The skip connections that made ResNet work reappear here in a new guise, this time carrying fine spatial detail across the compression bottleneck.
+
+## Check Your Understanding
+
+1. A fully connected layer connecting two 224x224 RGB feature maps would have roughly 23 billion parameters. A 3x3 convolutional layer between two feature maps with 64 channels has only about 37,000. What architectural assumption makes this compression possible, and is it always valid?
+2. Global average pooling replaces the large fully connected layers at the end of modern CNNs. What information is lost when you average each entire feature map to a single number, and why is this an acceptable trade-off for classification but potentially problematic for other tasks?
+3. Skip connections in ResNet allow the gradient to flow directly through the identity path, bypassing the residual block. How does this help when training very deep networks, and why does it also make the identity function the easiest solution for the network to default to?
+
+## Challenge
+
+Receptive field size determines how much context a neuron at a given depth can see. Calculate the theoretical receptive field of a neuron in the fifth convolutional layer for three architectures: (a) five 3x3 convolutions with no pooling, (b) five 3x3 convolutions with 2x2 max pooling after each layer, and (c) five 3x3 dilated convolutions with dilation rates 1, 2, 4, 8, 16. Now design an experiment on a spatial task where the correct answer depends on long-range context (e.g., detecting a pattern that spans half the image) and test which architecture succeeds. Does theoretical receptive field size predict practical performance?
+

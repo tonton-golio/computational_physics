@@ -51,10 +51,23 @@ This is the **Hagen-Poiseuille law**: flow rate scales with the *fourth power* o
 
 The Reynolds number for pipe flow is Re $= UD/\nu$, where $U$ is the mean velocity and $D = 2a$ is the diameter. For Re $\lesssim 2300$, the flow is laminar and the Poiseuille solution holds. Above that, the flow transitions to turbulence and everything gets much more complicated.
 
-## What We Just Learned
+## Big Ideas
 
-For simple geometries with steady, unidirectional flow, the Navier-Stokes equation yields exact analytical solutions. Channel flow and pipe flow both produce parabolic velocity profiles. The Hagen-Poiseuille law reveals the dramatic fourth-power dependence of flow rate on pipe radius. Non-Newtonian fluids modify the profile shape according to their power-law exponent.
+* For steady, fully developed, unidirectional flow, the nonlinear advection term vanishes entirely and Navier-Stokes reduces to a simple second-order ODE — solvable by hand.
+* Both pressure-driven and gravity-driven flows produce parabolic velocity profiles for Newtonian fluids. The parabola sharpens (power-law $n > 1$) or blunts ($n < 1$) for non-Newtonian materials.
+* The Hagen-Poiseuille law $Q \propto a^4$ is one of the most consequential scaling laws in biology and engineering: a 10% reduction in artery radius cuts blood flow by more than a third.
+* Laminar pipe flow transitions to turbulence above Re $\approx 2300$ — and once turbulent, the simple Poiseuille solution is gone and the problem becomes far harder.
 
-## What's Next
+## What Comes Next
 
 We've seen flows driven by pressure and gravity in confined geometries. The next section takes us to the surface: gravity waves on water, shallow-water equations, and the physics of ocean waves.
+
+## Check Your Understanding
+
+1. A pipe of radius $a$ carries fluid at flow rate $Q$. You replace it with a pipe of radius $2a$ at the same pressure gradient. By what factor does the flow rate increase? By what factor does the mean velocity change?
+2. In gravity-driven planar flow on an inclined surface, the maximum velocity occurs at the free surface, not at the center. Why? Where would the maximum occur in pressure-driven channel flow between two no-slip walls?
+3. Glaciers follow Glen's flow law with $n \approx 3$. How does the velocity profile across a glacier valley differ qualitatively from the Newtonian ($n = 1$) Poiseuille profile? Sketch both profiles and explain the physical reason for the difference.
+
+## Challenge
+
+Blood ($\eta \approx 3 \times 10^{-3}$ Pa·s, $\rho \approx 1060$ kg/m³) flows through a capillary of radius 4 $\mu$m and length 1 mm, driven by a pressure difference of 25 Pa. Compute the volume flow rate using the Hagen-Poiseuille law. Then check the Reynolds number — is laminar flow a reasonable assumption? Now suppose the capillary narrows to radius 3.5 $\mu$m due to plaque buildup. By what percentage does the flow rate drop at the same pressure difference? What additional pressure would be needed to restore the original flow rate?

@@ -74,6 +74,8 @@ $$
 
 What is this term actually doing? It is the universe telling the network "do not be too sure of yourself." Without the KL term, the encoder would collapse each input to a single point (zero variance) at some arbitrary location — perfectly memorizing each training example but creating a latent space full of gaps. The KL penalty forces each encoding to be a spread-out cloud that overlaps with the prior, filling the latent space with meaning.
 
+Think of the KL term as a parking-lot attendant who forces every car (encoding) to leave a little space around it. Without the attendant, every car parks exactly on top of a training example and the lot becomes useless for new arrivals.
+
 ## What if we didn't have the KL term?
 
 Without the KL regularizer, the VAE degenerates into a regular autoencoder. The encoder would learn to place each training example at a unique, precise point in latent space with zero variance. Reconstruction would be perfect, but sampling would be useless — random points in latent space would decode to nothing coherent. The KL term is the price of generativity.
@@ -86,8 +88,8 @@ $$
 \mathcal{L}_{\beta\text{-VAE}} = \mathbb{E}[-\log p_\theta(\mathbf{x}|\mathbf{z})] + \beta \cdot D_{\text{KL}}(q_\phi \| p).
 $$
 
-- $\beta > 1$: Stronger regularization, encouraging more disentangled latent representations at the cost of reconstruction quality. The network is forced to organize its latent space more carefully.
-- $\beta < 1$: Better reconstruction but a less structured latent space.
+* $\beta > 1$: Stronger regularization, encouraging more disentangled latent representations at the cost of reconstruction quality. The network is forced to organize its latent space more carefully.
+* $\beta < 1$: Better reconstruction but a less structured latent space.
 
 ## VAE model (fully connected)
 
@@ -168,9 +170,9 @@ FUNCTION vae_loss(recon_x, x, mu, logvar):
 
 A well-trained VAE exhibits several desirable latent space properties:
 
-- **Smoothness**: Nearby points in latent space decode to similar outputs. Walk from one digit to another and you see a continuous morphing, not a sudden jump.
-- **Completeness**: Every point sampled from the prior $p(\mathbf{z}) = \mathcal{N}(\mathbf{0}, \mathbf{I})$ decodes to a plausible output. There are no dead zones.
-- **Disentanglement**: Individual latent dimensions may correspond to interpretable factors of variation (e.g., digit identity, slant, thickness). Twist one knob and only one thing changes.
+* **Smoothness**: Nearby points in latent space decode to similar outputs. Walk from one digit to another and you see a continuous morphing, not a sudden jump.
+* **Completeness**: Every point sampled from the prior $p(\mathbf{z}) = \mathcal{N}(\mathbf{0}, \mathbf{I})$ decodes to a plausible output. There are no dead zones.
+* **Disentanglement**: Individual latent dimensions may correspond to interpretable factors of variation (e.g., digit identity, slant, thickness). Twist one knob and only one thing changes.
 
 [[simulation adl-latent-interpolation]]
 
@@ -178,7 +180,24 @@ A well-trained VAE exhibits several desirable latent space properties:
 
 We take a single batch, encode all images, and examine where they fall in the latent space. By mapping the latent space to 2D using PCA, we can visualize how different digits cluster. Selecting a point on this 2D map and decoding it produces a generated image, demonstrating the smooth interpolation property of the VAE latent space.
 
-## Further reading
+## Big Ideas
 
-- Kingma, D.P. and Welling, M. (2014). *Auto-Encoding Variational Bayes*. The original VAE paper, deriving the ELBO and the reparameterization trick.
-- Doersch, C. (2016). *Tutorial on Variational Autoencoders*. An accessible walkthrough of VAE theory with clear diagrams and intuitions.
+* The reparameterization trick is a sleight of hand that moves randomness out of the parameters and into a fixed noise variable — backpropagation can flow through deterministic operations but not through sampling, so you change where the sampling happens.
+* The KL term is a leash on the encoder: without it, each training example retreats to its own isolated point in latent space, and the space between them becomes a wasteland where the decoder has never been trained to operate.
+* A smooth latent space is not an aesthetic preference — it is what makes interpolation and generation meaningful. Walking from one encoding to another should produce a path through plausible data, not a teleportation through garbage.
+* Beta-VAE reveals a tension baked into the architecture: tighter KL regularization forces more disentangled representations but at the cost of blurrier reconstructions — you cannot have perfect fidelity and perfect organization at the same time.
+
+## What Comes Next
+
+The VAE imposes smoothness through probability theory: every encoding is a little Gaussian cloud forced to overlap with the prior. But smooth outputs have a cost — VAEs tend to produce blurry images because they optimize a pixel-level reconstruction loss that averages over uncertainty. The next lesson introduces **generative adversarial networks**, which take a radically different approach: instead of a mathematical loss function, use a second network as a critic. The generator and discriminator play a game that drives outputs toward sharpness rather than smoothness, at the price of a much more chaotic training dynamic.
+
+## Check Your Understanding
+
+1. A standard autoencoder encodes inputs to single points in latent space and achieves zero reconstruction error on training data. Why can you not simply sample a random point from this latent space to generate a new image?
+2. The ELBO is a lower bound on the log-likelihood of the data. Maximizing the ELBO does not guarantee maximizing the true likelihood — there is always a gap equal to the KL divergence between the approximate and true posterior. What does it mean in practice if this gap is large?
+3. Walking in a straight line through the latent space of a well-trained VAE produces smooth morphs between digits. Would you expect the same to be true for a standard autoencoder with the same architecture? Design a simple experiment to test this.
+
+## Challenge
+
+The standard VAE uses a Gaussian prior $p(\mathbf{z}) = \mathcal{N}(\mathbf{0}, \mathbf{I})$ and a Gaussian approximate posterior. This forces all classes into a single, undifferentiated ball in latent space. Design and implement a **conditional VAE** where the prior depends on the class label — e.g., each digit class has its own Gaussian prior centered at a different location. Does this produce more separable latent representations? Does it improve generation quality for specific classes? How does the reconstruction-vs-KL tradeoff change when the prior is no longer a single fixed Gaussian?
+

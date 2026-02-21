@@ -38,9 +38,9 @@ Under $H_0: \alpha_1 = \cdots = \alpha_k = 0$, this follows an $F(k-1, N-k)$ dis
 
 **Assumptions** (check these before trusting the result):
 
-- Independence of observations.
-- Normality within each group (check with Q-Q plots or the Shapiro-Wilk test).
-- Homogeneity of variances (**homoscedasticity**); checked with Levene's test or Bartlett's test.
+* Independence of observations.
+* Normality within each group (check with Q-Q plots or the Shapiro-Wilk test).
+* Homogeneity of variances (**homoscedasticity**); checked with Levene's test or Bartlett's test.
 
 ## Two-Way ANOVA
 
@@ -52,9 +52,9 @@ $$
 
 This decomposes variability into three sources:
 
-- Main effect of $A$: do levels of factor $A$ differ on average?
-- Main effect of $B$: do levels of factor $B$ differ on average?
-- **Interaction** $A \times B$: does the effect of $A$ depend on the level of $B$?
+* Main effect of $A$: do levels of factor $A$ differ on average?
+* Main effect of $B$: do levels of factor $B$ differ on average?
+* **Interaction** $A \times B$: does the effect of $A$ depend on the level of $B$?
 
 The interaction term is often the most scientifically interesting finding. A fertilizer might work brilliantly with daily watering but do nothing with weekly watering — that's an interaction. You might think the two factors work independently — but actually, they can amplify or cancel each other in ways neither factor alone would reveal.
 
@@ -68,10 +68,10 @@ A **full factorial design** tests all combinations of factor levels. For factors
 
 ANOVA tells you *that* at least one group differs, but not *which* ones. To find the specific differences, you use post-hoc (after-the-fact) comparisons. Here's the menu, ordered from most to least commonly used:
 
-- **Tukey's HSD**: Compares all pairs of group means. The go-to choice for pairwise comparisons. Controls the simultaneous confidence level.
-- **Bonferroni correction**: Divides $\alpha$ by the number of comparisons. Conservative but general-purpose. Simple to explain and implement.
-- **Scheffé's method**: Allows arbitrary contrasts (not just pairwise). Most conservative. Use it when you want to test combinations like "are groups 1 and 2 together different from group 3?"
-- **Dunnett's test**: Compares each treatment to a single control group. Perfect when you have one reference condition.
+* **Tukey's HSD**: Compares all pairs of group means. The go-to choice for pairwise comparisons. Controls the simultaneous confidence level.
+* **Bonferroni correction**: Divides $\alpha$ by the number of comparisons. Conservative but general-purpose. Simple to explain and implement.
+* **Scheffé's method**: Allows arbitrary contrasts (not just pairwise). Most conservative. Use it when you want to test combinations like "are groups 1 and 2 together different from group 3?"
+* **Dunnett's test**: Compares each treatment to a single control group. Perfect when you have one reference condition.
 
 All of these control the **family-wise error rate** — the probability of making *any* false discovery across all comparisons. Without this control, the more groups you compare, the more likely you are to find something "significant" that isn't real.
 
@@ -92,3 +92,26 @@ Because it works with ranks rather than raw values, the Kruskal-Wallis test is r
 Now you can compare groups and detect real differences. But all of this analysis is only as good as the data that went into it. A well-designed experiment with 50 observations can beat a sloppy one with 5000. That's the power of experimental design — and it's where we go next.
 
 > **Challenge.** Explain the F-statistic to a friend using the signal-to-noise analogy. The "signal" is how different the group averages are; the "noise" is how much individuals scatter within each group. If the signal is big compared to the noise, something real is happening. One minute.
+
+## Big Ideas
+
+* ANOVA does not actually test means — it tests whether the variance *between* groups is larger than you would expect given the variance *within* groups. The name describes the method, not the question.
+* Running multiple t-tests instead of ANOVA inflates the false-positive rate: with 10 pairwise comparisons at $\alpha = 0.05$, you have nearly a 40% chance of finding at least one "significant" result by luck alone.
+* The interaction term in two-way ANOVA is often the most scientifically interesting result — it reveals when the effect of one factor depends on the level of another, something neither factor alone can show.
+* ANOVA's assumptions are testable, and when they fail, Kruskal-Wallis handles non-normal or heteroscedastic data — you trade some statistical power for broader applicability.
+
+## What Comes Next
+
+ANOVA tells you that at least one group differs, and post-hoc tests tell you which ones. But the quality of any test depends entirely on how the data were collected. A well-designed experiment answers your question with far fewer observations than a sloppy one.
+
+The next section introduces the principles of experimental design: randomization, replication, and blocking. These are the tools that control noise before you collect any data — making subsequent analysis cleaner and more powerful.
+
+## Check Your Understanding
+
+1. You test four fertilizers on crop yields and run six pairwise t-tests to find which ones differ. Why is this approach statistically problematic, and what should you do instead?
+2. A one-way ANOVA returns $F = 2.1$ with groups $k = 4$ and total observations $N = 40$. Without a table, explain what you would need to look up to determine whether this is significant, and what the degrees of freedom are.
+3. You find a significant interaction in a two-way ANOVA between fertilizer type and watering frequency. A colleague concludes "so the best fertilizer is whichever one has the highest average yield." Why is this conclusion potentially wrong?
+
+## Challenge
+
+You run a one-way ANOVA on three groups (20 observations per group) and find a significant F-statistic. You then use Tukey's HSD to identify which pairs of means differ significantly. Now suppose a reviewer points out that Levene's test for homogeneity of variance gives $p = 0.02$ — the groups have different variances. Describe what this means for the validity of your analysis, what alternative you might use, and whether your conclusions would likely change if you used a non-parametric alternative. How would your answer differ if the sample sizes were very unequal across groups?

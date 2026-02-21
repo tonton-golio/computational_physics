@@ -54,6 +54,22 @@ Think of a portfolio manager who invests in stocks every day. At the end of the 
 
 Or think of an email system that routes your messages to different folders using a set of rules (experts). After a year of routing, you compare the system's accuracy to the single best routing rule. Regret measures the gap, and a good algorithm makes that gap vanishingly small over time.
 
----
+## Big Ideas
+* Regret is not about making mistakes — it is about making mistakes you could have avoided. The benchmark is always the best fixed strategy in hindsight, not perfection.
+* Sublinear regret means your per-round error vanishes over time, even against an adversary who knows your algorithm. You do not need a cooperative world to learn well.
+* The price of feedback is real and quantified: full information gives $O(\sqrt{T \log N})$ regret while bandit feedback costs an extra $\sqrt{K}$. That gap is the price of silence.
+* External and internal regret measure different kinds of second-guessing. No-internal-regret is strictly harder and connects to game-theoretic equilibria.
 
-*Okay, we just learned what regret is and why it is the right way to measure performance in online learning. Next lesson, we are going to ask: what kind of feedback does the learner actually get? The answer — full information, bandit, or contextual — determines everything about which algorithms work and how fast regret can shrink.*
+## What Comes Next
+
+The regret framework tells us *what to measure*, but nothing yet about *what information* we get to make decisions with. Before we can design any algorithm, we need to be precise about the feedback model: does the world show you every outcome, or only the one you chose?
+
+That question — full information versus bandit versus contextual — turns out to determine almost everything: which algorithms are possible, how fast regret can shrink, and what exploration costs you. The next lesson maps out that landscape so every algorithm we build afterward has a clear place to stand.
+
+## Check Your Understanding
+1. A strategy achieves regret $R_T = 50\sqrt{T}$ after $T$ rounds. Is this sublinear? What does it say about the average per-round regret as $T \to \infty$?
+2. Explain why comparing yourself to the "best fixed action in hindsight" is a meaningful benchmark even though that action is chosen after seeing all the data.
+3. Why does adversarial bandit feedback produce a regret lower bound of $\Omega(\sqrt{KT})$ while full-information feedback only requires $\Omega(\sqrt{T \log N})$? What structural property drives that difference?
+
+## Challenge
+Design a scenario — with a specific number of experts and a specific adversary strategy — where Follow the Leader achieves linear regret. Then show analytically that your scenario does in fact produce $R_T = \Theta(T)$. What is the minimum number of experts needed to construct the adversarial sequence, and why?

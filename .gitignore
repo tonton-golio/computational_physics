@@ -40,7 +40,11 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+.cache/
 .claw/
+
+# scraped course data (large HTML files + embeddings cache)
+scripts/data/
 
 
 

@@ -34,10 +34,11 @@ Before full inversion, let's build intuition. Suppose you want to estimate the v
 
 [[simulation sphere-in-cube-mc]]
 
-> **What to look for:**
-> - Watch the estimate converge — noisy at first, then settling down
-> - Increase the dimension and see how the sphere's volume fraction collapses (the curse of dimensionality in action)
-> - Notice the $1/\sqrt{N}$ convergence: 100× more samples for 10× more accuracy
+Things to look for in the simulation:
+
+* Watch the estimate converge — noisy at first, then settling down
+* Increase the dimension and see how the sphere's volume fraction collapses (the curse of dimensionality in action)
+* Notice the $1/\sqrt{N}$ convergence: 100x more samples for 10x more accuracy
 
 [[simulation monte-carlo-integration]]
 
@@ -102,14 +103,24 @@ Running MCMC is easy. Knowing whether it *worked* is the hard part. Here's what 
 
 ---
 
-## Takeaway
+## Big Ideas
+* The $O(N^{-1/2})$ convergence of Monte Carlo integration is dimension-independent — the same rate in one dimension as in a thousand. That is the entire reason MCMC exists as a discipline.
+* The Metropolis acceptance rule is not an approximation. When the chain has mixed, the histogram of visited states is the exact posterior. You are not fitting — you are sampling.
+* Acceptance rate, burn-in, and autocorrelation time are not optional diagnostics. They are the only evidence you have that the chain actually worked.
+* A stuck chain with low acceptance rate can look exactly like a well-mixed chain in the wrong metric. Multiple chains started from different points are your insurance policy.
 
-Monte Carlo methods turn intractable integrals into sampling problems. When the posterior is too complex for analytical solutions — and in real inverse problems, it almost always is — MCMC gives you a way to explore the full distribution of plausible models. The samples themselves become the answer.
+## What Comes Next
 
-For applications of these methods to real geophysical problems, see [Geophysical Inversion Examples](./geophysical-inversion).
+Monte Carlo methods give you samples from the posterior. But knowing what to do with those samples — and what they mean scientifically — requires applying them to real problems. The theoretical machinery becomes concrete when you run MCMC on an earthquake fault geometry and watch the sampler reveal a trade-off between fault depth and slip that no point estimate could show you. It becomes real when the glacier bed example demonstrates that some features are sharply constrained by the data while others remain genuinely unknown, no matter how long the chain runs.
 
----
+The geophysical examples also show the full inversion workflow in context: how the forward model feeds the likelihood, how a smoothness prior keeps the solutions physically plausible, and how the resulting posterior distribution — not any single model — is the honest scientific answer to the original question.
 
-## Further Reading
+## Check Your Understanding
+1. Why does rejection sampling fail in high dimensions, even when the proposal distribution is reasonable? Describe what happens geometrically as dimension increases.
+2. You run 100,000 Metropolis steps and compute the acceptance rate as 78%. Should you be worried, and if so, what should you change? What if the rate is 2%?
+3. Two independent Markov chains are started from very different initial points. After 10,000 steps they have converged to the same stationary distribution. What does this tell you — and what does it still not guarantee?
 
-MacKay's *Information Theory, Inference, and Learning Algorithms* has a wonderfully clear treatment of MCMC. Mosegaard & Tarantola's paper on Monte Carlo methods in geophysics is a classic.
+## Challenge
+
+Implement a Metropolis sampler for a two-dimensional posterior that has two separated modes — for example, a mixture of two Gaussians placed far apart. Run a single chain and record how often it successfully crosses between modes as a function of the proposal step size. Then implement a simple parallel tempering scheme (run chains at different "temperatures" and occasionally swap states between adjacent chains) and measure the mode-crossing rate again. How much does tempering improve exploration, and how does it scale with the separation between modes?
+

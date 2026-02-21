@@ -12,16 +12,16 @@ In many systems, the relevant actors are discrete individuals, not continuous fi
 
 ABMs are particularly powerful when:
 
-- The population is **heterogeneous** (agents differ in attributes or behavior).
-- Spatial structure matters (local interactions dominate over global averages).
-- Stochasticity at the individual level drives macroscopic phenomena.
+* The population is **heterogeneous** (agents differ in attributes or behavior).
+* Spatial structure matters (local interactions dominate over global averages).
+* Stochasticity at the individual level drives macroscopic phenomena.
 
 ## Cellular automata: the Game of Life
 
 **Conway's Game of Life** is the canonical deterministic agent-based model. On a 2D grid, each cell is alive or dead, and its state updates synchronously based on its eight neighbors:
 
-- A live cell **survives** if it has exactly 2 or 3 live neighbors; otherwise it dies (of loneliness or overcrowding).
-- A dead cell **is born** if it has exactly 3 live neighbors (just the right amount of community).
+* A live cell **survives** if it has exactly 2 or 3 live neighbors; otherwise it dies (of loneliness or overcrowding).
+* A dead cell **is born** if it has exactly 3 live neighbors (just the right amount of community).
 
 [[simulation game-of-life]]
 
@@ -53,9 +53,9 @@ $$
 
 But now put this on a spatial grid as an agent-based model:
 
-- Rabbits reproduce with some probability at each step.
-- Foxes eat nearby rabbits and reproduce; they die if they go too long without eating.
-- Both species move randomly on a spatial grid.
+* Rabbits reproduce with some probability at each step.
+* Foxes eat nearby rabbits and reproduce; they die if they go too long without eating.
+* Both species move randomly on a spatial grid.
 
 The agent-based version reveals phenomena invisible to the ODEs: spatial clustering (predators chase prey in traveling waves), local extinctions (an island of rabbits gets wiped out even though the global population is fine), and stochastic fluctuations that can drive one species to *global* extinction — something the deterministic equations say is impossible.
 
@@ -67,9 +67,9 @@ This is a recurring lesson: mean-field equations tell you what happens on averag
 
 A walker on a lattice takes steps in random directions at each time step. Key results for an unbiased random walk in $d$ dimensions:
 
-- Mean displacement: $\langle \mathbf{r}(t) \rangle = 0$ (no net drift).
-- Mean-squared displacement: $\langle r^2(t) \rangle = 2d \, D \, t$ (spreads as $\sqrt{t}$).
-- **Recurrence**: the walker returns to the origin with probability 1 in 1D and 2D, but not in 3D and higher (**Polya's theorem**). A drunk person will eventually find their way home on a 2D street grid, but a drunk bird in 3D space may wander forever.
+* Mean displacement: $\langle \mathbf{r}(t) \rangle = 0$ (no net drift).
+* Mean-squared displacement: $\langle r^2(t) \rangle = 2d \, D \, t$ (spreads as $\sqrt{t}$).
+* **Recurrence**: the walker returns to the origin with probability 1 in 1D and 2D, but not in 3D and higher (**Polya's theorem**). A drunk person will eventually find their way home on a 2D street grid, but a drunk bird in 3D space may wander forever.
 
 The **Langevin equation** provides a continuous-time description:
 
@@ -83,11 +83,11 @@ where $\xi(t)$ is Gaussian white noise with $\langle \xi(t) \xi(t') \rangle = \d
 
 Let us tie together the applications that make agent-based models so compelling:
 
-- **Flocking** (Vicsek model): each bird aligns its velocity with its neighbors, plus some noise. No bird knows the global pattern, yet the flock moves as a coordinated whole. The transition from disordered to ordered motion is a phase transition — just like the Ising model, but for velocities instead of spins.
+* **Flocking** (Vicsek model): each bird aligns its velocity with its neighbors, plus some noise. No bird knows the global pattern, yet the flock moves as a coordinated whole. The transition from disordered to ordered motion is a phase transition — just like the Ising model, but for velocities instead of spins.
 
-- **Traffic flow** (Nagel-Schreckenberg model): each driver follows simple rules — accelerate if there is space, brake if the car ahead is close, randomly slow down sometimes. No driver has a map of the whole highway, yet traffic jams emerge as traveling waves that propagate backward through the flow.
+* **Traffic flow** (Nagel-Schreckenberg model): each driver follows simple rules — accelerate if there is space, brake if the car ahead is close, randomly slow down sometimes. No driver has a map of the whole highway, yet traffic jams emerge as traveling waves that propagate backward through the flow.
 
-- **Epidemics**: each person can be susceptible, infected, or recovered (SIR). Transmission depends on local contacts. No one knows the global state of the epidemic, yet complex spatial patterns of infection emerge, especially on the scale-free networks we studied earlier.
+* **Epidemics**: each person can be susceptible, infected, or recovered (SIR). Transmission depends on local contacts. No one knows the global state of the epidemic, yet complex spatial patterns of infection emerge, especially on the scale-free networks we studied earlier.
 
 In every case, the story is the same: local rules, no global plan, and yet coherent macroscopic patterns emerge. That is the power and the beauty of agent-based modeling.
 
@@ -95,10 +95,23 @@ In every case, the story is the same: local rules, no global plan, and yet coher
 
 This simulation shows the Lorenz attractor — another system where simple deterministic rules produce complex, unpredictable behavior. The trajectory never repeats, yet it stays confined to a beautiful butterfly-shaped structure. Deterministic chaos from three simple equations.
 
-> **Key Intuition.** Agent-based models show that complex global behavior can emerge from simple local rules. No agent needs a plan; no one needs to see the big picture. Flocking, traffic jams, epidemics, and even the Game of Life all demonstrate the same principle: interactions between many simple agents produce patterns that no individual agent "intended." This is emergence — the central theme of complex physics.
+## Big Ideas
 
-> **Challenge.** Implement Conway's Game of Life on a small grid (say $30 \times 30$). Start with a random initial state where each cell is alive with probability $0.5$. Run it for 200 steps. Does the population stabilize? Try different initial densities ($0.1$, $0.3$, $0.7$). What fraction of the grid is alive in the long run? Does the initial density matter much?
+* Emergence is not a mystery — it is what happens when many agents following local rules collectively explore a high-dimensional state space, and the typical state looks organized even though no agent planned it.
+* The Gillespie algorithm is exact stochastic simulation: it generates sample paths from the master equation one reaction at a time, capturing fluctuations that ODEs and mean-field equations completely miss.
+* Spatial structure matters: the agent-based predator-prey model produces traveling waves, local extinctions, and global chaos that the mean-field Lotka-Volterra equations say are impossible.
+* The Vicsek flocking model is an Ising model for velocities — the transition from disordered motion to coordinated flocking is a genuine phase transition, with the same critical phenomena we have studied throughout this topic.
 
----
+## What Comes Next
 
-*We have seen local rules produce global order in physical, biological, and social systems. For our final section, we turn to one of the most consequential complex systems of all: financial markets. The same power laws, the same heavy tails, the same avalanche-like dynamics show up in stock prices. Econophysics applies everything we have learned to understand why markets crash.*
+Agent-based models distill the essence of complex systems into their purest form: agents, rules, interactions, and emergent behavior. In [Econophysics](econophysics), we apply this entire framework to financial markets — one of the most consequential and least understood complex systems in human civilization. Markets exhibit the same power-law distributed events (crashes and rallies), the same fat tails, the same volatility clustering that we have seen in sandpiles, percolation clusters, and scale-free networks. The question is whether markets are just another instance of a self-organized critical system — and what that means for how we model and regulate them.
+
+## Check Your Understanding
+
+1. Conway's Game of Life is deterministic: the same initial state always produces the same trajectory. Yet predicting the long-term behavior of a given configuration is computationally intractable. How can a deterministic system be unpredictable?
+2. The Gillespie algorithm draws waiting times from an exponential distribution with rate $a_0 = \sum_i a_i$. Why exponential? What assumption about the underlying process makes this the correct distribution?
+3. In the spatial predator-prey model, predators can drive local rabbit populations to extinction even when the global rabbit population is healthy. Why does spatial structure create this vulnerability that the mean-field ODE hides?
+
+## Challenge
+
+Implement the Vicsek flocking model: $N$ point particles move at constant speed $v_0$ on a 2D periodic domain. At each time step, each particle updates its heading to the average heading of all particles within radius $r$, plus noise of amplitude $\eta$. For fixed $v_0 = 0.5$, $r = 1$, $N = 300$, vary $\eta$ from 0 (no noise) to 2$\pi$ (random). Find the critical noise level $\eta_c$ where the transition from ordered to disordered motion occurs. Compute an order parameter (the magnitude of the mean velocity vector) as a function of $\eta$. Does the transition look continuous (second-order) or discontinuous (first-order)? Compare with the Ising transition you studied earlier.

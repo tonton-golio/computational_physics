@@ -62,10 +62,31 @@ In an **optical parametric oscillator** (OPO), the nonlinear crystal is placed i
 
 Squeezed light has practical applications in precision measurement:
 
-- **Gravitational wave detection**: LIGO and Virgo inject squeezed vacuum into the interferometer's dark port, reducing shot noise and improving sensitivity. Frequency-dependent squeezing (using filter cavities) optimizes noise reduction across the detection bandwidth.
+* **Gravitational wave detection**: LIGO and Virgo inject squeezed vacuum into the interferometer's dark port, reducing shot noise and improving sensitivity. Frequency-dependent squeezing (using filter cavities) optimizes noise reduction across the detection bandwidth.
 
-- **Quantum key distribution**: Squeezed states enable continuous-variable quantum cryptography protocols where security is guaranteed by the uncertainty principle.
+* **Quantum key distribution**: Squeezed states enable continuous-variable quantum cryptography protocols where security is guaranteed by the uncertainty principle.
 
-- **Spectroscopy**: Sub-shot-noise measurements improve the sensitivity of absorption and phase-shift spectroscopy.
+* **Spectroscopy**: Sub-shot-noise measurements improve the sensitivity of absorption and phase-shift spectroscopy.
 
-- **Quantum computing**: Squeezed states are resources for measurement-based quantum computation in the continuous-variable regime, where large cluster states can be deterministically generated.
+* **Quantum computing**: Squeezed states are resources for measurement-based quantum computation in the continuous-variable regime, where large cluster states can be deterministically generated.
+
+## Big Ideas
+
+* Squeezed states redistribute quantum noise: one quadrature drops below the vacuum level while the conjugate quadrature inflates, always satisfying $\Delta X \cdot \Delta P \geq \frac{1}{4}$.
+* The squeezing operator $\hat{S}(\xi) = \exp[\frac{1}{2}(\xi^*\hat{a}^2 - \xi\hat{a}^{\dagger 2})]$ creates and destroys photons in pairs — this is why squeezed vacuum contains only even photon numbers.
+* Parametric down-conversion is the workhorse for generating squeezed light: a nonlinear crystal breaks pump photons into pairs, and that pairwise creation is exactly the squeezing Hamiltonian.
+* Squeezing is measured in decibels relative to the vacuum noise floor; LIGO uses squeezed light to hear gravitational waves that would otherwise be drowned out by quantum shot noise.
+
+## What Comes Next
+
+Squeezed states have reduced noise in one quadrature but no particular displacement in phase space. The next lesson combines squeezing with displacement to produce displaced squeezed states — the most general Gaussian states — and extends the idea to two-mode squeezing, which is the primary resource for continuous-variable entanglement and quantum teleportation.
+
+## Check Your Understanding
+
+1. The squeezing operator mixes $\hat{a}$ and $\hat{a}^\dagger$ with the transformation $\hat{S}^\dagger\hat{a}\hat{S} = \hat{a}\cosh r - \hat{a}^\dagger e^{i\theta}\sinh r$. Show from this that if $|\xi\rangle = \hat{S}(\xi)|0\rangle$, then $\langle\hat{n}\rangle = \sinh^2 r$. Interpret physically: why does the squeezed vacuum contain photons even though it started from $|0\rangle$?
+2. The photon number distribution of squeezed vacuum has support only on even $|2n\rangle$ states. Explain this parity conservation from the structure of the squeezing operator: the Hamiltonian $\hat{H}_{\text{PDC}} = i\hbar\kappa(\hat{a}^{\dagger 2} - \hat{a}^2)$ creates and annihilates photons in pairs, so parity is conserved. What observable would you measure to directly confirm this even-photon-number distribution?
+3. Squeezing of $r$ gives noise reduction of $e^{-2r}$ in one quadrature. Current experiments achieve $r \approx 1.7$ (about 15 dB). What fundamental physical mechanism limits how much squeezing can be achieved in practice, and why doesn't the uncertainty principle itself set the limit?
+
+## Challenge
+
+Work out the Bogoliubov transformation: show that $\hat{S}^\dagger(\xi)\hat{a}\hat{S}(\xi) = \hat{a}\cosh r - \hat{a}^\dagger e^{i\theta}\sinh r$. Use this to compute the quadrature variances $(\Delta X_\theta)^2$ and $(\Delta X_{\theta+\pi/2})^2$ for the squeezed vacuum and confirm the values $\frac{1}{4}e^{-2r}$ and $\frac{1}{4}e^{2r}$. Then compute the Wigner function of the squeezed vacuum and show it is a Gaussian ellipse with semi-axes $e^{-r}/2$ and $e^{r}/2$. Sketch how this ellipse evolves as $r$ increases from 0 (vacuum) to $r = 2$ (strong squeezing).

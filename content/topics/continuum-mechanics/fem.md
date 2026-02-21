@@ -29,7 +29,7 @@ $$
 
 The intuition: the residual and the approximation error are linked. Making $r$ orthogonal to the approximation space produces the best approximation within that space. This yields $N$ equations for $N$ unknowns.
 
-> **Other approaches.** *Least squares* minimizes $\int (r^N)^2 \, dx$. *Collocation* forces $r^N = 0$ at selected points. Galerkin dominates because it preserves symmetry of the underlying operator and connects directly to energy minimization.
+There are other approaches. *Least squares* minimizes $\int (r^N)^2 \, dx$. *Collocation* forces $r^N = 0$ at selected points. Galerkin dominates because it preserves symmetry of the underlying operator and connects directly to energy minimization.
 
 ## What Makes It "Finite Element"
 
@@ -56,6 +56,23 @@ The simulation below solves a 1D bar fixed at one end under a uniform distribute
 
 [[simulation fem-1d-bar-sim]]
 
-## What's Next
+## Big Ideas
+
+* FEM approximates the solution itself (as a sum of local basis functions), not the derivatives — this is what separates it from finite differences and gives it flexibility with irregular geometries.
+* Galerkin's method turns the residual-minimization problem into a linear system: require the residual to be orthogonal to every basis function, and you get $N$ equations for $N$ unknowns.
+* Sparsity is the killer feature: each basis function is nonzero only near its home node, so the global stiffness matrix $\mathbf{K}$ has almost all zero entries and systems with millions of unknowns stay tractable.
+* The variational perspective reveals why FEM converges: nature minimizes potential energy, and FEM finds the best approximation within the element space — a projection onto a finite-dimensional subspace.
+
+## What Comes Next
 
 We have the theory. Next we get hands dirty with actual computation — setting up and solving FEM problems in Python with FEniCS.
+
+## Check Your Understanding
+
+1. In the Galerkin method, we require $\int r^N \phi_i \, dx = 0$ for every basis function $\phi_i$. Why is orthogonality the right condition? What would it mean if the residual were not orthogonal to the approximation space?
+2. FEM produces a sparse stiffness matrix. Why? Which entries of $\mathbf{K}_{ij}$ are nonzero, and which are zero?
+3. Adding more elements (refining the mesh) increases $N$. How does the error in the FEM solution typically scale with element size $h$? What does this tell you about the trade-off between accuracy and computational cost?
+
+## Challenge
+
+Consider the 1D Poisson equation $-d^2u/dx^2 = 1$ on $[0,1]$ with $u(0) = u(1) = 0$, whose exact solution is $u = x(1-x)/2$. Implement a 1D FEM solver by hand (no libraries): set up the weak form, build the stiffness matrix and load vector for $n = 2, 4, 8, 16$ linear elements, solve each system, and plot the error $\|u - u^N\|$ as a function of $n$. Verify that the error decreases as $h^2$ (where $h = 1/n$). Now repeat with quadratic elements ($n = 2, 4, 8$) and confirm the error scales as $h^3$. What is the computational cost (in terms of matrix size and solve time) of achieving the same error level with linear versus quadratic elements?

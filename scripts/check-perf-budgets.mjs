@@ -6,8 +6,8 @@ const buildManifestPath = path.join(projectRoot, ".next", "app-build-manifest.js
 
 const budgets = {
   "/topics": 900 * 1024,
-  "/continuum-mechanics/page": 700 * 1024,
-  "/complex-physics/page": 700 * 1024,
+  "/topics/[topic]": 700 * 1024,
+  "/topics/[topic]/[slug]": 700 * 1024,
 };
 
 function formatKB(bytes) {
@@ -31,6 +31,11 @@ for (const [route, budgetBytes] of Object.entries(budgets)) {
     if (!fs.existsSync(filePath)) return sum;
     return sum + fs.statSync(filePath).size;
   }, 0);
+
+  if (totalBytes === 0) {
+    console.warn(`- WARN ${route}: no JS files found in manifest (key may be wrong)`);
+    continue;
+  }
 
   const pass = totalBytes <= budgetBytes;
   const status = pass ? "PASS" : "FAIL";

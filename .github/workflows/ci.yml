@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
   pull_request:
     branches: [main]
 
@@ -34,17 +34,9 @@ jobs:
 
       - name: Build project
         run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: "https://placeholder.supabase.co"
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: "placeholder"
 
       - name: Enforce route bundle budgets
         run: npm run perf:budget
-
-      - name: Check build output
-        run: ls -la .next
-
-  # Future: Add deployment job when ready
-  # deploy:
-  #   needs: lint-and-build
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Deploy to production
-  #       run: echo "Deploy step - configure when ready"

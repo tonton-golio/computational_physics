@@ -102,7 +102,7 @@ $$
     \\&\approx
         \exp \left[ \frac{1}{k_\mathrm{B}}
         \left(S_\mathrm{r}(E_\mathrm{t})
-        - \left.
+        * \left.
         \frac{\mathrm{d}S_\mathrm{r}}{\mathrm{d}E}
         \right|_{E=E_\mathrm{t}}E_i
         \right)
@@ -146,7 +146,7 @@ $$
     \\&=
     -\frac{1}{Z} \frac{\partial Z}{\partial \beta}
     \\&=
-    - \frac{\partial}{\partial \beta} \ln Z.
+    * \frac{\partial}{\partial \beta} \ln Z.
 \end{align*}
 $$
 
@@ -175,7 +175,7 @@ $$
 \end{align*}
 $$
 
-> **Aside — why your coffee behaves itself.** The energy of $N$ particles scales as $\langle E \rangle \sim N k_\mathrm{B} T$, and the specific heat as $C \sim N k_\mathrm{B}$. So the fluctuation in energy goes as $\Delta E \sim \sqrt{N}$. The *relative* fluctuation is $\Delta E / \langle E \rangle \sim 1/\sqrt{N}$. For a teaspoon of water ($N \sim 10^{23}$) that is about one part in $10^{11.5}$. That is why your coffee does not spontaneously boil in one half and freeze in the other. The law of large numbers is not just a theorem — it is the reason thermodynamics works.
+Why does your coffee behave itself? The energy of $N$ particles scales as $\langle E \rangle \sim N k_\mathrm{B} T$, and the specific heat as $C \sim N k_\mathrm{B}$. So the fluctuation in energy goes as $\Delta E \sim \sqrt{N}$. The *relative* fluctuation is $\Delta E / \langle E \rangle \sim 1/\sqrt{N}$. For a teaspoon of water ($N \sim 10^{23}$) that is about one part in $10^{11.5}$. That is why your coffee does not spontaneously boil in one half and freeze in the other. The law of large numbers is not just a theorem — it is the reason thermodynamics works.
 
 From the free energy we can also extract:
 
@@ -207,10 +207,25 @@ $$
 
 This is a deep pattern: response functions (how much a system reacts to a small push) are always related to fluctuations (how much the system jiggles on its own). It is called the **fluctuation-dissipation theorem**, and it is one of the most beautiful results in all of physics.
 
-> **Key Intuition.** The partition function $Z$ is the Rosetta Stone of statistical mechanics. Once you have it, every thermodynamic quantity is just a derivative away. Response functions (specific heat, susceptibility) measure fluctuations — and fluctuations shrink as $1/\sqrt{N}$, which is why macroscopic physics is predictable even though microscopic physics is random.
+## Big Ideas
 
-> **Challenge.** Estimate the relative energy fluctuation of a glass of water at room temperature. How many molecules are there? What is $1/\sqrt{N}$? Could you ever detect such a fluctuation with any instrument humans have built?
+* The partition function $Z$ is the Rosetta Stone of statistical mechanics: every thermodynamic quantity is a derivative of $\ln Z$.
+* Entropy is just a count of microstates — the universe tends toward disorder because disordered states are overwhelmingly more numerous, not because disorder is "preferred."
+* Temperature equality at equilibrium is not an axiom but a theorem: it is simply the most probable way to divide energy between a system and a reservoir.
+* Response functions (specific heat, susceptibility) equal fluctuations — how much a system jitters tells you how much it reacts to a nudge.
 
----
+## What Comes Next
 
-*We now have the machinery to compute anything — in principle. But in practice, summing over all microstates of an interacting system is impossibly hard. So how do we actually calculate things? We let the computer roll the dice. That is the Metropolis algorithm, and it is where we go next.*
+The machinery of statistical mechanics is complete in principle: once you have $Z$, you have everything. But for an interacting system like a lattice of spins, computing $Z$ means summing $2^N$ terms — a number that dwarfs the count of atoms in the observable universe for any macroscopic system.
+
+The [Metropolis Algorithm](metropolisAlgorithm) is the clever escape from this impossibility. Rather than summing over all configurations, we let the computer wander through configuration space, visiting states with the correct Boltzmann probabilities. The trick is that you never need to know $Z$ at all — only energy *differences* matter, and those are cheap to compute.
+
+## Check Your Understanding
+
+1. The entropy formula $S = k_\mathrm{B} \ln \Omega$ implies that mixing two gases increases entropy. But if you mix two identical gases, entropy does not increase — the Gibbs paradox. Why does identical composition change the counting argument?
+2. The specific heat equals the variance of energy: $k_\mathrm{B} T^2 C = \langle E^2 \rangle - \langle E \rangle^2$. What does it mean physically that a system with large energy fluctuations also has a large heat capacity?
+3. Two systems at different temperatures are placed in thermal contact. Explain, in terms of counting microstates, why energy flows from the hotter system to the cooler one.
+
+## Challenge
+
+Estimate the relative energy fluctuation $\Delta E / \langle E \rangle$ for a glass of water at room temperature. Roughly how many water molecules are there? What is $1/\sqrt{N}$ numerically? Now imagine a hypothetical detector sensitive enough to measure this fluctuation — what precision in energy measurement would it need? Compare this to the best calorimeters ever built, and reflect on why thermodynamics is so reliable.

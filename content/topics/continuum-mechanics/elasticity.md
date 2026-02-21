@@ -93,8 +93,8 @@ Push a material and let go. If it's elastic, it springs back — and *overshoots
 
 There are two kinds of elastic waves:
 
-- **P-waves** (pressure/longitudinal): the material compresses and expands along the direction of propagation, like a slinky being pushed and pulled. The displacement is parallel to the wave vector $\vec{K}$.
-- **S-waves** (shear/transverse): the material shears perpendicular to the direction of propagation, like a rope being wiggled. The displacement is perpendicular to $\vec{K}$, with two possible polarizations.
+* **P-waves** (pressure/longitudinal): the material compresses and expands along the direction of propagation, like a slinky being pushed and pulled. The displacement is parallel to the wave vector $\vec{K}$.
+* **S-waves** (shear/transverse): the material shears perpendicular to the direction of propagation, like a rope being wiggled. The displacement is perpendicular to $\vec{K}$, with two possible polarizations.
 
 Their speeds are:
 $$
@@ -105,10 +105,23 @@ P-waves are always faster than S-waves ($c_P > c_S$). For a Poisson's ratio of $
 
 This is how earthquakes work. When a fault ruptures, it sends out both P-waves and S-waves. The P-waves arrive first (that's why they're called "primary"), and the S-waves arrive later ("secondary"). The time delay between them tells seismologists how far away the earthquake was. This is also how Bruel & Kjaer uses microphones to characterize the vibrational properties of objects — they listen to the elastic waves and work backward to figure out the material properties (an inverse problem).
 
-## What We Just Learned
+## Big Ideas
 
-Elasticity extends Hooke's law to three dimensions using Young's modulus, Poisson's ratio, and the Lame coefficients. Real materials have yield points beyond which linear elasticity fails. Elastic energy is stored as $\sigma : \varepsilon$, and elastic waves come in two flavors: fast pressure waves and slower shear waves.
+* Young's modulus and Poisson's ratio are the two numbers that completely characterize an isotropic elastic solid — everything else (Lame coefficients, bulk modulus, wave speeds) follows from them.
+* A Poisson ratio of 0.5 means the material is perfectly incompressible: it changes shape without changing volume. A ratio of 0 means the transverse dimensions are completely indifferent to longitudinal loading.
+* Elastic energy density is $\sigma : \varepsilon$ — a double contraction that sums up all the work done by every stress component on its corresponding strain.
+* Two types of elastic waves always exist: P-waves (compressive, faster) and S-waves (shearing, slower). The time gap between them is your tape measure for earthquake distance.
 
-## What's Next
+## What Comes Next
 
 We now have the toolkit to describe how solids deform and vibrate. But before we move to fluids, we need to bring in the computational tools you'll use for the rest of the course. Time to meet Python and its friends.
+
+## Check Your Understanding
+
+1. Steel has $E \approx 200$ GPa and $\nu \approx 0.3$. Cork has $\nu \approx 0$. What is special about cork's Poisson ratio, and why does it make cork ideal for wine-bottle stoppers?
+2. For a material with $\nu = 1/3$, the P-wave speed is exactly twice the S-wave speed. Show this algebraically using the expressions for $c_P$ and $c_S$ in terms of $\lambda$, $\mu$, and $\rho$.
+3. The Euler-Bernoulli beam equation $EI\,d^4w/dx^4 = q(x)$ is fourth-order. Why does a beam require four boundary conditions, and what are natural choices at a free end versus a clamped end?
+
+## Challenge
+
+A seismograph records two distinct arrivals from an earthquake. The P-wave arrives at 09:00:00 and the S-wave arrives at 09:01:30. The crust beneath the seismograph has $E = 70$ GPa, $\nu = 0.25$, and $\rho = 2700$ kg/m³. Compute the P- and S-wave speeds, estimate the distance to the earthquake, and determine the origin time of the quake. Now suppose a second seismograph 200 km away also records both arrivals — at what times does each wave arrive there?

@@ -78,10 +78,10 @@ Why do we need the activation function $\sigma$ at all? Without it, stacking lin
 
 Common choices include:
 
-- **ReLU**: $f(x) = \max(0, x)$. Dead simple: if the input is positive, pass it through; if negative, output zero. Fast and effective, but neurons can "die" (output zero for all inputs) if the bias drifts too negative.
-- **Sigmoid**: $f(x) = 1 / (1 + e^{-x})$. Squashes everything into $(0, 1)$, useful for output layers in binary classification. But it has a fatal flaw for deep networks: the derivative $f'(x) = f(x)(1 - f(x))$ is at most $0.25$, so gradients shrink exponentially through many layers. This is the **vanishing gradient problem**.
-- **Tanh**: $f(x) = \tanh(x)$. Outputs in $(-1, 1)$, zero-centered. Better gradient flow than sigmoid but still saturates for large $|x|$.
-- **Swish**: $f(x) = x \cdot \sigma(x)$. Smooth and non-monotonic. Used in EfficientNet and modern architectures; often outperforms ReLU in deep networks.
+* **ReLU**: $f(x) = \max(0, x)$. Dead simple: if the input is positive, pass it through; if negative, output zero. Fast and effective, but neurons can "die" (output zero for all inputs) if the bias drifts too negative.
+* **Sigmoid**: $f(x) = 1 / (1 + e^{-x})$. Squashes everything into $(0, 1)$, useful for output layers in binary classification. But it has a fatal flaw for deep networks: the derivative $f'(x) = f(x)(1 - f(x))$ is at most $0.25$, so gradients shrink exponentially through many layers. This is the **vanishing gradient problem**.
+* **Tanh**: $f(x) = \tanh(x)$. Outputs in $(-1, 1)$, zero-centered. Better gradient flow than sigmoid but still saturates for large $|x|$.
+* **Swish**: $f(x) = x \cdot \sigma(x)$. Smooth and non-monotonic. Used in EfficientNet and modern architectures; often outperforms ReLU in deep networks.
 
 ReLU and its variants (Leaky ReLU, GELU) dominate modern practice because they maintain strong gradients even in deep networks.
 
@@ -93,11 +93,11 @@ Without nonlinear activations, a 100-layer network would compute exactly the sam
 
 ## Multilayer perceptrons
 
-A **multilayer perceptron** (MLP) stacks multiple layers of neurons. The **universal approximation theorem** (Cybenko, 1989; Hornik, 1991) says something remarkable: a feedforward network with a single hidden layer containing sufficiently many neurons can approximate any continuous function on a compact set to arbitrary accuracy. The network does not need to be deep — it just needs to be wide enough.
+A **multilayer perceptron** (MLP) stacks multiple layers of neurons. The **universal approximation theorem** says something remarkable: a feedforward network with a single hidden layer containing sufficiently many neurons can approximate any continuous function on a compact set to arbitrary accuracy. The network does not need to be deep — it just needs to be wide enough.
 
 So why bother with depth? In practice, **deeper networks** (more layers, fewer neurons per layer) are vastly more efficient:
-- Depth enables hierarchical feature extraction: early layers detect simple patterns, later layers compose them into complex concepts.
-- Certain functions require exponentially many neurons in a shallow network but only polynomially many in a deep one. Depth gives you exponential compression.
+* Depth enables hierarchical feature extraction: early layers detect simple patterns, later layers compose them into complex concepts.
+* Certain functions require exponentially many neurons in a shallow network but only polynomially many in a deep one. Depth gives you exponential compression.
 
 ## Forward pass
 
@@ -142,7 +142,7 @@ CLASS MultilayerPerceptron:
 
 How do we tell the network it made a mistake? We need a single number that measures how wrong the predictions are. That number is the **loss function**.
 
-- **Cross-entropy loss**: The standard choice for classification. For a true label $y$ and predicted probabilities $\hat{p}$:
+* **Cross-entropy loss**: The standard choice for classification. For a true label $y$ and predicted probabilities $\hat{p}$:
 
 $$
 \mathcal{L}_{\text{CE}} = -\sum_{c=1}^{C} y_c \log \hat{p}_c.
@@ -150,7 +150,7 @@ $$
 
 For one-hot encoded labels, this simplifies to $\mathcal{L} = -\log \hat{p}_{y}$ where $y$ is the correct class. The intuition: if the model is 99% confident in the right answer, the loss is tiny ($-\log 0.99 \approx 0.01$). If it is only 1% confident, the loss is enormous ($-\log 0.01 \approx 4.6$). Cross-entropy punishes confident wrong answers severely.
 
-- **Mean squared error** (MSE): Used for regression tasks:
+* **Mean squared error** (MSE): Used for regression tasks:
 
 $$
 \mathcal{L}_{\text{MSE}} = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2.
@@ -216,7 +216,26 @@ FOR epoch = 1 TO 10:
 
 Training iterates over the dataset in **epochs** (one full pass through all training data), processing **mini-batches** at each step. **Convergence** is monitored by tracking loss and validation accuracy across epochs. When the validation loss stops decreasing while the training loss keeps falling, the model is overfitting — a signal to stop training or add regularization.
 
-## Further reading
+## Big Ideas
 
-- Hornik, K. (1991). *Approximation capabilities of multilayer feedforward networks*. Neural Networks, 4(2), 251-257. The universal approximation theorem in its general form.
-- 3Blue1Brown, *Neural Networks* video series. The best visual introduction to how neural networks and backpropagation actually work.
+* Without nonlinearity, a million-layer network is still just a straight line through the data — activations are the ingredient that makes depth matter.
+* Backpropagation is the chain rule applied cleverly: one backward pass computes every gradient simultaneously, turning what would take months into milliseconds.
+* The universal approximation theorem promises that a wide enough single hidden layer can fit anything, but depth is what makes that fitting *efficient*.
+* A neuron that outputs zero for all inputs contributes nothing — the vanishing gradient and dying ReLU problems are the same story told by different characters.
+
+## What Comes Next
+
+You now have a network that can learn, but you have left enormous questions on the table: what learning rate should you use, how do you stop the network from memorizing noise, and how do you find good hyperparameters in a space with hundreds of dimensions? The next lesson takes on the optimizer — the thing that actually moves the weights — and the full toolkit of regularization, learning rate schedules, and initialization strategies that separate a network that trains from one that generalizes.
+
+The transition from "this works in principle" to "this works in practice" is where most of the craft lives, and understanding the optimizer landscape will change how you think about every network you train from here on.
+
+## Check Your Understanding
+
+1. A single neuron with no activation function can only draw a straight-line decision boundary. What happens when you stack ten such neurons in sequence — does the boundary become more complex? Why or why not?
+2. The perceptron update rule moves the weights toward the correct class when the prediction is wrong. Why does this rule fail on the XOR problem even after many iterations?
+3. Backpropagation computes the gradient of the loss with respect to every weight in one backward pass. Why is this so much cheaper than perturbing each weight individually to estimate gradients numerically?
+
+## Challenge
+
+Design a training experiment to test whether depth or width matters more for learning a target function. Pick a specific target — say, $f(x) = \sin(10x)$ on $[0, 1]$ — and compare networks of equal parameter count but different shapes (one wide hidden layer vs. many narrow layers). Plot the approximation error as a function of training time and total parameters. Does the answer depend on the target function? What happens if you replace $\sin(10x)$ with a function that has a natural hierarchical structure, like a composition of simpler functions?
+

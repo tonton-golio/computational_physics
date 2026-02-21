@@ -8,10 +8,10 @@ Not all data fits neatly into a table or a sequence. Molecules are atoms connect
 
 Many systems we care about are fundamentally relational:
 
-- **Molecules**: atoms are nodes, bonds are edges. Predicting molecular properties requires understanding the connectivity, not just a list of atom types.
-- **Social and communication networks**: who talks to whom shapes information flow, influence, and community structure.
-- **Recommendation systems**: users and items form a bipartite graph, and similar users connect to similar items.
-- **Physical simulations**: particles interact through local forces, forming interaction graphs.
+* **Molecules**: atoms are nodes, bonds are edges. Predicting molecular properties requires understanding the connectivity, not just a list of atom types.
+* **Social and communication networks**: who talks to whom shapes information flow, influence, and community structure.
+* **Recommendation systems**: users and items form a bipartite graph, and similar users connect to similar items.
+* **Physical simulations**: particles interact through local forces, forming interaction graphs.
 
 A graph $G=(V,E)$ has nodes $V$ (entities) and edges $E$ (relationships). Each node can carry a feature vector, and edges can have their own features (bond type, interaction strength, distance).
 
@@ -54,10 +54,10 @@ Initial features: $h_A=[1,0]$, $h_B=[0,1]$, $h_C=[1,1]$, $h_D=[0,0]$.
 
 With a simple mean-aggregation GNN layer (no learned weights, just averaging):
 
-- Node A's neighbors are B, C. Message: mean of $[0,1]$ and $[1,1]$ = $[0.5, 1.0]$.
-- Node B's neighbors are A, C. Message: mean of $[1,0]$ and $[1,1]$ = $[1.0, 0.5]$.
-- Node C's neighbors are A, B, D. Message: mean of $[1,0]$, $[0,1]$, $[0,0]$ = $[0.33, 0.33]$.
-- Node D's neighbor is only C. Message: $[1,1]$.
+* Node A's neighbors are B, C. Message: mean of $[0,1]$ and $[1,1]$ = $[0.5, 1.0]$.
+* Node B's neighbors are A, C. Message: mean of $[1,0]$ and $[1,1]$ = $[1.0, 0.5]$.
+* Node C's neighbors are A, B, D. Message: mean of $[1,0]$, $[0,1]$, $[0,0]$ = $[0.33, 0.33]$.
+* Node D's neighbor is only C. Message: $[1,1]$.
 
 After one layer, each node knows about its immediate neighbors. After two layers, node D would know about A and B through C — information has propagated across the graph.
 
@@ -79,12 +79,29 @@ In practice, most GNNs work best with 2–4 layers. Beyond that, you need archit
 
 ## Practical notes
 
-- The aggregation function must be permutation-invariant — sum, mean, and max are the standard choices.
-- Task formulation matters: node-level tasks (classify each node), edge-level tasks (predict whether an edge exists), and graph-level tasks (predict a property of the whole graph) require different readout strategies.
-- For graph-level tasks, you need a pooling step that aggregates all node representations into a single graph vector.
+* The aggregation function must be permutation-invariant — sum, mean, and max are the standard choices.
+* Task formulation matters: node-level tasks (classify each node), edge-level tasks (predict whether an edge exists), and graph-level tasks (predict a property of the whole graph) require different readout strategies.
+* For graph-level tasks, you need a pooling step that aggregates all node representations into a single graph vector.
+
+## Big Ideas
+
+* The central insight of GNNs is that structure is information. Two molecules with the same atoms but different connectivity are different molecules — and any model that ignores the connectivity is throwing away the most important part of the data.
+* Message passing is a beautifully general operation: it subsumes convolution (which is message passing on a grid), diffusion (which is message passing on a manifold), and social influence (which is message passing on a social graph).
+* Permutation invariance is not optional — it is a hard constraint. The correct answer must not change because you listed node A before node B in your input file.
+* Oversmoothing is the depth tax on GNNs: each layer you add expands the information horizon but dilutes node identity. Most practical GNNs are shallower than you would expect.
+
+## What Comes Next
+
+Graph neural networks close the loop on the main ideas in this module. You have now seen models that handle tabular data (trees and ensembles), unstructured sequences (RNNs), arbitrary relational structure (GNNs), and any continuous input-output mapping (MLPs). The next frontier is generative modeling — not predicting a label, but producing entirely new data that looks like it came from the training distribution. Generative adversarial networks, the final topic in this module, turn the optimization framework you learned in loss and optimization into a two-player game, and the result is a model that can create.
+
+Beyond this module, GNNs are an active research frontier: attention-based graph networks, equivariant architectures for physical systems, and graph transformers all build on the message-passing foundation you just learned. If you care about molecules, protein structure, materials science, or any domain where relationships matter as much as quantities, GNNs are where the action is.
 
 ## Check your understanding
 
-- Can you explain message passing to a friend using the gossip analogy?
-- What visual would you draw to show a friend why too many GNN layers cause oversmoothing?
-- What experiment would test whether your GNN benefits from 2 layers versus 4?
+* Can you explain message passing to a friend using the gossip analogy?
+* What visual would you draw to show a friend why too many GNN layers cause oversmoothing?
+* What experiment would test whether your GNN benefits from 2 layers versus 4?
+
+## Challenge
+
+Implement message passing by hand on the four-node triangle-plus-tail graph from the worked example, but this time with learned weights. Initialize $W$ randomly, define a graph-level property (for example, the sum of all final node representations), and write out the full gradient computation to update $W$ by gradient descent — deriving the chain rule through the aggregation step yourself. Now generalize: does your derivation change if the aggregation function is max instead of mean? If it is not differentiable everywhere (as in max-pooling), how would you handle the gradient at ties?

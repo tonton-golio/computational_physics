@@ -12,20 +12,20 @@ A **network** (graph) consists of nodes (vertices) connected by edges (links). N
 
 Examples of real-world networks:
 
-- **Social networks**: individuals connected by friendships or interactions.
-- **World Wide Web**: pages connected by hyperlinks.
-- **Biological networks**: proteins connected by interactions, genes by regulatory links.
-- **Infrastructure**: power grids, transportation systems, the internet.
+* **Social networks**: individuals connected by friendships or interactions.
+* **World Wide Web**: pages connected by hyperlinks.
+* **Biological networks**: proteins connected by interactions, genes by regulatory links.
+* **Infrastructure**: power grids, transportation systems, the internet.
 
 ## Network metrics
 
 Key quantities that characterize a network:
 
-- **Degree** $k_i$: the number of edges connected to node $i$. The **degree distribution** $P(k)$ describes the probability that a randomly chosen node has degree $k$. This single function tells you more about a network's structure than almost anything else.
-- **Clustering coefficient**: measures the fraction of a node's neighbors that are also connected to each other. High clustering means "my friends know each other" — cliquishness.
-- **Betweenness centrality**: the fraction of shortest paths between all pairs of nodes that pass through a given node. High centrality means the node is a bottleneck — remove it, and many paths break.
-- **Connectedness**: how many nodes must be removed to disconnect the network?
-- **Modularity**: the strength of division into communities. Zero modularity means no meaningful partition.
+* **Degree** $k_i$: the number of edges connected to node $i$. The **degree distribution** $P(k)$ describes the probability that a randomly chosen node has degree $k$. This single function tells you more about a network's structure than almost anything else.
+* **Clustering coefficient**: measures the fraction of a node's neighbors that are also connected to each other. High clustering means "my friends know each other" — cliquishness.
+* **Betweenness centrality**: the fraction of shortest paths between all pairs of nodes that pass through a given node. High centrality means the node is a bottleneck — remove it, and many paths break.
+* **Connectedness**: how many nodes must be removed to disconnect the network?
+* **Modularity**: the strength of division into communities. Zero modularity means no meaningful partition.
 
 The **amplification factor** involves the second moment of the degree distribution:
 
@@ -37,12 +37,12 @@ This quantity is crucial: it diverges for scale-free networks with exponent $\ga
 
 ## Small-world networks
 
-Here is a surprising fact about social networks: any two people on Earth are connected by roughly six intermediaries. That is the **"six degrees of separation"** phenomenon (Milgram, 1967).
+Here is a surprising fact about social networks: any two people on Earth are connected by roughly six intermediaries. That is the **"six degrees of separation"** phenomenon.
 
-**Small-world networks** (Watts and Strogatz, 1998) explain how this is possible by combining two properties:
+**Small-world networks** explain how this is possible by combining two properties:
 
-- **High clustering**: like a regular lattice, neighbors of a node tend to be connected (your friends know each other).
-- **Short path lengths**: like a random graph, any two nodes are connected by a short chain (six degrees).
+* **High clustering**: like a regular lattice, neighbors of a node tend to be connected (your friends know each other).
+* **Short path lengths**: like a random graph, any two nodes are connected by a short chain (six degrees).
 
 The Watts-Strogatz model starts from a regular ring lattice and randomly rewires each edge with probability $p$. The remarkable finding: even a tiny rewiring probability ($p \sim 0.01$) dramatically reduces the average path length while preserving high clustering. A few long-range shortcuts are enough to make the whole network small-world.
 
@@ -58,10 +58,10 @@ typically with $2 < \gamma < 3$. This means a few nodes (hubs) have enormously m
 
 Examples of scale-free networks:
 
-- The World Wide Web ($\gamma \approx 2.1$ for in-degree).
-- Protein interaction networks.
-- Citation networks.
-- Software dependency graphs.
+* The World Wide Web ($\gamma \approx 2.1$ for in-degree).
+* Protein interaction networks.
+* Citation networks.
+* Software dependency graphs.
 
 [[simulation scale-free-network]]
 
@@ -69,7 +69,7 @@ Watch the network grow in this simulation. New nodes attach preferentially to we
 
 ## Preferential attachment
 
-The **Barabasi-Albert model** (1999) explains how scale-free networks arise through **preferential attachment**: new nodes connect preferentially to existing nodes that already have many connections.
+The **Barabasi-Albert model** explains how scale-free networks arise through **preferential attachment**: new nodes connect preferentially to existing nodes that already have many connections.
 
 Algorithm:
 
@@ -83,23 +83,36 @@ This produces a power-law degree distribution with exponent $\gamma = 3$. The ri
 
 Networks are not just static structures; processes unfold on them:
 
-- **Epidemic spreading** (SIR/SIS models): on scale-free networks, the epidemic threshold vanishes in the thermodynamic limit. Even weakly infectious diseases can spread through the hubs. This is why super-spreaders matter so much.
-- **Diffusion and synchronization**: random walks on networks explore hubs quickly; coupled oscillators synchronize more easily on networks with high connectivity.
-- **Information cascades**: content spreads through social networks via threshold mechanisms — one viral post can reach millions through the hub structure.
+* **Epidemic spreading** (SIR/SIS models): on scale-free networks, the epidemic threshold vanishes in the thermodynamic limit. Even weakly infectious diseases can spread through the hubs. This is why super-spreaders matter so much.
+* **Diffusion and synchronization**: random walks on networks explore hubs quickly; coupled oscillators synchronize more easily on networks with high connectivity.
+* **Information cascades**: content spreads through social networks via threshold mechanisms — one viral post can reach millions through the hub structure.
 
 ## Robustness and attacks
 
 Networks respond very differently to random failures versus targeted attacks:
 
-- **Random failure**: removing random nodes has little effect on scale-free networks because most nodes have low degree — you are unlikely to hit a hub by chance.
-- **Targeted attack**: removing hubs rapidly fragments the network, dramatically increasing path lengths and disconnecting components.
+* **Random failure**: removing random nodes has little effect on scale-free networks because most nodes have low degree — you are unlikely to hit a hub by chance.
+* **Targeted attack**: removing hubs rapidly fragments the network, dramatically increasing path lengths and disconnecting components.
 
 This **robustness-yet-fragility** property has real consequences: the internet is resilient to random router failures but vulnerable to targeted attacks on major hubs. The same principle applies to disease control (vaccinate the super-spreaders) and infrastructure protection.
 
-> **Key Intuition.** Scale-free networks arise from preferential attachment — the rich get richer. The resulting power-law degree distribution means there is no typical node: a few hubs dominate the network. This makes the network robust to random failures (you rarely hit a hub by accident) but fragile to targeted attacks (take out the hubs and the network falls apart). The same power laws we see in sandpiles and percolation show up here too — nature reuses her tricks.
+## Big Ideas
 
-> **Challenge.** Think about your own social network. How many people do you know? Now think about the most connected person you know — how many people do *they* know? Estimate the ratio. In a scale-free network with $\gamma = 3$, the most connected node in a network of $N$ people has roughly $\sqrt{N}$ connections. For $N = 10{,}000$, that is about 100. Does that seem plausible for a school or workplace?
+* Preferential attachment — new nodes connect to well-connected nodes — is all you need to generate a power-law degree distribution; the rich get richer, and the math takes care of the rest.
+* The amplification factor $\langle k^2 \rangle / \langle k \rangle - 1$ diverges for scale-free networks with $\gamma \leq 3$, which means epidemic thresholds vanish and even the weakest disease can spread through hubs.
+* Small-world networks are the best of both worlds: high local clustering (your friends know each other) combined with short global paths (six degrees of separation), achieved by adding just a few long-range shortcuts.
+* Network robustness is deeply asymmetric: scale-free networks are nearly immune to random node failure but catastrophically fragile to targeted hub removal.
 
----
+## What Comes Next
 
-*Networks give us the structure, but what about the dynamics? What happens when you put autonomous agents on these networks (or on grids) and let them follow simple local rules? No agent knows the big picture, yet collective patterns emerge — flocking, traffic jams, epidemics. That is the world of agent-based models.*
+Networks describe the *structure* of interactions, but not what happens on them. [Agent-Based Models](agentbased) puts the dynamics back in: place autonomous agents on a network (or a spatial grid) and give each one simple local rules — align with your neighbors, run from predators, spread a disease to your contacts. No agent has a global view, yet collective patterns emerge spontaneously: flocking, traffic jams, epidemic waves. The connection to everything we have studied — the Ising model, percolation, SOC — will become clear when we see that emergence is a single theme running through all of complex physics.
+
+## Check Your Understanding
+
+1. A Poisson random graph (Erdős-Rényi model) has an exponential degree distribution: $P(k) \sim e^{-\langle k \rangle} \langle k \rangle^k / k!$. A scale-free network has $P(k) \sim k^{-\gamma}$. Why does the scale-free distribution lead to a finite epidemic threshold vanishing in the limit $N \to \infty$, while the Poisson distribution gives a nonzero threshold?
+2. The clustering coefficient of a node measures whether its neighbors are connected to each other. The Watts-Strogatz model has high clustering for small rewiring probability $p$. Explain intuitively why rewiring destroys clustering even when the average path length drops dramatically.
+3. Removing hub nodes rapidly fragments a scale-free network. In a network where the hub with degree $k_{\max} \sim \sqrt{N}$ is removed, roughly what fraction of the remaining nodes lose their connection to the giant component?
+
+## Challenge
+
+Model the spread of an epidemic on a scale-free network with degree distribution $P(k) \sim k^{-3}$ using the SIR model (susceptible-infected-recovered). In the mean-field approximation on a heterogeneous network, the epidemic threshold is $\lambda_c = \langle k \rangle / (\langle k^2 \rangle - \langle k \rangle)$. Show analytically that $\lambda_c \to 0$ as $N \to \infty$ for $\gamma = 3$ (since $\langle k^2 \rangle$ diverges logarithmically). Then argue: what does this mean for vaccination strategy? If you can only vaccinate a fraction $f$ of the population, is it better to vaccinate randomly or to target hubs? Estimate how much $f$ you need for each strategy to halt the epidemic.

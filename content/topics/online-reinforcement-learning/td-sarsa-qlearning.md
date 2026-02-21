@@ -73,6 +73,22 @@ This is the **deadly triad**, and it is the central challenge of modern RL. DQN,
 [[simulation concentration-bounds]]
 [[simulation stochastic-approximation]]
 
----
+## Big Ideas
+* Bootstrapping is the engine of TD learning: you use your current estimates to build better estimates, and the fixed point of this process is the truth. The bias-variance trade-off is baked in — you gain speed but pay a bias tax.
+* SARSA and Q-learning answer different questions. SARSA asks "how good is the policy I am currently following?" Q-learning asks "how good is the optimal policy?" Neither question is wrong; they just require different targets.
+* The deadly triad — function approximation, bootstrapping, off-policy learning — is not a quirk of particular algorithms. It is a structural property of the problem. Every modern RL algorithm that scales is navigating around this hazard.
+* Exploration strategies are not ornamental. Without exploration, tabular Q-learning provably fails to converge; with the wrong exploration, you waste vast amounts of experience on bad actions.
 
-*We now have the core toolkit for model-free RL: TD learning, SARSA, and Q-learning. But these all rely on tables — one entry per state-action pair. What happens when the state space is enormous, or continuous? Next lesson, we bring in neural networks and build DQN, the algorithm that played Atari games at superhuman level.*
+## What Comes Next
+
+TD methods and Q-learning work beautifully when the state space is small enough to fit in a table. But most interesting problems — robot control, video games, language models — have state spaces so large that no table could hold them. Every pixel arrangement in an Atari game is a different state. You cannot store one entry per state.
+
+The next lesson addresses this with function approximation: instead of a lookup table, you train a neural network to generalize across states. That changes everything about stability, convergence, and the engineering needed to make training work. The key innovations — the replay buffer and the target network — are essentially patch jobs on the deadly triad, and understanding exactly what problem each one solves is the lesson's central payoff.
+
+## Check Your Understanding
+1. The TD error is $\delta_t = r_{t+1} + \gamma V(s_{t+1}) - V(s_t)$. When $\delta_t > 0$, what does that tell you about the current estimate $V(s_t)$, and which direction does the update push it?
+2. Trace through a specific two-state gridworld example to show that SARSA and Q-learning converge to different Q-functions when the behavior policy is epsilon-greedy. Which one gives the higher value at the cliff edge, and why?
+3. Which of the three components of the deadly triad is present in standard tabular Q-learning? Which is absent? Why is tabular Q-learning still provably convergent despite having two of the three?
+
+## Challenge
+Implement both SARSA and Q-learning on the cliff-walking environment (a 4x12 grid with a cliff along the bottom edge, start in the bottom-left, goal in the bottom-right). Run both with $\epsilon = 0.1$ epsilon-greedy exploration. Plot the per-episode total reward over 500 episodes. Then: explain the gap between the two curves in terms of what each algorithm is learning about, verify that Q-learning's learned policy is closer to optimal while SARSA's learned policy is safer, and show what happens to both when $\epsilon$ is reduced to 0.01 after 500 episodes.

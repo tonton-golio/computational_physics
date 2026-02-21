@@ -10,7 +10,7 @@ Imagine tuning a radio in a noisy room. The raw signal from the antenna jitters 
 
 This two-timescale structure is not a bug — it is a feature. It means protein levels are naturally buffered against rapid noise in transcription. Nature builds its own low-pass filter.
 
-> **Figure: Two-timescale response.** Dual-axis time course after a transcription step-on event: mRNA (fast rise and decay, shown on the left axis) and protein (slow ramp, shown on the right axis). Caption: "mRNA is jittery — the protein is a natural low-pass filter."
+[[figure two-timescale-response]]
 
 ## The equations
 
@@ -20,7 +20,7 @@ $$
 \frac{\mathrm{d} n_\mathrm{m}(t)}{\mathrm{d} t} = k_\mathrm{m} - \Gamma_\mathrm{m} \, n_\mathrm{m}(t).
 $$
 
-> *This is exactly the bathtub equation from last time, applied to mRNA.*
+> *This is exactly the [bathtub equation](./differential-equations), applied to mRNA.*
 
 For **translation**, protein is produced at a rate proportional to the number of mRNA molecules (more mRNA means more ribosomes translating) and degraded at rate $\Gamma_\mathrm{p}$:
 
@@ -31,12 +31,12 @@ $$
 > *Notice the key difference: the production of protein depends on how much mRNA is present. These two equations are coupled.*
 
 The parameters:
-- $n_\mathrm{m}(t)$: number of mRNA molecules at time $t$
-- $n_\mathrm{p}(t)$: number of protein molecules at time $t$
-- $k_\mathrm{m}$: transcription rate (mRNA molecules per unit time)
-- $k_\mathrm{p}$: translation rate (proteins per mRNA per unit time)
-- $\Gamma_\mathrm{m}$: mRNA degradation rate
-- $\Gamma_\mathrm{p}$: protein degradation rate (often dominated by dilution through cell growth)
+* $n_\mathrm{m}(t)$: number of mRNA molecules at time $t$
+* $n_\mathrm{p}(t)$: number of protein molecules at time $t$
+* $k_\mathrm{m}$: transcription rate (mRNA molecules per unit time)
+* $k_\mathrm{p}$: translation rate (proteins per mRNA per unit time)
+* $\Gamma_\mathrm{m}$: mRNA degradation rate
+* $\Gamma_\mathrm{p}$: protein degradation rate (often dominated by dilution through cell growth)
 
 ## Steady state
 
@@ -68,9 +68,9 @@ Why have two separate steps (transcription and translation) instead of going dir
 
 ## Check your understanding
 
-- If mRNA degradation becomes much faster ($\Gamma_\mathrm{m} \gg \Gamma_\mathrm{p}$), what happens to the protein response time? Why?
-- A gene is transcribed 10 times per minute and each mRNA is translated 20 times before it is degraded. Roughly how many proteins does the cell make from this gene per minute?
-- Why is protein degradation in bacteria often dominated by dilution (cell division) rather than active degradation?
+* If mRNA degradation becomes much faster ($\Gamma_\mathrm{m} \gg \Gamma_\mathrm{p}$), what happens to the protein response time? Why?
+* A gene is transcribed 10 times per minute and each mRNA is translated 20 times before it is degraded. Roughly how many proteins does the cell make from this gene per minute?
+* Why is protein degradation in bacteria often dominated by dilution (cell division) rather than active degradation?
 
 ## Challenge
 
@@ -78,9 +78,9 @@ In *E. coli*, a typical mRNA has a half-life of about 3 minutes, and a typical p
 
 ## Big ideas
 
-- **Transcription and translation form a coupled two-step system**, each described by a bathtub equation.
-- **mRNA is fast and jittery, protein is slow and smooth** — the two-timescale structure acts as a natural noise filter.
-- **Steady-state protein level** = $(k_\mathrm{p} \, k_\mathrm{m}) / (\Gamma_\mathrm{p} \, \Gamma_\mathrm{m})$ — a product of all four rate parameters.
+* **Transcription and translation form a coupled two-step system**, each described by a bathtub equation.
+* **mRNA is fast and jittery, protein is slow and smooth** — the two-timescale structure acts as a natural noise filter.
+* **Steady-state protein level** = $(k_\mathrm{p} \, k_\mathrm{m}) / (\Gamma_\mathrm{p} \, \Gamma_\mathrm{m})$ — a product of all four rate parameters.
 
 ## What comes next
 

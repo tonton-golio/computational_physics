@@ -111,10 +111,25 @@ Cool it further below $T_c$, and the entire system snaps into alignment — near
 
 If we track the energy and magnetization as functions of temperature, we see the signatures: the energy drops, the magnetization jumps from zero to a finite value, and the susceptibility peaks sharply at $T_c$. That peak is the fingerprint of the transition, and it gets sharper as you increase the system size.
 
-> **Key Intuition.** The Metropolis algorithm is nature's own decision-making process, implemented on a computer. At each step, a spin asks: "Would flipping lower the energy? If yes, I flip. If no, I might flip anyway if the temperature is high enough." The competition between energy-lowering and entropy-raising is what drives the entire simulation — and it is the same competition that drives every phase transition in nature.
+## Big Ideas
 
-> **Challenge.** Run a 2D Ising simulation (even a small $20 \times 20$ grid). Estimate $T_c$ by finding the temperature where $\chi$ peaks. Compare your answer with Onsager's exact result $T_c = 2J/(k_\mathrm{B} \ln(1+\sqrt{2})) \approx 2.269\, J/k_\mathrm{B}$. How close can you get?
+* The Metropolis algorithm converts the impossible task of summing $2^N$ states into a random walk through configuration space — you never need to know $Z$, only energy differences.
+* Detailed balance is the key: demanding that every pair of states exchange probability at equal rates guarantees the simulation converges to the Boltzmann distribution.
+* At each step, a spin "decides" whether to flip based on energy change and temperature — the same competition between order and randomness that governs every real phase transition.
+* Watching the Ising simulation cool through $T_c$ is worth more than a hundred equations: the moment correlated domains erupt from random noise is the moment you understand why phase transitions are surprising.
 
----
+## What Comes Next
 
-*We have seen that something dramatic happens at a special temperature: the system suddenly orders. But what exactly is a phase transition? What is an order parameter? And can we build a theory that predicts when and how it happens? That is the subject of the next section.*
+The Metropolis simulation reveals something dramatic: as temperature drops through a critical value, the system snaps from a disordered mess into a coherent, magnetized state. But the simulation does not tell us *why* this happens, or how to predict *when* it will happen for a given model.
+
+[Phase Transitions](phaseTransitions) builds the theoretical framework. The key concept is the **order parameter** — a quantity that is zero in the disordered phase and nonzero in the ordered phase. We will derive the mean-field Hamiltonian, which replaces the tangled many-body problem with a self-consistent single-body problem, and use it to predict the critical temperature.
+
+## Check Your Understanding
+
+1. The Metropolis algorithm always accepts moves that lower the energy, but only sometimes accepts moves that raise it. Why is it essential to sometimes accept uphill moves — what goes wrong if you never do?
+2. Detailed balance requires $w_{ij} P_j = w_{ji} P_i$ for every pair of states. Why is this stronger than just requiring the steady-state condition $\mathrm{d}P_i/\mathrm{d}t = 0$?
+3. At high temperature the Ising simulation looks like random noise, but at low temperature almost all spins align. Why does the system "choose" one direction (all up or all down) rather than staying at zero magnetization?
+
+## Challenge
+
+The Metropolis algorithm requires computing the energy change $\Delta E$ when a single spin flips. Show that for the 2D nearest-neighbor Ising model, $\Delta E$ depends only on the four neighboring spins, not on the entire lattice. Use this to estimate how many floating-point operations per second a simple Metropolis implementation can perform on a modern CPU. How long would it take to simulate $10^9$ spin-flip attempts on a $100 \times 100$ lattice?
