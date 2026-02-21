@@ -2,25 +2,21 @@
 
 import React, { useState, useMemo } from 'react';
 import * as math from 'mathjs';
-import Plotly from 'react-plotly.js';
-import AppliedStatsSim2 from './applied-statistics/AppliedStatsSim2';
-import AppliedStatsSim1 from './applied-statistics/AppliedStatsSim1';
-import AppliedStatsSim5 from './applied-statistics/AppliedStatsSim5';
-import AppliedStatsSim6 from './applied-statistics/AppliedStatsSim6';
-import AppliedStatsSim7 from './applied-statistics/AppliedStatsSim7';
-import AppliedStatsSim8 from './applied-statistics/AppliedStatsSim8';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { CanvasChart } from '@/components/ui/canvas-chart';
+import RegressionAnalysis from './applied-statistics/RegressionAnalysis';
+import DataExploration from './applied-statistics/DataExploration';
+import BayesianInference from './applied-statistics/BayesianInference';
+import ConfidenceIntervals from './applied-statistics/ConfidenceIntervals';
+import CorrelationAnalysis from './applied-statistics/CorrelationAnalysis';
+import BootstrapResampling from './applied-statistics/BootstrapResampling';
 import { Slider } from '@/components/ui/slider';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-interface SimulationProps {
-  id: string;
-}
 
 // Central Limit Theorem Simulation
 function CentralLimitTheoremSim() {
   const [sampleSize, setSampleSize] = useState(10);
   const [numSamples, setNumSamples] = useState(500);
-  const { mergeLayout } = usePlotlyTheme();
   const data = useMemo<number[]>(() => {
     const samples = [];
     for (let i = 0; i < numSamples; i++) {
@@ -69,15 +65,14 @@ function CentralLimitTheoremSim() {
           />
         </div>
       </div>
-      <Plotly
+      <CanvasChart
         data={hist ? [hist as any] : []}
-        layout={mergeLayout({
+        layout={{
           title: { text: `Distribution of Sample Means (n=${sampleSize})` },
           xaxis: { title: { text: 'Sample Mean' } },
           yaxis: { title: { text: 'Frequency' } },
           height: 400,
-        })}
-        config={{ displayModeBar: false }}
+        }}
       />
     </div>
   );
@@ -143,13 +138,26 @@ function HypothesisTestingSim() {
   );
 }
 
-export const APPLIED_STATS_SIMULATIONS: Record<string, React.ComponentType<SimulationProps>> = {
-  'applied-stats-sim-1': AppliedStatsSim1,
-  'applied-stats-sim-2': AppliedStatsSim2,
+export const APPLIED_STATS_SIMULATIONS: Record<string, React.ComponentType<SimulationComponentProps>> = {
+  'applied-stats-sim-1': DataExploration,
+  'applied-stats-sim-2': RegressionAnalysis,
   'applied-stats-sim-3': CentralLimitTheoremSim,
   'applied-stats-sim-4': HypothesisTestingSim,
-  'applied-stats-sim-5': AppliedStatsSim5,
-  'applied-stats-sim-6': AppliedStatsSim6,
-  'applied-stats-sim-7': AppliedStatsSim7,
-  'applied-stats-sim-8': AppliedStatsSim8,
+  'applied-stats-sim-5': BayesianInference,
+  'applied-stats-sim-6': ConfidenceIntervals,
+  'applied-stats-sim-7': CorrelationAnalysis,
+  'applied-stats-sim-8': BootstrapResampling,
+};
+
+// ============ CO-LOCATED DESCRIPTIONS ============
+
+export const STATS_DESCRIPTIONS: Record<string, string> = {
+  "applied-stats-sim-1": "Statistical data exploration — interactive summary statistics and distribution visualization for sample data.",
+  "applied-stats-sim-2": "Regression analysis — fitting linear and polynomial models to data and evaluating goodness of fit.",
+  "applied-stats-sim-3": "Central Limit Theorem — the distribution of sample means approaches a Gaussian as sample size increases.",
+  "applied-stats-sim-4": "Two-sample t-test — testing whether two groups have significantly different means using pooled variance.",
+  "applied-stats-sim-5": "Bayesian inference — updating prior beliefs with observed data to obtain posterior distributions.",
+  "applied-stats-sim-6": "Confidence intervals — visualizing the range of plausible parameter values at a given significance level.",
+  "applied-stats-sim-7": "Correlation analysis — measuring the strength and direction of linear relationships between variables.",
+  "applied-stats-sim-8": "Bootstrap resampling — estimating sampling distributions by repeatedly drawing with replacement from the data.",
 };

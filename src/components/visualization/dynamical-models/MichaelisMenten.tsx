@@ -1,11 +1,8 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
 import { Slider } from '@/components/ui/slider';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
-
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
+import { CanvasChart } from '@/components/ui/canvas-chart';
 
 /**
  * Michaelis-Menten / Monod growth curve:
@@ -18,7 +15,6 @@ const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 export default function MichaelisMenten() {
   const [lambdaMax, setLambdaMax] = useState(1.25);
   const [Ks, setKs] = useState(0.5);
-  const { mergeLayout } = usePlotlyTheme();
 
   const { xVals, yVals } = useMemo(() => {
     const n = 500;
@@ -50,7 +46,7 @@ export default function MichaelisMenten() {
         </div>
       </div>
 
-      <Plot
+      <CanvasChart
         data={[
           {
             x: xVals, y: yVals, type: 'scatter', mode: 'lines',
@@ -93,7 +89,7 @@ export default function MichaelisMenten() {
             showlegend: false,
           },
         ] as any}
-        layout={mergeLayout({
+        layout={{
           height: 420,
           margin: { t: 40, b: 60, l: 60, r: 20 },
           title: {
@@ -107,8 +103,7 @@ export default function MichaelisMenten() {
             title: { text: 'lambda (growth rate)' },
             range: [0, 2.2],
           },
-        })}
-        config={{ displayModeBar: false }}
+        }}
         style={{ width: '100%' }}
       />
 

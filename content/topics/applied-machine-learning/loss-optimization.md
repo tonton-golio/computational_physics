@@ -72,6 +72,8 @@ Standard k-fold is cheating for temporal data — it lets the model peek into th
 
 Both approaches prevent data leakage by never letting future information contaminate training.
 
+[[figure aml-loss-landscape-3d]]
+
 ## Interactive simulations
 
 [[simulation aml-loss-functions]]
@@ -90,5 +92,5 @@ Both approaches prevent data leakage by never letting future information contami
 ## Check your understanding
 
 - Can you explain to a friend who has never seen calculus why gradient descent works, using only the blindfolded hiker analogy?
-- What is the one picture in your head that distinguishes MSE from MAE?
+- If you could sketch one mental image that distinguishes MSE from MAE, what would it show?
 - What experiment would you run to show that your validation strategy is trustworthy?

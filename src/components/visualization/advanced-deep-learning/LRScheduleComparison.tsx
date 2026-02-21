@@ -1,11 +1,8 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { CanvasChart } from '@/components/ui/canvas-chart';
 import { Slider } from '@/components/ui/slider';
-
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
 interface LRScheduleComparisonProps {
   id?: string;
@@ -87,7 +84,6 @@ export default function LRScheduleComparison({ id: _id }: LRScheduleComparisonPr
   const [maxLR, setMaxLR] = useState(0.01);
   const [totalEpochs, setTotalEpochs] = useState(100);
   const [warmupFrac, setWarmupFrac] = useState(0.1);
-  const { mergeLayout } = usePlotlyTheme();
 
   const plotData = useMemo(() => {
     const traces: any[] = [];
@@ -164,17 +160,15 @@ export default function LRScheduleComparison({ id: _id }: LRScheduleComparisonPr
         </div>
 
         <div className="lg:col-span-2">
-          <Plot
+          <CanvasChart
             data={plotData}
-            layout={mergeLayout({
+            layout={{
               xaxis: { title: { text: 'Epoch' } },
               yaxis: { title: { text: 'Learning Rate' } },
               margin: { t: 30, b: 50, l: 70, r: 30 },
               autosize: true,
-            })}
-            useResizeHandler
+            }}
             style={{ width: '100%', height: '400px' }}
-            config={{ displayModeBar: false }}
           />
         </div>
       </div>

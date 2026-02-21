@@ -24,6 +24,11 @@ A fair coin: $H = \log 2 \approx 0.693$ nats. A loaded coin (99% heads): $H \app
 
 [[simulation entropy-demo]]
 
+> **What to look for:**
+> - Drag the distribution toward uniform — entropy climbs to its maximum (maximum ignorance)
+> - Concentrate probability on a single outcome — entropy drops toward zero (you know the answer)
+> - Every inverse problem starts somewhere on this curve, and data moves you toward the minimum
+
 Drag the probability slider and watch entropy change. The maximum is at uniform distribution (maximum ignorance). The minimum is at a spike (you know the answer). Every inverse problem starts somewhere on this curve — and data moves you toward the minimum.
 
 ---
@@ -36,7 +41,9 @@ $$
 D_{\mathrm{KL}}(P \| Q) = \sum_i P(i) \log \frac{P(i)}{Q(i)}.
 $$
 
-Here's the intuition. If your model $Q$ matches reality $P$ perfectly, there's no extra surprise: $D_{\mathrm{KL}} = 0$. If your model assigns low probability to events that actually happen often, you're constantly caught off guard — $D_{\mathrm{KL}}$ is large.
+Think of $D_{\mathrm{KL}}(P \| Q)$ as the "extra surprise tax" you pay every time you use model $Q$ when reality follows $P$. Using the wrong model always costs you — never the other way around.
+
+If your model $Q$ matches reality $P$ perfectly, there's no extra surprise: $D_{\mathrm{KL}} = 0$. If your model assigns low probability to events that actually happen often, you're constantly caught off guard — $D_{\mathrm{KL}}$ is large.
 
 Three things to remember:
 
@@ -45,6 +52,11 @@ Three things to remember:
 - It's **asymmetric**: $D_{\mathrm{KL}}(P \| Q) \neq D_{\mathrm{KL}}(Q \| P)$. Being wrong about likely events costs more than being wrong about rare ones.
 
 [[simulation kl-divergence]]
+
+> **What to look for:**
+> - Make the two distributions identical and verify $D_{\mathrm{KL}} = 0$
+> - Shift one distribution's mean and watch the divergence grow — the "surprise tax" increases
+> - Swap $P$ and $Q$ and notice the asymmetry: $D_{\mathrm{KL}}(P \| Q) \neq D_{\mathrm{KL}}(Q \| P)$
 
 ---
 
@@ -86,11 +98,14 @@ When running [MCMC](./monte-carlo-methods), the entropy of the sampled posterior
 
 Step back and look at the entire course through this lens:
 
-1. **Foundations**: inverse problems are ill-posed — entropy of the naive solution is all wrong
-2. **Regularization**: stabilize by controlling model complexity — equivalently, by limiting how much "information" (real + noise) you extract
-3. **Bayesian framework**: the prior sets the entropy floor, the data reduces it
-4. **Monte Carlo**: explores the posterior, whose entropy tells you what you actually know
-5. **Information theory** (here): quantifies all of this precisely
+1. **Foundations** (Lesson 1): inverse problems are ill-posed — entropy of the naive solution is all wrong
+2. **Regularization** (Lesson 2): stabilize by controlling model complexity — limiting how much "information" (real + noise) you extract
+3. **Bayesian framework** (Lesson 3): the prior sets the entropy floor, the data reduces it
+4. **Iterative methods** (Lesson 4): find the MAP efficiently when the problem is huge
+5. **Tomography** (Lesson 5): the complete linear workflow
+6. **Monte Carlo** (Lesson 6): explores the posterior, whose entropy tells you what you actually know
+7. **Geophysical examples** (Lesson 7): the answer is always a distribution
+8. **Information theory** (here): quantifies all of this precisely
 
 Entropy is not a footnote. It's the thread that runs through the entire course.
 
@@ -104,4 +119,4 @@ Information-theoretic tools — entropy, KL divergence, mutual information — q
 
 ## Further Reading
 
-Shannon's original 1948 paper is surprisingly readable and still worth your time. Cover & Thomas's *Elements of Information Theory* is the standard textbook. For the inverse-problems connection, see Tarantola's chapter on information and resolution, or Mackay's *Information Theory, Inference, and Learning Algorithms* which beautifully bridges the gap. But honestly, play with the entropy demo first — watch how moving a single probability changes the whole landscape of uncertainty.
+Shannon's original 1948 paper is surprisingly readable. Cover & Thomas's *Elements of Information Theory* is the standard textbook. MacKay's *Information Theory, Inference, and Learning Algorithms* beautifully bridges information theory and Bayesian inference.

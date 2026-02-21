@@ -3,19 +3,19 @@
 @custom-variant dark (&:where(:root[data-theme="dark"], :root[data-theme="dark"] *));
 
 :root {
-  --background: #f4f7ff;
-  --foreground: #101a2b;
-  --surface-1: #ffffff;
-  --surface-2: #ecf2ff;
-  --surface-3: #dfe8fb;
-  --border-strong: #c5d4ef;
-  --text-muted: #42536f;
-  --text-soft: #60708a;
-  --text-strong: #101a2b;
-  --accent: #2458c9;
-  --accent-strong: #173f93;
-  --danger-surface: #fff1f3;
-  --danger-border: #efb6c2;
+  --background: #edf0f5;
+  --foreground: #1a2235;
+  --surface-1: #f5f6f9;
+  --surface-2: #e4e8f0;
+  --surface-3: #d8dde8;
+  --border-strong: #bcc6da;
+  --text-muted: #4a5a72;
+  --text-soft: #657488;
+  --text-strong: #1a2235;
+  --accent: #2d56be;
+  --accent-strong: #1c4290;
+  --danger-surface: #f5edef;
+  --danger-border: #e0b3be;
 }
 
 @theme inline {
@@ -44,19 +44,19 @@
 }
 
 :root[data-theme="light"] {
-  --background: #f4f7ff;
-  --foreground: #101a2b;
-  --surface-1: #ffffff;
-  --surface-2: #ecf2ff;
-  --surface-3: #dfe8fb;
-  --border-strong: #c5d4ef;
-  --text-muted: #42536f;
-  --text-soft: #60708a;
-  --text-strong: #101a2b;
-  --accent: #2458c9;
-  --accent-strong: #173f93;
-  --danger-surface: #fff1f3;
-  --danger-border: #efb6c2;
+  --background: #edf0f5;
+  --foreground: #1a2235;
+  --surface-1: #f5f6f9;
+  --surface-2: #e4e8f0;
+  --surface-3: #d8dde8;
+  --border-strong: #bcc6da;
+  --text-muted: #4a5a72;
+  --text-soft: #657488;
+  --text-strong: #1a2235;
+  --accent: #2d56be;
+  --accent-strong: #1c4290;
+  --danger-surface: #f5edef;
+  --danger-border: #e0b3be;
 }
 
 :root[data-theme="dark"] {
@@ -76,9 +76,24 @@
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
+  background-image: radial-gradient(circle at 20% 20%, rgba(45,86,190,0.25), transparent 45%),
+                    radial-gradient(circle at 80% 70%, rgba(139,92,216,0.20), transparent 50%) !important;
+  background-attachment: fixed;
   color: var(--foreground);
   font-family: var(--font-geist-sans), Inter, system-ui, -apple-system, sans-serif;
+}
+
+:root[data-theme="dark"] body {
+  background-image: radial-gradient(circle at 20% 20%, rgba(56,189,248,0.08), transparent 35%),
+                    radial-gradient(circle at 80% 70%, rgba(168,85,247,0.09), transparent 40%) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) body {
+    background-image: radial-gradient(circle at 20% 20%, rgba(56,189,248,0.08), transparent 35%),
+                      radial-gradient(circle at 80% 70%, rgba(168,85,247,0.09), transparent 40%) !important;
+  }
 }
 
 .markdown-content h1,
@@ -117,62 +132,20 @@ body {
   color: var(--text-muted) !important;
 }
 
-/* Keep Plotly backgrounds theme-aware across all simulations. */
-.js-plotly-plot .plotly .bg {
-  fill: var(--surface-1) !important;
+/* Collapsible sidebar grid */
+.sidebar-grid {
+  transition: grid-template-columns 300ms ease-in-out, gap 300ms ease-in-out;
 }
 
-.js-plotly-plot .plotly .legend rect.bg {
-  fill: var(--surface-1) !important;
-  stroke: var(--border-strong) !important;
-}
-
-/* Plotly colorbar text */
-.js-plotly-plot .plotly .cbtitle text,
-.js-plotly-plot .plotly .cbticks text {
-  fill: var(--text-muted) !important;
-}
-
-/* Plotly container subtle depth */
-.js-plotly-plot {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  border-radius: 8px;
-}
-
-/* Plotly modebar: subtle by default, opaque on hover */
-.js-plotly-plot .plotly .modebar {
-  opacity: 0.4;
-  transition: opacity 0.25s ease;
-}
-
-.js-plotly-plot:hover .plotly .modebar {
-  opacity: 1;
-}
-
-.js-plotly-plot .plotly .modebar-btn path {
-  fill: var(--text-soft) !important;
-}
-
-.js-plotly-plot .plotly .modebar-btn:hover path {
-  fill: var(--accent) !important;
-}
-
-/* Plotly axis titles and tick labels */
-.js-plotly-plot .plotly .g-xtitle text,
-.js-plotly-plot .plotly .g-ytitle text,
-.js-plotly-plot .plotly .g-ztitle text {
-  fill: var(--text-strong) !important;
-}
-
-.js-plotly-plot .plotly .xtick text,
-.js-plotly-plot .plotly .ytick text,
-.js-plotly-plot .plotly .ztick text {
-  fill: var(--text-muted) !important;
-}
-
-/* Plotly plot title */
-.js-plotly-plot .plotly .g-gtitle text {
-  fill: var(--text-strong) !important;
+@media (min-width: 1024px) {
+  .sidebar-grid[data-collapsed="false"] {
+    grid-template-columns: 320px minmax(0, 1fr);
+    gap: 20px;
+  }
+  .sidebar-grid[data-collapsed="true"] {
+    grid-template-columns: 0px minmax(0, 1fr);
+    gap: 0px;
+  }
 }
 
 /* Shimmer animation for loading skeletons */

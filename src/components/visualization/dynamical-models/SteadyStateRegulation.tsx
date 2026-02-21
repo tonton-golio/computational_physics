@@ -1,11 +1,8 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
 import { Slider } from '@/components/ui/slider';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
-
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
+import { CanvasChart } from '@/components/ui/canvas-chart';
 
 /**
  * Steady-state concentration for positive and negative regulation.
@@ -21,7 +18,6 @@ const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 export default function SteadyStateRegulation() {
   const [H, setH] = useState(1);
   const [gammaP, setGammaP] = useState(0.5);
-  const { mergeLayout } = usePlotlyTheme();
 
   const { xVals, yPosHill, yNegHill, yLinear } = useMemo(() => {
     const n = 500;
@@ -73,7 +69,7 @@ export default function SteadyStateRegulation() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <Plot
+          <CanvasChart
             data={[
               {
                 x: xVals, y: yPosHill, type: 'scatter', mode: 'lines',
@@ -86,19 +82,18 @@ export default function SteadyStateRegulation() {
                 name: 'Gamma_P * P',
               },
             ] as any}
-            layout={mergeLayout({
+            layout={{
               ...commonLayout,
               title: {
                 text: 'Positive regulation',
               },
               legend: { x: 0.5, y: 0.3, bgcolor: 'rgba(0,0,0,0.3)' },
-            })}
-            config={{ displayModeBar: false }}
+            }}
             style={{ width: '100%' }}
           />
         </div>
         <div>
-          <Plot
+          <CanvasChart
             data={[
               {
                 x: xVals, y: yNegHill, type: 'scatter', mode: 'lines',
@@ -111,14 +106,13 @@ export default function SteadyStateRegulation() {
                 name: 'Gamma_P * P',
               },
             ] as any}
-            layout={mergeLayout({
+            layout={{
               ...commonLayout,
               title: {
                 text: 'Negative regulation',
               },
               legend: { x: 0.5, y: 0.95, bgcolor: 'rgba(0,0,0,0.3)' },
-            })}
-            config={{ displayModeBar: false }}
+            }}
             style={{ width: '100%' }}
           />
         </div>

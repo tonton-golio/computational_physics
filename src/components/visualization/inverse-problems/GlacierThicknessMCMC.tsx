@@ -1,15 +1,10 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
-import dynamic from 'next/dynamic';
 import { Slider } from '@/components/ui/slider';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { CanvasChart } from '@/components/ui/canvas-chart';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
-
-interface SimulationProps {
-  id: string;
-}
 
 const X_OBS = [535, 749, 963, 1177, 1391, 1605, 1819, 2033, 2247, 2461, 2675, 2889];
 const D_OBS = [-15.1, -23.9, -31.2, -36.9, -40.8, -42.8, -42.5, -40.7, -37.1, -31.5, -21.9, -12.9];
@@ -71,7 +66,7 @@ function percentile(values: number[], p: number): number {
   return sorted[idx];
 }
 
-export default function GlacierThicknessMCMC({ id }: SimulationProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function GlacierThicknessMCMC({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
   const [nWalkers, setNWalkers] = useState(6);
   const [nSteps, setNSteps] = useState(450);
   const [burnIn, setBurnIn] = useState(140);
@@ -80,7 +75,6 @@ export default function GlacierThicknessMCMC({ id }: SimulationProps) { // eslin
   const [kernelWidth, setKernelWidth] = useState(320);
   const [scale, setScale] = useState(0.16);
   const [seed, setSeed] = useState(12);
-  const { mergeLayout } = usePlotlyTheme();
 
   const result = useMemo(() => {
     const rng = seededRandom(seed);
@@ -213,7 +207,7 @@ export default function GlacierThicknessMCMC({ id }: SimulationProps) { // eslin
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-        <Plot
+        <CanvasChart
           data={result.lossTraces.map((trace, i) => ({
             x: Array.from({ length: trace.length }, (_, k) => k),
             y: trace,
@@ -223,12 +217,10 @@ export default function GlacierThicknessMCMC({ id }: SimulationProps) { // eslin
             opacity: 0.55,
             line: { width: 1 },
           }))}
-          layout={mergeLayout({
+          layout={{
             title: { text: 'Loss Traces (MCMC Walkers)' },
             xaxis: { title: { text: 'iteration' } },
             yaxis: { title: { text: 'loss' }, type: 'log' },
-            height: 320,
-            margin: { t: 40, b: 50, l: 60, r: 20 },
             showlegend: false,
             shapes: [{
               type: 'line',
@@ -239,30 +231,28 @@ export default function GlacierThicknessMCMC({ id }: SimulationProps) { // eslin
               yref: 'paper',
               line: { color: '#22d3ee', dash: 'dash' },
             }],
-          })}
-          config={{ displayModeBar: false }}
-          style={{ width: '100%' }}
+            margin: { t: 40, b: 50, l: 60, r: 20 },
+          }}
+          style={{ width: '100%', height: 320 }}
         />
-        <Plot
+        <CanvasChart
           data={[{
             x: Array.from({ length: result.acceptanceRates.length }, (_, i) => `w${i + 1}`),
             y: result.acceptanceRates,
             type: 'bar' as const,
             marker: { color: 'rgba(167,139,250,0.85)' },
           }]}
-          layout={mergeLayout({
+          layout={{
             title: { text: 'Acceptance Rate per Walker' },
             yaxis: { title: { text: 'acceptance fraction' }, range: [0, 1] },
-            height: 320,
             margin: { t: 40, b: 50, l: 60, r: 20 },
-          })}
-          config={{ displayModeBar: false }}
-          style={{ width: '100%' }}
+          }}
+          style={{ width: '100%', height: 320 }}
         />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-        <Plot
+        <CanvasChart
           data={[
             {
               x: X_OBS,
@@ -301,17 +291,15 @@ export default function GlacierThicknessMCMC({ id }: SimulationProps) { // eslin
               marker: { size: 4 },
             },
           ]}
-          layout={mergeLayout({
+          layout={{
             title: { text: 'Observed vs Posterior Prediction' },
             xaxis: { title: { text: 'distance along glacier (m)' } },
             yaxis: { title: { text: 'Bouguer anomaly' } },
-            height: 340,
             margin: { t: 40, b: 55, l: 60, r: 20 },
-          })}
-          config={{ displayModeBar: false }}
-          style={{ width: '100%' }}
+          }}
+          style={{ width: '100%', height: 340 }}
         />
-        <Plot
+        <CanvasChart
           data={[
             {
               x: X_OBS,
@@ -331,15 +319,13 @@ export default function GlacierThicknessMCMC({ id }: SimulationProps) { // eslin
               line: { color: '#a78bfa', width: 1.5, dash: 'dot' },
             },
           ]}
-          layout={mergeLayout({
+          layout={{
             title: { text: 'Inferred Glacier Thickness Profile' },
             xaxis: { title: { text: 'distance along glacier (m)' } },
             yaxis: { title: { text: 'thickness (m)' } },
-            height: 340,
             margin: { t: 40, b: 55, l: 60, r: 20 },
-          })}
-          config={{ displayModeBar: false }}
-          style={{ width: '100%' }}
+          }}
+          style={{ width: '100%', height: 340 }}
         />
       </div>
 

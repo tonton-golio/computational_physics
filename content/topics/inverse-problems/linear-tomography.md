@@ -90,6 +90,11 @@ If you've been following along, this should feel familiar — it's exactly the T
 
 [[simulation linear-tomography]]
 
+> **What to look for:**
+> - Compare the true anomaly pattern with the recovered image — where does the reconstruction succeed? Where does it smear?
+> - Change the regularization parameter and watch the image sharpen (small $\epsilon$) or blur (large $\epsilon$)
+> - Notice which cells are well-resolved (crossed by many rays) and which are ghostly (sparse coverage)
+
 ---
 
 ## Resolution and Coverage
@@ -127,4 +132,4 @@ Linear tomography turns geometry plus physics into a matrix inverse problem. The
 
 ## Further Reading
 
-Nolet's *A Breviary of Seismic Tomography* is compact and insightful. Iyer & Hirahara's *Seismic Tomography* covers the full range of applications. For the mathematical foundations, see Natterer's *The Mathematics of Computerized Tomography*. But before you read any of those — run the simulation above, change the ray geometry, and watch how the resolution changes. That's the lesson.
+Nolet's *A Breviary of Seismic Tomography* is compact and insightful. Natterer's *The Mathematics of Computerized Tomography* covers the mathematical foundations.

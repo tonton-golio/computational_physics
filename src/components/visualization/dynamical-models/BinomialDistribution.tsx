@@ -1,11 +1,8 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
 import { Slider } from '@/components/ui/slider';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
-
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
+import { CanvasChart } from '@/components/ui/canvas-chart';
 
 /** Log-space factorial using Stirling-like summation for large n */
 function logFactorial(n: number): number {
@@ -30,7 +27,6 @@ export default function BinomialDistribution() {
   const [p1, setP1] = useState(0.17);
   const [N2, setN2] = useState(20);
   const [p2, setP2] = useState(0.33);
-  const { mergeLayout } = usePlotlyTheme();
 
   const { kVals, y1, y2 } = useMemo(() => {
     const kMax = Math.max(N1, N2);
@@ -66,7 +62,7 @@ export default function BinomialDistribution() {
         </div>
       </div>
 
-      <Plot
+      <CanvasChart
         data={[
           {
             x: kVals, y: y1, type: 'scatter', mode: 'lines+markers',
@@ -81,7 +77,7 @@ export default function BinomialDistribution() {
             name: `N=${N2}, p=${p2.toFixed(2)}`,
           },
         ] as any}
-        layout={mergeLayout({
+        layout={{
           height: 400,
           margin: { t: 40, b: 50, l: 60, r: 20 },
           title: { text: 'Binomial Distribution P_N(k)' },
@@ -94,8 +90,7 @@ export default function BinomialDistribution() {
             range: [0, 1],
           },
           legend: { x: 0.65, y: 0.95, bgcolor: 'rgba(0,0,0,0.3)' },
-        })}
-        config={{ displayModeBar: false }}
+        }}
         style={{ width: '100%' }}
       />
 

@@ -1,13 +1,9 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
 import { Slider } from '@/components/ui/slider';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
-
-// Dynamically import Plot to avoid SSR issues
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
+import { CanvasChart } from '@/components/ui/canvas-chart';
 
 function solveFEM(ne: number, L: number, A: number, E: number, P: number): { nodes: number[], u: number[], deformed: number[] } {
   const n = ne + 1; // number of nodes
@@ -85,7 +81,6 @@ function solveLinearSystem(A: number[][], b: number[]): number[] {
 }
 
 export function FEMSim() {
-  const { mergeLayout } = usePlotlyTheme();
   const [ne, setNe] = useState([10]);
   const [L, setL] = useState([1.0]);
   const [A, setA] = useState([0.01]);
@@ -139,32 +134,30 @@ export function FEMSim() {
             <div>
               <h3 className="text-lg font-semibold mb-4">Mesh (Original and Deformed)</h3>
               {meshData && (
-                <Plot
+                <CanvasChart
                   data={meshData}
-                  layout={mergeLayout({
+                  layout={{
                     width: 500,
                     height: 300,
                     xaxis: { title: { text: 'Position x' } },
                     yaxis: { title: { text: 'Deformation (exaggerated)' } },
                     margin: { t: 20, b: 40, l: 60, r: 20 },
-                  })}
-                  config={{ displayModeBar: false }}
+                  }}
                 />
               )}
             </div>
             <div>
               <h3 className="text-lg font-semibold mb-4">Displacement u(x)</h3>
               {displacementData && (
-                <Plot
+                <CanvasChart
                   data={displacementData}
-                  layout={mergeLayout({
+                  layout={{
                     width: 500,
                     height: 300,
                     xaxis: { title: { text: 'Position x' } },
                     yaxis: { title: { text: 'Displacement u' } },
                     margin: { t: 20, b: 40, l: 60, r: 20 },
-                  })}
-                  config={{ displayModeBar: false }}
+                  }}
                 />
               )}
             </div>

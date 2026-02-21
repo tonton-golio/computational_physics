@@ -1,15 +1,10 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
-import dynamic from 'next/dynamic';
 import { Slider } from '@/components/ui/slider';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { CanvasChart } from '@/components/ui/canvas-chart';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
-
-interface SimulationProps {
-  id: string;
-}
 
 function seededRandom(seed: number): () => number {
   let s = Math.max(1, Math.floor(seed));
@@ -40,12 +35,11 @@ function theoreticalVolumeFraction(dim: number): number {
   return volBall / volCube;
 }
 
-export default function SphereInCubeMC({ id }: SimulationProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function SphereInCubeMC({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
   const [nDims, setNDims] = useState(4);
   const [nPointsExp, setNPointsExp] = useState(12);
   const [seed, setSeed] = useState(17);
   const nPoints = Math.pow(2, nPointsExp);
-  const { mergeLayout } = usePlotlyTheme();
 
   const result = useMemo(() => {
     const rng = seededRandom(seed);
@@ -138,7 +132,7 @@ export default function SphereInCubeMC({ id }: SimulationProps) { // eslint-disa
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-        <Plot
+        <CanvasChart
           data={[
             {
               x: result.xInside,
@@ -157,17 +151,16 @@ export default function SphereInCubeMC({ id }: SimulationProps) { // eslint-disa
               marker: { color: 'rgba(248,113,113,0.35)', size: 3 },
             },
           ]}
-          layout={mergeLayout({
+          layout={{
             title: { text: `First 2 coordinates (showing ${result.nPlot} points)` },
             xaxis: { title: { text: 'x1' }, range: [-1.1, 1.1], scaleanchor: 'y' },
             yaxis: { title: { text: 'x2' }, range: [-1.1, 1.1] },
             height: 380,
             margin: { t: 40, b: 50, l: 50, r: 20 },
-          })}
-          config={{ displayModeBar: false }}
+          }}
           style={{ width: '100%' }}
         />
-        <Plot
+        <CanvasChart
           data={[
             {
               x: result.dimAxis,
@@ -187,14 +180,13 @@ export default function SphereInCubeMC({ id }: SimulationProps) { // eslint-disa
               name: 'MC estimate',
             },
           ]}
-          layout={mergeLayout({
+          layout={{
             title: { text: 'Accepted Fraction vs Dimension' },
             xaxis: { title: { text: 'dimension' } },
             yaxis: { title: { text: 'fraction in unit sphere' }, type: 'log' },
             height: 380,
             margin: { t: 40, b: 50, l: 60, r: 20 },
-          })}
-          config={{ displayModeBar: false }}
+          }}
           style={{ width: '100%' }}
         />
       </div>

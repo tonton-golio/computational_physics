@@ -53,21 +53,6 @@ Think of this course as a hike up a mountain. Each stop builds on the last, and 
 
 You start at base camp learning that your computer lies to you (floating-point errors). Then you climb through the world of linear equations where we actually have perfect tools. Higher up, the data gets messy (least squares) and the equations get wild (nonlinear). Optimization teaches you to hike smart. Eigenvalues reveal the secret personalities hidden inside matrices. The FFT lets you hear the music in data. ODE solvers teach you to march through time. And at the summit, you can paint the whole sky with PDE simulations of heat, waves, and fluid flow.
 
-## Learning trajectory
-
-| # | Lesson | Subtitle | Time |
-|---|--------|----------|------|
-| 01 | **Bounding Errors** | *Why your computer is a liar and how to catch it in the act* | 45 min + 20 min coding |
-| 02 | **Linear Equations** | *The one family of problems we can solve perfectly (almost)* | 60 min + 30 min coding |
-| 03 | **Linear Least Squares** | *When the data doesn't fit, find the closest thing that does* | 50 min + 25 min coding |
-| 04 | **Nonlinear Equations** | *Welcome to the jungle where anything is possible* | 55 min + 25 min coding |
-| 05 | **Nonlinear Systems** | *Newton goes to higher dimensions and brings friends* | 50 min + 25 min coding |
-| 06 | **Optimization** | *Finding the best answer when "best" is all you've got* | 50 min + 30 min coding |
-| 07-08 | **Eigenvalue Problems & Algorithms** | *Discovering the secret personalities hiding inside matrices* | 70 min + 30 min coding |
-| 09 | **Fast Fourier Transform** | *The machine that tells you which notes are in a song* | 40 min + 20 min coding |
-| 10 | **Initial Value Problems** | *Teaching the computer to march through time without tripping* | 55 min + 25 min coding |
-| 11 | **Partial Differential Equations** | *Painting the whole sky: heat, waves, and everything in between* | 60 min + 30 min coding |
-
 ## Key mathematical ideas
 
 - Matrix factorizations (LU, QR, SVD) and their role in solving linear systems.
@@ -76,28 +61,6 @@ You start at base camp learning that your computer lies to you (floating-point e
 - Finite-difference discretization of PDEs.
 - The discrete Fourier transform and the FFT algorithm.
 - Condition numbers and the propagation of rounding errors.
-
-## Prerequisites
-
-- Programming in Python with NumPy.
-- Linear algebra: matrix operations, eigenvalues, vector spaces.
-- Calculus: derivatives, integrals, Taylor series.
-
-## Recommended reading
-
-- Heath, *Scientific Computing: An Introductory Survey*.
-- Trefethen and Bau, *Numerical Linear Algebra*.
-- Press et al., *Numerical Recipes*.
-
-### Further reading (only if you're curious)
-
-- 3Blue1Brown: [Essence of Linear Algebra](https://www.youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab) — watch this before the course if linear algebra feels rusty.
-- 3Blue1Brown: [Differential Equations](https://www.youtube.com/playlist?list=PLZHQObOWTQDNPOjrT6KVlfJuKtYTftqH6) — beautiful visual intuition for ODEs and PDEs.
-- 3Blue1Brown: [But what is the Fourier Transform?](https://www.youtube.com/watch?v=spUNpyF58BY) — the single best visual explanation of FFT.
-- Steve Brunton's YouTube channel — excellent applied scientific computing lectures.
-- Gilbert Strang, *Introduction to Linear Algebra* — the gentlest serious linear algebra textbook.
-
----
 
 ## Cheat Sheet of Big Ideas
 

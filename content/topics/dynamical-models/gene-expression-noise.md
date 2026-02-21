@@ -2,7 +2,7 @@
 
 ## Where we are headed
 
-In the last lesson you learned to write differential equations for production and degradation, and you saw that the system settles into a nice, clean steady state. Beautiful. But here is the twist: that steady state is a *lie*. Or rather, it is the average of something much messier. Inside a real cell, molecules are made and destroyed one at a time by random collisions, and when the numbers are small — tens or hundreds of molecules, not trillions — the randomness matters enormously. Today we find out just how noisy gene expression really is, and why that noise is not just a nuisance but a tool that cells use to make life-or-death decisions.
+In the last lesson you saw how the Poisson distribution describes rare mutational events — and you met the Fano factor as a statistical fingerprint. Now we turn those same tools on **gene expression itself**. Remember the bathtub equation from lesson one, with its clean, smooth steady state? That steady state is a *lie*. Or rather, it is the average of something much messier. Inside a real cell, molecules are made and destroyed one at a time by random collisions, and when the numbers are small — tens or hundreds of molecules, not trillions — the randomness matters enormously. Today we find out just how noisy gene expression really is, and why that noise is not just a nuisance but a tool that cells use to make life-or-death decisions.
 
 ## The central dogma, revisited
 
@@ -88,18 +88,13 @@ $$
 
 The Fano factor is a fingerprint: it tells you something about the underlying mechanism of gene expression just from measuring the variance and mean of protein levels across cells.
 
+> **Figure: Three noise histograms.** Three-panel histogram side by side: Poisson ($F = 1$), bursty ($F = 5$), and negative-feedback suppressed ($F < 1$). Each panel overlays the CV and Fano number.
+
+> **Figure: Elowitz two-colour scatter.** Two scatter plots: one panel shows a correlated diagonal cloud (extrinsic noise dominates), the other shows a circular uncorrelated cloud (intrinsic noise dominates).
+
 ## Stochastic simulation: the Gillespie algorithm
 
-Our deterministic equations give us the average, but they miss the noise entirely. To simulate what actually happens inside a single cell, molecule by molecule, we use the **Gillespie algorithm** (also called the stochastic simulation algorithm). Here is how it works:
-
-1. List all possible reactions and compute their **propensities** $a_i$ — how likely each reaction is to happen right now.
-2. Draw the time to the next reaction from an exponential distribution with total rate $a_0 = \sum_i a_i$.
-3. Choose *which* reaction fires with probability proportional to its propensity: $a_i / a_0$.
-4. Update the molecule counts and repeat.
-
-> *This gives you exact sample trajectories of the chemical master equation. It is the computational workhorse for studying noise in gene expression, and you will use it throughout this course.*
-
-Play with the simulation above — try changing the production and degradation rates and watch how the noise changes.
+Our deterministic equations give us the average, but they miss the noise entirely. To simulate what actually happens inside a single cell, molecule by molecule, we use the **Gillespie algorithm** (also called the stochastic simulation algorithm). The idea is simple: at each step, compute how likely each possible reaction is right now (its *propensity*), draw a random waiting time, pick which reaction fires, update the molecule counts, and repeat. This gives you exact sample trajectories of the chemical master equation — the computational workhorse for studying noise in gene expression. Play with the simulation above to see it in action.
 
 ## Why does nature do it this way?
 
@@ -123,4 +118,4 @@ Imagine a gene with a mean protein level of $\langle N \rangle = 100$ and varian
 
 ## What comes next
 
-Noise in gene expression and mutations in DNA replication are two faces of the same coin: randomness at the molecular level. In the next lesson, we dive into the statistics of rare events — how DNA polymerase achieves an error rate of one in a billion, and what the distribution of mutations across a population looks like. The probability distributions you will meet there (binomial, Poisson) are exactly the same ones that underpin everything we just said about noise.
+So far we have treated the transcription rate as a fixed number — the gene is either on or off, and we do not ask what controls it. But real genes have a knob. A repressor protein can sit on the promoter and shut it down; an activator can recruit the transcription machinery and crank it up. In the next lesson, we derive the mathematical function that describes this control — the **Hill function** — and you will see how nature turns a gentle dimmer into a sharp on-off switch.

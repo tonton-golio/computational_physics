@@ -1,17 +1,13 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
-import dynamic from 'next/dynamic';
 import { Slider } from '@/components/ui/slider';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { CanvasChart } from '@/components/ui/canvas-chart';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
-interface SimulationProps { id: string }
-
-export default function HedgeWeightsRegret({ id }: SimulationProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function HedgeWeightsRegret({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
   const [eta, setEta] = useState(0.3);
-  const { mergeLayout } = usePlotlyTheme();
   const rounds = 220;
   const experts = 4;
 
@@ -46,18 +42,17 @@ export default function HedgeWeightsRegret({ id }: SimulationProps) { // eslint-
       <h3 className="text-xl font-semibold mb-3 text-[var(--text-strong)]">Hedge: Weight Evolution and Regret</h3>
       <label className="mb-1 block text-sm text-[var(--text-muted)]">Learning rate eta: {eta.toFixed(2)}</label>
       <Slider value={[eta]} onValueChange={([v]) => setEta(v)} min={0.05} max={1} step={0.05} className="mb-4" />
-      <Plot
+      <CanvasChart
         data={[
           ...probs.map((series, i) => ({ x, y: series.map((v) => v * 10), type: 'scatter' as const, mode: 'lines' as const, name: `Expert ${i + 1} prob (scaled)`, })),
           { x, y: regret, type: 'scatter' as const, mode: 'lines' as const, name: 'Regret to best expert', line: { color: '#4ade80', width: 3 } },
         ]}
-        layout={mergeLayout({
+        layout={{
           title: { text: 'Multiplicative updates concentrate on stronger experts' },
           xaxis: { title: { text: 'round t' } },
           yaxis: { title: { text: 'regret / scaled probabilities' } },
           height: 430,
-        })}
-        config={{ displayModeBar: false }}
+        }}
         style={{ width: '100%' }}
       />
     </div>

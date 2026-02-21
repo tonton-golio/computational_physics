@@ -1,15 +1,11 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
-import dynamic from 'next/dynamic';
 import { Slider } from '@/components/ui/slider';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { CanvasChart } from '@/components/ui/canvas-chart';
+import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
-
-interface SimulationProps {
-  id: string;
-}
 
 const G_CONST = 6.674e-11;
 const X_OBS = [2, 4, 6, 8, 10, 12, 16, 18, 20, 22, 24, 26, 28, 30, 32, 36, 38, 40];
@@ -70,7 +66,7 @@ function loss(obs: number[], pred: number[], sigma: number): number {
   return s / (2 * sigma * sigma);
 }
 
-export default function VerticalFaultMCMC({ id }: SimulationProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function VerticalFaultMCMC({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
   const [nWalkers, setNWalkers] = useState(8);
   const [nSteps, setNSteps] = useState(400);
   const [burnIn, setBurnIn] = useState(120);
@@ -78,7 +74,6 @@ export default function VerticalFaultMCMC({ id }: SimulationProps) { // eslint-d
   const [proposalRho, setProposalRho] = useState(45);
   const [beta, setBeta] = useState(1.0);
   const [seed, setSeed] = useState(42);
-  const { mergeLayout } = usePlotlyTheme();
 
   const result = useMemo(() => {
     const rng = seededRandom(seed);
@@ -200,7 +195,7 @@ export default function VerticalFaultMCMC({ id }: SimulationProps) { // eslint-d
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-        <Plot
+        <CanvasChart
           data={result.lossTraces.map((trace, i) => ({
             x: Array.from({ length: trace.length }, (_, k) => k),
             y: trace,
@@ -210,12 +205,10 @@ export default function VerticalFaultMCMC({ id }: SimulationProps) { // eslint-d
             opacity: 0.5,
             line: { width: 1 },
           }))}
-          layout={mergeLayout({
+          layout={{
             title: { text: 'Loss Traces (all walkers)' },
             xaxis: { title: { text: 'iteration' } },
             yaxis: { title: { text: 'loss' }, type: 'log' },
-            height: 320,
-            margin: { t: 40, b: 50, l: 60, r: 20 },
             showlegend: false,
             shapes: [{
               type: 'line',
@@ -226,11 +219,11 @@ export default function VerticalFaultMCMC({ id }: SimulationProps) { // eslint-d
               yref: 'paper',
               line: { color: '#22d3ee', dash: 'dash' },
             }],
-          })}
-          config={{ displayModeBar: false }}
-          style={{ width: '100%' }}
+            margin: { t: 40, b: 50, l: 60, r: 20 },
+          }}
+          style={{ width: '100%', height: 320 }}
         />
-        <Plot
+        <CanvasChart
           data={[
             {
               x: Array.from({ length: result.acceptanceRates.length }, (_, i) => `w${i + 1}`),
@@ -240,19 +233,17 @@ export default function VerticalFaultMCMC({ id }: SimulationProps) { // eslint-d
               name: 'acceptance',
             },
           ]}
-          layout={mergeLayout({
+          layout={{
             title: { text: 'Acceptance Rate per Walker' },
             yaxis: { title: { text: 'acceptance fraction' }, range: [0, 1] },
-            height: 320,
             margin: { t: 40, b: 50, l: 60, r: 20 },
-          })}
-          config={{ displayModeBar: false }}
-          style={{ width: '100%' }}
+          }}
+          style={{ width: '100%', height: 320 }}
         />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-        <Plot
+        <CanvasChart
           data={[
             {
               x: X_OBS,
@@ -272,37 +263,46 @@ export default function VerticalFaultMCMC({ id }: SimulationProps) { // eslint-d
               line: { color: '#22d3ee', width: 2 },
             },
           ]}
-          layout={mergeLayout({
+          layout={{
             title: { text: 'Observed vs Predicted Gravity Gradient' },
             xaxis: { title: { text: 'x-position' } },
             yaxis: { title: { text: 'd(x)' } },
-            height: 320,
             margin: { t: 40, b: 50, l: 60, r: 20 },
-          })}
-          config={{ displayModeBar: false }}
-          style={{ width: '100%' }}
+          }}
+          style={{ width: '100%', height: 320 }}
         />
 
-        <Plot
-          data={[
-            {
-              x: result.posteriorH1,
-              y: result.posteriorRho1,
-              type: 'histogram2d' as const,
-              colorscale: 'Viridis',
-              nbinsx: 30,
-            },
-          ]}
-          layout={mergeLayout({
-            title: { text: 'Posterior of Slab 1 (height vs density)' },
-            xaxis: { title: { text: 'height_1 (m)' } },
-            yaxis: { title: { text: 'rho_1 (kg/m^3)' } },
-            height: 320,
-            margin: { t: 40, b: 50, l: 60, r: 20 },
-          })}
-          config={{ displayModeBar: false }}
-          style={{ width: '100%' }}
-        />
+        {(() => {
+          // Manual 2D histogram binning for CanvasHeatmap
+          const h1 = result.posteriorH1;
+          const rho1 = result.posteriorRho1;
+          if (h1.length === 0) return null;
+          const nBins = 30;
+          const hMin = Math.min(...h1), hMax = Math.max(...h1);
+          const rMin = Math.min(...rho1), rMax = Math.max(...rho1);
+          const hStep = (hMax - hMin) / nBins || 1;
+          const rStep = (rMax - rMin) / nBins || 1;
+          const z: number[][] = Array.from({ length: nBins }, () => Array(nBins).fill(0));
+          for (let k = 0; k < h1.length; k++) {
+            const ix = Math.min(Math.floor((h1[k] - hMin) / hStep), nBins - 1);
+            const iy = Math.min(Math.floor((rho1[k] - rMin) / rStep), nBins - 1);
+            z[iy][ix]++;
+          }
+          const xLabels = Array.from({ length: nBins }, (_, i) => hMin + (i + 0.5) * hStep);
+          const yLabels = Array.from({ length: nBins }, (_, i) => rMin + (i + 0.5) * rStep);
+          return (
+            <CanvasHeatmap
+              data={[{ z, x: xLabels, y: yLabels, colorscale: 'Viridis' }]}
+              layout={{
+                title: { text: 'Posterior of Slab 1 (height vs density)' },
+                xaxis: { title: { text: 'height_1 (m)' } },
+                yaxis: { title: { text: 'rho_1 (kg/m^3)' } },
+                margin: { t: 40, b: 50, l: 60, r: 20 },
+              }}
+              style={{ width: '100%', height: 320 }}
+            />
+          );
+        })()}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 text-sm">

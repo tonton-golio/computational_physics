@@ -83,7 +83,7 @@ const registryGroups: RegistryGroup[] = [
       ),
   },
   {
-    topic: "linear-algebra",
+    topic: "scientific-computing",
     title: "Eigenvalue Visualizations",
     load: () => import("@/components/visualization/EigenvalueSimulations").then((m) => m.EIGENVALUE_SIMULATIONS as SimulationRegistry),
   },

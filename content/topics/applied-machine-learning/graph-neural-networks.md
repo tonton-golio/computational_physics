@@ -63,9 +63,11 @@ After one layer, each node knows about its immediate neighbors. After two layers
 
 ## Oversmoothing: when everyone sounds the same
 
-There is a catch with stacking many GNN layers. After too many rounds of gossip, everyone ends up with the same opinion. This is **oversmoothing**: node representations converge to indistinguishable vectors as you add layers, because information has diffused uniformly across the graph. It is like a party where everyone has talked to everyone else so many times that all opinions have blended into a single consensus.
+There is a catch with stacking many GNN layers. After enough layers it is like a party where everyone has talked to everyone else ten times. All opinions have blended into one polite average. Every node sounds exactly the same — useful information has been washed away. This is **oversmoothing**: node representations converge to indistinguishable vectors as you add layers, because information has diffused uniformly across the graph.
 
 In practice, most GNNs work best with 2–4 layers. Beyond that, you need architectural tricks (skip connections, normalization, or attention mechanisms) to preserve node identity.
+
+[[figure aml-gnn-message-steps]]
 
 ## Interactive simulations
 
@@ -84,5 +86,5 @@ In practice, most GNNs work best with 2–4 layers. Beyond that, you need archit
 ## Check your understanding
 
 - Can you explain message passing to a friend using the gossip analogy?
-- What is the one picture in your head that shows why too many GNN layers cause oversmoothing?
+- What visual would you draw to show a friend why too many GNN layers cause oversmoothing?
 - What experiment would test whether your GNN benefits from 2 layers versus 4?

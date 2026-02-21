@@ -1,11 +1,9 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import dynamic from 'next/dynamic';
 import { Slider } from '@/components/ui/slider';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
-
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
+import { CanvasChart } from '@/components/ui/canvas-chart';
+import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
 
 function linspace(start: number, end: number, n: number): number[] {
   return Array.from({ length: n }, (_, i) => start + ((end - start) * i) / (n - 1));
@@ -20,8 +18,6 @@ export function AttentionHeatmapDemo() {
   const [tokens, setTokens] = useState(10);
   const [focus, setFocus] = useState(0.5);
   const [numHeads, setNumHeads] = useState(1);
-  const { mergeLayout } = usePlotlyTheme();
-
   const tokenLabels = EXAMPLE_TOKENS.slice(0, tokens);
 
   const heads = useMemo(() => {
@@ -71,7 +67,7 @@ export function AttentionHeatmapDemo() {
                 {headLabels[h]}
               </p>
             )}
-            <Plot
+            <CanvasHeatmap
               data={[{
                 z,
                 type: 'heatmap',
@@ -80,14 +76,12 @@ export function AttentionHeatmapDemo() {
                 y: tokenLabels,
                 showscale: h === 0,
               }]}
-              layout={mergeLayout({
+              layout={{
                 title: numHeads === 1 ? { text: 'Causal self-attention weights' } : undefined,
                 margin: { t: numHeads === 1 ? 40 : 20, r: 20, b: 60, l: 70 },
-                xaxis: { title: { text: 'Key token' }, tickangle: -45 },
+                xaxis: { title: { text: 'Key token' } },
                 yaxis: { title: { text: 'Query token' } },
-                height: numHeads === 1 ? 420 : 350,
-              })}
-              config={{ responsive: true, displayModeBar: false }}
+              }}
               style={{ width: '100%', height: numHeads === 1 ? 420 : 350 }}
             />
           </div>
@@ -160,8 +154,6 @@ export function OptimizerTrajectoryDemo() {
     new Set(['sgd-momentum'])
   );
   const [showContours, setShowContours] = useState(true);
-  const { mergeLayout } = usePlotlyTheme();
-
   const trajectories = useMemo(() => {
     const result: Record<OptimizerType, ReturnType<typeof runOptimizer>> = {} as any;
     for (const opt of ['sgd', 'sgd-momentum', 'adam'] as OptimizerType[]) {
@@ -191,20 +183,29 @@ export function OptimizerTrajectoryDemo() {
 
   const trajectoryTraces: any[] = [];
 
+  // Show loss contour reference circles when enabled
   if (contourData) {
-    trajectoryTraces.push({
-      type: 'contour',
-      x: contourData.x,
-      y: contourData.y,
-      z: contourData.z,
-      colorscale: [[0, '#0d0d1a'], [0.3, '#1a1a3e'], [0.6, '#2d1b69'], [1, '#6b21a8']],
-      contours: { coloring: 'lines', showlabels: false },
-      line: { width: 1 },
-      showscale: false,
-      opacity: 0.5,
-      name: 'Loss contours',
-      showlegend: false,
-    });
+    const levels = [0.5, 1, 2, 3, 5];
+    for (const level of levels) {
+      const pts = 100;
+      const cx: number[] = [];
+      const cy: number[] = [];
+      for (let i = 0; i <= pts; i++) {
+        const theta = (2 * Math.PI * i) / pts;
+        const r = Math.sqrt(level / 0.5);
+        cx.push(r * Math.cos(theta));
+        cy.push(r * Math.sin(theta));
+      }
+      trajectoryTraces.push({
+        x: cx,
+        y: cy,
+        type: 'scatter' as const,
+        mode: 'lines' as const,
+        line: { color: 'rgba(107, 33, 168, 0.3)', width: 1 },
+        showlegend: false,
+        hoverinfo: 'skip',
+      });
+    }
   }
 
   for (const [opt, traj] of Object.entries(trajectories)) {
@@ -264,26 +265,22 @@ export function OptimizerTrajectoryDemo() {
         </label>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Plot
+        <CanvasChart
           data={trajectoryTraces}
-          layout={mergeLayout({
+          layout={{
             title: { text: 'Parameter trajectory' },
             xaxis: { title: { text: 'w1' }, range: [-3, 3] },
             yaxis: { title: { text: 'w2' }, range: [-3, 3] },
-            height: 380,
-          })}
-          config={{ responsive: true, displayModeBar: false }}
+          }}
           style={{ width: '100%', height: 380 }}
         />
-        <Plot
+        <CanvasChart
           data={lossTraces}
-          layout={mergeLayout({
+          layout={{
             title: { text: 'Loss by iteration' },
             xaxis: { title: { text: 'Iteration' } },
             yaxis: { title: { text: 'Loss' }, type: 'log' },
-            height: 380,
-          })}
-          config={{ responsive: true, displayModeBar: false }}
+          }}
           style={{ width: '100%', height: 380 }}
         />
       </div>
@@ -302,8 +299,6 @@ function decode2D(z1: number, z2: number): number {
 export function LatentInterpolationDemo() {
   const [alpha, setAlpha] = useState(0.5);
   const [showGrid, setShowGrid] = useState(true);
-  const { mergeLayout } = usePlotlyTheme();
-
   const gridData = useMemo(() => {
     const gridSize = 20;
     const z1Range = linspace(-3, 3, gridSize);
@@ -323,68 +318,40 @@ export function LatentInterpolationDemo() {
     return { x, y, px, py, start, end };
   }, [alpha]);
 
-  const traces: any[] = [];
-
-  if (showGrid) {
-    traces.push({
-      type: 'heatmap',
-      x: gridData.z1Range,
-      y: gridData.z2Range,
-      z: gridData.values,
-      colorscale: 'Viridis',
-      showscale: true,
-      opacity: 0.7,
-      name: 'Decoded values',
-      colorbar: { title: { text: 'Decoded' }, len: 0.5 },
-    });
-  }
-
-  // Interpolation path
-  traces.push({
-    x: path.x,
-    y: path.y,
-    type: 'scatter',
-    mode: 'lines',
-    line: { color: '#8b5cf6', width: 3 },
-    name: 'Interpolation path',
-  });
-
-  // Start and end markers
-  traces.push({
-    x: [path.start[0]],
-    y: [path.start[1]],
-    type: 'scatter',
-    mode: 'markers+text',
-    marker: { size: 12, color: '#22c55e', symbol: 'diamond' },
-    text: ['Start'],
-    textposition: 'top center',
-    textfont: { color: '#22c55e', size: 11 },
-    name: 'Start point',
-    showlegend: false,
-  });
-
-  traces.push({
-    x: [path.end[0]],
-    y: [path.end[1]],
-    type: 'scatter',
-    mode: 'markers+text',
-    marker: { size: 12, color: '#ef4444', symbol: 'diamond' },
-    text: ['End'],
-    textposition: 'top center',
-    textfont: { color: '#ef4444', size: 11 },
-    name: 'End point',
-    showlegend: false,
-  });
-
-  // Current interpolated point
-  traces.push({
-    x: [path.px],
-    y: [path.py],
-    type: 'scatter',
-    mode: 'markers',
-    marker: { size: 14, color: '#ec4899', symbol: 'circle', line: { width: 2, color: 'white' } },
-    name: `Decoded sample (alpha=${alpha.toFixed(2)})`,
-  });
+  const scatterTraces: any[] = [
+    {
+      x: path.x,
+      y: path.y,
+      type: 'scatter',
+      mode: 'lines',
+      line: { color: '#8b5cf6', width: 3 },
+      name: 'Interpolation path',
+    },
+    {
+      x: [path.start[0]],
+      y: [path.start[1]],
+      type: 'scatter',
+      mode: 'markers',
+      marker: { size: 12, color: '#22c55e', symbol: 'diamond' },
+      name: 'Start point',
+    },
+    {
+      x: [path.end[0]],
+      y: [path.end[1]],
+      type: 'scatter',
+      mode: 'markers',
+      marker: { size: 12, color: '#ef4444', symbol: 'diamond' },
+      name: 'End point',
+    },
+    {
+      x: [path.px],
+      y: [path.py],
+      type: 'scatter',
+      mode: 'markers',
+      marker: { size: 14, color: '#ec4899', symbol: 'circle' },
+      name: `Sample (alpha=${alpha.toFixed(2)})`,
+    },
+  ];
 
   return (
     <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8 space-y-4">
@@ -404,17 +371,24 @@ export function LatentInterpolationDemo() {
           Show 2D decoded grid
         </label>
       </div>
-      <Plot
-        data={traces}
-        layout={mergeLayout({
-          title: { text: 'Smooth semantic interpolation through latent manifold' },
-          xaxis: { title: { text: 'z1' }, range: [-3.5, 3.5] },
-          yaxis: { title: { text: 'z2' }, range: [-3.5, 3.5] },
-          height: 450,
-        })}
-        config={{ responsive: true, displayModeBar: false }}
-        style={{ width: '100%', height: 450 }}
-      />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {showGrid && (
+          <CanvasHeatmap
+            data={[{ z: gridData.values, x: gridData.z1Range, y: gridData.z2Range, colorscale: 'Viridis' }]}
+            layout={{ title: { text: 'Decoded Latent Grid' }, xaxis: { title: { text: 'z1' } }, yaxis: { title: { text: 'z2' } } }}
+            style={{ width: '100%', height: 450 }}
+          />
+        )}
+        <CanvasChart
+          data={scatterTraces}
+          layout={{
+            title: { text: 'Interpolation through latent manifold' },
+            xaxis: { title: { text: 'z1' }, range: [-3.5, 3.5] },
+            yaxis: { title: { text: 'z2' }, range: [-3.5, 3.5] },
+          }}
+          style={{ width: '100%', height: 450 }}
+        />
+      </div>
       <div className="p-3 bg-[var(--surface-2)] rounded text-sm text-[var(--text-muted)]">
         The 2D grid shows decoded values across the latent space. A well-trained VAE produces smooth transitions: nearby latent points decode to similar outputs.
         The interpolation path demonstrates that moving linearly through latent space produces semantically meaningful intermediate samples.

@@ -1,11 +1,8 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { CanvasChart } from '@/components/ui/canvas-chart';
 import { Slider } from '@/components/ui/slider';
-
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
 function generateBrownianTimeSeries(length: number, drift: number, volatility: number): number[] {
   const series: number[] = [100]; // starting price
@@ -75,7 +72,6 @@ export function HurstExponent() {
   const [drift, setDrift] = useState(0.0005);
   const [volatility, setVolatility] = useState(0.02);
   const [seed, setSeed] = useState(0);
-  const { mergeLayout } = usePlotlyTheme();
 
   const { timeSeries, hurstValues, varData } = useMemo(() => {
     const ts = generateBrownianTimeSeries(seriesLength, drift, volatility);
@@ -142,23 +138,22 @@ export function HurstExponent() {
 
       {/* Time series and variance */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Plot
+        <CanvasChart
           data={[{
             y: timeSeries,
             type: 'scatter',
             mode: 'lines',
             line: { color: '#3b82f6', width: 1.5 },
           }]}
-          layout={mergeLayout({
+          layout={{
             title: { text: 'Simulated Price Series (GBM)', font: { size: 13 } },
             xaxis: { title: { text: 'Time' } },
             yaxis: { title: { text: 'Price' } },
             margin: { t: 40, r: 20, b: 50, l: 60 },
-          })}
-          config={{ responsive: true, displayModeBar: false }}
+          }}
           style={{ width: '100%', height: 300 }}
         />
-        <Plot
+        <CanvasChart
           data={[
             {
               x: varData.lags,
@@ -169,19 +164,18 @@ export function HurstExponent() {
               name: 'Data',
             },
           ]}
-          layout={mergeLayout({
+          layout={{
             title: { text: 'Variance vs Lag', font: { size: 13 } },
             xaxis: { title: { text: 'Lag (tau)' } },
             yaxis: { title: { text: 'var(tau)' } },
             margin: { t: 40, r: 20, b: 50, l: 60 },
-          })}
-          config={{ responsive: true, displayModeBar: false }}
+          }}
           style={{ width: '100%', height: 300 }}
         />
       </div>
 
       {/* Hurst exponent */}
-      <Plot
+      <CanvasChart
         data={[
           {
             x: hurstValues.map(h => h.lag),
@@ -200,14 +194,13 @@ export function HurstExponent() {
             name: 'H = 0.5 (Brownian)',
           },
         ]}
-        layout={mergeLayout({
+        layout={{
           title: { text: 'Hurst Exponent at Various Max Lags', font: { size: 14 } },
           xaxis: { title: { text: 'Max Lag' } },
           yaxis: { title: { text: 'Hurst Exponent H' } },
           showlegend: true,
           margin: { t: 40, r: 20, b: 50, l: 60 },
-        })}
-        config={{ responsive: true, displayModeBar: false }}
+        }}
         style={{ width: '100%', height: 300 }}
       />
     </div>

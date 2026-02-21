@@ -1,14 +1,9 @@
 'use client';
 
 import { useState, useMemo, useCallback } from 'react';
-import dynamic from 'next/dynamic';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
-
-interface SimulationProps {
-  id?: string;
-}
 
 type Matrix = number[][];
 
@@ -17,7 +12,7 @@ function formatNum(n: number): string {
   return n.toFixed(3);
 }
 
-export function LUDecomposition({}: SimulationProps) {
+export function LUDecomposition({}: SimulationComponentProps) {
   const [matrixInput, setMatrixInput] = useState<Matrix>([
     [1, 4, 12],
     [5, 4, 2],
@@ -26,7 +21,6 @@ export function LUDecomposition({}: SimulationProps) {
   const [rhsInput, setRhsInput] = useState<number[]>([1, 2, 3]);
   const [currentStep, setCurrentStep] = useState(0);
   const [showSolve, setShowSolve] = useState(false);
-  const { mergeLayout } = usePlotlyTheme();
 
   // LU factorization with step tracking
   const luSteps = useMemo(() => {
@@ -183,7 +177,7 @@ export function LUDecomposition({}: SimulationProps) {
           y: Array.from({ length: n }, (_, i) => i),
         },
       ],
-      layout: mergeLayout({
+      layout: {
         margin: { t: 35, r: 10, b: 10, l: 10 },
         title: { text: title, font: { size: 14 } },
         xaxis: { showticklabels: false, ticks: '' as const, showgrid: false },
@@ -191,9 +185,9 @@ export function LUDecomposition({}: SimulationProps) {
         annotations,
         width: 220,
         height: 220,
-      }),
+      },
     };
-  }, [mergeLayout]);
+  }, []);
 
   const lHeatmap = useMemo(() => makeHeatmap(step.L, 'L (Lower)', 'Blues'), [step.L, makeHeatmap]);
   const uHeatmap = useMemo(() => makeHeatmap(step.U, 'U (Upper)', 'Reds'), [step.U, makeHeatmap]);
@@ -249,15 +243,13 @@ export function LUDecomposition({}: SimulationProps) {
 
       {/* LU Heatmaps */}
       <div className="flex flex-wrap gap-4 justify-center">
-        <Plot
-          data={lHeatmap.data as Plotly.Data[]}
-          layout={lHeatmap.layout as Partial<Plotly.Layout>}
-          config={{ responsive: false, displayModeBar: false }}
+        <CanvasHeatmap
+          data={lHeatmap.data}
+          layout={lHeatmap.layout}
         />
-        <Plot
-          data={uHeatmap.data as Plotly.Data[]}
-          layout={uHeatmap.layout as Partial<Plotly.Layout>}
-          config={{ responsive: false, displayModeBar: false }}
+        <CanvasHeatmap
+          data={uHeatmap.data}
+          layout={uHeatmap.layout}
         />
       </div>
 

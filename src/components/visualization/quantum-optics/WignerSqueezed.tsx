@@ -1,16 +1,11 @@
 'use client';
 
-import dynamic from 'next/dynamic';
 import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
 import { SimulationPanel, SimulationLabel, SimulationToggle } from '@/components/ui/simulation-panel';
+import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
-
-interface SimulationProps {
-  id?: string;
-}
 
 /**
  * Wigner function for a squeezed coherent state |alpha, xi>
@@ -28,13 +23,12 @@ interface SimulationProps {
  *
  * where alpha = (x0 + i*p0)/sqrt(2)
  */
-export default function WignerSqueezed({}: SimulationProps) {
+export default function WignerSqueezed({}: SimulationComponentProps) {
   const [realAlpha, setRealAlpha] = useState(0.0);
   const [imagAlpha, setImagAlpha] = useState(0.0);
   const [squeezeR, setSqueezeR] = useState(0.8);
   const [squeezeTheta, setSqueezeTheta] = useState(0.0);
   const [show3D, setShow3D] = useState(false);
-  const { mergeLayout } = usePlotlyTheme();
 
   const { xvec, pvec, W } = useMemo(() => {
     const plotRange = 6;
@@ -140,19 +134,18 @@ export default function WignerSqueezed({}: SimulationProps) {
       />
 
       {!show3D ? (
-        <Plot
+        <CanvasHeatmap
           data={[
             {
               z: W,
               x: xvec,
               y: pvec,
-              type: 'contour',
+              type: 'heatmap',
               colorscale: 'RdBu',
-              ncontours: 30,
               colorbar: { title: { text: 'W(q, p)' } },
             },
           ]}
-          layout={mergeLayout({
+          layout={{
             title: { text: `Squeezed State W(q, p) [r=${squeezeR.toFixed(2)}]` },
             xaxis: {
               title: { text: 'q' },
@@ -163,34 +156,29 @@ export default function WignerSqueezed({}: SimulationProps) {
             },
             height: 500,
             margin: { t: 40, r: 20, b: 50, l: 50 },
-          })}
+          }}
           style={{ width: '100%', height: '500px' }}
-          config={{ responsive: true, displayModeBar: false }}
         />
       ) : (
-        <Plot
+        <CanvasHeatmap
           data={[
             {
               z: W,
               x: xvec,
               y: pvec,
-              type: 'surface',
+              type: 'heatmap',
               colorscale: 'RdBu',
               colorbar: { title: { text: 'W(q,p)' } },
             },
           ]}
-          layout={mergeLayout({
+          layout={{
             title: { text: `Squeezed State W(q, p) - 3D [r=${squeezeR.toFixed(2)}]` },
-            scene: {
-              xaxis: { title: { text: 'q' } },
-              yaxis: { title: { text: 'p' } },
-              zaxis: { title: { text: 'W(q,p)' } },
-            },
+            xaxis: { title: { text: 'q' } },
+            yaxis: { title: { text: 'p' } },
             height: 500,
             margin: { t: 40, r: 20, b: 50, l: 50 },
-          })}
+          }}
           style={{ width: '100%', height: '500px' }}
-          config={{ responsive: true, displayModeBar: false }}
         />
       )}
     </SimulationPanel>

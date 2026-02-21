@@ -1,17 +1,12 @@
 'use client';
 
 import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
-import dynamic from 'next/dynamic';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
 import { Slider } from '@/components/ui/slider';
+import { CanvasChart } from '@/components/ui/canvas-chart';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
-interface SimulationProps {
-  id: string;
-}
-
-export default function ElasticWave({ id }: SimulationProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function ElasticWave({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
   const [youngsMod, setYoungsMod] = useState(200); // GPa
   const [density, setDensity] = useState(7800); // kg/m^3 (steel-like)
   const [amplitude, setAmplitude] = useState(1.0);
@@ -21,7 +16,6 @@ export default function ElasticWave({ id }: SimulationProps) { // eslint-disable
   const [isPlaying, setIsPlaying] = useState(false);
   const animRef = useRef<number | null>(null);
   const lastTimeRef = useRef<number>(0);
-  const { mergeLayout } = usePlotlyTheme();
 
   // Wave speed c = sqrt(E / rho)
   // For visualization, we scale units: E in GPa = 1e9 Pa, rho in kg/m^3
@@ -122,7 +116,7 @@ export default function ElasticWave({ id }: SimulationProps) { // eslint-disable
           line: { color: '#ef4444', width: 1.5, dash: 'dot' as const },
         },
       ],
-      layout: mergeLayout({
+      layout: ({
         title: {
           text: '1D Elastic Wave Propagation in a Bar',
         },
@@ -160,7 +154,7 @@ export default function ElasticWave({ id }: SimulationProps) { // eslint-disable
         ],
       }),
     };
-  }, [amplitude, frequency, damping, time, cNorm, mergeLayout]);
+  }, [amplitude, frequency, damping, time, cNorm]);
 
   return (
     <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
@@ -291,11 +285,10 @@ export default function ElasticWave({ id }: SimulationProps) { // eslint-disable
         )}
       </div>
 
-      <Plot
+      <CanvasChart
         data={plotData.data}
         layout={plotData.layout}
-        config={{ displayModeBar: false, responsive: true }}
-        style={{ width: '100%' }}
+        style={{ width: '100%', height: 450 }}
       />
 
       <div className="mt-4 text-sm text-[var(--text-muted)] space-y-1">

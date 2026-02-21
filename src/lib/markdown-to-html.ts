@@ -1,13 +1,18 @@
 import { FIGURE_DEFS } from "./figure-definitions";
+import { SIMULATION_DESCRIPTIONS, simulationTitle } from "./simulation-descriptions";
 
 export interface MarkdownToHtmlOptions {
   /** When true, renders interactive elements as static placeholders for PDF export */
   staticMode?: boolean;
+  /** When set, figure images use this base path in generated HTML (e.g. "figures/") */
+  figureBasePath?: string;
 }
 
 export interface MarkdownToHtmlResult {
   html: string;
   placeholders: Array<{ type: string; id: string; index: number }>;
+  /** Figures referenced in the content (available when staticMode is true) */
+  figures: Array<{ id: string; src: string; caption: string; localFilename: string }>;
 }
 
 interface KatexLike {
@@ -26,15 +31,22 @@ function resolveAbsoluteUrl(src: string): string {
   return src;
 }
 
+function getExtensionFromUrl(url: string): string {
+  const pathname = url.split("?")[0].split("#")[0];
+  const match = pathname.match(/\.([a-z0-9]+)$/i);
+  return match ? match[1].toLowerCase() : "png";
+}
+
 export function markdownToHtml(
   content: string,
   katexModule: KatexLike | null,
   options: MarkdownToHtmlOptions = {},
 ): MarkdownToHtmlResult {
-  const { staticMode = false } = options;
+  const { staticMode = false, figureBasePath } = options;
 
   let processed = content;
   const placeholders: Array<{ type: string; id: string; index: number }> = [];
+  const figures: Array<{ id: string; src: string; caption: string; localFilename: string }> = [];
   let placeholderIndex = 0;
 
   // Extract and replace placeholders with temporary markers
@@ -45,26 +57,36 @@ export function markdownToHtml(
         const trimmedId = id.trim();
 
         if (type === "simulation") {
-          return `<div style="border:2px dashed #555;border-radius:12px;padding:24px;margin:16px 0;text-align:center;background:#111;color:#999;">
-            <div style="font-size:14px;font-weight:600;margin-bottom:4px;">Interactive Simulation</div>
-            <div style="font-size:12px;">[View online to interact]</div>
+          const title = simulationTitle(trimmedId);
+          const description = SIMULATION_DESCRIPTIONS[trimmedId];
+          return `<div style="border:2px dashed #555;border-radius:12px;padding:24px;margin:16px 0;background:#111;color:#999;">
+            <div style="font-size:14px;font-weight:600;margin-bottom:4px;text-align:center;">Interactive Simulation: ${escapeHtml(title)}</div>
+            ${description ? `<div style="font-size:12px;margin-top:8px;line-height:1.5;">${escapeHtml(description)}</div>` : ""}
           </div>`;
         }
 
         if (type === "figure") {
           const knownFigure = FIGURE_DEFS[trimmedId];
           if (knownFigure) {
-            const src = resolveAbsoluteUrl(knownFigure.src);
+            const fetchableSrc = resolveAbsoluteUrl(knownFigure.src);
+            const ext = getExtensionFromUrl(knownFigure.src);
+            const localFilename = `${trimmedId}.${ext}`;
+            figures.push({ id: trimmedId, src: fetchableSrc, caption: knownFigure.caption, localFilename });
+            const displaySrc = figureBasePath ? `${figureBasePath}${localFilename}` : fetchableSrc;
             return `<div style="margin:16px 0;text-align:center;">
-              <img src="${src}" alt="${escapeHtml(knownFigure.caption)}" style="max-width:100%;max-height:440px;border-radius:8px;border:1px solid #333;" />
+              <img src="${displaySrc}" alt="${escapeHtml(knownFigure.caption)}" style="max-width:100%;max-height:440px;border-radius:8px;border:1px solid #333;" />
               <div style="margin-top:8px;font-size:11px;color:#999;">${escapeHtml(knownFigure.caption)}</div>
             </div>`;
           }
           const hasExt = /\.[a-z0-9]+$/i.test(trimmedId);
           const localSrc = hasExt ? `/figures/${trimmedId}` : `/figures/${trimmedId}.png`;
-          const src = resolveAbsoluteUrl(localSrc);
+          const fetchableSrc = resolveAbsoluteUrl(localSrc);
+          const ext = hasExt ? localSrc.split(".").pop()! : "png";
+          const localFilename = `${trimmedId}.${ext}`;
+          figures.push({ id: trimmedId, src: fetchableSrc, caption: `Figure: ${trimmedId}`, localFilename });
+          const displaySrc = figureBasePath ? `${figureBasePath}${localFilename}` : fetchableSrc;
           return `<div style="margin:16px 0;text-align:center;">
-            <img src="${src}" alt="Figure ${escapeHtml(trimmedId)}" style="max-width:100%;border-radius:8px;border:1px solid #333;" />
+            <img src="${displaySrc}" alt="Figure ${escapeHtml(trimmedId)}" style="max-width:100%;border-radius:8px;border:1px solid #333;" />
             <div style="margin-top:8px;font-size:11px;color:#999;">Figure: ${escapeHtml(trimmedId)}</div>
           </div>`;
         }
@@ -207,5 +229,5 @@ export function markdownToHtml(
     })
     .join("\n");
 
-  return { html: processed, placeholders };
+  return { html: processed, placeholders, figures };
 }

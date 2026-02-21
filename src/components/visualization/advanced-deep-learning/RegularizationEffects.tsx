@@ -1,11 +1,8 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { CanvasChart } from '@/components/ui/canvas-chart';
 import { Slider } from '@/components/ui/slider';
-
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
 interface RegularizationEffectsProps {
   id?: string;
@@ -49,7 +46,6 @@ export default function RegularizationEffects({ id: _id }: RegularizationEffects
   const [dropout, setDropout] = useState(0);
   const [weightDecay, setWeightDecay] = useState(0);
   const [showNoReg, setShowNoReg] = useState(true);
-  const { mergeLayout } = usePlotlyTheme();
 
   const noRegCurves = useMemo(() => generateCurves(0, 0, 42), []);
   const regCurves = useMemo(() => generateCurves(dropout, weightDecay, 43), [dropout, weightDecay]);
@@ -135,17 +131,15 @@ export default function RegularizationEffects({ id: _id }: RegularizationEffects
         </div>
 
         <div className="lg:col-span-2">
-          <Plot
+          <CanvasChart
             data={traces}
-            layout={mergeLayout({
+            layout={{
               xaxis: { title: { text: 'Epoch' } },
               yaxis: { title: { text: 'Loss' } },
               margin: { t: 30, b: 50, l: 60, r: 30 },
               autosize: true,
-            })}
-            useResizeHandler
+            }}
             style={{ width: '100%', height: '400px' }}
-            config={{ displayModeBar: false }}
           />
         </div>
       </div>

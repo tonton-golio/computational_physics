@@ -34,6 +34,10 @@ The solution is to give the network a notebook — a persistent memory cell with
 
 Consider predicting the next word. Given "The cat sat on the ___", a simple RNN can likely predict "mat" — the context is short and recent. But now consider: "The author, who grew up in Paris and studied literature at the Sorbonne before moving to New York where she worked as a journalist for twenty years, finally published her ___". To predict "book" or "novel," the model must remember "author" and "published" across a gap of 30+ words. A vanilla RNN's hidden state would have long forgotten "author" by the time it reaches "her." An LSTM, with its explicit memory cell, can carry that information across the entire sentence.
 
+[[figure aml-rnn-gradient-flow]]
+
+[[simulation aml-rnn-memory-highway]]
+
 ## Where this topic goes deeper
 
 This page gives you the core intuition for sequence modeling. For full architectural details — bidirectional RNNs, attention mechanisms, the evolution from LSTMs to transformers, and practical sequence modeling workflows — see [Advanced Deep Learning — Sequence Models](/topics/advanced-deep-learning/ann).
@@ -48,5 +52,5 @@ This page gives you the core intuition for sequence modeling. For full architect
 ## Check your understanding
 
 - Can you explain the vanishing gradient problem using the telephone game analogy?
-- What is the one picture in your head that shows how an LSTM gate decides what to remember?
+- Sketch the scene that shows how an LSTM gate decides what to remember.
 - What experiment would reveal whether your sequence model is actually using long-range context or just predicting from the last few tokens?

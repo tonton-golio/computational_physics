@@ -1,14 +1,14 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import dynamic from 'next/dynamic';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
-
-// Dynamically import Plot to avoid SSR issues
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
+import { useTheme } from '@/lib/use-theme';
 
 const SIZE = 50;
+
+// ---------------------------------------------------------------------------
+// Game Logic
+// ---------------------------------------------------------------------------
 
 function createEmptyGrid(): number[][] {
   return Array.from({ length: SIZE }, () => Array(SIZE).fill(0));
@@ -103,87 +103,247 @@ function nextGeneration(grid: number[][]): number[][] {
   return newGrid;
 }
 
+// ---------------------------------------------------------------------------
+// p5.js 2D Canvas
+// ---------------------------------------------------------------------------
+
+interface CanvasProps {
+  gridRef: React.RefObject<number[][] | null>;
+  isDark: boolean;
+  onCellToggle: (i: number, j: number) => void;
+}
+
+function GameOfLifeCanvas({ gridRef, isDark, onCellToggle }: CanvasProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const p5Ref = useRef<any>(null);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    let cancelled = false;
+
+    import('p5').then(({ default: p5 }) => {
+      if (cancelled || !containerRef.current) return;
+
+      if (p5Ref.current) {
+        p5Ref.current.remove();
+        p5Ref.current = null;
+      }
+
+      const instance = new p5((p: any) => {
+        const canvasWidth = containerRef.current?.clientWidth || 600;
+        const cellSize = canvasWidth / SIZE;
+
+        p.setup = () => {
+          p.createCanvas(canvasWidth, canvasWidth);
+          p.pixelDensity(1);
+          p.frameRate(30);
+        };
+
+        p.draw = () => {
+          const grid = gridRef.current;
+          if (!grid) return;
+
+          if (isDark) p.background(7, 7, 16);
+          else p.background(240, 244, 255);
+
+          const ctx = p.drawingContext as CanvasRenderingContext2D;
+          p.noStroke();
+
+          // Dead cells
+          if (isDark) p.fill(18, 18, 36);
+          else p.fill(223, 232, 251);
+          for (let i = 0; i < SIZE; i++) {
+            for (let j = 0; j < SIZE; j++) {
+              if (grid[i][j] === 0) {
+                p.rect(j * cellSize + 0.5, i * cellSize + 0.5, cellSize - 1, cellSize - 1, 1);
+              }
+            }
+          }
+
+          // Alive cells with glow in dark mode
+          if (isDark) {
+            ctx.shadowColor = 'rgba(0, 255, 204, 0.6)';
+            ctx.shadowBlur = 8;
+            p.fill(0, 255, 204);
+          } else {
+            p.fill(0, 170, 136);
+          }
+          for (let i = 0; i < SIZE; i++) {
+            for (let j = 0; j < SIZE; j++) {
+              if (grid[i][j] === 1) {
+                p.rect(j * cellSize + 0.5, i * cellSize + 0.5, cellSize - 1, cellSize - 1, 1);
+              }
+            }
+          }
+          if (isDark) {
+            ctx.shadowBlur = 0;
+            ctx.shadowColor = 'transparent';
+          }
+        };
+
+        p.mousePressed = () => {
+          if (p.mouseX >= 0 && p.mouseX < canvasWidth && p.mouseY >= 0 && p.mouseY < canvasWidth) {
+            const j = Math.floor(p.mouseX / cellSize);
+            const i = Math.floor(p.mouseY / cellSize);
+            if (i >= 0 && i < SIZE && j >= 0 && j < SIZE) {
+              onCellToggle(i, j);
+            }
+          }
+        };
+      }, containerRef.current);
+
+      p5Ref.current = instance;
+    });
+
+    return () => {
+      cancelled = true;
+      if (p5Ref.current) {
+        p5Ref.current.remove();
+        p5Ref.current = null;
+      }
+    };
+  }, [isDark, gridRef, onCellToggle]);
+
+  return <div ref={containerRef} className="w-full" />;
+}
+
+// ---------------------------------------------------------------------------
+// Main Component
+// ---------------------------------------------------------------------------
+
 export function GameOfLife() {
+  const theme = useTheme();
+  const isDark = theme === 'dark';
   const [grid, setGrid] = useState(createRandomGrid);
   const [running, setRunning] = useState(false);
   const [selectedPattern, setSelectedPattern] = useState('random');
-  const { mergeLayout } = usePlotlyTheme();
+  const [speed, setSpeed] = useState(200);
+  const [generation, setGeneration] = useState(0);
+
+  const gridRef = useRef<number[][] | null>(grid);
+  useEffect(() => { gridRef.current = grid; }, [grid]);
+
+  const selectedPatternRef = useRef(selectedPattern);
+  useEffect(() => {
+    selectedPatternRef.current = selectedPattern;
+  }, [selectedPattern]);
 
   useEffect(() => {
     if (!running) return;
 
     const interval = setInterval(() => {
       setGrid(currentGrid => nextGeneration(currentGrid));
-    }, 200);
+      setGeneration(g => g + 1);
+    }, speed);
 
     return () => clearInterval(interval);
-  }, [running]);
+  }, [running, speed]);
 
-  const start = () => setRunning(true);
-  const stop = () => setRunning(false);
-  const reset = () => {
+  const population = grid.reduce((sum, row) => sum + row.reduce((s, c) => s + c, 0), 0);
+
+  const start = useCallback(() => setRunning(true), []);
+  const stop = useCallback(() => setRunning(false), []);
+
+  const reset = useCallback(() => {
     setRunning(false);
-    if (selectedPattern === 'random') {
+    setGeneration(0);
+    const pat = selectedPatternRef.current;
+    if (pat === 'random') {
       setGrid(createRandomGrid());
     } else {
       const emptyGrid = createEmptyGrid();
-      const pattern = patterns[selectedPattern as keyof typeof patterns];
-      if (Array.isArray(pattern)) {
-        const startX = Math.floor(SIZE / 2) - Math.floor(pattern.length / 2);
-        const startY = Math.floor(SIZE / 2) - Math.floor(pattern[0].length / 2);
-        setGrid(setPattern(emptyGrid, pattern, startX, startY));
+      const p = patterns[pat as keyof typeof patterns];
+      if (Array.isArray(p)) {
+        const startX = Math.floor(SIZE / 2) - Math.floor(p.length / 2);
+        const startY = Math.floor(SIZE / 2) - Math.floor(p[0].length / 2);
+        setGrid(setPattern(emptyGrid, p, startX, startY));
       } else {
-        setGrid(pattern());
+        setGrid(p());
       }
     }
-  };
+  }, []);
 
-  const selectPattern = (pattern: string) => {
+  const selectPattern = useCallback((pattern: string) => {
     setSelectedPattern(pattern);
-    reset();
-  };
+    selectedPatternRef.current = pattern;
+    setRunning(false);
+    setGeneration(0);
+    if (pattern === 'random') {
+      setGrid(createRandomGrid());
+    } else {
+      const emptyGrid = createEmptyGrid();
+      const p = patterns[pattern as keyof typeof patterns];
+      if (Array.isArray(p)) {
+        const startX = Math.floor(SIZE / 2) - Math.floor(p.length / 2);
+        const startY = Math.floor(SIZE / 2) - Math.floor(p[0].length / 2);
+        setGrid(setPattern(emptyGrid, p, startX, startY));
+      } else {
+        setGrid(p());
+      }
+    }
+  }, []);
+
+  const toggleCell = useCallback((i: number, j: number) => {
+    setGrid(g => {
+      const newGrid = g.map(row => [...row]);
+      newGrid[i][j] = newGrid[i][j] === 1 ? 0 : 1;
+      return newGrid;
+    });
+  }, []);
 
   return (
     <div>
-      <div className="mb-4 flex gap-2 flex-wrap">
+      {/* Controls */}
+      <div className="mb-4 flex gap-2 flex-wrap items-center">
         <Button onClick={start} disabled={running}>Play</Button>
         <Button onClick={stop} disabled={!running}>Pause</Button>
         <Button onClick={reset}>Reset</Button>
+        <span className="text-sm text-[var(--text-muted)] ml-2">
+          Gen: {generation} | Pop: {population}
+        </span>
       </div>
-      <div className="mb-4">
-        <label className="text-[var(--text-strong)] mr-2">Initial Pattern:</label>
-        <select
-          value={selectedPattern}
-          onChange={(e) => selectPattern(e.target.value)}
-          className="bg-[var(--surface-3)] text-[var(--text-strong)] p-2 rounded border border-[var(--border-strong)]"
-        >
-          <option value="random">Random</option>
-          <option value="glider">Glider</option>
-          <option value="blinker">Blinker</option>
-          <option value="beacon">Beacon</option>
-          <option value="toad">Toad</option>
-          <option value="block">Block</option>
-          <option value="beehive">Beehive</option>
-        </select>
+
+      <div className="mb-4 flex gap-4 flex-wrap items-center">
+        <div>
+          <label className="text-[var(--text-strong)] mr-2">Initial Pattern:</label>
+          <select
+            value={selectedPattern}
+            onChange={(e) => selectPattern(e.target.value)}
+            className="bg-[var(--surface-3)] text-[var(--text-strong)] p-2 rounded border border-[var(--border-strong)]"
+          >
+            <option value="random">Random</option>
+            <option value="glider">Glider</option>
+            <option value="blinker">Blinker</option>
+            <option value="beacon">Beacon</option>
+            <option value="toad">Toad</option>
+            <option value="block">Block</option>
+            <option value="beehive">Beehive</option>
+          </select>
+        </div>
+        <div className="flex items-center gap-2">
+          <label className="text-[var(--text-strong)]">Speed:</label>
+          <input
+            type="range"
+            min={50}
+            max={500}
+            step={10}
+            value={speed}
+            onChange={(e) => setSpeed(Number(e.target.value))}
+            className="w-32 accent-[var(--accent)]"
+          />
+          <span className="text-[var(--text-muted)] text-sm w-16">{speed}ms</span>
+        </div>
       </div>
-      <Plot
-        data={[
-          {
-            z: grid,
-            type: 'heatmap',
-            colorscale: [[0, 'white'], [1, 'black']],
-            showscale: false,
-          },
-        ]}
-        layout={mergeLayout({
-          width: 600,
-          height: 600,
-          xaxis: { showticklabels: false },
-          yaxis: { showticklabels: false },
-          margin: { t: 0, b: 0, l: 0, r: 0 },
-        })}
-        config={{ displayModeBar: false }}
-      />
+
+      {/* 2D Canvas */}
+      <div
+        className="w-full rounded-lg overflow-hidden"
+        style={{ background: isDark ? '#070710' : '#f0f4ff' }}
+      >
+        <GameOfLifeCanvas gridRef={gridRef} isDark={isDark} onCellToggle={toggleCell} />
+      </div>
+
+      <p className="text-xs text-[var(--text-muted)] mt-2">Click on cells to toggle them.</p>
     </div>
   );
 }

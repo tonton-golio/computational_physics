@@ -1,37 +1,13 @@
 "use client";
 
-export type LotkaVolterraParams = {
-  alpha: number;
-  beta: number;
-  gamma: number;
-  delta: number;
-  x0: number;
-  y0: number;
-  dt: number;
-  steps: number;
-};
+import type {
+  LotkaVolterraParams,
+  LotkaVolterraResult,
+  MDPSimulationParams,
+  MDPSimulationResult,
+} from "@/shared/types/simulation";
 
-export type LotkaVolterraResult = {
-  t: number[];
-  x: number[];
-  y: number[];
-};
-
-export type MDPSimulationParams = {
-  costPerUnfilled: number;
-  setupCost: number;
-  maxUnfilled: number;
-  alpha: number;
-  timeHorizon: number;
-};
-
-export type MDPSimulationResult = {
-  probFills: number[];
-  avgCosts: number[];
-  minCosts: number[];
-  maxCosts: number[];
-  optIdx: number;
-};
+export type { LotkaVolterraParams, LotkaVolterraResult, MDPSimulationParams, MDPSimulationResult };
 
 type CacheEntry<T> = {
   key: string;

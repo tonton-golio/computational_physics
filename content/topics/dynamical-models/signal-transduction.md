@@ -68,6 +68,8 @@ $$
 
 > *The first term says CheR adds methyl groups at a constant rate. The second term says CheB removes them at a rate that depends on receptor activity $B^*(l)$, which in turn depends on the ligand concentration $l$. The balance of these two processes is what gives the cell its remarkable ability to adapt.*
 
+> **Figure: Chemotaxis adaptation.** Time course showing a step increase in ligand concentration, followed by a brief spike in CheA activity (tumbling), then methylation level slowly rising, and activity returning to the pre-stimulus baseline (perfect adaptation).
+
 With adaptation, the bacterium can be sensitive to tiny changes in concentration at *any* background level — from nanomolar to millimolar. It is like having a camera that automatically adjusts its exposure, always keeping the image sharp.
 
 ## Signal transduction in space: morphogen gradients
@@ -80,11 +82,13 @@ Suppose you are a cell, and your neighbors are producing a signal (the **Delta**
 
 > *The logic: if my neighbor is loud, I shut up. And if I shut up, my other neighbors get louder. The result is a checkerboard pattern — alternating cells with high and low Delta expression.*
 
+> **Figure: Notch-Delta checkerboard emergence.** A 4x4 grid of cells at $t = 0$ (uniform Delta expression) next to the same grid at $t_\mathrm{final}$ (alternating high/low Delta in a checkerboard pattern).
+
 This is **lateral inhibition**, and it is the mechanism behind many beautiful patterns in biology: the regular spacing of bristles on a fly, the alternating fates of cells in the inner ear, and the spacing of hair follicles on your skin. The Notch-Delta system is one of evolution's most reused circuit designs.
 
 ## Why does nature do it this way?
 
-A cell that cannot sense its environment is a cell that cannot survive. Signal transduction is how a single-celled organism finds food, avoids poison, and coordinates with its neighbors. In multicellular organisms, it is how cells decide their identity during development. The common theme is that cells need to respond to *changes*, not just to absolute levels — and the elegant adaptation mechanisms we see in chemotaxis are nature's solution to this universal problem.
+Survival demands awareness. Signal transduction is how a single-celled organism finds food, avoids poison, and coordinates with its neighbors. In multicellular organisms, it is how cells decide their identity during development. The common theme is that cells need to respond to *changes*, not just to absolute levels — and the elegant adaptation mechanisms we see in chemotaxis are nature's solution to this universal problem.
 
 ## Check your understanding
 

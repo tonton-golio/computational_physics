@@ -40,6 +40,8 @@ A very shallow tree (say, depth 2) is like a tourist with a simple rule: "If you
 
 Bagging (random forests) fights variance by averaging many high-variance trees â€” each tree overfits differently, and the errors cancel. Boosting fights bias by building a sequence of simple trees that progressively correct each other's mistakes. In practice, gradient boosting with careful tuning (early stopping, regularization) is one of the most powerful methods for structured data.
 
+[[figure aml-xor-ensemble]]
+
 ## Interactive simulations
 
 [[simulation aml-tree-split-impurity]]
@@ -55,5 +57,5 @@ Bagging (random forests) fights variance by averaging many high-variance trees â
 ## Check your understanding
 
 - Can you explain to a non-technical friend what a decision tree does using the twenty-questions game?
-- What is the one picture in your head that shows why averaging many noisy predictions reduces error?
+- What single mental snapshot captures why averaging many noisy predictions reduces error?
 - What experiment would reveal whether your tree ensemble is overfitting?

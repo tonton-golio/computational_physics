@@ -1,11 +1,8 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { CanvasChart } from '@/components/ui/canvas-chart';
 import { Slider } from '@/components/ui/slider';
-
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
 interface DoubleDescentProps {
   id?: string;
@@ -61,7 +58,6 @@ export default function DoubleDescent({ id: _id }: DoubleDescentProps) {
   const [numSamples, setNumSamples] = useState(100);
   const [peakSharpness, setPeakSharpness] = useState(1.0);
   const [showClassical, setShowClassical] = useState(true);
-  const { mergeLayout } = usePlotlyTheme();
 
   const data = useMemo(() => computeDoubleDescent(numSamples, peakSharpness), [numSamples, peakSharpness]);
 
@@ -141,9 +137,9 @@ export default function DoubleDescent({ id: _id }: DoubleDescentProps) {
         </div>
 
         <div className="lg:col-span-2">
-          <Plot
+          <CanvasChart
             data={traces}
-            layout={mergeLayout({
+            layout={{
               xaxis: { title: { text: 'Number of parameters' } },
               yaxis: { title: { text: 'Error' }, range: [0, 2.5] },
               shapes,
@@ -156,10 +152,8 @@ export default function DoubleDescent({ id: _id }: DoubleDescentProps) {
                 showarrow: false,
                 font: { color: '#ef4444', size: 10 },
               }],
-            })}
-            useResizeHandler
+            }}
             style={{ width: '100%', height: '450px' }}
-            config={{ displayModeBar: false }}
           />
         </div>
       </div>

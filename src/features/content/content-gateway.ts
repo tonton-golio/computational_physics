@@ -2,8 +2,9 @@ import { unstable_cache } from "next/cache";
 import { TOPICS } from "@/lib/content";
 import { AppError } from "@/shared/errors/app-error";
 import type { ContentDocument, TopicDefinition, TopicIndex } from "@/shared/types/content";
-import { listLessonSlugs, readLessonDocument } from "@/infra/content/file-content-repository";
-import { sortLessonsBySlug, topicIndexFrom } from "@/domain/content/models";
+import { readLessonDocument } from "@/infra/content/file-content-repository";
+import { topicIndexFrom } from "@/domain/content/models";
+import { getOrderedLessonSlugs } from "@/lib/topic-navigation.server";
 
 function asTopicDefinition(topicId: string): TopicDefinition {
   const topic = TOPICS[topicId as keyof typeof TOPICS];
@@ -21,7 +22,7 @@ function asTopicDefinition(topicId: string): TopicDefinition {
 }
 
 async function loadTopicIndexes(): Promise<TopicIndex[]> {
-  return Object.keys(TOPICS).map((topicId) => topicIndexFrom(asTopicDefinition(topicId), listLessonSlugs(topicId)));
+  return Object.keys(TOPICS).map((topicId) => topicIndexFrom(asTopicDefinition(topicId), getOrderedLessonSlugs(topicId)));
 }
 
 const getTopicIndexesCached = unstable_cache(loadTopicIndexes, ["topics:index"], {
@@ -40,11 +41,9 @@ export async function getTopicIndexes(): Promise<TopicIndex[]> {
 
 export async function getTopicLessons(topicId: string): Promise<{ topic: TopicDefinition; lessons: ContentDocument[] }> {
   const topic = asTopicDefinition(topicId);
-  const lessons = sortLessonsBySlug(
-    listLessonSlugs(topicId)
+  const lessons = getOrderedLessonSlugs(topicId)
     .map((slug) => readLessonDocument(topicId, slug))
-    .filter((doc): doc is ContentDocument => doc !== null)
-  );
+    .filter((doc): doc is ContentDocument => doc !== null);
 
   return { topic, lessons };
 }

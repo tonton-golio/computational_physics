@@ -1,11 +1,9 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
-import dynamic from 'next/dynamic';
+import React, { useMemo, useState, useRef, useEffect } from 'react';
+import { CanvasChart } from '@/components/ui/canvas-chart';
 import { Slider } from '@/components/ui/slider';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
-
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
+import { useTheme } from '@/lib/use-theme';
 
 function mandelbrotMask(resolution: number, maxIter: number, exponent: number): number[][] {
   const mask: number[][] = [];
@@ -80,11 +78,125 @@ function boxCountDimension(mask: number[][]): { eps: number[]; counts: number[];
   return { eps, counts, slope };
 }
 
+// ── p5.js Fractal Canvas ──────────────────────────────────────────────
+
+function FractalCanvas({ mask, resolution, isDark }: { mask: number[][]; resolution: number; isDark: boolean }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const p5Ref = useRef<any>(null);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    let cancelled = false;
+
+    import('p5').then(({ default: p5 }) => {
+      if (cancelled || !containerRef.current) return;
+
+      if (p5Ref.current) {
+        p5Ref.current.remove();
+        p5Ref.current = null;
+      }
+
+      const instance = new p5((p: any) => {
+        const canvasWidth = containerRef.current?.clientWidth || 600;
+        const canvasHeight = Math.round(canvasWidth * (2.8 / 3.4));
+
+        p.setup = () => {
+          p.createCanvas(canvasWidth, canvasHeight);
+          p.pixelDensity(1);
+          p.noLoop();
+          renderFractal(p, canvasWidth, canvasHeight);
+        };
+
+        function renderFractal(p: any, w: number, h: number) {
+          const base = p.createGraphics(w, h);
+          base.pixelDensity(1);
+          base.loadPixels();
+
+          for (let py = 0; py < h; py++) {
+            for (let px = 0; px < w; px++) {
+              const mi = Math.floor((py / h) * resolution);
+              const mj = Math.floor((px / w) * resolution);
+              const val =
+                mask[Math.min(mi, resolution - 1)]?.[Math.min(mj, resolution - 1)] ?? 0;
+
+              const idx = (py * w + px) * 4;
+              if (val === 1) {
+                if (isDark) {
+                  base.pixels[idx] = 0;
+                  base.pixels[idx + 1] = 255;
+                  base.pixels[idx + 2] = 221;
+                } else {
+                  base.pixels[idx] = 0;
+                  base.pixels[idx + 1] = 160;
+                  base.pixels[idx + 2] = 140;
+                }
+                base.pixels[idx + 3] = 255;
+              } else {
+                if (isDark) {
+                  base.pixels[idx] = 11;
+                  base.pixels[idx + 1] = 18;
+                  base.pixels[idx + 2] = 32;
+                } else {
+                  base.pixels[idx] = 223;
+                  base.pixels[idx + 1] = 232;
+                  base.pixels[idx + 2] = 251;
+                }
+                base.pixels[idx + 3] = 255;
+              }
+            }
+          }
+          base.updatePixels();
+
+          if (isDark) {
+            p.background(11, 18, 32);
+          } else {
+            p.background(240, 244, 255);
+          }
+          const ctx = p.drawingContext as CanvasRenderingContext2D;
+
+          if (isDark) {
+            ctx.save();
+            ctx.filter = 'blur(12px)';
+            ctx.globalAlpha = 35 / 255;
+            ctx.drawImage(base.elt, 0, 0);
+            ctx.restore();
+
+            ctx.save();
+            ctx.filter = 'blur(6px)';
+            ctx.globalAlpha = 55 / 255;
+            ctx.drawImage(base.elt, 0, 0);
+            ctx.restore();
+          }
+
+          p.image(base, 0, 0);
+
+          base.remove();
+        }
+      }, containerRef.current);
+
+      p5Ref.current = instance;
+    });
+
+    return () => {
+      cancelled = true;
+      if (p5Ref.current) {
+        p5Ref.current.remove();
+        p5Ref.current = null;
+      }
+    };
+  }, [mask, resolution, isDark]);
+
+  return <div ref={containerRef} className="w-full" />;
+}
+
+// ── Main Component ────────────────────────────────────────────────────
+
 export function FractalDimension() {
+  const theme = useTheme();
+  const isDark = theme === 'dark';
   const [resolution, setResolution] = useState(128);
   const [maxIter, setMaxIter] = useState(35);
   const [exponent, setExponent] = useState(2.0);
-  const { mergeLayout } = usePlotlyTheme();
 
   const { mask, boxes } = useMemo(() => {
     const m = mandelbrotMask(resolution, maxIter, exponent);
@@ -93,6 +205,7 @@ export function FractalDimension() {
 
   return (
     <div className="space-y-6">
+      {/* Controls */}
       <div className="flex flex-wrap gap-6 items-center">
         <div>
           <label className="mb-1 block text-sm text-[var(--text-muted)]">Resolution: {resolution}</label>
@@ -111,18 +224,13 @@ export function FractalDimension() {
       <div className="text-sm text-[var(--text-muted)]">Estimated box-counting fractal dimension D ≈ {boxes.slope.toFixed(3)}</div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Plot
-          data={[{ z: mask, type: 'heatmap', colorscale: [[0, '#0b1220'], [1, '#22d3ee']], showscale: false }]}
-          layout={mergeLayout({
-            title: { text: 'Mandelbrot Membership Mask', font: { size: 13 } },
-            xaxis: { visible: false },
-            yaxis: { visible: false },
-            margin: { t: 40, r: 10, b: 10, l: 10 },
-          })}
-          config={{ responsive: true, displayModeBar: false }}
-          style={{ width: '100%', height: 360 }}
-        />
-        <Plot
+        {/* p5.js Fractal Rendering */}
+        <div className="rounded-lg overflow-hidden" style={{ background: isDark ? '#0a0a0f' : '#f0f4ff' }}>
+          <FractalCanvas mask={mask} resolution={resolution} isDark={isDark} />
+        </div>
+
+        {/* Box-counting log-log plot */}
+        <CanvasChart
           data={[
             {
               x: boxes.eps.map(e => Math.log(1 / e)),
@@ -133,14 +241,13 @@ export function FractalDimension() {
               marker: { size: 6 },
             },
           ]}
-          layout={mergeLayout({
+          layout={{
             title: { text: 'Box Counting: log(N) vs log(1/epsilon)', font: { size: 13 } },
             xaxis: { title: { text: 'log(1/epsilon)' } },
             yaxis: { title: { text: 'log(N)' } },
             showlegend: false,
             margin: { t: 40, r: 20, b: 50, l: 60 },
-          })}
-          config={{ responsive: true, displayModeBar: false }}
+          }}
           style={{ width: '100%', height: 360 }}
         />
       </div>

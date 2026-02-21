@@ -52,37 +52,6 @@ Throughout this course, you'll follow **Alex**, a physicist who measures things 
 - Random effects and hierarchical/mixed models — handling messy, grouped data.
 - Experimental design: randomization, blocking, and power analysis — getting the data right before you analyze it.
 
-## Prerequisites
-
-- Introductory statistics: variation, estimation, confidence intervals, hypothesis tests.
-- One-way ANOVA and simple linear regression.
-- Basic familiarity with Python or R.
-
-## Recommended reading
-
-- Draper and Smith, *Applied Regression Analysis*.
-- Agresti, *Statistical Methods for the Social Sciences*.
-
-- Course notes and documentation.
-
-## Learning trajectory
-
-This module builds like a chain — each topic relies on what came before and sets up what comes next. The connections between lessons are as important as the lessons themselves.
-
-- **Lesson 1 — Introduction and general concepts**: You have a pile of numbers — what can you learn from them? We start with the tools for summarizing data: means, medians, spread, and correlation. These descriptive tools appear in every later lesson. *Next up: where do those numbers come from?*
-- **Lesson 2 — Probability density functions**: The mathematical models behind data — distributions and maximum likelihood estimation. The likelihood concept introduced here becomes the foundation for fitting, testing, and Bayesian analysis. *Next up: why do errors always seem to be Gaussian?*
-- **Lesson 3 — CLT and error propagation**: Why Gaussian statistics work, and how uncertainties flow through calculations. Connects distributions to the practical error analysis used everywhere else. *Next up: what happens when the math gets too hard for pen and paper?*
-- **Lesson 4 — Simulation methods**: When analytical formulas break down, Monte Carlo methods take over. Now that you can fake the universe a million times, watch what happens when you ask "is this real or just luck?" *Next up: fitting models to real data.*
-- **Lesson 5 — Chi-square method**: Fitting models to data with uncertainties. Connects maximum likelihood (from lesson 2) to practical regression and goodness-of-fit assessment. *Next up: formalizing "is there a real effect?"*
-- **Lesson 6 — Hypothesis testing**: Is there a real effect, or is it just noise? p-values, confidence intervals, and the danger of Simpson's paradox. *Next up: what if you have more than two groups?*
-- **Lesson 7 — ANOVA**: Extending hypothesis testing to compare multiple groups at once, with post-hoc tests and non-parametric alternatives. *Next up: planning experiments so the analysis actually works.*
-- **Lesson 8 — Design of experiments**: Investing thought *before* spending money. Randomization, blocking, and power analysis make everything else in this course more powerful. *Next up: what happens when your data has natural groupings?*
-- **Lesson 9 — Random effects and mixed models**: Handling clustered and hierarchical data where observations within groups are correlated. Generalizes ANOVA to realistic data structures. *Next up: the same idea, but now the data are collected over time.*
-- **Lesson 10 — Longitudinal data and repeated measures**: Extending mixed models to data collected over time, with autocorrelation, growth curves, and missing data. Remember those random effects from lesson 9? Here's why they save you in real life. *Next up: a fundamentally different way of thinking about probability.*
-- **Lesson 11 — Bayesian statistics**: An alternative framework where probability represents belief. Connects to maximum likelihood through the likelihood function, and offers a natural way to incorporate prior knowledge. *Next up: handling the full complexity of real experiments.*
-- **Lesson 12 — Advanced fitting and calibration**: Multi-component models, systematic uncertainties, and model comparison. Synthesizes likelihood, chi-square, and Bayesian ideas into a complete analysis framework. *Next up: the grand finale.*
-- **Lesson 13 — Machine learning and data analysis**: Everything you've learned — priors, regularization, cross-validation, uncertainty — is secretly inside every modern ML algorithm. This lesson connects the dots and shows you where to go from here.
-
 ## Glossary of key ideas
 
 Here are the 20 most important concepts in this course, each in one sentence.

@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import Plotly from 'react-plotly.js';
-import type { Data, Layout } from 'plotly.js';
 import { Slider } from '@/components/ui/slider';
+import { CanvasChart } from '@/components/ui/canvas-chart';
 
 interface Func {
   name: string;
@@ -69,7 +68,7 @@ const Newton1D: React.FC = () => {
     const margin = 0.5;
     const plotX = [minX - margin, maxX + margin];
 
-    const traces: Data[] = [
+    const traces: any[] = [
       {
         x: xGrid,
         y: yGrid,
@@ -137,12 +136,10 @@ const Newton1D: React.FC = () => {
     return traces;
   }, [f, path, currentStep]);
 
-  const layout: Partial<Layout> = {
+  const layout = {
     title: { text: `${functions[selectedFunc].name} - Newton's Method Cobweb` },
     xaxis: {title: { text: 'x' }},
     yaxis: {title: { text: 'y' }},
-    width: 800,
-    height: 600,
   };
 
   const handleStep = () => {
@@ -195,7 +192,7 @@ const Newton1D: React.FC = () => {
         </div>
       </div>
       <div>Path length: {path.length}, Current step: {currentStep}, Final x: {path[path.length-1]?.toFixed(6)}</div>
-      <Plotly data={data} layout={layout} />
+      <CanvasChart data={data} layout={layout} style={{ width: '100%', height: 600 }} />
     </div>
   );
 };

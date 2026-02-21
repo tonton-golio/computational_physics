@@ -38,15 +38,14 @@ The displacements decay with distance — but *how* they decay encodes the fault
 
 ### Running the MCMC
 
-We set up a Metropolis sampler to explore the posterior over fault parameters. The algorithm:
-
-1. Start from an initial guess (say, $D = 5$ km, $s = 1$ m, $\delta = 90°$)
-2. Propose a small random perturbation to each parameter
-3. Compute the forward model for the proposed fault
-4. Compare with the data — if the fit improves, accept. If it worsens, accept with probability proportional to the likelihood ratio.
-5. Repeat 50,000 times.
+We set up a Metropolis sampler (see [Monte Carlo Methods](./monte-carlo-methods) for the algorithm) to explore the posterior over fault parameters — starting from an initial guess, proposing random perturbations, and accepting or rejecting via the likelihood ratio. After 50,000 iterations, the chain has mapped out the posterior.
 
 [[simulation vertical-fault-mcmc]]
+
+> **What to look for:**
+> - The chain doesn't settle on one answer — it wanders through a cloud of plausible fault configurations
+> - Look for the elongated depth-vs-slip trade-off: shallow+large-slip and deep+small-slip produce similar surface data
+> - The total seismic moment (depth × slip) is tightly constrained even when individual parameters aren't
 
 ### What the Posterior Tells Us
 
@@ -72,23 +71,21 @@ But the bed is buried under hundreds of meters of ice. We can't see it directly.
 
 We have two types of data:
 
-- **Surface velocity**: ice flows faster where it's thicker (roughly proportional to the fourth power of thickness — the Glen flow law). Measured by tracking features in satellite images.
+- **Surface velocity**: ice flows faster where it's thicker — roughly proportional to the fourth power of thickness (for $n = 3$ in Glen's flow law, the shallow-ice approximation gives velocity $\sim h^{n+1} = h^4$). Measured by tracking features in satellite images.
 - **Surface elevation**: precisely measured by GPS or lidar. The bed elevation equals surface elevation minus ice thickness.
 
 The forward model connects bed topography to surface observables through the equations of ice flow. It's nonlinear — the relationship between bed shape and surface velocity involves a power law and depends on the local slope.
 
 ### Running the MCMC
 
-We parameterize the bed as a smooth curve (a set of control points with interpolation) and explore the posterior with MCMC:
-
-1. Start from a flat-bed initial guess
-2. Propose random perturbations to each control point
-3. Run the forward model (ice flow simulation) for the proposed bed
-4. Compare predicted surface velocity and elevation with observations
-5. Accept or reject using the Metropolis criterion
-6. After 30,000 iterations, examine the posterior distribution over bed shapes
+We parameterize the bed as a smooth curve (control points with interpolation) and explore the posterior with the same Metropolis algorithm from [Lesson 6](./monte-carlo-methods): propose perturbations to each control point, run the forward model, accept or reject. After 30,000 iterations, we have a family of plausible bed profiles.
 
 [[simulation glacier-thickness-mcmc]]
+
+> **What to look for:**
+> - The posterior is narrow where ice is thin (good constraint) and wide where ice is thick (poor constraint)
+> - Some sampled beds show an overdeepening; others don't — the data cannot resolve this feature
+> - The smoothness prior prevents geologically absurd bed shapes while the data pulls toward the observations
 
 ### A Family of Possible Beds
 
@@ -112,7 +109,7 @@ Look at both examples one more time. In neither case did we produce "the answer.
 - **What's uncertain:** features that vary wildly between samples
 - **What trade-offs exist:** which parameters can compensate for each other
 
-This is the payoff of the entire course. Regularization (Lessons 2–3) stabilized the inversion. The Bayesian framework (Lesson 4) gave it probabilistic meaning. Tomography (Lesson 5) showed the complete linear workflow. And Monte Carlo (Lesson 6) gave us the computational machinery to explore nonlinear posteriors.
+This is the payoff of the entire course. Regularization (Lesson 2) stabilized the inversion. The Bayesian framework (Lesson 3) gave it probabilistic meaning. Iterative methods (Lesson 4) scaled it up. Tomography (Lesson 5) showed the complete linear workflow. And Monte Carlo (Lesson 6) gave us the computational machinery to explore nonlinear posteriors.
 
 The answer to an inverse problem is never a single number. The answer is always a distribution. That distribution is where the science lives.
 
@@ -120,7 +117,7 @@ The answer to an inverse problem is never a single number. The answer is always 
 
 ## Connection to Regularization
 
-Recall from [Bayesian Inversion](./bayesian-inversion) that Tikhonov regularization corresponds to a Gaussian prior. MCMC generalizes this — instead of finding a single regularized optimum, we explore the full posterior distribution. These examples show why that matters:
+Recall from [Bayesian Inversion](./bayesian-inversion) that Tikhonov regularization corresponds to a Gaussian prior (under Gaussian noise and a quadratic penalty). MCMC generalizes this — instead of finding a single regularized optimum, we explore the full posterior distribution. These examples show why that matters:
 
 - The posterior is **multimodal**: the fault example can have distinct solution families
 - Parameter **trade-offs** create elongated or curved posterior shapes that a point estimate would miss
@@ -136,4 +133,4 @@ For nonlinear inverse problems, uncertainty is not a nuisance to be minimized �
 
 ## Further Reading
 
-Mosegaard & Tarantola's *Monte Carlo sampling of solutions to inverse problems* (JGR, 1995) is the classic paper on MCMC in geophysics. Sambridge's *Geophysical Inversion with a Neighbourhood Algorithm* offers an alternative sampling strategy. For the fault mechanics, Okada's (1985) dislocation model is the standard forward model. For glaciers, Gudmundsson's work on inverse methods for ice flow is excellent. But the real learning happens when you run the simulations and watch the posterior breathe.
+Mosegaard & Tarantola's *Monte Carlo sampling of solutions to inverse problems* (JGR, 1995) is the classic paper on MCMC in geophysics. Okada's (1985) dislocation model is the standard fault forward model. For glaciers, Gudmundsson's work on inverse methods for ice flow is excellent.

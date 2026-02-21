@@ -1,11 +1,8 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { CanvasChart } from '@/components/ui/canvas-chart';
 import { Slider } from '@/components/ui/slider';
-
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
 interface GANTrainingDynamicsProps {
   id?: string;
@@ -69,7 +66,6 @@ export default function GANTrainingDynamics({ id: _id }: GANTrainingDynamicsProp
   const [dLR, setDLR] = useState(0.5);
   const [gLR, setGLR] = useState(0.5);
   const [collapseProb, setCollapseProb] = useState(0);
-  const { mergeLayout } = usePlotlyTheme();
 
   const data = useMemo(() => simulateGAN(dLR, gLR, collapseProb, 42), [dLR, gLR, collapseProb]);
   const steps = Array.from({ length: 200 }, (_, i) => i);
@@ -134,26 +130,24 @@ export default function GANTrainingDynamics({ id: _id }: GANTrainingDynamicsProp
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Plot
+        <CanvasChart
           data={lossTraces}
-          layout={mergeLayout({
+          layout={{
             title: { text: 'Generator vs Discriminator Loss' },
             xaxis: { title: { text: 'Training step' } },
             yaxis: { title: { text: 'Loss' } },
             height: 350,
-          })}
-          config={{ responsive: true, displayModeBar: false }}
+          }}
           style={{ width: '100%', height: 350 }}
         />
-        <Plot
+        <CanvasChart
           data={diversityTraces}
-          layout={mergeLayout({
+          layout={{
             title: { text: 'Output Diversity (Mode Coverage)' },
             xaxis: { title: { text: 'Training step' } },
             yaxis: { title: { text: 'Diversity' }, range: [0, 1.1] },
             height: 350,
-          })}
-          config={{ responsive: true, displayModeBar: false }}
+          }}
           style={{ width: '100%', height: 350 }}
         />
       </div>

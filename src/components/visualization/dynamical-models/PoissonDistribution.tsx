@@ -1,11 +1,8 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
 import { Slider } from '@/components/ui/slider';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
-
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
+import { CanvasChart } from '@/components/ui/canvas-chart';
 
 /** Log-space factorial */
 function logFactorial(n: number): number {
@@ -25,7 +22,6 @@ function poissonPMF(k: number, lambda: number): number {
 export default function PoissonDistribution() {
   const [m1, setM1] = useState(1);
   const [m2, setM2] = useState(10);
-  const { mergeLayout } = usePlotlyTheme();
 
   const { kVals, y1, y2 } = useMemo(() => {
     const kMax = 50;
@@ -57,7 +53,7 @@ export default function PoissonDistribution() {
         </div>
       </div>
 
-      <Plot
+      <CanvasChart
         data={[
           {
             x: kVals, y: y1, type: 'scatter', mode: 'lines+markers',
@@ -72,7 +68,7 @@ export default function PoissonDistribution() {
             name: `m=${m2}`,
           },
         ] as any}
-        layout={mergeLayout({
+        layout={{
           height: 400,
           margin: { t: 40, b: 50, l: 60, r: 20 },
           title: { text: 'Poisson Distribution P_m(k)' },
@@ -85,8 +81,7 @@ export default function PoissonDistribution() {
             range: [0, 0.4],
           },
           legend: { x: 0.65, y: 0.95, bgcolor: 'rgba(0,0,0,0.3)' },
-        })}
-        config={{ displayModeBar: false }}
+        }}
         style={{ width: '100%' }}
       />
 

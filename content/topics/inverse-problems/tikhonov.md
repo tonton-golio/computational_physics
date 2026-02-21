@@ -1,6 +1,6 @@
 # Iterative Methods and Large-Scale Tricks
 
-The [previous lesson](./regularization) gave us the Tikhonov formula — a closed-form solution that stabilizes inversion beautifully. One matrix inversion, done.
+We now know what regularization does ([Lesson 2](./regularization)) and *why* it works — it's a Gaussian prior ([Lesson 3](./bayesian-inversion)). The Tikhonov formula gives a closed-form MAP estimate. One matrix inversion, done.
 
 But here's the catch. That formula requires building $\mathbf{G}^T\mathbf{G} + \epsilon^2\mathbf{I}$ and inverting it. If your model has 100 parameters, no problem. If it has a million parameters — a 3D seismic tomography model, a full-waveform inversion grid, a climate reanalysis — that matrix has $10^{12}$ entries. You can't even store it, let alone invert it.
 
@@ -33,6 +33,11 @@ where $\alpha_k$ is the step size (learning rate).
 Sounds simple. And it is — but the devil is in the details.
 
 [[simulation steepest-descent]]
+
+> **What to look for:**
+> - Try extreme learning rates — watch the iterates overshoot and oscillate (too large) or crawl (too small)
+> - Find the Goldilocks step size where the path curves smoothly toward the minimum
+> - Notice how the path zigzags in narrow valleys — that's why conjugate gradients and L-BFGS exist
 
 Watch what happens in the simulation above:
 
@@ -89,12 +94,12 @@ Early stopping is itself a form of regularization: iterative methods typically f
 
 ## Takeaway
 
-When the Tikhonov formula is too expensive to compute directly, iterative optimization gives you the same answer — or a better one — using only matrix-vector products. The regularization term isn't just numerical medicine; it's where your physical knowledge of the problem lives.
+When the Tikhonov formula is too expensive to compute directly, iterative optimization gives you the same answer — or a better one — using only matrix-vector products. The regularization term isn't just numerical medicine; it's the prior belief from [Bayesian Inversion](./bayesian-inversion), expressed as a matrix operation.
 
-For the probabilistic interpretation of these choices — why the penalty is really a prior — see [Bayesian Inversion](./bayesian-inversion).
+Next: [Linear Tomography](./linear-tomography) puts all of this together in a complete inversion workflow — from seismic rays to Earth images.
 
 ---
 
 ## Further Reading
 
-Nocedal & Wright's *Numerical Optimization* is the standard reference for iterative methods. For the inverse-problems angle, see Vogel's *Computational Methods for Inverse Problems*. But the best way to understand this is to play with the steepest descent simulation above and watch how the step size and regularization interact.
+Nocedal & Wright's *Numerical Optimization* is the standard reference. Vogel's *Computational Methods for Inverse Problems* covers the inverse-problems angle.

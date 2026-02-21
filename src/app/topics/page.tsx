@@ -13,7 +13,7 @@ export default function TopicsPage() {
   }));
 
   return (
-    <div className="h-[calc(100vh-4rem)] w-full overflow-hidden bg-[var(--background)]">
+    <div className="h-[calc(100vh-4rem)] w-full overflow-hidden">
       <div className="h-full w-full">
         <Suspense
           fallback={

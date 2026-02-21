@@ -1,15 +1,11 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
 import { Slider } from '@/components/ui/slider';
+import { CanvasChart } from '@/components/ui/canvas-chart';
+import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
-
-interface SimulationProps {
-  id: string;
-}
 
 // Cost function: f(x,y) = a*sin(x*b) + c*cos(y*d) + e*x + c1*y + x^4/100 + (y-1)^4/100 + y/4 + 2
 function costFunction(x: number, y: number, params: number[]): number {
@@ -20,11 +16,10 @@ function costFunction(x: number, y: number, params: number[]): number {
 
 const COST_PARAMS = [1, 1, 0.77, 1.11, 0.31, 0.31];
 
-export default function SteepestDescent({ id: _id }: SimulationProps) {
+export default function SteepestDescent({ id: _id }: SimulationComponentProps) {
   const [lr, setLr] = useState(0.1);
   const [nSteps, setNSteps] = useState(30);
   const [seed, setSeed] = useState(1);
-  const { mergeLayout } = usePlotlyTheme();
 
   const result = useMemo(() => {
     // Generate contour grid
@@ -124,56 +119,67 @@ export default function SteepestDescent({ id: _id }: SimulationProps) {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Plot
-          data={[
-            {
+        <div className="relative">
+          <CanvasHeatmap
+            data={[{
+              z: result.zGrid,
               x: result.xArr,
               y: result.yArr,
-              z: result.zGrid,
-              type: 'contour' as const,
+              type: 'heatmap',
               colorscale: 'Inferno',
-              ncontours: 30,
-              showscale: true,
-              contours: { coloring: 'heatmap' },
-            },
-            {
-              x: result.pathX,
-              y: result.pathY,
-              type: 'scatter' as const,
-              mode: 'lines+markers' as const,
-              marker: { color: '#22d3ee', size: 4 },
-              line: { color: '#22d3ee', width: 2 },
-              name: 'Descent path',
-            },
-            {
-              x: [result.x0],
-              y: [result.pathY[0]],
-              type: 'scatter' as const,
-              mode: 'markers' as const,
-              marker: { color: '#fbbf24', size: 10, symbol: 'star' },
-              name: 'Start',
-            },
-            {
-              x: [result.pathX[result.pathX.length - 1]],
-              y: [result.pathY[result.pathY.length - 1]],
-              type: 'scatter' as const,
-              mode: 'markers' as const,
-              marker: { color: '#34d399', size: 10, symbol: 'diamond' },
-              name: 'End',
-            },
-          ]}
-          layout={mergeLayout({
-            title: { text: 'Contour Plot with Descent Path' },
-            xaxis: { title: { text: 'x' } },
-            yaxis: { title: { text: 'y' } },
-            height: 450,
-            legend: { x: 0.02, y: 0.98 },
-            margin: { t: 40, b: 50, l: 50, r: 20 },
-          })}
-          config={{ displayModeBar: false }}
-          style={{ width: '100%' }}
-        />
-        <Plot
+            }]}
+            layout={{
+              title: { text: 'Contour Plot with Descent Path' },
+              xaxis: { title: { text: 'x' } },
+              yaxis: { title: { text: 'y' } },
+              height: 450,
+              legend: { x: 0.02, y: 0.98 },
+              margin: { t: 40, b: 50, l: 50, r: 20 },
+            }}
+            style={{ width: '100%' }}
+          />
+          <CanvasChart
+            data={[
+              {
+                x: result.pathX,
+                y: result.pathY,
+                type: 'scatter' as const,
+                mode: 'lines+markers' as const,
+                marker: { color: '#22d3ee', size: 4 },
+                line: { color: '#22d3ee', width: 2 },
+                name: 'Descent path',
+              },
+              {
+                x: [result.x0],
+                y: [result.pathY[0]],
+                type: 'scatter' as const,
+                mode: 'markers' as const,
+                marker: { color: '#fbbf24', size: 10, symbol: 'star' },
+                name: 'Start',
+              },
+              {
+                x: [result.pathX[result.pathX.length - 1]],
+                y: [result.pathY[result.pathY.length - 1]],
+                type: 'scatter' as const,
+                mode: 'markers' as const,
+                marker: { color: '#34d399', size: 10, symbol: 'diamond' },
+                name: 'End',
+              },
+            ]}
+            layout={{
+              xaxis: { range: [-4, 4] },
+              yaxis: { range: [-4, 4] },
+              height: 450,
+              paper_bgcolor: 'rgba(0,0,0,0)',
+              plot_bgcolor: 'rgba(0,0,0,0)',
+              showlegend: true,
+              legend: { x: 0.02, y: 0.98 },
+              margin: { t: 40, b: 50, l: 50, r: 20 },
+            }}
+            style={{ width: '100%', position: 'absolute', top: 0, left: 0 }}
+          />
+        </div>
+        <CanvasChart
           data={[{
             y: result.pathZ,
             type: 'scatter' as const,
@@ -182,14 +188,13 @@ export default function SteepestDescent({ id: _id }: SimulationProps) {
             line: { color: '#f472b6' },
             name: 'Cost f(x,y)',
           }]}
-          layout={mergeLayout({
+          layout={{
             title: { text: 'Cost Function vs Iteration' },
             xaxis: { title: { text: 'Step' } },
             yaxis: { title: { text: 'f(x, y)' } },
             height: 450,
             margin: { t: 40, b: 50, l: 50, r: 20 },
-          })}
-          config={{ displayModeBar: false }}
+          }}
           style={{ width: '100%' }}
         />
       </div>

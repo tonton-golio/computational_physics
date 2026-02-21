@@ -1,14 +1,15 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
+import { CanvasChart } from '@/components/ui/canvas-chart';
 import { Slider } from '@/components/ui/slider';
+import { useTheme } from '@/lib/use-theme';
 
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
+// ---------------------------------------------------------------------------
+// Simulation logic
+// ---------------------------------------------------------------------------
 
 function generateGrid(size: number, seed: number): number[][] {
-  // Simple seeded RNG (mulberry32)
   let s = seed;
   function rand() {
     s = (s + 0x6D2B79F5) | 0;
@@ -33,7 +34,6 @@ function findClusters(grid: number[][], p: number): { clusterMap: number[][]; nu
   const clusterMap: number[][] = Array.from({ length: size }, () => Array(size).fill(-1));
   let clusterId = 0;
 
-  // DFS using explicit stack to avoid recursion limit
   function dfs(startI: number, startJ: number, id: number) {
     const stack: [number, number][] = [[startI, startJ]];
     clusterMap[startI][startJ] = id;
@@ -62,35 +62,89 @@ function findClusters(grid: number[][], p: number): { clusterMap: number[][]; nu
   return { clusterMap, numClusters: clusterId };
 }
 
-// Generate distinct colors using HSL
-function clusterColorScale(numClusters: number): string[] {
-  const colors: string[] = [];
-  for (let i = 0; i < numClusters; i++) {
-    const hue = (i * 137.508) % 360; // golden angle for good distribution
-    colors.push(`hsl(${hue}, 70%, 55%)`);
-  }
-  return colors;
+// ---------------------------------------------------------------------------
+// 2D Grid visualization
+// ---------------------------------------------------------------------------
+
+function GridCanvas({ clusterMap, size, isDark }: { clusterMap: number[][]; size: number; isDark: boolean }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    const canvas = canvasRef.current;
+    if (!container || !canvas) return;
+
+    const redraw = () => {
+      const width = container.clientWidth;
+      const height = width;
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      ctx.scale(dpr, dpr);
+
+      const cellSize = width / size;
+      const gap = Math.max(cellSize * 0.06, 0.5);
+
+      ctx.fillStyle = isDark ? '#0a0a0f' : '#f0f4ff';
+      ctx.fillRect(0, 0, width, height);
+
+      for (let i = 0; i < size; i++) {
+        for (let j = 0; j < size; j++) {
+          const clusterId = clusterMap[i][j];
+          if (clusterId >= 0) {
+            const hue = (clusterId * 137.508) % 360;
+            ctx.fillStyle = isDark ? `hsl(${hue}, 70%, 55%)` : `hsl(${hue}, 65%, 50%)`;
+          } else {
+            ctx.fillStyle = isDark ? '#1a1a2e' : '#dfe8fb';
+          }
+          ctx.fillRect(
+            j * cellSize + gap / 2,
+            i * cellSize + gap / 2,
+            cellSize - gap,
+            cellSize - gap,
+          );
+        }
+      }
+    };
+
+    redraw();
+    const ro = new ResizeObserver(redraw);
+    ro.observe(container);
+    return () => ro.disconnect();
+  }, [clusterMap, size, isDark]);
+
+  return (
+    <div
+      ref={containerRef}
+      className="w-full rounded-lg overflow-hidden"
+      style={{ aspectRatio: '1 / 1', background: isDark ? '#0a0a0f' : '#f0f4ff' }}
+    >
+      <canvas ref={canvasRef} style={{ display: 'block' }} />
+    </div>
+  );
 }
 
+// ---------------------------------------------------------------------------
+// Main exported component
+// ---------------------------------------------------------------------------
+
 export function PercolationSim() {
-  const [p, setP] = useState(0.45);
-  const [size, setSize] = useState(40);
+  const theme = useTheme();
+  const isDark = theme === 'dark';
+  const [p, setP] = useState(0.5);
+  const [size, setSize] = useState(30);
   const [seed, setSeed] = useState(42);
-  const { mergeLayout } = usePlotlyTheme();
 
-  const { displayGrid, numClusters } = useMemo(() => {
-    const grid = generateGrid(size, seed);
-    const { clusterMap, numClusters } = findClusters(grid, p);
-    clusterColorScale(numClusters);
+  const grid = useMemo(() => generateGrid(size, seed), [size, seed]);
+  const { clusterMap, numClusters } = useMemo(() => findClusters(grid, p), [grid, p]);
 
-    // Build display grid: -1 for closed sites, cluster ID for open sites
-    const displayGrid: number[][] = clusterMap.map(row => row.map(v => v));
-    return { displayGrid, numClusters };
-  }, [p, size, seed]);
-
-  // Percolation over many p values
   const npData = useMemo(() => {
-    const grid = generateGrid(size, seed);
     const ps: number[] = [];
     const ns: number[] = [];
     for (let pp = 0.01; pp <= 0.95; pp += 0.05) {
@@ -99,10 +153,11 @@ export function PercolationSim() {
       ns.push(nc);
     }
     return { ps, ns };
-  }, [size, seed]);
+  }, [grid]);
 
   return (
     <div className="space-y-6">
+      {/* Controls */}
       <div className="flex flex-wrap gap-6 items-center">
         <div>
           <label className="text-sm text-[var(--text-muted)] block mb-1">p = {p.toFixed(2)}</label>
@@ -119,7 +174,7 @@ export function PercolationSim() {
           <label className="text-sm text-[var(--text-muted)] block mb-1">Size: {size}</label>
           <Slider
             min={10}
-            max={80}
+            max={60}
             step={5}
             value={[size]}
             onValueChange={([v]) => setSize(v)}
@@ -144,23 +199,11 @@ export function PercolationSim() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Plot
-          data={[{
-            z: displayGrid,
-            type: 'heatmap',
-            colorscale: 'Portland',
-            showscale: false,
-          }]}
-          layout={mergeLayout({
-            title: { text: `Site Percolation (p=${p.toFixed(2)})`, font: { size: 13 } },
-            xaxis: { showticklabels: false },
-            yaxis: { showticklabels: false },
-            margin: { t: 40, r: 5, b: 5, l: 5 },
-          })}
-          config={{ responsive: true, displayModeBar: false }}
-          style={{ width: '100%', height: 400 }}
-        />
-        <Plot
+        {/* 2D Cluster Grid */}
+        <GridCanvas clusterMap={clusterMap} size={size} isDark={isDark} />
+
+        {/* N(p) Curve */}
+        <CanvasChart
           data={[{
             x: npData.ps,
             y: npData.ns,
@@ -169,14 +212,13 @@ export function PercolationSim() {
             line: { color: '#3b82f6', width: 2 },
             marker: { size: 5 },
           }]}
-          layout={mergeLayout({
+          layout={{
             title: { text: 'Number of Clusters N(p)', font: { size: 13 } },
             xaxis: { title: { text: 'p' } },
             yaxis: { title: { text: 'N' } },
             margin: { t: 40, r: 20, b: 50, l: 60 },
-          })}
-          config={{ responsive: true, displayModeBar: false }}
-          style={{ width: '100%', height: 400 }}
+          }}
+          style={{ width: '100%', height: 360 }}
         />
       </div>
     </div>

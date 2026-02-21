@@ -6,11 +6,19 @@ This is our first lesson, and we need a language for talking about how things ch
 
 ## The bathtub picture
 
-Before we write any symbols, think about a bathtub. Water flows in from the faucet at a constant rate. Water drains out through the plug at a rate that depends on how full the tub is — the more water, the faster it drains. What happens?
+Imagine you are filling a bathtub. Water flows in at constant rate $k$ (molecules per minute) and drains out at rate proportional to how full it is: $\Gamma n$. The net rate of change is production minus loss:
 
-At first the tub fills up quickly because very little is draining out. As the water level rises, the drain gets faster and faster. Eventually the inflow and the outflow balance perfectly, and the water level stops changing. That final level is the **steady state**.
+$$
+\dot{n} = k - \Gamma n.
+$$
 
-This is exactly how molecules work inside a cell. mRNA is produced at some rate by the transcription machinery, and it is degraded at a rate proportional to how much is present. The steady-state concentration is simply the ratio of production to degradation. Nature finds this balance automatically.
+At steady state the tub is neither rising nor falling, so $\dot{n} = 0$. Solve: $n_\mathrm{ss} = k / \Gamma$. Every steady state in this entire course is of this form.
+
+This is exactly how molecules work inside a cell. mRNA is produced at some rate by the transcription machinery, and it is degraded at a rate proportional to how much is present. The steady-state concentration is simply the ratio of production to degradation. Nature finds this balance automatically. Let us now derive this step by step.
+
+> **Figure: Bathtub cartoon.** A bathtub with a faucet labelled "production $k$" and a drain labelled "degradation $\Gamma$." The water level represents the molecule count $n$. An arrow pointing to the water surface is labelled "$1/\Gamma$ = response time."
+
+> **Figure: Approach to steady state.** Time-course plot with two curves: one starting at $n = 0$ rising toward the horizontal steady-state line $n_\mathrm{ss}$, and one starting above $n_\mathrm{ss}$ decaying down to it. Vertical arrows on both curves labelled "time constant $1/\Gamma$."
 
 ## Creation: molecules appearing at a constant rate
 

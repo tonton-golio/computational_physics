@@ -71,7 +71,14 @@ Here's the practical recipe:
 
 Other approaches exist: the discrepancy principle (choose $\epsilon$ so the residual matches the expected noise level), cross-validation, and Bayesian model selection. But the L-curve is intuitive, visual, and often your best first move.
 
+**Rule of thumb you can remember forever:** Sweep $\epsilon$ on a log scale. Plot the L-curve. Pick the corner — the simplest model that still fits the data within its noise level. Everything else is either drunk (overfitting noise) or dead (ignoring data).
+
 [[simulation tikhonov-regularization]]
+
+> **What to look for:**
+> - Drag $\epsilon$ toward zero and watch the solution go wild — that's noise amplification in action
+> - Find the "sober" region where the model captures real structure without oscillating
+> - Compare the residual norm at different $\epsilon$ values — the corner of the L-curve is where the trade-off bends
 
 ---
 
@@ -95,10 +102,10 @@ Regularization is not an optional tweak or a mathematical convenience. It is the
 
 The art is in the balance — and the L-curve is your guide.
 
-For the optimization view of regularization, including iterative methods and steepest descent, see [Iterative Methods and Large-Scale Tricks](./tikhonov). For the probabilistic interpretation — why regularization is really a prior belief in disguise — see [Bayesian Inversion](./bayesian-inversion).
+Next up: [Bayesian Inversion](./bayesian-inversion) reveals that the penalty term $\epsilon^2\|\mathbf{m}\|^2$ is not a hack — it's a Gaussian prior in disguise. Once you see this, regularization becomes honest science.
 
 ---
 
 ## Further Reading
 
-Aster, Borchers & Thurber give an excellent treatment of the L-curve and parameter choice methods. Hansen's *Rank-Deficient and Discrete Ill-Posed Problems* is the definitive reference on regularization tools. But for now, play with the simulation above — drag the $\epsilon$ slider and watch the solution morph from drunk to sober to dead. That's worth more than any textbook chapter.
+Aster, Borchers & Thurber give an excellent treatment of the L-curve and parameter choice methods. Hansen's *Rank-Deficient and Discrete Ill-Posed Problems* is the definitive reference.

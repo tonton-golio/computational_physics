@@ -1,15 +1,10 @@
 'use client';
 
 import React, { useState, useMemo, useCallback } from 'react';
-import dynamic from 'next/dynamic';
 import { Slider } from '@/components/ui/slider';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { CanvasChart } from '@/components/ui/canvas-chart';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
-
-interface SimulationProps {
-  id: string;
-}
 
 function mulberry32(a: number) {
   return function () {
@@ -105,13 +100,11 @@ function banditRun(
   return rewards;
 }
 
-export default function MultiArmedBandit({ id }: SimulationProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function MultiArmedBandit({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
   const [T, setT] = useState(500);
   const [nExperiments, setNExperiments] = useState(20);
   const [epsilon, setEpsilon] = useState(0.1);
   const [seed, setSeed] = useState(42);
-  const { mergeLayout } = usePlotlyTheme();
-
   const probs = useMemo(() => [0.1, 0.15, 0.2, 0.5], []);
   const methods: Method[] = useMemo(
     () => ['greedy', 'epsilon-greedy', 'UCB', 'LCB'],
@@ -216,7 +209,7 @@ export default function MultiArmedBandit({ id }: SimulationProps) { // eslint-di
         </div>
       </div>
 
-      <Plot
+      <CanvasChart
         data={methods.map((method) => ({
           x: plotData.timeSteps,
           y: plotData.avgRewards[method],
@@ -225,7 +218,7 @@ export default function MultiArmedBandit({ id }: SimulationProps) { // eslint-di
           name: method,
           line: { color: colors[method], width: 2 },
         }))}
-        layout={mergeLayout({
+        layout={{
           title: {
             text: `Average Cumulative Reward (${nExperiments} experiments)`,
           },
@@ -236,8 +229,7 @@ export default function MultiArmedBandit({ id }: SimulationProps) { // eslint-di
           height: 450,
           legend: { x: 0.02, y: 1 },
           margin: { t: 40, b: 60, l: 60, r: 20 },
-        })}
-        config={{ displayModeBar: false }}
+        }}
         style={{ width: '100%' }}
       />
 

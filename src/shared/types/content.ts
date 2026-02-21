@@ -19,16 +19,3 @@ export interface ContentDocument {
   content: string;
   meta: Record<string, string>;
 }
-
-export interface ContentListResponse {
-  topics: TopicIndex[];
-}
-
-export interface TopicLessonsResponse {
-  topic: TopicDefinition;
-  lessons: ContentDocument[];
-}
-
-export interface ContentDocumentResponse {
-  content: ContentDocument;
-}

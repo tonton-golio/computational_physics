@@ -1,15 +1,10 @@
 'use client';
 
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
-import dynamic from 'next/dynamic';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
 import { Slider } from '@/components/ui/slider';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
-
-interface SimulationProps {
-  id?: string;
-}
 
 const PRESETS: Record<string, { Dp: number; Dq: number; C: number; K: number; label: string }> = {
   standard: { Dp: 1, Dq: 8, C: 4.5, K: 9, label: "Standard" },
@@ -17,7 +12,7 @@ const PRESETS: Record<string, { Dp: number; Dq: number; C: number; K: number; la
   stripes: { Dp: 1, Dq: 6, C: 3.5, K: 8, label: "Stripes" },
 };
 
-export function ReactionDiffusion({}: SimulationProps) {
+export function ReactionDiffusion({}: SimulationComponentProps) {
   const [Dp, setDp] = useState(1);
   const [Dq, setDq] = useState(8);
   const [C, setC] = useState(4.5);
@@ -28,7 +23,6 @@ export function ReactionDiffusion({}: SimulationProps) {
   const [stepCount, setStepCount] = useState(0);
   const [stepsPerFrame, setStepsPerFrame] = useState(10);
   const [stable, setStable] = useState(true);
-  const { mergeLayout } = usePlotlyTheme();
 
   const pRef = useRef<Float64Array | null>(null);
   const qRef = useRef<Float64Array | null>(null);
@@ -184,7 +178,7 @@ export function ReactionDiffusion({}: SimulationProps) {
     <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <Plot
+          <CanvasHeatmap
             data={[
               {
                 z: pGrid,
@@ -194,16 +188,15 @@ export function ReactionDiffusion({}: SimulationProps) {
                 colorbar: { title: { text: 'p', side: 'right' as const }, len: 0.8 },
               },
             ]}
-            layout={mergeLayout({
+            layout={{
               ...heatmapLayout,
               title: { text: 'Concentration p', font: { size: 14 } },
-            }) as Partial<Plotly.Layout>}
-            config={{ responsive: true, displayModeBar: false }}
+            }}
             style={{ width: '100%', height: '350px' }}
           />
         </div>
         <div>
-          <Plot
+          <CanvasHeatmap
             data={[
               {
                 z: qGrid,
@@ -213,11 +206,10 @@ export function ReactionDiffusion({}: SimulationProps) {
                 colorbar: { title: { text: 'q', side: 'right' as const }, len: 0.8 },
               },
             ]}
-            layout={mergeLayout({
+            layout={{
               ...heatmapLayout,
               title: { text: 'Concentration q', font: { size: 14 } },
-            }) as Partial<Plotly.Layout>}
-            config={{ responsive: true, displayModeBar: false }}
+            }}
             style={{ width: '100%', height: '350px' }}
           />
         </div>

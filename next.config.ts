@@ -66,7 +66,6 @@ const nextConfig: NextConfig = {
     ],
     webVitalsAttribution: ["CLS", "LCP", "INP", "TTFB"],
   },
-  serverExternalPackages: ["plotly.js"],
   turbopack: {},
   webpack: (config) => {
     if (process.env.ANALYZE === "true" && process.env.NODE_ENV === "production") {

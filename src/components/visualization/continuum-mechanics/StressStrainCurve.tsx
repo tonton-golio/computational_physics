@@ -1,22 +1,16 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
 import { Slider } from '@/components/ui/slider';
+import { CanvasChart } from '@/components/ui/canvas-chart';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
-interface SimulationProps {
-  id: string;
-}
-
-export default function StressStrainCurve({ id }: SimulationProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function StressStrainCurve({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
   const [youngsMod, setYoungsMod] = useState(200); // GPa
   const [yieldStress, setYieldStress] = useState(0.25); // GPa
   const [hardeningExp, setHardeningExp] = useState(5);
   const [maxStrain, setMaxStrain] = useState(0.05);
-  const { mergeLayout } = usePlotlyTheme();
 
   const plotData = useMemo(() => {
     const numPoints = 200;
@@ -105,7 +99,7 @@ export default function StressStrainCurve({ id }: SimulationProps) { // eslint-d
           marker: { color: '#f59e0b', size: 10, symbol: 'diamond' },
         },
       ],
-      layout: mergeLayout({
+      layout: ({
         title: { text: 'Stress-Strain Curve' },
         xaxis: {
           title: { text: 'Strain \u03b5' },
@@ -120,7 +114,7 @@ export default function StressStrainCurve({ id }: SimulationProps) { // eslint-d
         margin: { t: 50, b: 60, l: 70, r: 30 },
       }),
     };
-  }, [youngsMod, yieldStress, hardeningExp, maxStrain, mergeLayout]);
+  }, [youngsMod, yieldStress, hardeningExp, maxStrain]);
 
   return (
     <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
@@ -188,11 +182,10 @@ export default function StressStrainCurve({ id }: SimulationProps) { // eslint-d
         </div>
       </div>
 
-      <Plot
+      <CanvasChart
         data={plotData.data}
         layout={plotData.layout}
-        config={{ displayModeBar: false, responsive: true }}
-        style={{ width: '100%' }}
+        style={{ width: '100%', height: 500 }}
       />
 
       <div className="mt-4 text-sm text-[var(--text-muted)] space-y-1">

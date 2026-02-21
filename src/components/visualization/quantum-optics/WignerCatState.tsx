@@ -1,16 +1,11 @@
 'use client';
 
-import dynamic from 'next/dynamic';
 import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
 import { SimulationPanel, SimulationLabel, SimulationToggle } from '@/components/ui/simulation-panel';
+import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
-
-interface SimulationProps {
-  id?: string;
-}
 
 /**
  * Wigner function for a Schrodinger cat state:
@@ -29,12 +24,11 @@ interface SimulationProps {
  *
  * where alpha = (x0 + i*p0)/sqrt(2)
  */
-export default function WignerCatState({}: SimulationProps) {
+export default function WignerCatState({}: SimulationComponentProps) {
   const [realAlpha, setRealAlpha] = useState(2.5);
   const [imagAlpha, setImagAlpha] = useState(0.0);
   const [phi, setPhi] = useState(0.0);
   const [show3D, setShow3D] = useState(false);
-  const { mergeLayout } = usePlotlyTheme();
 
   const { xvec, pvec, W } = useMemo(() => {
     const plotRange = 7;
@@ -134,19 +128,18 @@ export default function WignerCatState({}: SimulationProps) {
       />
 
       {!show3D ? (
-        <Plot
+        <CanvasHeatmap
           data={[
             {
               z: W,
               x: xvec,
               y: pvec,
-              type: 'contour',
+              type: 'heatmap',
               colorscale: 'RdBu',
-              ncontours: 40,
               colorbar: { title: { text: 'W(q, p)' } },
             },
           ]}
-          layout={mergeLayout({
+          layout={{
             title: { text: `Cat State W(q, p)` },
             xaxis: {
               title: { text: 'q' },
@@ -157,34 +150,29 @@ export default function WignerCatState({}: SimulationProps) {
             },
             height: 500,
             margin: { t: 40, r: 20, b: 50, l: 50 },
-          })}
+          }}
           style={{ width: '100%', height: '500px' }}
-          config={{ responsive: true, displayModeBar: false }}
         />
       ) : (
-        <Plot
+        <CanvasHeatmap
           data={[
             {
               z: W,
               x: xvec,
               y: pvec,
-              type: 'surface',
+              type: 'heatmap',
               colorscale: 'RdBu',
               colorbar: { title: { text: 'W(q,p)' } },
             },
           ]}
-          layout={mergeLayout({
+          layout={{
             title: { text: `Cat State W(q, p) - 3D` },
-            scene: {
-              xaxis: { title: { text: 'q' } },
-              yaxis: { title: { text: 'p' } },
-              zaxis: { title: { text: 'W(q,p)' } },
-            },
+            xaxis: { title: { text: 'q' } },
+            yaxis: { title: { text: 'p' } },
             height: 500,
             margin: { t: 40, r: 20, b: 50, l: 50 },
-          })}
+          }}
           style={{ width: '100%', height: '500px' }}
-          config={{ responsive: true, displayModeBar: false }}
         />
       )}
     </SimulationPanel>

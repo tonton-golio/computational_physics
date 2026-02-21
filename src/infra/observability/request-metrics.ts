@@ -17,3 +17,7 @@ export function logRequestMetric(input: RequestMetricInput): void {
     correlationId: input.correlationId,
   });
 }
+
+export function correlationIdFrom(request: Request): string {
+  return request.headers.get("x-correlation-id") ?? crypto.randomUUID();
+}

@@ -279,12 +279,16 @@ export function ExportPdfButton({ topicContentId, topicTitle, variant = "default
       const zip = new JSZip();
       const topicFolder = sanitizeFilename(topicTitle);
 
-      // Build individual lesson files and collect TOC entries
+      // Build individual lesson files and collect TOC entries + figures
       const tocEntries: Array<{ index: number; title: string; summary?: string; filename: string }> = [];
+      const allFigures = new Map<string, { src: string; caption: string }>();
 
       for (let i = 0; i < lessons.length; i++) {
         const lesson = lessons[i];
-        const { html } = markdownToHtml(lesson.content, katex, { staticMode: true });
+        const { html, figures } = markdownToHtml(lesson.content, katex, {
+          staticMode: true,
+          figureBasePath: "figures/",
+        });
         const num = String(i + 1).padStart(2, "0");
         const filename = `${num}-${sanitizeFilename(lesson.title)}.html`;
 
@@ -295,8 +299,39 @@ export function ExportPdfButton({ topicContentId, topicTitle, variant = "default
           filename,
         });
 
+        for (const fig of figures) {
+          if (!allFigures.has(fig.localFilename)) {
+            allFigures.set(fig.localFilename, { src: fig.src, caption: fig.caption });
+          }
+        }
+
         const lessonDoc = buildLessonHtml(lesson.title, html, topicTitle, katexCss);
         zip.file(`${topicFolder}/${filename}`, lessonDoc);
+      }
+
+      // Fetch and bundle figure images (skip videos)
+      const VIDEO_EXTS = new Set(["mp4", "webm", "ogg", "avi", "mov"]);
+      const figureEntries = Array.from(allFigures.entries()).filter(
+        ([filename]) => !VIDEO_EXTS.has(filename.split(".").pop()?.toLowerCase() ?? ""),
+      );
+
+      const fetchedFigures = await Promise.all(
+        figureEntries.map(async ([filename, { src }]) => {
+          try {
+            const response = await fetch(src);
+            if (!response.ok) return null;
+            const blob = await response.blob();
+            return { filename, blob };
+          } catch {
+            return null;
+          }
+        }),
+      );
+
+      for (const result of fetchedFigures) {
+        if (result) {
+          zip.file(`${topicFolder}/figures/${result.filename}`, result.blob);
+        }
       }
 
       // Build table of contents file

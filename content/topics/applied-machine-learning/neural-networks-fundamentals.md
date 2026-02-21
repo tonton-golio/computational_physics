@@ -42,7 +42,7 @@ $$
 \frac{\partial\mathcal{L}}{\partial W^{(1)}}=\frac{\partial\mathcal{L}}{\partial\mathbf{h}^{(2)}}\cdot\frac{\partial\mathbf{h}^{(2)}}{\partial\mathbf{h}^{(1)}}\cdot\frac{\partial\mathbf{h}^{(1)}}{\partial W^{(1)}}
 $$
 
-Each term in this chain tells us: "How much does a small change in this layer's output affect the next?" Multiplied together, they give the gradient of the loss with respect to the first layer's weights. Modern frameworks (PyTorch, JAX) compute these gradients automatically, but understanding the chain rule structure still matters for diagnosing training failures — when gradients explode or vanish, it is usually because one of these terms is too large or too small.
+Each term in this chain tells us: "How much does a small change in this layer's output affect the next?" Multiplied together, they give the gradient of the loss with respect to the first layer's weights. Imagine the loss is angry at the output and starts shouting "who did this?!" The blame passes backward through every layer, getting multiplied by how sensitive each layer was. That multiplication is why gradients can vanish or explode. Modern frameworks (PyTorch, JAX) compute these gradients automatically, but understanding the chain rule structure still matters for diagnosing training failures — when gradients explode or vanish, it is usually because one of these terms is too large or too small.
 
 ## Regularization
 
@@ -75,6 +75,10 @@ Neural networks specialize by changing how layers are connected. Here is the fam
 
 The remaining pages in this module cover RNNs and GNNs. For CNNs, transformers, and autoencoders, see [Advanced Deep Learning](/topics/advanced-deep-learning).
 
+[[figure aml-backprop-blame]]
+
+[[simulation aml-backprop-blame]]
+
 ## Practical checklist
 
 - Start with a small network and increase capacity if underfitting.
@@ -86,5 +90,5 @@ The remaining pages in this module cover RNNs and GNNs. For CNNs, transformers, 
 ## Check your understanding
 
 - Can you explain backpropagation to a non-technical friend using the "passing blame backward" analogy?
-- What is the one picture in your head that captures why depth is better than width?
+- What is the mental image that makes clear why depth beats width?
 - What experiment would you run to determine if your network needs more capacity or more regularization?

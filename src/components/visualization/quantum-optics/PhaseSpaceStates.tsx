@@ -1,16 +1,12 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import dynamic from 'next/dynamic';
 import { Slider } from '@/components/ui/slider';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
-
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
+import { CanvasChart } from '@/components/ui/canvas-chart';
 
 export default function PhaseSpaceStates() {
   const [radius, setRadius] = useState(2.2);
   const [phase, setPhase] = useState(0.7);
-  const { mergeLayout } = usePlotlyTheme();
 
   const { circleX, circleY, coherent, numberRing } = useMemo(() => {
     const t = Array.from({ length: 200 }, (_, i) => (2 * Math.PI * i) / 199);
@@ -46,20 +42,19 @@ export default function PhaseSpaceStates() {
           <Slider min={0} max={6.28} step={0.02} value={[phase]} onValueChange={([v]) => setPhase(v)} />
         </div>
       </div>
-      <Plot
+      <CanvasChart
         data={[
           { x: circleX, y: circleY, type: 'scatter', mode: 'lines', line: { color: '#475569', width: 1 }, name: 'Vacuum reference' },
           { x: numberRing.x, y: numberRing.y, type: 'scatter', mode: 'lines', line: { color: '#10b981', width: 2, dash: 'dot' }, name: 'Number-state phase ring' },
           { x: [coherent.x], y: [coherent.y], type: 'scatter', mode: 'markers', marker: { size: 11, color: '#3b82f6' }, name: 'Coherent state centroid' },
         ]}
-        layout={mergeLayout({
+        layout={{
           title: { text: 'State geometry in quadrature space (q, p)' },
           margin: { t: 40, r: 20, b: 40, l: 50 },
           xaxis: { title: { text: 'q' }, range: [-5, 5] },
           yaxis: { title: { text: 'p' }, range: [-5, 5], scaleanchor: 'x' },
           height: 430,
-        })}
-        config={{ responsive: true, displayModeBar: false }}
+        }}
         style={{ width: '100%', height: 430 }}
       />
     </div>

@@ -17,7 +17,7 @@ $$
 
 Think of this as a zero-sum tennis match. The discriminator tries to maximize its score (correctly classifying real vs. fake), while the generator tries to minimize it (making fakes that the discriminator calls real). At equilibrium — if you ever reach it — the generator produces samples so realistic that the discriminator can do no better than random guessing.
 
-In plain English: the first term rewards the discriminator for giving high scores to real data. The second term rewards it for giving low scores to fakes — but the generator is simultaneously trying to make that second term as small as possible by generating convincing samples.
+In plain English: the discriminator is rewarded twice — once for correctly saying "real" to real images, and once for correctly saying "fake" to generated images. The generator is only rewarded when the discriminator says "real" to a fake. Its entire job is to make the discriminator's second reward as small as possible — by becoming indistinguishable from reality.
 
 ## Mode collapse: when the forger gets lazy
 
@@ -41,8 +41,12 @@ These are engineering solutions to a fundamental tension: the two networks must 
 
 This page gives you the intuition for adversarial training. GANs are a bridge from classical applied ML to the wild world of deep generative modeling. For architecture details (DCGAN, StyleGAN, conditional GANs), training recipes, and the relationship to other generative approaches (VAEs, diffusion models), see [Advanced Deep Learning — Generative Models](/topics/advanced-deep-learning/gan).
 
+[[figure aml-gan-progression]]
+
+[[simulation aml-gan-forger-arena]]
+
 ## Check your understanding
 
 - Can you explain the GAN training loop to a friend using the forger-and-detective story?
-- What is the one picture in your head that captures mode collapse?
+- If you had to explain mode collapse in one drawing, what would it look like?
 - What experiment would tell you whether your GAN is suffering from mode collapse rather than simply needing more training?

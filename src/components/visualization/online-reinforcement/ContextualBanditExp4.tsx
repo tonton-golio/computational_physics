@@ -1,17 +1,13 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
-import dynamic from 'next/dynamic';
 import { Slider } from '@/components/ui/slider';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { CanvasChart } from '@/components/ui/canvas-chart';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
-interface SimulationProps { id: string }
-
-export default function ContextualBanditExp4({ id }: SimulationProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function ContextualBanditExp4({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
   const [rounds, setRounds] = useState(400);
-  const { mergeLayout } = usePlotlyTheme();
   const contexts = useMemo(() => Array.from({ length: rounds }, (_, t) => (Math.sin(t / 18) > 0 ? 1 : 0)), [rounds]);
   const oracle = useMemo(() => contexts.map((c) => (c === 1 ? 1 : 0)), [contexts]);
   const exp4Choice = useMemo(
@@ -36,19 +32,18 @@ export default function ContextualBanditExp4({ id }: SimulationProps) { // eslin
       <h3 className="text-xl font-semibold mb-3 text-[var(--text-strong)]">Contextual Bandit (EXP4-style)</h3>
       <label className="mb-1 block text-sm text-[var(--text-muted)]">Rounds: {rounds}</label>
       <Slider value={[rounds]} onValueChange={([v]) => setRounds(v)} min={100} max={1000} step={25} className="mb-4" />
-      <Plot
+      <CanvasChart
         data={[
           { x, y: cumExp4, type: 'scatter', mode: 'lines', name: 'Learner cumulative reward', line: { color: '#60a5fa', width: 2 } },
           { x, y: cumOracle, type: 'scatter', mode: 'lines', name: 'Best contextual policy', line: { color: '#4ade80', width: 2 } },
           { x, y: regret, type: 'scatter', mode: 'lines', name: 'Regret', line: { color: '#f87171', width: 2, dash: 'dot' } },
         ]}
-        layout={mergeLayout({
+        layout={{
           title: { text: 'Context-dependent actions reduce regret' },
           xaxis: { title: { text: 'round' } },
           yaxis: { title: { text: 'cumulative reward' } },
           height: 420,
-        })}
-        config={{ displayModeBar: false }}
+        }}
         style={{ width: '100%' }}
       />
     </div>

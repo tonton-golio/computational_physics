@@ -1,15 +1,10 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
 import { Slider } from '@/components/ui/slider';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { CanvasChart } from '@/components/ui/canvas-chart';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
-
-interface SimulationProps {
-  id: string;
-}
 
 // Seeded random number generator for reproducibility within a render
 function mulberry32(a: number) {
@@ -21,11 +16,10 @@ function mulberry32(a: number) {
   };
 }
 
-export default function ConcentrationBounds({ id }: SimulationProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function ConcentrationBounds({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
   const [nExperiments, setNExperiments] = useState(500);
   const [nSamples, setNSamples] = useState(50);
   const [threshold, setThreshold] = useState(0.15);
-  const { mergeLayout } = usePlotlyTheme();
 
   const plotData = useMemo(() => {
     const rng = mulberry32(42);
@@ -164,7 +158,7 @@ export default function ConcentrationBounds({ id }: SimulationProps) { // eslint
         </div>
       </div>
 
-      <Plot
+      <CanvasChart
         data={[
           {
             x: plotData.thresholds,
@@ -208,7 +202,7 @@ export default function ConcentrationBounds({ id }: SimulationProps) { // eslint
             showlegend: false,
           },
         ]}
-        layout={mergeLayout({
+        layout={{
           title: { text: 'Concentration Bounds vs Empirical Tail Probability' },
           xaxis: { title: { text: 'Threshold t' } },
           yaxis: {
@@ -219,8 +213,7 @@ export default function ConcentrationBounds({ id }: SimulationProps) { // eslint
           height: 450,
           legend: { x: 0.6, y: 1 },
           margin: { t: 40, b: 60, l: 60, r: 20 },
-        })}
-        config={{ displayModeBar: false }}
+        }}
         style={{ width: '100%' }}
       />
     </div>

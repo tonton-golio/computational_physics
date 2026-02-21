@@ -1,15 +1,11 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
 import { Slider } from '@/components/ui/slider';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { CanvasChart } from '@/components/ui/canvas-chart';
+import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
-
-interface SimulationProps {
-  id: string;
-}
 
 const G_CONST = 6.674e-11;
 
@@ -115,12 +111,11 @@ function solveTikhonov(G: number[][], d: number[], eps: number): number[] {
   return m;
 }
 
-export default function TikhonovRegularization({ id }: SimulationProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function TikhonovRegularization({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
   const [nDepthCells, setNDepthCells] = useState(20);
   const [epsExpMin, setEpsExpMin] = useState(-13);
   const [epsExpMax, setEpsExpMax] = useState(-9);
   const [nEps, setNEps] = useState(16);
-  const { mergeLayout } = usePlotlyTheme();
 
   const result = useMemo(() => {
     // Measurement positions (similar to the old gravdata)
@@ -213,26 +208,25 @@ export default function TikhonovRegularization({ id }: SimulationProps) { // esl
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-        <Plot
+        <CanvasHeatmap
           data={[{
             z: result.solutionGrid,
             x: Array.from({ length: result.nDepthCells }, (_, i) => i),
             y: result.epsValues.map(e => e.toExponential(1)),
-            type: 'heatmap' as const,
+            type: 'heatmap',
             colorscale: 'Inferno',
             colorbar: { title: { text: 'density' } },
           }]}
-          layout={mergeLayout({
+          layout={{
             title: { text: 'Solutions m(depth) for each epsilon' },
             xaxis: { title: { text: 'Depth index' } },
             yaxis: { title: { text: 'epsilon' } },
             height: 380,
             margin: { t: 40, b: 50, l: 80, r: 20 },
-          })}
-          config={{ displayModeBar: false }}
+          }}
           style={{ width: '100%' }}
         />
-        <Plot
+        <CanvasChart
           data={[
             {
               x: result.residuals,
@@ -247,19 +241,18 @@ export default function TikhonovRegularization({ id }: SimulationProps) { // esl
               name: 'L-curve',
             },
           ]}
-          layout={mergeLayout({
+          layout={{
             title: { text: 'L-Curve (Residual vs Model Norm)' },
             xaxis: { title: { text: '||d_obs - Gm||' }, type: 'log' },
             yaxis: { title: { text: '||m||' }, type: 'log' },
             height: 380,
             margin: { t: 40, b: 50, l: 60, r: 20 },
-          })}
-          config={{ displayModeBar: false }}
+          }}
           style={{ width: '100%' }}
         />
       </div>
 
-      <Plot
+      <CanvasChart
         data={[
           {
             x: Array.from({ length: result.nDepthCells }, (_, i) => i),
@@ -279,15 +272,14 @@ export default function TikhonovRegularization({ id }: SimulationProps) { // esl
             opacity: 0.7,
           })),
         ]}
-        layout={mergeLayout({
+        layout={{
           title: { text: 'Selected Solutions vs True Model' },
           xaxis: { title: { text: 'Depth index' } },
           yaxis: { title: { text: 'Density anomaly' } },
           height: 350,
           legend: { x: 0.7, y: 0.98 },
           margin: { t: 40, b: 50, l: 60, r: 20 },
-        })}
-        config={{ displayModeBar: false }}
+        }}
         style={{ width: '100%' }}
       />
       <p className="text-[var(--text-soft)] text-xs mt-3">

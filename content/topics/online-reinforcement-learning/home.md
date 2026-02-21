@@ -46,26 +46,3 @@ These ideas power online advertising, recommendation engines, adaptive routing i
 
 The mathematics in this course revolves around four big themes. First, **regret minimization** — you will see how to define and bound the gap between your performance and the best fixed strategy in hindsight, without any statistical assumptions on the data. Second, **exponential weights and mirror-style updates** — the engine behind algorithms like Hedge that multiply confidence by performance. Third, **exploration-exploitation trade-offs** — the bandit's dilemma, where you must balance trying new actions against sticking with what has worked. Fourth, **Bellman operators and fixed-point reasoning** — the backbone of MDP theory, where the right value is the one that does not change when you apply the update rule.
 
-## Prerequisites
-
-You should be comfortable with basic probability and random variables — expectations, variances, conditional probabilities. You will need some linear algebra, mostly matrix-vector products and norms. Basic optimization ideas (gradients, convexity) will help, and some exposure to machine learning concepts will give you context, though we will build everything we need from scratch.
-
-## Recommended reading
-
-We recommend four books that complement this course beautifully. Sutton and Barto's *Reinforcement Learning: An Introduction* (2nd edition) is the standard RL textbook and covers the MDP and TD material in great depth. Cesa-Bianchi and Lugosi's *Prediction, Learning, and Games* is the bible for online learning and expert advice. Lattimore and Szepesvari's *Bandit Algorithms* is the modern reference for everything bandits. And Hazan's *Introduction to Online Convex Optimization* gives you the optimization perspective that ties it all together.
-
-## Learning trajectory
-
-This module is organized from foundational online learning concepts through bandits to full reinforcement learning:
-
-1. **The Notion of Regret** — the central performance metric for online learning, and the hero of our story.
-2. **Forms of Feedback and Problem Settings** — full-information, bandit, and contextual feedback models, and why the kind of feedback you get changes everything.
-3. **Follow the Leader and Hedge** — your first real algorithms, including exponential weights, the workhorse of online learning.
-4. **Stochastic and Adversarial Bandits: UCB1 and EXP3** — the core bandit algorithms for when you can only see one outcome at a time.
-5. **Contextual Bandits and EXP4** — bandits with side information, where context makes you smarter.
-6. **MDPs and Dynamic Programming** — the world gains memory, and we learn to plan with Bellman equations.
-7. **Monte Carlo Methods for RL** — model-free value estimation by playing the game until it ends.
-8. **Temporal-Difference Learning, SARSA, and Q-Learning** — bootstrapping methods that learn from every single step.
-9. **Function Approximation and Deep Q-Learning** — scaling RL to huge state spaces with neural networks.
-10. **Online RL in Average-Reward and Discounted Settings** — what happens when the game never ends.
-11. **Assignments and Project Ideas** — empirical and theoretical exercises to cement everything.

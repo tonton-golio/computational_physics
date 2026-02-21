@@ -1,11 +1,8 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { CanvasChart } from '@/components/ui/canvas-chart';
 import { Slider } from '@/components/ui/slider';
-
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
 interface PCAVisualizationProps {
   id?: string;
@@ -34,7 +31,6 @@ export default function PCAVisualization({ id: _id }: PCAVisualizationProps) {
   const [spread, setSpread] = useState(0.6);
   const [showPCs, setShowPCs] = useState(true);
   const [showProjection, setShowProjection] = useState(false);
-  const { mergeLayout } = usePlotlyTheme();
 
   const { points, pc1, pc2, eigenvalues, center, pc1Dir } = useMemo(() => {
     const rng = mulberry32(42);
@@ -289,17 +285,15 @@ export default function PCAVisualization({ id: _id }: PCAVisualizationProps) {
 
         {/* Plot */}
         <div className="lg:col-span-2">
-          <Plot
+          <CanvasChart
             data={plotData}
-            layout={mergeLayout({
+            layout={{
               xaxis: { title: { text: 'Feature 1' } },
               yaxis: { title: { text: 'Feature 2' }, scaleanchor: 'x' },
               margin: { t: 30, b: 50, l: 60, r: 30 },
               autosize: true,
-            })}
-            useResizeHandler
+            }}
             style={{ width: '100%', height: '450px' }}
-            config={{ displayModeBar: false }}
           />
         </div>
       </div>

@@ -1,19 +1,14 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import dynamic from 'next/dynamic';
 import { Slider } from '@/components/ui/slider';
 import {
   runMDPSimulationWorker,
   type MDPSimulationResult,
 } from '@/features/simulation/simulation-worker.client';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { CanvasChart } from '@/components/ui/canvas-chart';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
-
-interface SimulationProps {
-  id: string;
-}
 
 function mulberry32(a: number) {
   return function () {
@@ -88,14 +83,13 @@ function runMDPSimulationFallback(
   return { probFills, avgCosts, minCosts, maxCosts, optIdx };
 }
 
-export default function MDPSimulation({ id }: SimulationProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function MDPSimulation({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
   const [costPerUnfilled, setCostPerUnfilled] = useState(0.1);
   const [setupCost, setSetupCost] = useState(0.5);
   const [maxUnfilled, setMaxUnfilled] = useState(10);
   const [alpha, setAlpha] = useState(0.5);
   const [timeHorizon, setTimeHorizon] = useState(300);
   const [plotData, setPlotData] = useState<MDPSimulationResult | null>(null);
-  const { mergeLayout } = usePlotlyTheme();
 
   useEffect(() => {
     let active = true;
@@ -207,7 +201,7 @@ export default function MDPSimulation({ id }: SimulationProps) { // eslint-disab
           Running simulation...
         </div>
       ) : (
-        <Plot
+        <CanvasChart
           data={[
             {
               x: plotData.probFills,
@@ -237,7 +231,7 @@ export default function MDPSimulation({ id }: SimulationProps) { // eslint-disab
               marker: { size: 12, color: '#4ade80', symbol: 'star' },
             },
           ]}
-          layout={mergeLayout({
+          layout={{
             title: { text: 'Total Cost vs Fill Probability' },
             xaxis: {
               title: { text: 'Probability of processing orders' },
@@ -246,8 +240,7 @@ export default function MDPSimulation({ id }: SimulationProps) { // eslint-disab
             height: 420,
             legend: { x: 0.6, y: 1 },
             margin: { t: 40, b: 60, l: 60, r: 20 },
-          })}
-          config={{ displayModeBar: false }}
+          }}
           style={{ width: '100%' }}
         />
       )}

@@ -1,19 +1,4 @@
-type LotkaVolterraParams = {
-  alpha: number;
-  beta: number;
-  gamma: number;
-  delta: number;
-  x0: number;
-  y0: number;
-  dt: number;
-  steps: number;
-};
-
-type LotkaVolterraResult = {
-  t: number[];
-  x: number[];
-  y: number[];
-};
+import type { LotkaVolterraParams, LotkaVolterraResult } from "../../shared/types/simulation";
 
 function solveLotkaVolterra({
   alpha,

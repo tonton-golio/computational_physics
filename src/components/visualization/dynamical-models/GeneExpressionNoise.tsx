@@ -1,11 +1,8 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
 import { Slider } from '@/components/ui/slider';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
-
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
+import { CanvasChart } from '@/components/ui/canvas-chart';
 
 /**
  * Stochastic gene expression simulation using the Gillespie algorithm.
@@ -19,7 +16,6 @@ export default function GeneExpressionNoise() {
   const [gpro, setGpro] = useState(0.1);
   const [nRepressor, setNRepressor] = useState(0);
   const [seed, setSeed] = useState(0);
-  const { mergeLayout } = usePlotlyTheme();
 
   const { tVals, mRNATrace, proteinTrace, repTrace, stats } = useMemo(() => {
     // Seeded pseudo-random number generator (simple LCG)
@@ -207,55 +203,52 @@ export default function GeneExpressionNoise() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Plot
+        <CanvasChart
           data={[
             {
               x: tVals, y: mRNATrace, type: 'scatter', mode: 'lines',
               line: { color: '#3b82f6', width: 1.5 }, name: 'mRNA',
             },
           ] as any}
-          layout={mergeLayout({
+          layout={{
             ...commonLayout,
             height: 300,
             title: { text: 'mRNA over time' },
             yaxis: { ...commonLayout.yaxis, title: { text: 'mRNA count' } },
-          })}
-          config={{ displayModeBar: false }}
+          }}
           style={{ width: '100%' }}
         />
-        <Plot
+        <CanvasChart
           data={[
             {
               x: tVals, y: proteinTrace, type: 'scatter', mode: 'lines',
               line: { color: '#ef4444', width: 1.5 }, name: 'Protein',
             },
           ] as any}
-          layout={mergeLayout({
+          layout={{
             ...commonLayout,
             height: 300,
             title: { text: 'Protein over time' },
             yaxis: { ...commonLayout.yaxis, title: { text: 'Protein count' } },
-          })}
-          config={{ displayModeBar: false }}
+          }}
           style={{ width: '100%' }}
         />
       </div>
 
       {nRepressor > 0 && (
-        <Plot
+        <CanvasChart
           data={[
             {
               x: tVals, y: repTrace, type: 'scatter', mode: 'lines',
               line: { color: '#22c55e', width: 1.5 }, name: 'Free Repressor',
             },
           ] as any}
-          layout={mergeLayout({
+          layout={{
             ...commonLayout,
             height: 250,
             title: { text: 'Free repressor over time' },
             yaxis: { ...commonLayout.yaxis, title: { text: 'Repressor count' } },
-          })}
-          config={{ displayModeBar: false }}
+          }}
           style={{ width: '100%' }}
         />
       )}

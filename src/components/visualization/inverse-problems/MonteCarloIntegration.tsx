@@ -1,15 +1,10 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
 import { Slider } from '@/components/ui/slider';
+import { CanvasChart } from '@/components/ui/canvas-chart';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
-
-interface SimulationProps {
-  id: string;
-}
 
 function seededRandom(seed: number): () => number {
   let s = seed;
@@ -19,12 +14,11 @@ function seededRandom(seed: number): () => number {
   };
 }
 
-export default function MonteCarloIntegration({ id }: SimulationProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function MonteCarloIntegration({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
   const [nPointsExp, setNPointsExp] = useState(10);
   const [nDim, setNDim] = useState(2);
   const [pNorm, setPNorm] = useState(2.0);
   const nPoints = Math.pow(2, nPointsExp);
-  const { mergeLayout } = usePlotlyTheme();
 
   const result = useMemo(() => {
     const rng = seededRandom(42);
@@ -150,7 +144,7 @@ export default function MonteCarloIntegration({ id }: SimulationProps) { // esli
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Plot
+        <CanvasChart
           data={[
             {
               x: result.xInside,
@@ -169,18 +163,17 @@ export default function MonteCarloIntegration({ id }: SimulationProps) { // esli
               name: 'Outside',
             },
           ]}
-          layout={mergeLayout({
+          layout={{
             title: { text: `First 2 Dimensions (showing up to 5000 pts)` },
             xaxis: { title: { text: 'x_1' }, range: [-1.1, 1.1], scaleanchor: 'y' },
             yaxis: { title: { text: 'x_2' }, range: [-1.1, 1.1] },
             height: 450,
             legend: { x: 0.02, y: 0.98 },
             margin: { t: 40, b: 50, l: 50, r: 20 },
-          })}
-          config={{ displayModeBar: false }}
+          }}
           style={{ width: '100%' }}
         />
-        <Plot
+        <CanvasChart
           data={[
             {
               x: result.dimRange,
@@ -200,15 +193,14 @@ export default function MonteCarloIntegration({ id }: SimulationProps) { // esli
               name: `MC estimate (d=${nDim})`,
             },
           ]}
-          layout={mergeLayout({
+          layout={{
             title: { text: 'Fraction Inside vs Dimension' },
             xaxis: { title: { text: 'Number of dimensions' } },
             yaxis: { title: { text: 'Fraction inside unit sphere' }, type: 'log' },
             height: 450,
             legend: { x: 0.5, y: 0.98 },
             margin: { t: 40, b: 50, l: 60, r: 20 },
-          })}
-          config={{ displayModeBar: false }}
+          }}
           style={{ width: '100%' }}
         />
       </div>

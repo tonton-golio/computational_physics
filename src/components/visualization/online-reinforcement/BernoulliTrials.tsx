@@ -1,15 +1,10 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
 import { Slider } from '@/components/ui/slider';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { CanvasChart } from '@/components/ui/canvas-chart';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
-
-interface SimulationProps {
-  id: string;
-}
 
 function mulberry32(a: number) {
   return function () {
@@ -20,11 +15,10 @@ function mulberry32(a: number) {
   };
 }
 
-export default function BernoulliTrials({ id }: SimulationProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function BernoulliTrials({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
   const [pHeads, setPHeads] = useState(0.5);
   const [nDraws, setNDraws] = useState(20);
   const [nExp, setNExp] = useState(10000);
-  const { mergeLayout } = usePlotlyTheme();
 
   const plotData = useMemo(() => {
     const rng = mulberry32(12345);
@@ -141,7 +135,7 @@ export default function BernoulliTrials({ id }: SimulationProps) { // eslint-dis
         </div>
       </div>
 
-      <Plot
+      <CanvasChart
         data={[
           {
             x: plotData.alphas,
@@ -177,7 +171,7 @@ export default function BernoulliTrials({ id }: SimulationProps) { // eslint-dis
             line: { color: '#4ade80', width: 2, dash: 'dashdot' },
           },
         ]}
-        layout={mergeLayout({
+        layout={{
           title: {
             text: `Bernoulli Bounds (p=${pHeads.toFixed(2)}, n=${nDraws})`,
           },
@@ -189,8 +183,7 @@ export default function BernoulliTrials({ id }: SimulationProps) { // eslint-dis
           height: 420,
           legend: { x: 0.55, y: 1 },
           margin: { t: 40, b: 60, l: 60, r: 20 },
-        })}
-        config={{ displayModeBar: false }}
+        }}
         style={{ width: '100%' }}
       />
 

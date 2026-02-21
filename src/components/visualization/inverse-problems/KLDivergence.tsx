@@ -1,15 +1,10 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
 import { Slider } from '@/components/ui/slider';
+import { CanvasChart } from '@/components/ui/canvas-chart';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
-
-interface SimulationProps {
-  id: string;
-}
 
 function seededRandom(seed: number): () => number {
   let s = seed;
@@ -26,12 +21,11 @@ function boxMullerNormal(rng: () => number, mu: number, sigma: number): number {
   return mu + sigma * z;
 }
 
-export default function KLDivergence({ id }: SimulationProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function KLDivergence({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
   const [loc1, setLoc1] = useState(5);
   const [scale1, setScale1] = useState(1.0);
   const [loc2, setLoc2] = useState(3);
   const [scale2, setScale2] = useState(1.0);
-  const { mergeLayout } = usePlotlyTheme();
 
   const result = useMemo(() => {
     const rng1 = seededRandom(123);
@@ -146,7 +140,7 @@ export default function KLDivergence({ id }: SimulationProps) { // eslint-disabl
         </div>
       </div>
 
-      <Plot
+      <CanvasChart
         data={[
           {
             x: result.binCenters,
@@ -165,7 +159,7 @@ export default function KLDivergence({ id }: SimulationProps) { // eslint-disabl
             width: result.binEdges[1] - result.binEdges[0],
           },
         ]}
-        layout={mergeLayout({
+        layout={{
           title: { text: `D_KL(P || Q) = ${result.klDiv.toFixed(4)} bits` },
           barmode: 'overlay',
           xaxis: { title: { text: 'Value' } },
@@ -173,8 +167,7 @@ export default function KLDivergence({ id }: SimulationProps) { // eslint-disabl
           height: 400,
           legend: { x: 0.02, y: 0.98 },
           margin: { t: 40, b: 50, l: 50, r: 20 },
-        })}
-        config={{ displayModeBar: false }}
+        }}
         style={{ width: '100%' }}
       />
       {result.method2 && (

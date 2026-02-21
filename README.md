@@ -54,9 +54,9 @@ npm run test:e2e
 - Release runbook: `docs/runbooks/release-and-rollback.md`
 - SLOs: `docs/operations/slo.md`
 
-## Topic Point Cloud
+## Topic Points
 
-Generate the 2D point-cloud JSON used by the Topics visualization. This embeds each sub-topic via OpenAI and projects the vectors to 2D with t-SNE.
+Generate the 2D points JSON used by the Topics visualization. This embeds each sub-topic via OpenAI and projects the vectors to 2D with t-SNE.
 
 **Prerequisites:**
 
@@ -64,15 +64,15 @@ Generate the 2D point-cloud JSON used by the Topics visualization. This embeds e
 - `OPENAI_API_KEY` set in `.env` at the project root
 
 ```bash
-npm run build:point-cloud
+npm run build:points
 ```
 
-Output: `public/data/topic-point-cloud.json`
+Output: `public/data/topic-points.json`
 
 Optional flags (pass after `--`):
 
 ```bash
-npm run build:point-cloud -- --output path/to/out.json --batch-size 32 --max-chars 4000
+npm run build:points -- --output path/to/out.json --batch-size 32 --max-chars 4000
 ```
 
 ## Learn More

@@ -1,11 +1,9 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
 import { Slider } from '@/components/ui/slider';
-
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
+import { useTheme } from '@/lib/use-theme';
 
 interface ConvolutionDemoProps {
   id?: string;
@@ -129,6 +127,8 @@ function convolve2d(image: number[][], kernel: number[][]): number[][] {
 }
 
 export default function ConvolutionDemo({ id: _id }: ConvolutionDemoProps) {
+  const theme = useTheme();
+  const isDark = theme === 'dark';
   const [kernelType, setKernelType] = useState<KernelType>('edge-detect');
   const [pattern, setPattern] = useState('cross');
   const [imageSize, setImageSize] = useState(10);
@@ -140,7 +140,6 @@ export default function ConvolutionDemo({ id: _id }: ConvolutionDemoProps) {
     [-1, 5, -1],
     [0, -1, 0],
   ]);
-  const { mergeLayout } = usePlotlyTheme();
 
   const kernel = useMemo(() => {
     if (kernelType === 'custom') return customKernel;
@@ -187,11 +186,17 @@ export default function ConvolutionDemo({ id: _id }: ConvolutionDemoProps) {
   const kernelTrace: any = {
     type: 'heatmap' as const,
     z: [...kernel].reverse(),
-    colorscale: [
-      [0, '#1a1a2e'],
-      [0.5, '#16213e'],
-      [1, '#e94560'],
-    ],
+    colorscale: isDark
+      ? [
+          [0, '#1a1a2e'],
+          [0.5, '#16213e'],
+          [1, '#e94560'],
+        ]
+      : [
+          [0, '#dfe8fb'],
+          [0.5, '#b0bdd4'],
+          [1, '#e94560'],
+        ],
     showscale: false,
     hovertemplate: 'row: %{y}<br>col: %{x}<br>weight: %{z:.3f}<extra>Kernel</extra>',
   };
@@ -382,16 +387,14 @@ export default function ConvolutionDemo({ id: _id }: ConvolutionDemoProps) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
         <div>
           <p className="text-center text-sm text-[var(--text-muted)] mb-2 font-semibold">Input Image</p>
-          <Plot
+          <CanvasHeatmap
             data={[inputTrace]}
-            layout={mergeLayout({
+            layout={{
               ...commonLayout,
               title: { text: '' },
               shapes: inputShapes,
-            })}
-            useResizeHandler
+            }}
             style={{ width: '100%', height: '300px' }}
-            config={{ displayModeBar: false }}
           />
         </div>
 
@@ -399,15 +402,13 @@ export default function ConvolutionDemo({ id: _id }: ConvolutionDemoProps) {
           <p className="text-center text-sm text-[var(--text-muted)] mb-2 font-semibold">
             Kernel ({kernelType === 'custom' ? 'Custom' : PRESET_KERNELS[kernelType as Exclude<KernelType, 'custom'>].name})
           </p>
-          <Plot
+          <CanvasHeatmap
             data={[kernelTrace]}
-            layout={mergeLayout({
+            layout={{
               ...commonLayout,
               title: { text: '' },
-            })}
-            useResizeHandler
+            }}
             style={{ width: '100%', height: '300px' }}
-            config={{ displayModeBar: false }}
           />
           <div className="mt-2 text-center">
             <table className="mx-auto text-xs text-[var(--text-muted)]">
@@ -439,16 +440,14 @@ export default function ConvolutionDemo({ id: _id }: ConvolutionDemoProps) {
 
         <div>
           <p className="text-center text-sm text-[var(--text-muted)] mb-2 font-semibold">Output (Convolved)</p>
-          <Plot
+          <CanvasHeatmap
             data={[outputTrace]}
-            layout={mergeLayout({
+            layout={{
               ...commonLayout,
               title: { text: '' },
               shapes: outputShapes,
-            })}
-            useResizeHandler
+            }}
             style={{ width: '100%', height: '300px' }}
-            config={{ displayModeBar: false }}
           />
         </div>
       </div>

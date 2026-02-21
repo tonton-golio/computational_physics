@@ -1,11 +1,8 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { CanvasChart } from '@/components/ui/canvas-chart';
 import { Slider } from '@/components/ui/slider';
-
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
 interface ActivationFunctionsProps {
   id?: string;
@@ -119,7 +116,6 @@ export default function ActivationFunctions({ id: _id }: ActivationFunctionsProp
   const [showDerivatives, setShowDerivatives] = useState(false);
   const [showGradientRegions, setShowGradientRegions] = useState(false);
   const [xRange, setXRange] = useState(5);
-  const { mergeLayout } = usePlotlyTheme();
 
   const xValues = useMemo(() => {
     const xs: number[] = [];
@@ -290,9 +286,9 @@ export default function ActivationFunctions({ id: _id }: ActivationFunctionsProp
 
         {/* Plot */}
         <div className="lg:col-span-2">
-          <Plot
+          <CanvasChart
             data={plotData}
-            layout={mergeLayout({
+            layout={{
               xaxis: {
                 title: { text: 'x' },
                 zerolinewidth: 1,
@@ -303,10 +299,8 @@ export default function ActivationFunctions({ id: _id }: ActivationFunctionsProp
               },
               margin: { t: 30, b: 50, l: 60, r: 30 },
               autosize: true,
-            })}
-            useResizeHandler
+            }}
             style={{ width: '100%', height: '450px' }}
-            config={{ displayModeBar: false }}
           />
         </div>
       </div>

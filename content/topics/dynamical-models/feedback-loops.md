@@ -39,6 +39,8 @@ Here is a powerful trick for analyzing any one-dimensional feedback circuit. Thi
 
 > *At the crossing point, production exactly balances degradation — nothing changes. If $X$ is below the crossing point, production exceeds degradation, so $X$ increases. If $X$ is above, degradation wins, so $X$ decreases. The system is pulled toward the crossing like a ball rolling to the bottom of a valley.*
 
+> **Figure: Graphical steady-state construction.** Sigmoidal Hill production curve intersecting a straight degradation line $\gamma P$. Show 1 intersection for negative regulation vs 3 intersections for positive regulation (two stable as solid dots, one unstable as open dot).
+
 To check stability: if the production curve is *below* the degradation line to the right of the crossing (and above to the left), the fixed point is stable. If the slopes tell the opposite story, it is unstable.
 
 [[simulation steady-state-regulation]]
@@ -57,9 +59,11 @@ where $\beta_0$ is a small basal (leak) production rate — even without feedbac
 
 For sufficiently cooperative activation ($n \geq 2$), the production curve can be S-shaped, and it may cross the degradation line at **three points**: two stable (low and high expression) and one unstable in between. This is **bistability**.
 
-> *Imagine a light switch with two stable positions — up and down — and an unstable balance point in the middle. The cell can sit in the "low" state or the "high" state, but not in between. A push large enough to cross the unstable middle point flips the switch.*
+> *Look at the picture: a straight degradation line can cross an S-curve once (monostable) or three times (two stable states + one unstable). The cell now has **memory** — it can sit in the low or high state forever, even after the signal is gone. That is how a stem cell stays a stem cell and how a phage decides to lysogenise.*
 
-Bistability gives cells **memory**: once a cell commits to the high state, it remains there even after the inducing signal is removed. The positive feedback maintains itself.
+A push large enough to cross the unstable middle point flips the switch. The positive feedback maintains itself — once a cell commits to the high state, it remains there even after the inducing signal is removed.
+
+> **Figure: Bifurcation diagram for positive feedback.** Steady-state protein level vs degradation rate $\gamma$, with solid (stable) and dashed (unstable) branches, clearly marking the bistable region between the two saddle-node bifurcations.
 
 ## The genetic toggle switch
 
@@ -83,6 +87,8 @@ $$
 
 where $j$ is the upstream repressor of gene $i$.
 
+> **Figure: Repressilator.** Three-gene time series showing oscillating protein concentrations (A, B, C out of phase) alongside a phase portrait showing the limit cycle.
+
 Think of it as **three friends who can never all be happy at once**. When $A$ is high, it represses $B$, so $B$ is low. But with $B$ low, $C$ is free to rise. When $C$ gets high enough, it represses $A$, which releases $B$, and the cycle continues. The system chases its own tail forever.
 
 > *Here is the deep principle: negative feedback loops arranged in odd-numbered rings can generate oscillations. Two mutual repressors give a switch (even number = stable). Three in a ring give a clock (odd number = unstable oscillations). This same principle underlies circadian clocks and cell cycle oscillators across all of life.*
@@ -92,9 +98,7 @@ Sustained oscillations require:
 - Well-matched protein and mRNA lifetimes.
 - Strong repression ($\alpha \gg \alpha_0$).
 
-[[simulation lotka-volterra]]
-
-> **Try this**: Increase the Hill coefficient $n$ and watch the oscillations become sharper and more sustained. With $n = 1$, the system may settle to a fixed point. With $n = 4$, you should see clear oscillatory behavior. Also try making the three genes asymmetric (different degradation rates) — do the oscillations survive?
+> **Try this**: Use the steady-state regulation simulation above. Increase the Hill coefficient $n$ and watch the oscillations become sharper and more sustained. With $n = 1$, the system may settle to a fixed point. With $n = 4$, you should see clear oscillatory behavior.
 
 ## Biological examples
 
@@ -104,7 +108,7 @@ Sustained oscillations require:
 
 ## Why does nature do it this way?
 
-A cell without feedback is a cell without memory, without the ability to make decisions, and without the ability to keep time. Feedback is what turns a collection of chemical reactions into a computing machine. Negative feedback provides stability and speed; positive feedback provides commitment and memory; oscillatory circuits provide timing. Together, these are the fundamental building blocks of cellular logic.
+Strip away feedback and you strip away everything that makes a cell smart: memory, decision-making, and timekeeping. Feedback is what turns a collection of chemical reactions into a computing machine. Negative feedback provides stability and speed; positive feedback provides commitment and memory; oscillatory circuits provide timing. Together, these are the fundamental building blocks of cellular logic.
 
 ## Check your understanding
 

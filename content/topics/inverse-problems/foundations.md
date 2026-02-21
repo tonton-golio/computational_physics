@@ -1,8 +1,12 @@
 # Introduction to Inverse Problems
 
-You drop a stone into a pond, and ripples spread outward. That's a **forward problem** — given the cause, predict the effect. Easy enough.
+**Question:** You record surface displacements after an earthquake. Can you uniquely determine how deep the fault is and how much it slipped?
 
-Now imagine you're standing at the edge of the pond and all you see are ripples. Can you figure out where the stone landed? *That's* an inverse problem. You observe effects and try to work backwards to the cause. And here's the thing: it's almost always harder than you'd expect.
+**Answer in advance:** No. Many different fault geometries produce almost identical surface movements.
+
+This is the hallmark of an *inverse problem*. The forward problem (given the fault, predict the surface) is easy and unique. The inverse problem is hard, non-unique, and unstable. Welcome to the club.
+
+You drop a stone into a pond, and ripples spread outward. That's a **forward problem** — given the cause, predict the effect. Easy enough. Now imagine you're standing at the edge of the pond and all you see are ripples. Can you figure out where the stone landed? *That's* an inverse problem. You observe effects and try to work backwards to the cause.
 
 $$
 \mathbf{d} = g(\mathbf{m})
@@ -90,11 +94,11 @@ We record the pressure $p(x_n, t)$ at sensors and try to infer the material prop
 
 ## The Road Ahead
 
-The central challenge is clear: inverse problems are ill-posed, and naive inversion will betray you. But there's good news. Over the next several lessons, we'll build a toolkit that tames these problems:
+The central challenge is clear: inverse problems are ill-posed, and naive inversion will betray you. But there's good news. Over the next seven lessons, we'll build a toolkit that tames these problems:
 
 - [Regularization — The First Rescue](./regularization): how to penalize wildness and stabilize inversion
+- [Bayesian Inversion](./bayesian-inversion): the probabilistic viewpoint — regularization is a prior in disguise
 - [Iterative Methods and Large-Scale Tricks](./tikhonov): when the problem is too big for a formula
-- [Bayesian Inversion](./bayesian-inversion): the probabilistic viewpoint — turning beliefs and data into honest answers
 - [Linear Tomography](./linear-tomography): a complete inversion workflow from rays to images
 - [Monte Carlo Methods](./monte-carlo-methods): exploring the full space of plausible models
 - [Geophysical Inversion Examples](./geophysical-inversion): fault and glacier case studies with real uncertainty
@@ -106,4 +110,4 @@ By the time we finish, you will be able to look at any inverse problem and say, 
 
 ## Further Reading
 
-If you want to go deeper right away, Tarantola's *Inverse Problem Theory* is the gold standard — he thinks the way we do. Aster, Borchers & Thurber's *Parameter Estimation and Inverse Problems* is excellent for the linear algebra foundations. But honestly, work through the demos first. The intuition matters more than the theorems at this stage.
+Tarantola's *Inverse Problem Theory* is the gold standard. Aster, Borchers & Thurber is excellent for the linear algebra foundations. But work through the demos first — the intuition matters more than the theorems at this stage.

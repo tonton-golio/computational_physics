@@ -34,7 +34,10 @@ Before full inversion, let's build intuition. Suppose you want to estimate the v
 
 [[simulation sphere-in-cube-mc]]
 
-Watch the estimate converge as you throw more darts. It's noisy at first, then settles down. That $1/\sqrt{N}$ convergence rate means you need 100 times more samples to get 10 times more accuracy. Not great — but it works in *any* number of dimensions, which is more than you can say for most methods.
+> **What to look for:**
+> - Watch the estimate converge — noisy at first, then settling down
+> - Increase the dimension and see how the sphere's volume fraction collapses (the curse of dimensionality in action)
+> - Notice the $1/\sqrt{N}$ convergence: 100× more samples for 10× more accuracy
 
 [[simulation monte-carlo-integration]]
 
@@ -77,7 +80,9 @@ $$
 4. If accepted, move to $\mathbf{m}_{\text{new}}$. If rejected, stay put. Either way, record the current position.
 5. Repeat. Many, many times.
 
-The beautiful thing: if the new model is *more* probable, you always accept. If it's *less* probable, you sometimes accept anyway — and the probability of accepting is exactly the ratio of the densities. This is what keeps you from getting trapped in local optima. That occasional uphill step? It's what lets the chain explore the full posterior, not just the nearest peak.
+Imagine the posterior probability landscape as a hilly terrain. The Metropolis walker always prefers to walk uphill (better fit). But occasionally it takes a small downhill step — with probability exactly equal to the ratio of probabilities. That tiny chance of going downhill is what lets the walker escape local valleys and explore the entire mountain range.
+
+The beautiful thing: if the new model is *more* probable, you always accept. If it's *less* probable, you sometimes accept anyway — and the probability of accepting is exactly the ratio of the densities. This is what keeps you from getting trapped in local optima.
 
 After enough steps, the chain "forgets" where it started and its samples are drawn from the true posterior. The histogram of visited models *is* the posterior distribution.
 
@@ -107,4 +112,4 @@ For applications of these methods to real geophysical problems, see [Geophysical
 
 ## Further Reading
 
-MacKay's *Information Theory, Inference, and Learning Algorithms* has a wonderfully clear treatment of MCMC. Mosegaard & Tarantola's paper on Monte Carlo methods in geophysics is a classic. For modern approaches, look at Betancourt's introduction to Hamiltonian Monte Carlo. But start with the simulations — throw some darts, run a chain, and watch the posterior come alive.
+MacKay's *Information Theory, Inference, and Learning Algorithms* has a wonderfully clear treatment of MCMC. Mosegaard & Tarantola's paper on Monte Carlo methods in geophysics is a classic.

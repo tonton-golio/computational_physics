@@ -1,18 +1,4 @@
-type MDPSimulationParams = {
-  costPerUnfilled: number;
-  setupCost: number;
-  maxUnfilled: number;
-  alpha: number;
-  timeHorizon: number;
-};
-
-type MDPSimulationResult = {
-  probFills: number[];
-  avgCosts: number[];
-  minCosts: number[];
-  maxCosts: number[];
-  optIdx: number;
-};
+import type { MDPSimulationParams, MDPSimulationResult } from "../../shared/types/simulation";
 
 function mulberry32(a: number) {
   return function rng() {

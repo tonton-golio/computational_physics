@@ -26,33 +26,6 @@ We focus on simple systems — often bacterial — but the principles apply broa
 - Fixed-point analysis and bifurcation diagrams for feedback circuits.
 - Resource allocation models for bacterial growth.
 
-## Prerequisites
-
-- Basic calculus (derivatives and integrals).
-- Introductory probability and statistics.
-- Familiarity with basic molecular biology (DNA, RNA, protein).
-- No advanced mathematics is required; differential equations are introduced from first principles.
-
-## Learning trajectory
-
-The course is organized to build your intuition layer by layer, from molecules to systems:
-
-1. **Differential equations** — The language of change. Production, degradation, and the steady state that every living system finds. We start with the bathtub and end with the exponential — the two shapes that run all of biology.
-2. **Gene expression noise** — Now watch what happens when the world is noisy! Intrinsic and extrinsic fluctuations, the Fano factor, the Gillespie algorithm, and why noise is not a nuisance but a survival strategy.
-3. **Mutational analysis** — Another flavor of randomness: the statistics of rare events. Binomial and Poisson distributions, the astonishing fidelity of DNA replication, and the Luria-Delbruck jackpot that proved mutations are random.
-4. **Transcription and translation** — Applying the bathtub equation to the central dogma: mRNA and protein as two coupled timescales, and why the cell builds its own low-pass filter.
-5. **Transcriptional regulation** — The Hill function: how cooperative binding turns a gentle dose-response curve into an all-or-nothing switch. This is the mathematical heart of biological decision-making.
-6. **Feedback loops** — Switches, oscillators, and memory. Negative feedback for homeostasis, positive feedback for commitment, and the repressilator that showed you can build a clock from scratch.
-7. **Signal transduction** — How a bacterium reads its mail: chemotaxis, adaptation, morphogen gradients, and the Notch-Delta system that paints patterns across tissues.
-8. **Gene regulatory networks** — The Lego bricks of regulation: motifs with personalities, feed-forward loops that filter noise, and how evolution wires circuits from a small toolkit.
-9. **Bacterial growth** — The grand finale: growth laws, ribosome allocation, ppGpp, and how a single cell turns physics into life.
-
-## Recommended reading
-
-- Phillips et al., *Physical Biology of the Cell*.
-- Alon, *An Introduction to Systems Biology*.
-- Weekly scientific articles from the quantitative biology literature.
-
 ## Cast of characters
 
 You will meet these molecules and systems throughout the course. Think of them as the recurring cast of a story — each one has a personality and a job:
@@ -95,6 +68,8 @@ When you get lost in the symbols, come back here:
 | ppGpp | The factory alarm bell. When raw materials run short, it rings and the ribosome factories slow down. |
 | Feed-forward loop | A delay timer. The signal must persist long enough to pass through two paths before the gene turns on. |
 | Ribosome allocation ($\phi_R$) | Deciding what fraction of your budget to spend on building more factories versus running the ones you have. |
+
+> **Figure: Course concept map.** A one-page diagram showing the flow of ideas through the course: bathtub equation $\to$ two timescales $\to$ probability & mutations $\to$ noise $\to$ Hill function $\to$ feedback loops $\to$ signals $\to$ network motifs $\to$ growth physiology. Arrows show dependencies between concepts.
 
 ## What did we just build?
 

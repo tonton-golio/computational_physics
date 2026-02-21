@@ -10,6 +10,8 @@ Imagine tuning a radio in a noisy room. The raw signal from the antenna jitters 
 
 This two-timescale structure is not a bug — it is a feature. It means protein levels are naturally buffered against rapid noise in transcription. Nature builds its own low-pass filter.
 
+> **Figure: Two-timescale response.** Dual-axis time course after a transcription step-on event: mRNA (fast rise and decay, shown on the left axis) and protein (slow ramp, shown on the right axis). Caption: "mRNA is jittery — the protein is a natural low-pass filter."
+
 ## The equations
 
 For **transcription**, mRNA is produced at rate $k_\mathrm{m}$ and degraded at rate $\Gamma_\mathrm{m}$:
@@ -82,4 +84,4 @@ In *E. coli*, a typical mRNA has a half-life of about 3 minutes, and a typical p
 
 ## What comes next
 
-So far we have treated the transcription rate as a fixed number — the gene is always on. But real genes have a knob. A repressor protein can sit on the promoter and shut it down; an activator can recruit the transcription machinery and crank it up. In the next lesson, we derive the mathematical function that describes this control — the **Hill function** — and you will see how nature turns a gentle dimmer into a sharp on-off switch.
+We now have the deterministic machinery: production, degradation, and the two-timescale coupling of mRNA and protein. But every one of these molecular events — polymerase finding the promoter, ribosome latching onto mRNA — is fundamentally random. In the next lesson, we confront the statistics of rare events head-on, starting with DNA replication itself. How does the polymerase achieve an error rate of one in a billion? And what does the distribution of mutations look like across a population? The probability tools we build there — binomial and Poisson distributions — will become the language we use to understand noise in gene expression.

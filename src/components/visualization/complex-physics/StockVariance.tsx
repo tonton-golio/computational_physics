@@ -1,11 +1,8 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
-import dynamic from 'next/dynamic';
+import { CanvasChart } from '@/components/ui/canvas-chart';
 import { Slider } from '@/components/ui/slider';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
-
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
 const STOCK_PRESETS: Record<string, { drift: number; vol: number }> = {
   GOOGL: { drift: 0.0006, vol: 0.018 },
@@ -61,7 +58,6 @@ export function StockVariance() {
   const [length, setLength] = useState(600);
   const [noiseScale, setNoiseScale] = useState(1);
   const [rerun, setRerun] = useState(0);
-  const { mergeLayout } = usePlotlyTheme();
 
   const { prices, varData } = useMemo(() => {
     const rand = mulberry32((length * 31 + Math.floor(noiseScale * 100) * 37 + rerun * 101 + ticker.charCodeAt(0) * 97) >>> 0);
@@ -97,28 +93,26 @@ export function StockVariance() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Plot
+        <CanvasChart
           data={[{ y: prices, type: 'scatter', mode: 'lines', line: { color: '#3b82f6', width: 1.5 } }]}
-          layout={mergeLayout({
+          layout={{
             title: { text: `${ticker} Simulated Closing Price`, font: { size: 13 } },
             xaxis: { title: { text: 'Time index' } },
             yaxis: { title: { text: 'Price' } },
             showlegend: false,
             margin: { t: 40, r: 20, b: 50, l: 60 },
-          })}
-          config={{ responsive: true, displayModeBar: false }}
+          }}
           style={{ width: '100%', height: 320 }}
         />
-        <Plot
+        <CanvasChart
           data={[{ x: varData.lags, y: varData.variances, type: 'scatter', mode: 'lines+markers', line: { color: '#34d399', width: 2 }, marker: { size: 5 } }]}
-          layout={mergeLayout({
+          layout={{
             title: { text: 'var(tau) of log-price increments', font: { size: 13 } },
             xaxis: { title: { text: 'tau' } },
             yaxis: { title: { text: 'var(tau)' } },
             showlegend: false,
             margin: { t: 40, r: 20, b: 50, l: 60 },
-          })}
-          config={{ responsive: true, displayModeBar: false }}
+          }}
           style={{ width: '100%', height: 320 }}
         />
       </div>

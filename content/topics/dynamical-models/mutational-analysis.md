@@ -2,7 +2,7 @@
 
 ## Where we are headed
 
-Last time we saw that gene expression is noisy — molecules appear and disappear randomly, and the statistics of those random events (Poisson, Fano factor) tell us something deep about how cells work. Today we zoom in on another source of randomness: **mutations**. DNA polymerase is one of the most astonishing proofreaders in nature, making fewer than one error per billion bases copied. How does it achieve that? And when errors *do* slip through, what does the statistics of their appearance look like? The probability distributions we develop here — binomial and Poisson — are the same ones that underpin everything we said about noise, so this lesson ties directly to what we just learned.
+In the last two lessons you learned to write differential equations for production and degradation, and you saw how mRNA and protein form a coupled two-timescale system. Those equations describe the average beautifully — but life is not average. Every molecular event is random, and randomness shows up first and most dramatically in DNA replication. Today we zoom in on **mutations**: DNA polymerase is one of the most astonishing proofreaders in nature, making fewer than one error per billion bases copied. How does it achieve that? And when errors *do* slip through, what does the statistics of their appearance look like? The probability distributions we develop here — **binomial** and **Poisson** — will become our toolkit for understanding randomness throughout this course, from rare mutational events to the noise in gene expression that we tackle in the very next lesson.
 
 ## What causes mutations?
 
@@ -93,6 +93,10 @@ If mutations arise *before* exposure (spontaneously, during normal growth), then
 
 Luria and Delbruck found the jackpot pattern — the variance was far larger than the mean, ruling out the directed-mutation hypothesis. Mutations are random, spontaneous events. This experiment won them the Nobel Prize and established one of the foundations of molecular biology.
 
+> **Figure: Jackpot cultures.** Bar graph of 10 independent cultures: nine bars showing 0--5 colonies, one bar showing ~200. Side-by-side with a Poisson simulation for the same mean, showing the dramatically different variance.
+
+> **Figure: Lineage tree.** A branching lineage tree: an early mutation (large red clone filling most of the $10^9$ cells) versus a late mutation (tiny clone of a few cells). Illustrates why variance is so much larger than the mean.
+
 > *The jackpot distribution (now called the Luria-Delbruck distribution) has a variance much larger than its mean — a Fano factor far greater than 1. Sound familiar? The same statistical fingerprint that tells us about transcriptional bursting in the noise lesson.*
 
 ## Check your understanding
@@ -113,4 +117,4 @@ A bacterial gene is 1,200 bases long. The mutation rate is $10^{-9}$ per base pe
 
 ## What comes next
 
-We now have the stochastic foundations: noise in gene expression and the statistics of rare mutational events. It is time to go back to the deterministic world and apply our bathtub equation to the two-step process at the heart of every cell — transcription and translation. You will see how mRNA and protein form a coupled system with two very different timescales, and why that difference is not a bug but a feature.
+You now own the Poisson distribution, the Fano factor, and the concept of "rare events in many trials." These are exactly the tools we need for the next lesson, where we discover that the noise in gene expression is not a nuisance but a feature. Genetically identical cells can have wildly different protein levels — and the same Poisson statistics and Fano factor you just learned will tell us whether that noise comes from random molecular firing or from cell-to-cell variation in shared resources. Get ready: the steady state you learned to love in lesson one is about to become a lie.

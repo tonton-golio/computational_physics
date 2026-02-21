@@ -19,12 +19,10 @@ import MonteCarloConvergence from './online-reinforcement/MonteCarloConvergence'
 import SarsaVsQLearning from './online-reinforcement/SarsaVsQLearning';
 import DQNStability from './online-reinforcement/DQNStability';
 import AverageRewardVsDiscounted from './online-reinforcement/AverageRewardVsDiscounted';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-interface SimulationProps {
-  id: string;
-}
 
-export const ONLINE_REINFORCEMENT_SIMULATIONS: Record<string, React.ComponentType<SimulationProps>> = {
+export const ONLINE_REINFORCEMENT_SIMULATIONS: Record<string, React.ComponentType<SimulationComponentProps>> = {
   'concentration-bounds': ConcentrationBounds,
   'bernoulli-trials': BernoulliTrials,
   'multi-armed-bandit': MultiArmedBandit,
@@ -43,4 +41,38 @@ export const ONLINE_REINFORCEMENT_SIMULATIONS: Record<string, React.ComponentTyp
   'sarsa-vs-qlearning': SarsaVsQLearning,
   'dqn-stability': DQNStability,
   'average-reward-vs-discounted': AverageRewardVsDiscounted,
+};
+
+// ============ CO-LOCATED DESCRIPTIONS ============
+
+export const ORL_DESCRIPTIONS: Record<string, string> = {
+  "concentration-bounds": "Concentration inequalities — Hoeffding, Bernstein, and other bounds on how random variables deviate from their mean.",
+  "bernoulli-trials": "Bernoulli trials — repeated independent experiments with two outcomes, illustrating the law of large numbers.",
+  "multi-armed-bandit": "Multi-armed bandit — balancing exploration and exploitation across slot machines with unknown reward distributions.",
+  "mdp-simulation": "Markov Decision Process — an agent navigating states with probabilistic transitions and rewards.",
+  "activation-functions": "Activation functions — visualizing nonlinear transformations used in neural network layers.",
+  "stochastic-approximation": "Stochastic approximation — iterative algorithms converging to a fixed point using noisy gradient estimates.",
+  "cartpole-learning-curves": "CartPole learning curves — tracking reward improvement as an RL agent learns to balance a pole.",
+  "regret-growth-comparison": "Regret growth comparison — how cumulative regret scales over time for different bandit algorithms.",
+  "ftl-instability": "Follow-the-Leader instability — demonstrating why greedy strategies fail in adversarial online settings.",
+  "hedge-weights-regret": "Hedge algorithm — multiplicative weight updates achieving logarithmic regret in adversarial prediction.",
+  "bandit-regret-comparison": "Bandit regret comparison — UCB, Thompson Sampling, and epsilon-greedy performance side-by-side.",
+  "contextual-bandit-exp4": "Contextual bandit (EXP4) — extending multi-armed bandits with side information for personalized decisions.",
+  "gridworld-mdp": "Gridworld MDP — a grid environment where an agent learns optimal navigation through value iteration or policy iteration.",
+  "dp-convergence": "Dynamic programming convergence — watching value iteration converge to the optimal value function.",
+  "monte-carlo-convergence": "Monte Carlo convergence — estimating value functions from sampled episode returns.",
+  "sarsa-vs-qlearning": "SARSA vs. Q-Learning — comparing on-policy and off-policy temporal-difference methods.",
+  "dqn-stability": "Deep Q-Network stability — how experience replay and target networks stabilize deep RL training.",
+  "average-reward-vs-discounted": "Average reward vs. discounted — comparing two objective formulations for continuing RL tasks.",
+};
+
+export const ORL_FIGURES: Record<string, { src: string; caption: string }> = {
+  'orl-cartpole-learning-image': {
+    src: 'https://upload.wikimedia.org/wikipedia/commons/0/06/Cart-pole.svg',
+    caption: 'CartPole control setup used for reinforcement learning experiments.',
+  },
+  'mdp-agent-environment-loop': {
+    src: 'https://www.researchgate.net/publication/350130760/figure/fig2/AS:1002586224209929@1616046591580/The-agent-environment-interaction-in-MDP.png',
+    caption: 'Agent-environment interaction loop for Markov decision processes.',
+  },
 };

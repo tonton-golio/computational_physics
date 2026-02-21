@@ -3,9 +3,10 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "katex/dist/katex.min.css";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
-import { ConditionalFooter } from "@/components/layout/ConditionalFooter";
+
 import { WebVitalsReporter } from "@/components/performance/WebVitalsReporter";
 import { Analytics } from "@vercel/analytics/next";
+import { SuggestionBox } from "@/components/layout/SuggestionBox";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -45,8 +46,9 @@ export default function RootLayout({
           <main className="flex-1">
             {children}
           </main>
-          <ConditionalFooter />
+
         </div>
+        <SuggestionBox />
         <Analytics />
       </body>
     </html>

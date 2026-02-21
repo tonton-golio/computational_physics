@@ -1,15 +1,11 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
 import { Slider } from '@/components/ui/slider';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { CanvasChart } from '@/components/ui/canvas-chart';
+import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
-
-interface SimulationProps {
-  id: string;
-}
 
 /**
  * Build the G matrix for linear tomography.
@@ -168,14 +164,13 @@ function solveTikhonov(G: number[][], dObs: number[], epsilon: number): number[]
   return m;
 }
 
-export default function LinearTomography({ id }: SimulationProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function LinearTomography({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
   const [N, setN] = useState(12);
   const [top, setTop] = useState(4);
   const [bot, setBot] = useState(8);
   const [left, setLeft] = useState(3);
   const [right, setRight] = useState(7);
   const [nEps, setNEps] = useState(10);
-  const { mergeLayout } = usePlotlyTheme();
 
   const result = useMemo(() => {
     const clampedTop = Math.min(top, bot);
@@ -300,58 +295,55 @@ export default function LinearTomography({ id }: SimulationProps) { // eslint-di
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
-        <Plot
+        <CanvasHeatmap
           data={[{
             z: result.mTrueGrid,
-            type: 'heatmap' as const,
+            type: 'heatmap',
             colorscale: 'Viridis',
           }]}
-          layout={mergeLayout({
+          layout={{
             title: { text: 'True Model m' },
             xaxis: { title: { text: 'x' } },
             yaxis: { title: { text: 'depth' }, autorange: 'reversed' as const },
             height: 300,
             margin: { t: 40, b: 50, l: 50, r: 20 },
-          })}
-          config={{ displayModeBar: false }}
+          }}
           style={{ width: '100%' }}
         />
-        <Plot
+        <CanvasHeatmap
           data={[{
             z: result.gSumGrid,
-            type: 'heatmap' as const,
+            type: 'heatmap',
             colorscale: 'Greys',
           }]}
-          layout={mergeLayout({
+          layout={{
             title: { text: 'Ray Coverage (sum of |G|)' },
             xaxis: { title: { text: 'x' } },
             yaxis: { title: { text: 'depth' }, autorange: 'reversed' as const },
             height: 300,
             margin: { t: 40, b: 50, l: 50, r: 20 },
-          })}
-          config={{ displayModeBar: false }}
+          }}
           style={{ width: '100%' }}
         />
-        <Plot
+        <CanvasHeatmap
           data={[{
             z: result.mOptGrid,
-            type: 'heatmap' as const,
+            type: 'heatmap',
             colorscale: 'Viridis',
           }]}
-          layout={mergeLayout({
+          layout={{
             title: { text: `Predicted m (eps=${result.epsOpt.toExponential(2)})` },
             xaxis: { title: { text: 'x' } },
             yaxis: { title: { text: 'depth' }, autorange: 'reversed' as const },
             height: 300,
             margin: { t: 40, b: 50, l: 50, r: 20 },
-          })}
-          config={{ displayModeBar: false }}
+          }}
           style={{ width: '100%' }}
         />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Plot
+        <CanvasChart
           data={[
             {
               x: Array.from({ length: result.dLeft.length }, (_, i) => i),
@@ -368,18 +360,17 @@ export default function LinearTomography({ id }: SimulationProps) { // eslint-di
               marker: { color: 'rgba(251,146,60,0.7)' },
             },
           ]}
-          layout={mergeLayout({
+          layout={{
             title: { text: 'Observed Seismograph Data' },
             xaxis: { title: { text: 'Detector index' } },
             yaxis: { title: { text: 'Time anomaly' } },
             barmode: 'group',
             height: 300,
             margin: { t: 40, b: 50, l: 50, r: 20 },
-          })}
-          config={{ displayModeBar: false }}
+          }}
           style={{ width: '100%' }}
         />
-        <Plot
+        <CanvasChart
           data={[{
             x: result.epsValues,
             y: result.residuals,
@@ -389,7 +380,7 @@ export default function LinearTomography({ id }: SimulationProps) { // eslint-di
             marker: { color: '#f472b6', size: 5 },
             name: 'Residual',
           }]}
-          layout={mergeLayout({
+          layout={{
             title: { text: 'Residual vs Epsilon' },
             xaxis: { title: { text: 'epsilon' }, type: 'log' },
             yaxis: { title: { text: '|d_obs - G*m| - |noise|' }, type: 'log' },
@@ -401,8 +392,7 @@ export default function LinearTomography({ id }: SimulationProps) { // eslint-di
               y0: 0, y1: 1, yref: 'paper',
               line: { color: '#22d3ee', dash: 'dash', width: 2 },
             }],
-          })}
-          config={{ displayModeBar: false }}
+          }}
           style={{ width: '100%' }}
         />
       </div>

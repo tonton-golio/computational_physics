@@ -1,15 +1,10 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
-import dynamic from 'next/dynamic';
 import { Slider } from '@/components/ui/slider';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { CanvasChart } from '@/components/ui/canvas-chart';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
-
-interface SimulationProps {
-  id: string;
-}
 
 function mulberry32(a: number) {
   return function () {
@@ -20,12 +15,11 @@ function mulberry32(a: number) {
   };
 }
 
-export default function StochasticApproximation({ id }: SimulationProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function StochasticApproximation({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
   const [steps, setSteps] = useState(300);
   const [alpha, setAlpha] = useState(0.03);
   const [noiseScale, setNoiseScale] = useState(0.1);
   const [seed, setSeed] = useState(7);
-  const { mergeLayout } = usePlotlyTheme();
 
   const { xs, ys } = useMemo(() => {
     const rng = mulberry32(seed);
@@ -60,19 +54,18 @@ export default function StochasticApproximation({ id }: SimulationProps) { // es
         </div>
         <button onClick={() => setSeed((s) => s + 1)} className="rounded bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white text-sm px-3 py-2">Re-sample</button>
       </div>
-      <Plot
+      <CanvasChart
         data={[
           { x: Array.from({ length: xs.length }, (_, i) => i), y: xs, type: 'scatter', mode: 'lines', name: 'x_k', line: { color: '#60a5fa', width: 2 } },
           { x: Array.from({ length: ys.length }, (_, i) => i), y: ys.map((v) => Math.log10(v + 1e-6)), type: 'scatter', mode: 'lines', name: 'log10 residual', line: { color: '#facc15', width: 2 } },
         ]}
-        layout={mergeLayout({
+        layout={{
           title: { text: 'Convergence behavior under noisy updates' },
           xaxis: { title: { text: 'iteration k' } },
           yaxis: { title: { text: 'state / log residual' } },
           height: 420,
           margin: { t: 40, b: 60, l: 60, r: 60 },
-        })}
-        config={{ displayModeBar: false }}
+        }}
         style={{ width: '100%' }}
       />
     </div>

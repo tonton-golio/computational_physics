@@ -50,6 +50,8 @@ Here is a practical decision guide:
 - **You need a fast nonlinear embedding that scales** — use UMAP. It handles large datasets well and often gives clearer global structure than t-SNE.
 - **PCA underperforms and you need a learnable, nonlinear embedding** — use autoencoders. Especially valuable when you want to train the embedding end-to-end with a downstream model.
 
+[[figure aml-dimred-comparison]]
+
 ## Interactive simulations
 
 [[simulation aml-pca-correlated-data]]
@@ -68,5 +70,5 @@ Here is a practical decision guide:
 ## Check your understanding
 
 - Can you explain PCA to a friend using the "photographs of a 3D object" analogy?
-- What is the one picture in your head that captures why t-SNE cluster distances are misleading?
+- Can you draw the one diagram that explains why t-SNE cluster distances are misleading?
 - If you had a new dataset, how would you decide which dimensionality reduction method to try first?

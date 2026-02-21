@@ -1,15 +1,10 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
-import dynamic from 'next/dynamic';
 import { Slider } from '@/components/ui/slider';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { CanvasChart } from '@/components/ui/canvas-chart';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
-
-interface SimulationProps {
-  id: string;
-}
 
 function smooth(values: number[], window: number): number[] {
   return values.map((_, i) => {
@@ -19,10 +14,9 @@ function smooth(values: number[], window: number): number[] {
   });
 }
 
-export default function CartPoleLearningCurves({ id }: SimulationProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function CartPoleLearningCurves({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
   const [episodes, setEpisodes] = useState(250);
   const [noise, setNoise] = useState(20);
-  const { mergeLayout } = usePlotlyTheme();
 
   const { raw, avg } = useMemo(() => {
     const rawDurations = Array.from({ length: episodes }, (_, ep) => {
@@ -52,19 +46,18 @@ export default function CartPoleLearningCurves({ id }: SimulationProps) { // esl
           <Slider value={[noise]} onValueChange={([v]) => setNoise(v)} min={0} max={60} step={1} />
         </div>
       </div>
-      <Plot
+      <CanvasChart
         data={[
           { x: Array.from({ length: raw.length }, (_, i) => i + 1), y: raw, type: 'scatter', mode: 'lines', name: 'Episode duration', line: { color: '#64748b', width: 1 } },
           { x: Array.from({ length: avg.length }, (_, i) => i + 1), y: avg, type: 'scatter', mode: 'lines', name: '20-episode moving average', line: { color: '#4ade80', width: 3 } },
         ]}
-        layout={mergeLayout({
+        layout={{
           title: { text: 'Training curve (synthetic CartPole-like progression)' },
           xaxis: { title: { text: 'episode' } },
           yaxis: { title: { text: 'duration (steps)' }, range: [0, 520] },
           height: 420,
           margin: { t: 40, b: 60, l: 60, r: 20 },
-        })}
-        config={{ displayModeBar: false }}
+        }}
         style={{ width: '100%' }}
       />
     </div>

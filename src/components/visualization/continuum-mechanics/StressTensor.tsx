@@ -1,21 +1,15 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
 import { Slider } from '@/components/ui/slider';
+import { CanvasChart } from '@/components/ui/canvas-chart';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
-interface SimulationProps {
-  id: string;
-}
-
-export default function StressTensor({ id }: SimulationProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function StressTensor({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
   const [sigmaXX, setSigmaXX] = useState(100); // MPa
   const [sigmaYY, setSigmaYY] = useState(-50);
   const [tauXY, setTauXY] = useState(40);
-  const { mergeLayout } = usePlotlyTheme();
 
   const mohrData = useMemo(() => {
     const sx = sigmaXX;
@@ -169,7 +163,7 @@ export default function StressTensor({ id }: SimulationProps) { // eslint-disabl
           marker: { color: '#ec4899', size: 8, symbol: 'triangle-up' },
         },
       ],
-      layout: mergeLayout({
+      layout: ({
         title: { text: "Mohr's Circle for 2D Stress State" },
         xaxis: {
           title: { text: 'Normal Stress \u03c3 [MPa]' },
@@ -192,7 +186,7 @@ export default function StressTensor({ id }: SimulationProps) { // eslint-disabl
         margin: { t: 50, b: 60, l: 70, r: 180 },
       }),
     };
-  }, [mohrData, mergeLayout]);
+  }, [mohrData]);
 
   return (
     <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
@@ -275,11 +269,10 @@ export default function StressTensor({ id }: SimulationProps) { // eslint-disabl
         </div>
       </div>
 
-      <Plot
+      <CanvasChart
         data={plotData.data}
         layout={plotData.layout}
-        config={{ displayModeBar: false, responsive: true }}
-        style={{ width: '100%' }}
+        style={{ width: '100%', height: 550 }}
       />
 
       <div className="mt-4 text-sm text-[var(--text-muted)] space-y-1">

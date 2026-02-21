@@ -1,4 +1,4 @@
-import { TOPICS } from "@/lib/content";
+import { TOPICS } from "@/lib/topic-config";
 
 export interface TopicRouteConfig {
   routeSlug: string;
@@ -14,7 +14,7 @@ export const TOPIC_ROUTES: TopicRouteConfig[] = [
   { routeSlug: "continuum-mechanics", contentId: "continuum-mechanics" },
   { routeSlug: "inverse-problems", contentId: "inverse-problems" },
   { routeSlug: "quantum-optics", contentId: "quantum-optics" },
-  { routeSlug: "online-reinforcement", contentId: "online-reinforcement-learning" },
+  { routeSlug: "online-reinforcement-learning", contentId: "online-reinforcement-learning" },
   { routeSlug: "advanced-deep-learning", contentId: "advanced-deep-learning" },
 ];
 

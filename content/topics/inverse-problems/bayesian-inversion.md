@@ -22,7 +22,7 @@ $$
 \sigma(\mathbf{m}) = \rho_m(\mathbf{m})\,L(\mathbf{m}), \qquad L(\mathbf{m}) = \rho_d(g(\mathbf{m}))
 $$
 
-where the prior $\rho_m$ is a zero-mean Gaussian with covariance proportional to $\epsilon^{-2}\mathbf{I}$, and the likelihood $L$ assumes Gaussian noise on the data.
+where the prior $\rho_m$ is a zero-mean Gaussian with covariance proportional to $\epsilon^{-2}\mathbf{I}$, and the likelihood $L$ assumes Gaussian noise on the data. (Important caveat: this equivalence holds specifically under Gaussian noise and a quadratic prior. Non-Gaussian noise or non-quadratic penalties lead to different posterior shapes — but the core insight that regularization encodes prior belief remains universal.)
 
 What does that mean in plain language? The prior says: "I expect the model parameters to be small — close to zero — and I'm about $1/\epsilon$ uncertain about each one." Large $\epsilon$ means a tight prior (you're very confident the model is small). Small $\epsilon$ means a loose prior (you're letting the data do the talking).
 
@@ -66,6 +66,8 @@ How much did the data actually narrow down the possibilities? That's something w
 
 This is exactly what [Monte Carlo methods](./monte-carlo-methods) give us: instead of finding one best answer, we generate thousands of plausible models, weighted by how well they explain the data. The spread of those models tells you what you know and what you don't.
 
+But before we sample — we need to scale up. When the model has millions of parameters, the Tikhonov formula is too expensive. [Iterative Methods](./tikhonov) shows how to find the MAP estimate without ever building the full matrix.
+
 ---
 
 ## Takeaway
@@ -76,4 +78,4 @@ The Bayesian viewpoint unifies regularization, uncertainty quantification, and m
 
 ## Further Reading
 
-Tarantola's *Inverse Problem Theory* develops the probabilistic viewpoint with real physical intuition. Kaipio & Somersalo's *Statistical and Computational Inverse Problems* is more mathematical but very thorough. Stuart's *Inverse Problems: A Bayesian Perspective* (Acta Numerica, 2010) is an excellent survey. But first, make sure the connection between $\epsilon$ and the prior variance has really sunk in — that insight will carry you through everything that follows.
+Tarantola's *Inverse Problem Theory* develops the probabilistic viewpoint with real physical intuition. Stuart's *Inverse Problems: A Bayesian Perspective* (Acta Numerica, 2010) is an excellent survey.

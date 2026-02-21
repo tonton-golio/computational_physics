@@ -1,13 +1,10 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
-import dynamic from 'next/dynamic';
 import { Slider } from '@/components/ui/slider';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { CanvasChart } from '@/components/ui/canvas-chart';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
-
-interface SimulationProps { id: string }
 
 function mulberry32(a: number) {
   return function () {
@@ -18,10 +15,9 @@ function mulberry32(a: number) {
   };
 }
 
-export default function MonteCarloConvergence({ id }: SimulationProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function MonteCarloConvergence({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
   const [episodes, setEpisodes] = useState(500);
   const [seed, setSeed] = useState(11);
-  const { mergeLayout } = usePlotlyTheme();
   const trueValue = 1.0;
 
   const estimates = useMemo(() => {
@@ -49,18 +45,17 @@ export default function MonteCarloConvergence({ id }: SimulationProps) { // esli
         </div>
         <button onClick={() => setSeed((s) => s + 1)} className="rounded bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white text-sm px-3 py-2">Re-sample trajectories</button>
       </div>
-      <Plot
+      <CanvasChart
         data={[
           { x, y: estimates, type: 'scatter', mode: 'lines', name: 'MC estimate', line: { color: '#60a5fa', width: 2 } },
           { x, y: truth, type: 'scatter', mode: 'lines', name: 'True value', line: { color: '#4ade80', width: 2, dash: 'dot' } },
         ]}
-        layout={mergeLayout({
+        layout={{
           title: { text: 'Law of large numbers in episodic returns' },
           xaxis: { title: { text: 'episode' } },
           yaxis: { title: { text: 'V(s) estimate' } },
           height: 420,
-        })}
-        config={{ displayModeBar: false }}
+        }}
         style={{ width: '100%' }}
       />
     </div>

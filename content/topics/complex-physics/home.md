@@ -40,35 +40,6 @@ By the end of this course, you will see these patterns everywhere. Nature reuses
 - Monte Carlo sampling and Markov chain methods.
 - Graph theory and network metrics.
 
-## Prerequisites
-
-- Probability and statistical reasoning.
-- Calculus and linear algebra.
-- Basic thermodynamics and classical mechanics.
-- Familiarity with Python for computational exercises.
-
-## Recommended reading
-
-- Thurner, Hanel, and Klimek, *Introduction to the Theory of Complex Systems*.
-- Sethna, *Statistical Mechanics: Entropy, Order Parameters, and Complexity*.
-- Newman, *Networks: An Introduction*.
-
-## Learning trajectory
-
-This module is organized from equilibrium foundations to complex emergent behavior:
-
-- **Statistical Mechanics** — Why does a room full of air molecules share energy so democratically? We start with the rules that govern huge numbers of particles.
-- **Metropolis Algorithm** — Let the computer do the hard work of exploring impossible-to-calculate probabilities.
-- **Phase Transitions** — The moment everything changes: how a magnet suddenly finds its direction.
-- **Mean-Field Results** — A beautifully simple (and sometimes wrong) theory where every spin feels the average of all the others.
-- **1D Ising & Transfer Matrix** — One dimension, one exact solution, and a clever matrix trick that makes it all work.
-- **Critical Phenomena** — The miracle of universality: why magnets, fluids, and gases all forget their differences at the critical point.
-- **Percolation and Fractals** — When random connections suddenly span the world, and the geometry turns out to be fractal.
-- **Self-Organized Criticality** — Sandpiles, avalanches, and systems that tune themselves to the edge without anyone turning the knob.
-- **Networks** — The rich get richer, power laws appear, and six degrees of separation connect us all.
-- **Agent-Based Models** — Dumb local rules, smart global behavior: flocking birds, traffic jams, and the Game of Life.
-- **Econophysics** — Stock markets crash like sandpiles, and the same mathematics describes both.
-
 ## Visual and Simulation Gallery
 
 [[figure complex-sandpile-image]]

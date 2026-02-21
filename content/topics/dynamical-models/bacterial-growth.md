@@ -72,6 +72,8 @@ $$
 
 > *The cell has a fixed budget. Every ribosome it makes is a metabolic enzyme it did not make, and vice versa. Growth physiology is fundamentally a problem of **resource allocation**.*
 
+> **Figure: Proteome pie charts.** Two pie charts side-by-side: slow growth (large housekeeping + metabolic slices, small ribosome slice) vs fast growth (ribosome slice roughly doubles, metabolic slice shrinks).
+
 ## The allocation dilemma
 
 Here is the dilemma the cell faces. Metabolic enzymes ($\phi_\mathrm{P}$) bring nutrients into the cell. Ribosomes ($\phi_\mathrm{R}$) convert those nutrients into new protein. For the cell to grow efficiently, **nutrient influx must match nutrient usage**. Too many metabolic enzymes and not enough ribosomes? Nutrients pile up but cannot be used. Too many ribosomes and not enough metabolic enzymes? Ribosomes sit idle with nothing to translate.
@@ -98,7 +100,9 @@ $$
 
 where in the last step we used the fact that the ribosome fraction $\phi_\mathrm{R}$ is proportional to $N_R^A / M$.
 
-> *This is a beautiful and testable prediction: the growth rate should be proportional to the ribosome fraction. Faster-growing cells should have more ribosomes. And indeed, this is exactly what experimentalists observe — it is one of the most robust quantitative relationships in all of microbiology.*
+> *This is one of the most beautiful quantitative laws in all of biology: the growth rate of a bacterium is directly proportional to the fraction of its protein that is ribosomes. Faster-growing cells are literally "more ribosome." Evolution has tuned the proteome allocation so that every extra ribosome is paid for by faster growth. And indeed, this is exactly what experimentalists observe — it is one of the most robust quantitative relationships in all of microbiology.*
+
+> **Figure: Growth-law plot.** Measured growth rate $\mu$ vs measured ribosome fraction $\phi_R$ (data points from literature), with a straight-line fit showing the linear relationship $\mu \propto \phi_R$.
 
 ## Why does nature do it this way?
 

@@ -18,13 +18,13 @@ Here's where we're going. Think of it as a subway map — each stop builds on th
 
 ```
  ╔══════════════╗     ╔═══════════════════╗     ╔════════════════════╗
- ║  1. WHY IT'S ║────▶║  2. REGULARIZATION ║────▶║  3. ITERATIVE       ║
- ║    HARD      ║     ║  The First Rescue  ║     ║  METHODS            ║
+ ║  1. WHY IT'S ║────▶║  2. REGULARIZATION ║────▶║  3. BAYESIAN       ║
+ ║    HARD      ║     ║  The First Rescue  ║     ║  INVERSION         ║
  ╚══════════════╝     ╚═══════════════════╝     ╚════════════════════╝
                                                           │
        ╔════════════════════╗     ╔══════════════════╗    │
-       ║  5. LINEAR         ║◀────║  4. BAYESIAN     ║◀───╯
-       ║  TOMOGRAPHY        ║     ║  INVERSION       ║
+       ║  5. LINEAR         ║◀────║  4. ITERATIVE    ║◀───╯
+       ║  TOMOGRAPHY        ║     ║  METHODS         ║
        ╚════════════════════╝     ╚══════════════════╝
                 │
                 ▼
@@ -34,20 +34,9 @@ Here's where we're going. Think of it as a subway map — each stop builds on th
  ╚══════════════════╝     ╚══════════════════╝     ╚═══════════════════╝
 ```
 
-**Ill-posed → Stabilize → Iterate → Probabilistic view → Full workflow → Explore the posterior → Real applications → How much did we really learn?**
+**Ill-posed → Stabilize → Probabilistic meaning → Scale up → Full workflow → Explore the posterior → Real applications → How much did we really learn?**
 
----
-
-## Learning Path
-
-1. **Why it's hard**: [Introduction to Inverse Problems](./foundations) — Hadamard, instability, and why naive inversion fails
-2. **The first rescue**: [Regularization — The First Rescue](./regularization) — penalizing wildness, the L-curve, finding the sweet spot
-3. **Scaling up**: [Iterative Methods and Large-Scale Tricks](./tikhonov) — when the formula is too expensive and you need to walk toward the answer
-4. **Thinking probabilistically**: [Bayesian Inversion](./bayesian-inversion) — regularization as prior belief, from point estimates to posteriors
-5. **A complete workflow**: [Linear Tomography](./linear-tomography) — from seismic rays to subsurface images
-6. **Exploring the posterior**: [Monte Carlo Methods](./monte-carlo-methods) — sampling when analysis fails
-7. **Real applications**: [Geophysical Inversion Examples](./geophysical-inversion) — faults, glaciers, and why the answer is always a distribution
-8. **The deep question**: [Information, Entropy, and Uncertainty](./information-entropy) — measuring how much the data actually taught us
+The key move: Bayesian inversion comes right after regularization. Once you see that the Tikhonov penalty *is* a Gaussian prior, everything else clicks — iterative methods become "how to find the MAP when the matrix is huge," and Monte Carlo becomes "how to explore beyond the MAP."
 
 ---
 
@@ -57,6 +46,7 @@ By the end of this module, you will be able to:
 
 - Formulate any inverse problem as parameter estimation from indirect measurements
 - Recognize ill-posedness and choose appropriate regularization
+- Explain *why* regularization works (it's a prior, not a trick)
 - Set up and solve linear tomographic inversions
 - Run MCMC to explore nonlinear posteriors
 - Quantify what the data can and cannot resolve
@@ -74,12 +64,3 @@ Each lesson includes hands-on simulations. Drag sliders, watch posteriors breath
 - Information theory: `entropy-demo`, `kl-divergence`
 
 Short theory bursts, then interactive exploration. That's the rhythm.
-
----
-
-## Prerequisites
-
-- Linear algebra: matrix operations, eigenvalues, least squares
-- Calculus: derivatives, integrals, Taylor series
-- Probability and statistics: distributions, Bayes' theorem, expectation
-- Programming in Python with NumPy

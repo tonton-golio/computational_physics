@@ -1,11 +1,8 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { CanvasChart } from '@/components/ui/canvas-chart';
 import { Slider } from '@/components/ui/slider';
-
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
 function runBetHedging(
   p: number,
@@ -44,7 +41,6 @@ export function BetHedging() {
   const [winMultiplier, setWinMultiplier] = useState(1.5);
   const [lossMultiplier, setLossMultiplier] = useState(0.5);
   const [seed, setSeed] = useState(0);
-  const { mergeLayout } = usePlotlyTheme();
 
   const numAgents = 5;
 
@@ -133,7 +129,7 @@ export function BetHedging() {
         Re-run
       </button>
 
-      <Plot
+      <CanvasChart
         data={results.map((capital, idx) => ({
           y: capital,
           type: 'scatter' as const,
@@ -141,14 +137,13 @@ export function BetHedging() {
           line: { color: colors[idx % colors.length], width: 1.5 },
           name: `Agent ${idx + 1}`,
         }))}
-        layout={mergeLayout({
+        layout={{
           title: { text: 'Bet Hedging: Capital Over Time', font: { size: 14 } },
           xaxis: { title: { text: 'Timestep' } },
           yaxis: { title: { text: 'Capital' }, type: 'log' },
           showlegend: true,
           margin: { t: 40, r: 20, b: 50, l: 60 },
-        })}
-        config={{ responsive: true, displayModeBar: false }}
+        }}
         style={{ width: '100%', height: 400 }}
       />
     </div>

@@ -2,7 +2,7 @@
 
 ## Where we are headed
 
-So far we have treated the transcription rate as a constant — the gene is either on or off, and we do not ask what controls it. But in a real cell, genes are regulated. A repressor protein sits on the promoter and blocks transcription; an activator protein recruits RNA polymerase and turns it on. Today we derive the mathematical function that describes this regulation — the **Hill function** — and you will see how nature turns a gentle, graded response into a sharp, switch-like one. This is one of the most important functions in all of quantitative biology.
+Over the last four lessons you have built the foundations: differential equations for production and degradation, the two-timescale coupling of mRNA and protein, probability distributions for rare events, and the noisy reality of gene expression. Through all of that, we treated the transcription rate as a constant — the gene is either on or off, and we did not ask what controls it. But in a real cell, genes are regulated. A repressor protein sits on the promoter and blocks transcription; an activator protein recruits RNA polymerase and turns it on. Today we derive the mathematical function that describes this regulation — the **Hill function** — and you will see how nature turns a gentle, graded response into a sharp, switch-like one. This is one of the most important functions in all of quantitative biology.
 
 ## The committee picture
 
@@ -44,11 +44,15 @@ $$
 
 ### The general Hill function
 
+Because each extra bound repressor multiplies the probability of the next one binding (cooperativity), the fraction bound becomes $[c_\mathrm{p}/K]^n / (1 + [c_\mathrm{p}/K]^n)$. The gene is active only when the promoter is *empty*, so transcription rate is maximal rate times $(1 - \text{fraction bound})$ — giving us the Hill repression function you see everywhere in biology.
+
 For a complex of $n$ molecules (Hill coefficient $n$), the pattern generalizes:
 
 $$
 P_\mathrm{free} = \frac{1}{1 + (c_\mathrm{p}/K)^n}.
 $$
+
+> **Figure: Hill function overlay.** Four Hill functions ($n = 1, 2, 4, 8$) plotted on the same axes. Shaded vertical bands show the 10--90% switching window narrowing dramatically with increasing $n$.
 
 Play with this in your head:
 - **$n = 1$**: a gentle, hyperbolic curve. The gene gradually turns off as repressor concentration increases.

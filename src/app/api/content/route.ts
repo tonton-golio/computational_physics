@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { NextResponse } from "next/server";
 import { getTopicIndexes, getTopicLesson, getTopicLessons } from "@/features/content/content-gateway";
-import { logRequestMetric } from "@/infra/observability/request-metrics";
+import { logRequestMetric, correlationIdFrom } from "@/infra/observability/request-metrics";
 import { AppError, asErrorEnvelope } from "@/shared/errors/app-error";
 
 export const runtime = "nodejs";
@@ -15,10 +15,6 @@ const querySchema = z.object({
   topic: z.string().optional(),
   slug: z.string().optional(),
 });
-
-function correlationIdFrom(request: Request): string {
-  return request.headers.get("x-correlation-id") ?? crypto.randomUUID();
-}
 
 export async function GET(request: Request) {
   const startedAt = performance.now();

@@ -1,16 +1,12 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { CanvasChart } from '@/components/ui/canvas-chart';
 import { Slider } from '@/components/ui/slider';
-
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
 export default function HillFunction() {
   const [K, setK] = useState(1.0);
   const [H, setH] = useState(1);
-  const { mergeLayout } = usePlotlyTheme();
 
   const { xVals, yRepression, yActivation } = useMemo(() => {
     const n = 500;
@@ -73,7 +69,7 @@ export default function HillFunction() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <Plot
+          <CanvasChart
             data={[
               {
                 x: xVals,
@@ -100,16 +96,15 @@ export default function HillFunction() {
                 showlegend: false,
               },
             ] as any}
-            layout={mergeLayout({
+            layout={{
               ...commonLayout,
               title: { text: 'Repression: K^H / (K^H + x^H)', font: { size: 14 } },
-            })}
-            config={{ displayModeBar: false }}
+            }}
             style={{ width: '100%' }}
           />
         </div>
         <div>
-          <Plot
+          <CanvasChart
             data={[
               {
                 x: xVals,
@@ -136,11 +131,10 @@ export default function HillFunction() {
                 showlegend: false,
               },
             ] as any}
-            layout={mergeLayout({
+            layout={{
               ...commonLayout,
               title: { text: 'Activation: x^H / (K^H + x^H)', font: { size: 14 } },
-            })}
-            config={{ displayModeBar: false }}
+            }}
             style={{ width: '100%' }}
           />
         </div>

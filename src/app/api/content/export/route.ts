@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { readLessonDocument } from "@/infra/content/file-content-repository";
 import { getOrderedLessonSlugs, getLessonSummary, isLandingPage } from "@/lib/topic-navigation.server";
 import { TOPICS } from "@/lib/content";
-import { logRequestMetric } from "@/infra/observability/request-metrics";
+import { logRequestMetric, correlationIdFrom } from "@/infra/observability/request-metrics";
 import { AppError, asErrorEnvelope } from "@/shared/errors/app-error";
 
 export const runtime = "nodejs";
@@ -11,10 +11,6 @@ export const runtime = "nodejs";
 const querySchema = z.object({
   topic: z.string().min(1),
 });
-
-function correlationIdFrom(request: Request): string {
-  return request.headers.get("x-correlation-id") ?? crypto.randomUUID();
-}
 
 export async function GET(request: Request) {
   const startedAt = performance.now();

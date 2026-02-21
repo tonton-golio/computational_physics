@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import Plotly from 'react-plotly.js';
-import type { Data, Layout } from 'plotly.js';
 import { Slider } from '@/components/ui/slider';
+import { CanvasChart } from '@/components/ui/canvas-chart';
+import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
 
 const Himmelblau2D: React.FC = () => {
   const [method, setMethod] = useState<'gd' | 'newton'>('gd');
@@ -81,7 +81,7 @@ const Himmelblau2D: React.FC = () => {
   }, [x0, y0, method, lr, maxSteps, gradX, gradY, hessXX, hessXY, hessYY]);
 
   // Contour data
-  const contourData = useMemo<Data[]>(() => {
+  const contourData = useMemo(() => {
     const nx = 100;
     const ny = 100;
     const xmin = -6;
@@ -98,25 +98,17 @@ const Himmelblau2D: React.FC = () => {
       }
       z.push(row);
     }
-    return [{
-      type: 'contour' as const,
-      x: xgrid,
-      y: ygrid,
-      z,
-      colorscale: 'Viridis',
-      contours: { coloring: 'heatmap' },
-      name: 'Himmelblau f(x,y)',
-    }];
+    return { xgrid, ygrid, z };
   }, [f]);
 
   // Path trace
-  const pathTrace = useMemo<Data>(() => ({
+  const pathTrace = useMemo(() => ({
     x: path.slice(0, currentStep + 1).map(p => p[0]),
     y: path.slice(0, currentStep + 1).map(p => p[1]),
     type: 'scatter' as const,
     mode: 'lines+markers' as const,
-    line: {color: 'white', width: 4},
-    marker: {size: 8, color: 'red'},
+    line: {color: '#ef4444', width: 3},
+    marker: {size: 8, color: '#ef4444'},
     name: 'Descent path',
   }), [path, currentStep]);
 
@@ -128,8 +120,8 @@ const Himmelblau2D: React.FC = () => {
     [3.584, -1.848],
   ], []);
 
-  const basinData = useMemo<Data[]>(() => {
-    if (!showBasins) return [];
+  const basinData = useMemo(() => {
+    if (!showBasins) return null;
     const nx = 40;
     const ny = 40;
     const xmin = -5;
@@ -186,27 +178,8 @@ const Himmelblau2D: React.FC = () => {
       }
       zbasin.push(row);
     }
-    return [{
-      type: 'heatmap' as const,
-      x: xgrid,
-      y: ygrid,
-      z: zbasin,
-      colorscale: 'RdYlBu',
-      colorbar: {title: { text: 'Basin' }},
-      name: 'Basins of attraction',
-      opacity: 0.6,
-    }];
+    return { xgrid, ygrid, zbasin };
   }, [showBasins, method, gradX, gradY, hessXX, hessXY, hessYY, attractors]);
-
-  const data: Data[] = [...contourData, pathTrace, ...basinData];
-
-  const layout: Partial<Layout> = {
-    title: { text: `Himmelblau Function - ${method.toUpperCase()} Descent & Basins` },
-    xaxis: {title: { text: 'x' }},
-    yaxis: {title: { text: 'y' }},
-    width: 800,
-    height: 700,
-  };
 
   const handleStep = () => {
     setCurrentStep((prev) => Math.min(prev + 1, path.length - 1));
@@ -254,8 +227,41 @@ const Himmelblau2D: React.FC = () => {
           <button onClick={handleReset} className="bg-[var(--surface-3)] hover:bg-[var(--border-strong)] text-[var(--text-strong)] px-4 py-1 rounded">Reset</button>
         </div>
       </div>
-      <div>Final: ({path[path.length-1]?.[0]?.toFixed(3) || 0}, {path[path.length-1]?.[1]?.toFixed(3) || 0}), f={f(path[path.length-1]?.[0] || 0, path[path.length-1]?.[1] || 0)?.toFixed(2)}</div>
-      <Plotly data={data} layout={layout} />
+      <div className="text-sm text-[var(--text-muted)] mb-4">Final: ({path[path.length-1]?.[0]?.toFixed(3) || 0}, {path[path.length-1]?.[1]?.toFixed(3) || 0}), f={f(path[path.length-1]?.[0] || 0, path[path.length-1]?.[1] || 0)?.toFixed(2)}</div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {showBasins && basinData ? (
+          <CanvasHeatmap
+            data={[{ z: basinData.zbasin, x: basinData.xgrid, y: basinData.ygrid, colorscale: 'Portland' }]}
+            layout={{ title: { text: 'Basins of Attraction' }, xaxis: { title: { text: 'x' } }, yaxis: { title: { text: 'y' } } }}
+            style={{ width: '100%', height: 450 }}
+          />
+        ) : (
+          <CanvasHeatmap
+            data={[{ z: contourData.z, x: contourData.xgrid, y: contourData.ygrid, colorscale: 'Viridis' }]}
+            layout={{ title: { text: 'Himmelblau f(x,y)' }, xaxis: { title: { text: 'x' } }, yaxis: { title: { text: 'y' } } }}
+            style={{ width: '100%', height: 450 }}
+          />
+        )}
+        <CanvasChart
+          data={[
+            pathTrace,
+            {
+              x: [path[0]?.[0] ?? 0],
+              y: [path[0]?.[1] ?? 0],
+              type: 'scatter' as const,
+              mode: 'markers' as const,
+              marker: { size: 12, color: '#22c55e', symbol: 'diamond' },
+              name: 'Start',
+            },
+          ]}
+          layout={{
+            title: { text: `${method.toUpperCase()} Descent Path` },
+            xaxis: { title: { text: 'x' }, range: [-6, 6] },
+            yaxis: { title: { text: 'y' }, range: [-6, 6] },
+          }}
+          style={{ width: '100%', height: 450 }}
+        />
+      </div>
     </div>
   );
 };

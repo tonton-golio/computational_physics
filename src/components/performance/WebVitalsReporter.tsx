@@ -29,7 +29,6 @@ function sendMetric(metric: WebVitalsMetric): void {
     ...metric,
     path: window.location.pathname,
     timestamp: Date.now(),
-    userAgent: navigator.userAgent,
   });
 
   if (navigator.sendBeacon) {

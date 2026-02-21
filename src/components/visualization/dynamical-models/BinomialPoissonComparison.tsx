@@ -1,11 +1,8 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import dynamic from 'next/dynamic';
 import { Slider } from '@/components/ui/slider';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
-
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
+import { CanvasChart } from '@/components/ui/canvas-chart';
 
 function factorial(n: number): number {
   if (n <= 1) return 1;
@@ -22,7 +19,6 @@ function choose(n: number, k: number): number {
 export default function BinomialPoissonComparison() {
   const [n, setN] = useState(40);
   const [mean, setMean] = useState(6);
-  const { mergeLayout } = usePlotlyTheme();
 
   const { ks, binom, poisson } = useMemo(() => {
     const p = mean / n;
@@ -49,7 +45,7 @@ export default function BinomialPoissonComparison() {
           <Slider value={[mean]} onValueChange={([v]) => setMean(v)} min={1} max={20} step={0.5} />
         </div>
       </div>
-      <Plot
+      <CanvasChart
         data={[
           {
             x: ks,
@@ -70,14 +66,13 @@ export default function BinomialPoissonComparison() {
             name: 'Poisson approximation',
           },
         ]}
-        layout={mergeLayout({
+        layout={{
           title: { text: 'Distribution comparison' },
           margin: { t: 40, r: 20, b: 40, l: 50 },
           xaxis: { title: { text: 'k events' } },
           yaxis: { title: { text: 'Probability' } },
           height: 430,
-        })}
-        config={{ responsive: true, displayModeBar: false }}
+        }}
         style={{ width: '100%', height: 430 }}
       />
     </div>

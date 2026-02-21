@@ -1,11 +1,8 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
-import dynamic from 'next/dynamic';
+import { CanvasChart } from '@/components/ui/canvas-chart';
 import { Slider } from '@/components/ui/slider';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
-
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
 
 function mulberry32(seed: number) {
   let s = seed >>> 0;
@@ -56,7 +53,6 @@ export function PhaseTransitionIsing1D() {
   const [beta, setBeta] = useState(1.2);
   const [nsteps, setNsteps] = useState(3000);
   const [rerun, setRerun] = useState(0);
-  const { mergeLayout } = usePlotlyTheme();
 
   const mcSeries = useMemo(() => runMonteCarlo1D(size, beta, nsteps, rerun), [size, beta, nsteps, rerun]);
 
@@ -91,32 +87,30 @@ export function PhaseTransitionIsing1D() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Plot
+        <CanvasChart
           data={[
             { y: mcSeries, type: 'scatter', mode: 'lines', line: { color: '#f59e0b', width: 1.5 }, name: '|m| Monte Carlo' },
           ]}
-          layout={mergeLayout({
+          layout={{
             title: { text: '1D Ising Monte Carlo: |m| vs Step', font: { size: 13 } },
             xaxis: { title: { text: 'Step' } },
             yaxis: { title: { text: '|m|' } },
             showlegend: false,
             margin: { t: 40, r: 20, b: 50, l: 60 },
-          })}
-          config={{ responsive: true, displayModeBar: false }}
+          }}
           style={{ width: '100%', height: 320 }}
         />
-        <Plot
+        <CanvasChart
           data={[
             { x: betaSweep.betas, y: betaSweep.mExact, type: 'scatter', mode: 'lines', line: { color: '#3b82f6', width: 2 }, name: 'Transfer matrix (h=0.1)' },
           ]}
-          layout={mergeLayout({
+          layout={{
             title: { text: '1D Ising (Transfer Matrix) Magnetization', font: { size: 13 } },
             xaxis: { title: { text: 'Beta (1/T)' } },
             yaxis: { title: { text: '|m|' } },
             showlegend: false,
             margin: { t: 40, r: 20, b: 50, l: 60 },
-          })}
-          config={{ responsive: true, displayModeBar: false }}
+          }}
           style={{ width: '100%', height: 320 }}
         />
       </div>

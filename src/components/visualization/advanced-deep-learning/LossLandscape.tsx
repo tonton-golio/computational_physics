@@ -1,11 +1,9 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
 import { Slider } from '@/components/ui/slider';
-
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
+import { useTheme } from '@/lib/use-theme';
 
 interface LossLandscapeProps {
   id?: string;
@@ -66,42 +64,48 @@ function computeLandscape(sharpness: number, numMinima: number, resolution: numb
 }
 
 export default function LossLandscape({ id: _id }: LossLandscapeProps) {
+  const theme = useTheme();
+  const isDark = theme === 'dark';
   const [sharpness, setSharpness] = useState(1.5);
   const [numMinima, setNumMinima] = useState(2);
   const [viewAngle, setViewAngle] = useState(30);
-  const { mergeLayout } = usePlotlyTheme();
 
   const resolution = 60;
   const data = useMemo(() => computeLandscape(sharpness, numMinima, resolution), [sharpness, numMinima]);
 
-  const surfaceTrace: any = {
-    type: 'surface',
+  // Surface rendered as 2D heatmap (top-down view of loss landscape)
+  const heatmapTrace: any = {
+    type: 'heatmap' as const,
     x: data.x,
     y: data.y,
     z: data.z,
-    colorscale: [
-      [0, '#0d0d2b'],
-      [0.2, '#1a1a5e'],
-      [0.4, '#3b2b8e'],
-      [0.6, '#6b3fa0'],
-      [0.8, '#c05299'],
-      [1, '#f06292'],
-    ],
-    contours: {
-      z: { show: true, usecolormap: true, project: { z: true } },
-    },
-    showscale: false,
-    opacity: 0.9,
+    colorscale: isDark
+      ? [
+          [0, '#0d0d2b'],
+          [0.2, '#1a1a5e'],
+          [0.4, '#3b2b8e'],
+          [0.6, '#6b3fa0'],
+          [0.8, '#c05299'],
+          [1, '#f06292'],
+        ]
+      : [
+          [0, '#e8edf8'],
+          [0.2, '#c5b3e8'],
+          [0.4, '#9b6bc4'],
+          [0.6, '#8b4fb0'],
+          [0.8, '#c05299'],
+          [1, '#f06292'],
+        ],
+    showscale: true,
   };
 
-  // Mark critical points
+  // Overlay critical points as scatter markers
   const markerTrace: any = {
-    type: 'scatter3d',
+    type: 'scatter' as const,
     x: data.criticalPoints.map(p => p.x),
     y: data.criticalPoints.map(p => p.y),
-    z: data.criticalPoints.map(p => p.z - 0.1),
-    mode: 'markers+text',
-    marker: { size: 6, color: '#fbbf24', symbol: 'diamond' },
+    mode: 'markers+text' as const,
+    marker: { size: 10, color: '#fbbf24', symbol: 'diamond' },
     text: data.criticalPoints.map(p => p.type),
     textposition: 'top center',
     textfont: { color: '#fbbf24', size: 10 },
@@ -143,27 +147,15 @@ export default function LossLandscape({ id: _id }: LossLandscapeProps) {
         </div>
 
         <div className="lg:col-span-3">
-          <Plot
-            data={[surfaceTrace, markerTrace]}
-            layout={mergeLayout({
-              scene: {
-                xaxis: { title: { text: 'w1' } },
-                yaxis: { title: { text: 'w2' } },
-                zaxis: { title: { text: 'Loss' } },
-                camera: {
-                  eye: {
-                    x: 1.5 * Math.cos(viewAngle * Math.PI / 180),
-                    y: 1.5 * Math.sin(viewAngle * Math.PI / 180),
-                    z: 1.2,
-                  },
-                },
-              },
-              margin: { t: 20, b: 20, l: 20, r: 20 },
+          <CanvasHeatmap
+            data={[heatmapTrace, markerTrace]}
+            layout={{
+              xaxis: { title: { text: 'w1' } },
+              yaxis: { title: { text: 'w2' } },
+              margin: { t: 20, b: 50, l: 60, r: 20 },
               autosize: true,
-            })}
-            useResizeHandler
+            }}
             style={{ width: '100%', height: '500px' }}
-            config={{ displayModeBar: false }}
           />
         </div>
       </div>

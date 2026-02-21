@@ -36,24 +36,6 @@ Creeping flow. Stokes equations. The world slows down and viscosity takes over. 
 
 For everything we can't solve by hand (which is most of the real world), we learn the finite element method — cutting the world into tiny triangles and stitching the answers together.
 
-## Learning Trajectory
-
-1. **Continuum Approximation** — When and why we can pretend matter is smooth.
-2. **Tensor Fundamentals** — The language of pushing and pulling: stress tensors, strain tensors, and how they transform.
-3. **Stress and Strain** — Traction vectors, principal stresses, Mohr's circle, and Hooke's law.
-4. **Elasticity** — Young's modulus, Poisson's ratio, work, energy, vibrations, and the speed of sound.
-5. **Python Packages** — Our computational toolkit. You'll need it from here on.
-6. **The Heartbeat Equation** — Conservation laws, the material derivative, and Cauchy's equation — the one equation that rules them all.
-7. **Fluids at Rest** — What is a fluid? Pressure, buoyancy, and why icebergs float the way they do.
-8. **Fluids in Motion** — Ideal flows, Euler's equations, Bernoulli's theorem, and vorticity.
-9. **Viscous Flow** — Viscosity, the Navier-Stokes equation, and the Reynolds number.
-10. **Channels and Pipes** — Pressure-driven flow, gravity-driven flow, and laminar pipe flow. Beautiful exact solutions.
-11. **Gravity Waves** — Shallow-water equations and dispersion.
-12. **Creeping Flow** — Stokes flow: when viscosity dominates and inertia vanishes. Like swimming through honey.
-13. **Weak Stokes Formulation** — Recasting the equations in weak form, preparing for computation.
-14. **Finite Element Method** — Weighted residuals, Galerkin's method, and how we actually simulate glaciers and airplane wings.
-15. **The Grand Finale** — Every big idea retold as one story. A glacier, an iceberg, and an earthquake walk into a bar...
-
 ## Meet the Cast
 
 Throughout these notes, you'll run into three recurring characters:
@@ -64,6 +46,12 @@ Throughout these notes, you'll run into three recurring characters:
 
 When the math gets abstract, these three will keep you grounded.
 
+## The Philosophy
+
+We won't start with equations. We'll start with *pictures*. Every concept in this course begins with something you can see, touch, or imagine — a rubber band, a block of cheese, a drop of honey. The equations come after, as the punchline to a question you already have.
+
+If at any point the math feels disconnected from reality, stop and go back to the physical picture. The math is the servant of the physics, not the other way around.
+
 ## Why This Matters
 
 - Understanding stress and strain is essential for engineering, geophysics, and biomechanics.
@@ -71,28 +59,10 @@ When the math gets abstract, these three will keep you grounded.
 - The Navier-Stokes equations remain one of the most important unsolved problems in mathematics.
 - Numerical simulation of continua underpins modern engineering and earth science.
 
-## Prerequisites
-
-- Vector calculus: gradient, divergence, curl.
-- Linear algebra: matrices, eigenvalues, tensor notation.
-- Ordinary differential equations.
-- Basic thermodynamics and classical mechanics.
-
-## Further Reading — For the Curious
-
-If you want to feel the math in your bones, here are some recommendations:
-
-- **Spencer**, *Continuum Mechanics* — clean and compact, a good desk companion.
-- **Landau and Lifshitz**, *Theory of Elasticity* and *Fluid Mechanics* — deep and beautiful, like a masterclass from old-world physicists.
-- **Batchelor**, *An Introduction to Fluid Dynamics* — the classic. Dense but rewarding.
-- **Lautrup**, *Physics of Continuous Matter* — the textbook for this course. Practical, physical, and full of real examples.
-- **Lamb**, *Hydrodynamics* — it's old but delicious, like a 100-year-old wine. Read it to feel the elegance.
-
-
 ## Visual and Simulation Gallery
 
-[[figure continuum-stress-tensor]]
+[[simulation stress-tensor-diagram]]
 
-[[figure continuum-hookes-law]]
+[[simulation hookes-law-diagram]]
 
-[[figure continuum-density-fluctuations]]
+[[simulation density-fluctuations]]

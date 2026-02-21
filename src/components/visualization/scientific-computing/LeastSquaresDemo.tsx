@@ -1,15 +1,10 @@
 'use client';
 
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
-import dynamic from 'next/dynamic';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
+import { CanvasChart } from '@/components/ui/canvas-chart';
 import { Slider } from '@/components/ui/slider';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
-
-interface SimulationProps {
-  id?: string;
-}
 
 function seededRandom(seed: number) {
   let s = seed;
@@ -19,7 +14,7 @@ function seededRandom(seed: number) {
   };
 }
 
-export function LeastSquaresDemo({}: SimulationProps) {
+export function LeastSquaresDemo({}: SimulationComponentProps) {
   const [nPoints, setNPoints] = useState(40);
   const [noiseLevel, setNoiseLevel] = useState(0.8);
   const [fitDegree, setFitDegree] = useState(1);
@@ -28,7 +23,6 @@ export function LeastSquaresDemo({}: SimulationProps) {
   const [isAnimating, setIsAnimating] = useState(false);
   const [animStep, setAnimStep] = useState(0);
   const animRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const { mergeLayout } = usePlotlyTheme();
 
   const generateData = useCallback((s: number) => {
     const rng = seededRandom(s);
@@ -192,7 +186,7 @@ export function LeastSquaresDemo({}: SimulationProps) {
 
   const plotData = useMemo(() => {
     const { xs, ys } = data;
-    const traces: Plotly.Data[] = [];
+    const traces: any[] = [];
 
     // Data points
     traces.push({
@@ -248,22 +242,6 @@ export function LeastSquaresDemo({}: SimulationProps) {
     return traces;
   }, [data, fitResult, showResiduals, animResult, animStep, fitDegree]);
 
-  const layout = useMemo(
-    () => mergeLayout({
-      margin: { t: 40, r: 20, b: 50, l: 50 },
-      xaxis: {
-        title: { text: 'x' },
-      },
-      yaxis: {
-        title: { text: 'y' },
-      },
-      title: { text: 'Least Squares Fitting', font: { size: 16 } },
-      legend: { x: 0, y: 1, bgcolor: 'rgba(0,0,0,0)' },
-      showlegend: true,
-    }),
-    [mergeLayout]
-  );
-
   const coeffString = useMemo(() => {
     const c = fitResult.coeffs;
     if (fitDegree === 1) {
@@ -281,10 +259,20 @@ export function LeastSquaresDemo({}: SimulationProps) {
 
   return (
     <div className="space-y-4">
-      <Plot
-        data={plotData as Plotly.Data[]}
-        layout={layout as Partial<Plotly.Layout>}
-        config={{ responsive: true, displayModeBar: false }}
+      <CanvasChart
+        data={plotData as any}
+        layout={{
+          margin: { t: 40, r: 20, b: 50, l: 50 },
+          xaxis: {
+            title: { text: 'x' },
+          },
+          yaxis: {
+            title: { text: 'y' },
+          },
+          title: { text: 'Least Squares Fitting', font: { size: 16 } },
+          legend: { x: 0, y: 1, bgcolor: 'rgba(0,0,0,0)' },
+          showlegend: true,
+        }}
         style={{ width: '100%', height: '400px' }}
       />
 

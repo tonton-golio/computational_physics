@@ -1,14 +1,10 @@
 'use client';
 
 import React, { useEffect, useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
 import { Slider } from '@/components/ui/slider';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { runLotkaVolterraWorker, type LotkaVolterraResult } from '@/features/simulation/simulation-worker.client';
-import { usePlotlyTheme } from '@/lib/plotly-theme';
-
-// Dynamically import Plot to avoid SSR issues
-const Plot = dynamic(() => import('react-plotly.js'), { ssr: false });
+import { CanvasChart } from '@/components/ui/canvas-chart';
 
 function solveLotkaVolterra(alpha: number, beta: number, gamma: number, delta: number, x0: number, y0: number, dt: number, steps: number): { t: number[], x: number[], y: number[] } {
   const t: number[] = [];
@@ -91,7 +87,6 @@ function getCachedBifurcation(
 }
 
 export function LotkaVolterraSim() {
-  const { mergeLayout } = usePlotlyTheme();
   const [alpha, setAlpha] = useState([1.0]);
   const [beta, setBeta] = useState([0.1]);
   const [gamma, setGamma] = useState([1.5]);
@@ -224,48 +219,45 @@ export function LotkaVolterraSim() {
             <div>
               <h3 className="text-lg font-semibold mb-4">Time Series</h3>
               {timeSeriesData && (
-                <Plot
+                <CanvasChart
                   data={timeSeriesData as any}
-                  layout={mergeLayout({
+                  layout={{
                     width: 400,
                     height: 300,
                     xaxis: { title: { text: 'Time' } },
                     yaxis: { title: { text: 'Population' } },
                     margin: { t: 20, b: 40, l: 60, r: 20 },
-                  })}
-                  config={{ displayModeBar: false }}
+                  }}
                 />
               )}
             </div>
             <div>
               <h3 className="text-lg font-semibold mb-4">Phase Portrait</h3>
               {phasePortraitData && (
-                <Plot
+                <CanvasChart
                   data={phasePortraitData as any}
-                  layout={mergeLayout({
+                  layout={{
                     width: 400,
                     height: 300,
                     xaxis: { title: { text: 'Prey' } },
                     yaxis: { title: { text: 'Predator' } },
                     margin: { t: 20, b: 40, l: 60, r: 20 },
-                  })}
-                  config={{ displayModeBar: false }}
+                  }}
                 />
               )}
             </div>
             <div>
               <h3 className="text-lg font-semibold mb-4">Bifurcation Diagram (vs Alpha)</h3>
               {bifurcationData && (
-                <Plot
+                <CanvasChart
                   data={bifurcationData as any}
-                  layout={mergeLayout({
+                  layout={{
                     width: 400,
                     height: 300,
                     xaxis: { title: { text: 'Alpha' } },
                     yaxis: { title: { text: 'Population' } },
                     margin: { t: 20, b: 40, l: 60, r: 20 },
-                  })}
-                  config={{ displayModeBar: false }}
+                  }}
                 />
               )}
             </div>
