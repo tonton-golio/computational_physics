@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 /**
  * Demonstrates how density fluctuations decrease as the averaging volume grows.
@@ -19,7 +22,7 @@ function seededRandom(seed: number) {
   };
 }
 
-export default function AveragingVolume() {
+export default function AveragingVolume({}: SimulationComponentProps) {
   const [nParticles, setNParticles] = useState(2000);
   const [seed] = useState(42);
 
@@ -93,34 +96,30 @@ export default function AveragingVolume() {
   }), []);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-2 text-[var(--text-strong)]">
-        Averaging Volume and Density Convergence
-      </h3>
-      <p className="text-sm text-[var(--text-muted)] mb-4">
-        Random particles are binned at different grid resolutions. As each cell
-        contains more particles, the relative density fluctuation drops as
-        1/&radic;N &mdash; the continuum approximation becomes valid.
-      </p>
-      <div className="max-w-xs mb-4">
-        <label className="block text-sm text-[var(--text-muted)] mb-1">
-          Total particles: {nParticles}
-        </label>
-        <Slider
-          min={200}
-          max={5000}
-          step={100}
-          value={[nParticles]}
-          onValueChange={([v]) => setNParticles(v)}
-          className="w-full"
-        />
-      </div>
-      <CanvasChart data={data} layout={layout} style={{ width: '100%', height: 420 }} />
+    <SimulationPanel title="Averaging Volume and Density Convergence" caption="Random particles are binned at different grid resolutions. As each cell contains more particles, the relative density fluctuation drops as 1/\u221AN \u2014 the continuum approximation becomes valid.">
+      <SimulationConfig>
+        <div className="max-w-xs">
+          <SimulationLabel>
+            Total particles: {nParticles}
+          </SimulationLabel>
+          <Slider
+            min={200}
+            max={5000}
+            step={100}
+            value={[nParticles]}
+            onValueChange={([v]) => setNParticles(v)}
+            className="w-full"
+          />
+        </div>
+      </SimulationConfig>
+      <SimulationMain>
+        <CanvasChart data={data} layout={layout} style={{ width: '100%', height: 420 }} />
+      </SimulationMain>
       <p className="mt-3 text-xs text-[var(--text-muted)]">
         Blue markers: measured std/mean at each grid resolution.
         Red dashed: theoretical 1/&radic;N scaling.
         Increase the particle count to push the continuum regime to finer grids.
       </p>
-    </div>
+    </SimulationPanel>
   );
 }

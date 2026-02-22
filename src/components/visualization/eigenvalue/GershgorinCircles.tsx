@@ -1,12 +1,14 @@
-'use client';
+"use client";
 
 import { useState, useMemo } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import { COLORS } from '@/lib/chart-colors';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 import type { Matrix2x2 } from './eigen-utils';
 
-export function GershgorinCircles({}: SimulationComponentProps) {
+export default function GershgorinCircles({}: SimulationComponentProps) {
   const [matrix] = useState<Matrix2x2>([[2, 1], [1, 3]]);
 
   const { data, layout } = useMemo(() => {
@@ -79,13 +81,10 @@ export function GershgorinCircles({}: SimulationComponentProps) {
   }, [matrix]);
 
   return (
-    <div className="space-y-4">
-      <CanvasChart data={data} layout={layout} style={{ width: '100%', height: 320 }} />
-      <div className="text-sm text-[var(--text-muted)]">
-        Each Gershgorin disc contains at least one eigenvalue. The center is the diagonal element, radius is the sum of off-diagonal absolute values in that row.
-      </div>
-    </div>
+    <SimulationPanel title="Gershgorin Circles" caption="Each Gershgorin disc contains at least one eigenvalue. The center is the diagonal element, radius is the sum of off-diagonal absolute values in that row.">
+      <SimulationMain>
+        <CanvasChart data={data} layout={layout} style={{ width: '100%', height: 320 }} />
+      </SimulationMain>
+    </SimulationPanel>
   );
 }
-
-export default GershgorinCircles;

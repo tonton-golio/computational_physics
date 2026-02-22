@@ -1,10 +1,9 @@
 import { unstable_cache } from "next/cache";
-import { TOPICS } from "@/lib/content";
+import { TOPICS } from "@/lib/topic-config";
 import { AppError } from "@/shared/errors/app-error";
 import type { ContentDocument, TopicDefinition, TopicIndex } from "@/shared/types/content";
 import { readLessonDocument } from "@/infra/content/file-content-repository";
-import { topicIndexFrom } from "@/domain/content/models";
-import { getOrderedLessonSlugs } from "@/lib/topic-navigation.server";
+import { getOrderedLessonSlugs } from "@/features/content/topic-lessons";
 
 function asTopicDefinition(topicId: string): TopicDefinition {
   const topic = TOPICS[topicId as keyof typeof TOPICS];
@@ -22,7 +21,10 @@ function asTopicDefinition(topicId: string): TopicDefinition {
 }
 
 async function loadTopicIndexes(): Promise<TopicIndex[]> {
-  return Object.keys(TOPICS).map((topicId) => topicIndexFrom(asTopicDefinition(topicId), getOrderedLessonSlugs(topicId)));
+  return Object.keys(TOPICS).map((topicId) => ({
+    topic: asTopicDefinition(topicId),
+    lessons: [...getOrderedLessonSlugs(topicId)],
+  }));
 }
 
 const getTopicIndexesCached = unstable_cache(loadTopicIndexes, ["topics:index"], {

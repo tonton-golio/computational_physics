@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 /**
  * Bathtub dynamics: approach to steady state.
@@ -14,7 +17,7 @@ import { CanvasChart } from '@/components/ui/canvas-chart';
  * Half-life:     t_half = ln(2) / Gamma
  * Time constant: tau = 1 / Gamma
  */
-export default function BathtubDynamics() {
+export default function BathtubDynamics({}: SimulationComponentProps) {
   const [k, setK] = useState(10);
   const [gamma, setGamma] = useState(0.2);
   const [showAnalytical, setShowAnalytical] = useState(false);
@@ -119,32 +122,33 @@ export default function BathtubDynamics() {
   }
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Bathtub Dynamics: Approach to Steady State</h3>
-
-      <div className="grid grid-cols-2 gap-6 mb-4">
-        <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Production rate k: {k.toFixed(1)}</label>
-          <Slider value={[k]} onValueChange={([v]) => setK(v)} min={0.5} max={20} step={0.5} />
+    <SimulationPanel title="Bathtub Dynamics: Approach to Steady State">
+      <SimulationConfig>
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <SimulationLabel>Production rate k: {k.toFixed(1)}</SimulationLabel>
+            <Slider value={[k]} onValueChange={([v]) => setK(v)} min={0.5} max={20} step={0.5} />
+          </div>
+          <div>
+            <SimulationLabel>Degradation rate Gamma: {gamma.toFixed(2)}</SimulationLabel>
+            <Slider value={[gamma]} onValueChange={([v]) => setGamma(v)} min={0.05} max={2.0} step={0.05} />
+          </div>
         </div>
+
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Degradation rate Gamma: {gamma.toFixed(2)}</label>
-          <Slider value={[gamma]} onValueChange={([v]) => setGamma(v)} min={0.05} max={2.0} step={0.05} />
+          <label className="inline-flex items-center gap-2 text-sm text-[var(--text-muted)] cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={showAnalytical}
+              onChange={(e) => setShowAnalytical(e.target.checked)}
+              className="w-4 h-4 rounded border-[var(--border-strong)] accent-[var(--accent)]"
+            />
+            Show analytical steady-state labels
+          </label>
         </div>
-      </div>
+      </SimulationConfig>
 
-      <div className="mb-4">
-        <label className="inline-flex items-center gap-2 text-sm text-[var(--text-muted)] cursor-pointer select-none">
-          <input
-            type="checkbox"
-            checked={showAnalytical}
-            onChange={(e) => setShowAnalytical(e.target.checked)}
-            className="w-4 h-4 rounded border-[var(--border-strong)] accent-[var(--accent)]"
-          />
-          Show analytical steady-state labels
-        </label>
-      </div>
-
+      <SimulationMain>
       <CanvasChart
         data={traces as any}
         layout={{
@@ -164,8 +168,10 @@ export default function BathtubDynamics() {
         }}
         style={{ width: '100%' }}
       />
+      </SimulationMain>
 
-      <div className="mt-4 grid grid-cols-3 gap-4 text-sm text-[var(--text-muted)]">
+      <SimulationResults>
+      <div className="grid grid-cols-3 gap-4 text-sm text-[var(--text-muted)]">
         <div className="bg-[var(--surface-2)] rounded-md p-3">
           <div className="font-medium text-[var(--text-strong)]">Steady state n_ss</div>
           <div className="text-lg font-mono">{ssDefault.toFixed(2)}</div>
@@ -182,6 +188,7 @@ export default function BathtubDynamics() {
           <div className="text-xs">1 / Gamma</div>
         </div>
       </div>
+      </SimulationResults>
 
       <div className="mt-4 border-l-4 border-blue-500 pl-4 text-sm text-[var(--text-muted)]">
         <p className="font-medium text-[var(--text-strong)] mb-1">What to notice</p>
@@ -195,6 +202,6 @@ export default function BathtubDynamics() {
           Faster degradation means a lower steady state but faster approach.
         </p>
       </div>
-    </div>
+    </SimulationPanel>
   );
 }

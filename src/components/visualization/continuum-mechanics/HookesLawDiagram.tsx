@@ -1,13 +1,16 @@
-'use client';
+"use client";
 
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 /**
  * Static stress-strain curve highlighting the linear Hooke's-law regime,
  * yield point, and plastic region.  No sliders — just a clean overview figure.
  */
-export default function HookesLawDiagram() {
+export default function HookesLawDiagram({}: SimulationComponentProps) {
   const plotData = useMemo(() => {
     const E = 200;          // Young's modulus (GPa)
     const sigmaY = 0.30;    // Yield stress (GPa)
@@ -120,20 +123,14 @@ export default function HookesLawDiagram() {
   }, []);
 
   return (
-    <div className="w-full rounded-lg p-6 mb-8">
-      <h3 className="text-lg font-semibold mb-2 text-[var(--text-strong)]">
-        Hooke&apos;s Law &amp; the Stress-Strain Curve
-      </h3>
-      <p className="text-sm text-[var(--text-muted)] mb-4">
-        In the linear elastic region (shaded blue) stress is proportional to
-        strain: &sigma;&nbsp;=&nbsp;E&epsilon;. Beyond the yield point the
-        material deforms plastically and the relationship becomes nonlinear.
-      </p>
-      <CanvasChart
-        data={plotData.data}
-        layout={plotData.layout}
-        style={{ width: '100%', height: 400 }}
-      />
-    </div>
+    <SimulationPanel title="Hooke's Law & the Stress-Strain Curve" caption="In the linear elastic region (shaded blue) stress is proportional to strain: \u03c3 = E\u03b5. Beyond the yield point the material deforms plastically and the relationship becomes nonlinear.">
+      <SimulationMain>
+        <CanvasChart
+          data={plotData.data}
+          layout={plotData.layout}
+          style={{ width: '100%', height: 400 }}
+        />
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

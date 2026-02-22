@@ -1,7 +1,10 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { Slider } from '@/components/ui/slider';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationLabel, SimulationToggle } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 /**
  * Shows a 2D grid deformed by different strain states: pure shear, simple shear,
@@ -11,7 +14,7 @@ import { Slider } from '@/components/ui/slider';
 
 const GRID_N = 10;
 
-export default function DeformationGrid() {
+export default function DeformationGrid({}: SimulationComponentProps) {
   const [exx, setExx] = useState(0.0);
   const [eyy, setEyy] = useState(0.0);
   const [exy, setExy] = useState(0.0);
@@ -138,59 +141,49 @@ export default function DeformationGrid() {
   }, [draw, deps]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-2 text-[var(--text-strong)]">
-        2D Deformation Grid
-      </h3>
-      <p className="text-sm text-[var(--text-muted)] mb-4">
-        Apply strain components to deform a regular grid. The faint grid shows
-        the reference configuration; the blue grid shows the deformed state.
-      </p>
-      <div className="flex flex-wrap gap-2 mb-4">
-        {Object.entries(presets).filter(([k]) => k !== 'custom').map(([key, [,,,label]]) => (
-          <button
-            key={key}
-            onClick={() => applyPreset(key)}
-            className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
-              preset === key
-                ? 'bg-[var(--accent)] text-white'
-                : 'bg-[var(--surface-2)] text-[var(--text-muted)] hover:bg-[var(--border-strong)]'
-            }`}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+    <SimulationPanel title="2D Deformation Grid" caption="Apply strain components to deform a regular grid. The faint grid shows the reference configuration; the blue grid shows the deformed state.">
+      <SimulationSettings>
+        <SimulationToggle
+          options={Object.entries(presets).filter(([k]) => k !== 'custom').map(([key, [,,,label]]) => ({
+            label: label as string,
+            value: key,
+          }))}
+          value={preset}
+          onChange={(v) => applyPreset(v)}
+        />
+      </SimulationSettings>
+      <SimulationConfig>
         <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">
+          <SimulationLabel>
             &epsilon;<sub>xx</sub>: {exx.toFixed(2)}
-          </label>
+          </SimulationLabel>
           <Slider min={-0.5} max={0.5} step={0.01} value={[exx]}
             onValueChange={([v]) => { setExx(v); setPreset('custom'); }} className="w-full" />
         </div>
         <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">
+          <SimulationLabel>
             &epsilon;<sub>yy</sub>: {eyy.toFixed(2)}
-          </label>
+          </SimulationLabel>
           <Slider min={-0.5} max={0.5} step={0.01} value={[eyy]}
             onValueChange={([v]) => { setEyy(v); setPreset('custom'); }} className="w-full" />
         </div>
         <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">
+          <SimulationLabel>
             &epsilon;<sub>xy</sub> (shear): {exy.toFixed(2)}
-          </label>
+          </SimulationLabel>
           <Slider min={-0.5} max={0.5} step={0.01} value={[exy]}
             onValueChange={([v]) => { setExy(v); setPreset('custom'); }} className="w-full" />
         </div>
-      </div>
-      <div ref={containerRef} style={{ width: '100%' }}>
-        <canvas ref={canvasRef} style={{ display: 'block', borderRadius: '4px' }} />
-      </div>
+      </SimulationConfig>
+      <SimulationMain scaleMode="contain">
+        <div ref={containerRef} style={{ width: '100%' }}>
+          <canvas ref={canvasRef} style={{ display: 'block', borderRadius: '4px' }} />
+        </div>
+      </SimulationMain>
       <p className="mt-3 text-xs text-[var(--text-muted)]">
         The deformation gradient is F = I + &epsilon;. For small strains the
         symmetric part gives stretch and the antisymmetric part gives rotation.
       </p>
-    </div>
+    </SimulationPanel>
   );
 }

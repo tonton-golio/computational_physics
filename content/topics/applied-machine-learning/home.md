@@ -8,8 +8,4 @@ Now suppose your data is not a spreadsheet but an image, a sentence, a molecule,
 
 ## Why This Topic Matters
 
-- Loss functions and optimization dynamics are essential for training any model effectively.
-- Tree ensembles remain the strongest baselines for tabular data across science and industry.
-- Dimensionality reduction is critical for exploratory data analysis and feature engineering.
-- Neural networks are the foundation of nearly all modern architectures, from vision to language.
-- Machine learning drives scientific discovery in molecular property prediction, climate modeling, and beyond.
+Loss functions and optimization are the engine room of every model you will ever train. Tree ensembles are still the reigning champs for tabular data -- do not let anyone tell you otherwise. And neural networks are the skeleton key that unlocks images, language, molecules, and anything else that does not fit in a spreadsheet.

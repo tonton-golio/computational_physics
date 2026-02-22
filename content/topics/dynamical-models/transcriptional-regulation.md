@@ -1,73 +1,71 @@
 # Transcriptional Regulation and the Hill Function
 
+> *The universe is not just stranger than we suppose; when it comes to cells, it is stranger than we can suppose -- until we write the equations.*
+
 ## Where we are headed
 
-Over the last four lessons you have built the foundations: differential equations for production and degradation, the two-timescale coupling of mRNA and protein, probability distributions for rare events, and the noisy reality of gene expression. Through all of that, we treated the transcription rate as a constant — the gene is either on or off, and we did not ask what controls it. But in a real cell, genes are regulated. A repressor protein sits on the promoter and blocks transcription; an activator protein recruits RNA polymerase and turns it on. Today we derive the mathematical function that describes this regulation — the **Hill function** — and you will see how nature turns a gentle, graded response into a sharp, switch-like one. This is one of the most important functions in all of quantitative biology.
+Through four lessons, we've treated the transcription rate as a constant -- the gene is either on or off, and we didn't ask what controls it. But in a real cell, genes are regulated. A repressor sits on the promoter and blocks transcription; an activator recruits RNA polymerase and cranks it up. Today we derive the **Hill function** -- and you'll see how nature turns a gentle, graded response into a sharp, switch-like one. This is one of the most important functions in all of quantitative biology.
 
 ## The committee picture
 
-Before any math, think about it this way. Suppose a gene's promoter is like a conference room, and the gene only turns on when the room is occupied by a transcription factor. If only *one* molecule needs to sit down, then the gene turns on gradually as the concentration of that molecule increases — some rooms are occupied, some are not, and the fraction increases smoothly.
+Before any math, think about it this way. A gene's promoter is like a conference room, and the gene only turns on when the room is occupied by a transcription factor. If only *one* molecule needs to sit down, the gene turns on gradually as concentration increases.
 
-But now suppose the promoter requires a *committee*: four transcription factor molecules must all be present at the same time to turn the gene on. At low concentrations, the chance of all four showing up simultaneously is tiny. At high concentrations, it is almost certain. The transition from "almost never" to "almost always" happens over a narrow range of concentration. You have turned a gentle slope into a switch.
+But now suppose the promoter requires a *committee*: four TF molecules must all show up simultaneously. At low concentrations, the chance of all four appearing is tiny. At high concentrations, it's almost certain. The transition from "almost never" to "almost always" happens over a narrow range. You've turned a gentle slope into a switch.
 
-That is the Hill function. The Hill coefficient $n$ is the size of the committee.
+That's the Hill function. The Hill coefficient $n$ is the size of the committee.
 
 ## Deriving the Hill function from binding kinetics
 
 ### A single transcription factor
 
-Consider a transcription factor (TF) that binds to and represses a promoter. The promoter can be in two states: **free** (gene on) or **occupied** (gene off). The binding rate depends on TF concentration, but the unbinding rate does not:
+Consider a TF that binds to and represses a promoter. The promoter is either **free** (gene on) or **occupied** (gene off):
 
 $$
 \frac{\mathrm{d} P_\mathrm{free}}{\mathrm{d} t} = - v_\mathrm{bind} \, c_\mathrm{p} \, P_\mathrm{free} + k_\mathrm{unbind} \, (1 - P_\mathrm{free}).
 $$
 
-> *In words: free promoters get occupied at a rate proportional to TF concentration, and occupied promoters become free at a constant unbinding rate.*
-
-We assume binding and unbinding are much faster than transcription itself, so the promoter reaches a quasi-steady state. Setting the derivative to zero:
+Binding and unbinding are much faster than transcription, so the promoter reaches quasi-steady state:
 
 $$
 P_\mathrm{free} = \frac{1}{1 + c_\mathrm{p}/K}, \qquad \text{where } K = \frac{k_\mathrm{unbind}}{v_\mathrm{bind}}.
 $$
 
-> *$K$ is the **dissociation constant** — the concentration at which the promoter is occupied half the time. When $c_\mathrm{p} = K$, you get $P_\mathrm{free} = 1/2$. Below $K$, the gene is mostly on; above $K$, the gene is mostly off.*
+> *$K$ is the **dissociation constant** -- the concentration at which the promoter is occupied half the time. Below $K$, the gene is mostly on; above $K$, mostly off.*
 
 ### Dimers: the committee of two
 
-Now suppose the transcription factor must form a **dimer** (a pair) before it can bind the promoter. The binding rate becomes proportional to $c_\mathrm{p}^2$ instead of $c_\mathrm{p}$:
+If the TF must form a **dimer** before binding, the binding rate goes as $c_\mathrm{p}^2$:
 
 $$
 P_\mathrm{free} = \frac{1}{1 + (c_\mathrm{p}/K_2)^2}.
 $$
 
-> *The exponent of 2 makes the transition from "on" to "off" steeper. The gene does not care about individual molecules — it waits until the concentration is high enough that pairs are common.*
+> *The exponent of 2 makes the on-off transition steeper. The gene waits until concentration is high enough that pairs are common.*
 
 ### The general Hill function
 
-Because each extra bound repressor multiplies the probability of the next one binding (cooperativity), the fraction bound becomes $[c_\mathrm{p}/K]^n / (1 + [c_\mathrm{p}/K]^n)$. The gene is active only when the promoter is *empty*, so transcription rate is maximal rate times $(1 - \text{fraction bound})$ — giving us the Hill repression function you see everywhere in biology.
+For a complex of $n$ molecules:
 
-For a complex of $n$ molecules (Hill coefficient $n$), the pattern generalizes:
-
-> **Key Equation — The Hill Function**
+> **Key Equation -- The Hill Function**
 > $$
 > P_\mathrm{free} = \frac{1}{1 + (c_\mathrm{p}/K)^n}
 > $$
-> The fraction of time the promoter is free (gene on) decreases as repressor concentration rises; the Hill coefficient $n$ controls how switch-like the transition is.
+> The fraction of time the promoter is free decreases as repressor rises; the Hill coefficient $n$ controls how switch-like the transition is.
 
 Play with this in your head:
-* **$n = 1$**: a gentle, hyperbolic curve. The gene gradually turns off as repressor concentration increases.
-* **$n = 2$**: steeper. The transition sharpens.
-* **$n = 4$**: very steep. The gene is either fully on or fully off, with a narrow transition zone around $c_\mathrm{p} = K$.
+* **$n = 1$**: gentle hyperbolic curve.
+* **$n = 2$**: steeper transition.
+* **$n = 4$**: nearly all-or-nothing, with a narrow switching zone around $c_\mathrm{p} = K$.
 
-> *Look how nature turns a gentle slope into a switch! The higher the Hill coefficient, the more "all-or-nothing" the response. This is the mathematical heart of biological decision-making.*
+And here's the gorgeous part: suddenly a gentle slope becomes a switch. That's how a cell decides "on" or "off" with almost no in-between.
 
 [[simulation hill-function]]
 
-Set the Hill coefficient to $n = 1$ and slowly increase the repressor concentration. Watch how gradually the gene turns off. Now crank $n$ up to 4 and repeat. See how the transition sharpens into a switch? Find the concentration where the gene is exactly at 50% — that is $K$, the dissociation constant. The cell has just invented a tunable amplifier.
+Set $n = 1$ and slowly increase repressor. Watch how gradually the gene dims. Now crank $n$ to 4 and repeat. See the transition sharpen into a switch? Find the 50% point -- that's $K$.
 
 ## Repression
 
-For a self-repressing gene, the transcription rate depends on the repressor (protein) concentration through the Hill function:
+For a self-repressing gene:
 
 $$
 \frac{\mathrm{d} c_\mathrm{m}}{\mathrm{d} t} = \frac{\alpha_\mathrm{m}}{1 + (c_\mathrm{p}/K)^n} - \Gamma_\mathrm{m} \, c_\mathrm{m},
@@ -77,44 +75,42 @@ $$
 \frac{\mathrm{d} c_\mathrm{p}}{\mathrm{d} t} = k_\mathrm{p} \, c_\mathrm{m} - \Gamma_\mathrm{p} \, c_\mathrm{p}.
 $$
 
-> *When protein is scarce ($c_\mathrm{p} \ll K$), the Hill function is close to 1 and mRNA is produced at full rate $\alpha_\mathrm{m}$. When protein is abundant ($c_\mathrm{p} \gg K$), the Hill function drops to nearly zero and transcription is shut off.*
-
-More generally, if the repressor is a different protein (not the gene's own product), we replace $c_\mathrm{p}$ with the concentration of the regulating transcription factor $c_\mathrm{TF}$.
+> *When protein is scarce, the Hill function is ~1 and mRNA cranks at full rate. When protein is abundant, the Hill function drops to ~0 and transcription shuts off.*
 
 ## Activation
 
-For an activator, the gene needs the TF to be *bound* to produce mRNA. We use $P_\mathrm{occupied} = 1 - P_\mathrm{free}$:
+For an activator, the gene needs the TF to be *bound*:
 
 $$
 \frac{\mathrm{d} c_\mathrm{m}}{\mathrm{d} t} = \frac{\alpha_\mathrm{m} \, (c_\mathrm{TF}/K)^n}{1 + (c_\mathrm{TF}/K)^n} - \Gamma_\mathrm{m} \, c_\mathrm{m}.
 $$
 
-> *Now the gene is off when TF is absent, and turns on sharply as TF concentration rises past $K$. The Hill coefficient $n$ controls how sharp the switch is, just as before.*
+> *The gene is off without the TF and turns on sharply as TF rises past $K$.*
 
 ## Regulation by small RNA
 
-Nature has another elegant trick: **small RNAs** (sRNAs) that bind directly to mRNA and mark it for rapid degradation. The key idea is **mutual annihilation** — when sRNA meets mRNA, they form a complex that is quickly degraded ($\delta \, c_\mathrm{m} \, c_\mathrm{s}$ appears as a loss term in both equations). This mutual destruction creates a threshold-like response: the mRNA is only abundant when its production rate exceeds the sRNA production rate. For a full derivation, see the further reading below.
+Nature has another trick: **small RNAs** that bind mRNA and mark it for destruction. The key idea is **mutual annihilation** -- when sRNA meets mRNA, both are rapidly degraded. This creates a threshold: mRNA is only abundant when its production rate exceeds the sRNA production rate.
 
 ## Why does nature do it this way?
 
-As we saw in [differential equations](./differential-equations), degradation lets a cell change levels quickly. The Hill function adds the ability to *switch* — making $n$ small for graded fine-tuning or large for all-or-nothing commitment. A constitutive gene (always on) cannot respond to the environment; a regulated one can.
+Degradation lets a cell change levels quickly. The Hill function adds the ability to *switch* -- making $n$ small for graded control or large for all-or-nothing commitment.
 
 ## Check your understanding
 
-* At what concentration of repressor is a gene with Hill coefficient $n$ repressed to exactly half its maximal rate?
-* Why does dimerization (or higher-order multimerization) increase the effective Hill coefficient?
-* An sRNA and an mRNA are produced at equal rates. What is the steady-state mRNA level? What happens if you double the sRNA production rate?
+* At what repressor concentration is a gene with Hill coefficient $n$ at exactly half its maximal rate?
+* Why does dimerization increase the effective Hill coefficient?
+* An sRNA and mRNA are produced at equal rates. Steady-state mRNA level?
 
 ## Challenge
 
-Plot the Hill function $f(c) = 1/(1 + (c/K)^n)$ for $K = 1$ and $n = 1, 2, 4, 8$. At what concentration range does the function transition from 90% activity to 10% activity? (Call this the "switching window.") How does the width of the switching window depend on $n$? Can you derive a formula? This tells you how sharp the cell's decision-making is.
+Plot $f(c) = 1/(1 + (c/K)^n)$ for $K = 1$ and $n = 1, 2, 4, 8$. At what concentration range does the function go from 90% to 10% activity? How does the width of this "switching window" depend on $n$? Can you derive a formula?
 
 ## Big ideas
 
-* **The Hill function** $1/(1 + (c/K)^n)$ is the universal model for cooperative binding and regulation in biology.
-* **The Hill coefficient** $n$ controls the steepness of the response: $n = 1$ is gentle, $n \geq 4$ is switch-like.
-* **The dissociation constant** $K$ sets the midpoint: the concentration at which the response is half-maximal.
+* The Hill function $1/(1 + (c/K)^n)$ is the universal model for cooperative regulation in biology.
+* The Hill coefficient $n$ controls steepness: $n = 1$ is gentle, $n \geq 4$ is switch-like.
+* The dissociation constant $K$ sets the midpoint: the concentration at which response is half-maximal.
 
 ## What comes next
 
-We now have a knob that can turn genes up or down. But what happens when the gene product reaches back and turns its own knob? That is feedback, and it changes everything. In the next lesson, we close the loop and discover that negative feedback gives cells thermostats, positive feedback gives them memory, and rings of repression give them clocks. Welcome to the world of switches and oscillators.
+We now have a knob that turns genes up or down. But what happens when the gene product reaches back and turns its *own* knob? That's feedback -- and it changes everything.

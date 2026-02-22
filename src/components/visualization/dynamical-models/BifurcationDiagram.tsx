@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 /**
  * Bifurcation diagram for a positive-feedback gene-regulation model.
@@ -84,7 +87,7 @@ function findSteadyStates(n: number, gamma: number): SteadyState[] {
   return roots;
 }
 
-export default function BifurcationDiagram() {
+export default function BifurcationDiagram({}: SimulationComponentProps) {
   const [n, setN] = useState(4);
   const [gammaSlider, setGammaSlider] = useState(1.0);
 
@@ -222,16 +225,12 @@ export default function BifurcationDiagram() {
   };
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">
-        Bifurcation Diagram: Positive Feedback
-      </h3>
-
-      <div className="grid grid-cols-2 gap-6 mb-4">
+    <SimulationPanel title="Bifurcation Diagram: Positive Feedback">
+      <SimulationConfig>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">
+          <SimulationLabel>
             Hill coefficient n: {n}
-          </label>
+          </SimulationLabel>
           <Slider
             value={[n]}
             onValueChange={([v]) => setN(v)}
@@ -241,9 +240,9 @@ export default function BifurcationDiagram() {
           />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">
+          <SimulationLabel>
             Degradation rate {'\u03B3'}: {gammaSlider.toFixed(2)}
-          </label>
+          </SimulationLabel>
           <Slider
             value={[gammaSlider]}
             onValueChange={([v]) => setGammaSlider(v)}
@@ -252,22 +251,26 @@ export default function BifurcationDiagram() {
             step={0.05}
           />
         </div>
-      </div>
+      </SimulationConfig>
 
+      <SimulationMain>
       <CanvasChart
         data={chartData}
         layout={chartLayout}
         style={{ width: '100%' }}
       />
+      </SimulationMain>
 
+      <SimulationResults>
       {saddleNodes.length > 0 && (
-        <div className="mt-3 text-sm text-[var(--text-muted)]">
+        <div className="text-sm text-[var(--text-muted)]">
           <strong className="text-[var(--text-muted)]">Saddle-node bifurcations</strong> at{' '}
           {saddleNodes
             .map((sn) => `\u03B3 \u2248 ${sn.gamma.toFixed(2)}`)
             .join(', ')}
         </div>
       )}
+      </SimulationResults>
 
       <div className="mt-4 text-sm text-[var(--text-muted)]">
         <p>
@@ -277,6 +280,6 @@ export default function BifurcationDiagram() {
           <strong className="text-[var(--text-muted)]">hysteresis</strong>.
         </p>
       </div>
-    </div>
+    </SimulationPanel>
   );
 }

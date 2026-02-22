@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 /** Log-space factorial */
 function logFactorial(n: number): number {
@@ -19,7 +22,7 @@ function poissonPMF(k: number, lambda: number): number {
   return Math.exp(logP);
 }
 
-export default function PoissonDistribution() {
+export default function PoissonDistribution({}: SimulationComponentProps) {
   const [m1, setM1] = useState(1);
   const [m2, setM2] = useState(10);
 
@@ -39,20 +42,19 @@ export default function PoissonDistribution() {
   }, [m1, m2]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Poisson Distribution</h3>
-
-      <div className="grid grid-cols-2 gap-6 mb-4">
+    <SimulationPanel title="Poisson Distribution">
+      <SimulationConfig>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Mean m1: {m1}</label>
+          <SimulationLabel>Mean m1: {m1}</SimulationLabel>
           <Slider value={[m1]} onValueChange={([v]) => setM1(v)} min={1} max={32} step={1} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Mean m2: {m2}</label>
+          <SimulationLabel>Mean m2: {m2}</SimulationLabel>
           <Slider value={[m2]} onValueChange={([v]) => setM2(v)} min={1} max={32} step={1} />
         </div>
-      </div>
+      </SimulationConfig>
 
+      <SimulationMain>
       <CanvasChart
         data={[
           {
@@ -84,6 +86,7 @@ export default function PoissonDistribution() {
         }}
         style={{ width: '100%' }}
       />
+      </SimulationMain>
 
       <div className="mt-3 text-sm text-[var(--text-muted)]">
         <p>
@@ -93,6 +96,6 @@ export default function PoissonDistribution() {
           For a Poisson distribution, Mean = Variance = m.
         </p>
       </div>
-    </div>
+    </SimulationPanel>
   );
 }

@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 function polyFit(xs: number[], ys: number[], degree: number): number[] {
   const n = xs.length;
@@ -54,7 +57,7 @@ function evalPoly(coeffs: number[], x: number): number {
   return y;
 }
 
-export default function OverfittingCarousel() {
+export default function OverfittingCarousel({}: SimulationComponentProps) {
   const [degree, setDegree] = useState(1);
 
   const { trainX, trainY, testX, testY, fitX, fitY, trainErr, testErr, degreeErrors } = useMemo(() => {
@@ -112,17 +115,14 @@ export default function OverfittingCarousel() {
   }, [degree]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Overfitting: Bias-Variance Tradeoff</h3>
-      <div className="grid grid-cols-1 gap-6 mb-4">
+    <SimulationPanel title="Overfitting: Bias-Variance Tradeoff">
+      <SimulationConfig>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Polynomial degree: {degree}</label>
+          <SimulationLabel>Polynomial degree: {degree}</SimulationLabel>
           <Slider value={[degree]} onValueChange={([v]) => setDegree(v)} min={1} max={15} step={1} />
         </div>
-      </div>
-      <div className="mb-3 text-sm text-[var(--text-muted)]">
-        Train MSE: {trainErr.toFixed(4)} | Test MSE: {testErr.toFixed(4)}
-      </div>
+      </SimulationConfig>
+      <SimulationMain>
       <div className="grid grid-cols-2 gap-4">
         <CanvasChart
           data={[
@@ -163,6 +163,12 @@ export default function OverfittingCarousel() {
           style={{ width: '100%' }}
         />
       </div>
-    </div>
+      </SimulationMain>
+      <SimulationResults>
+        <div className="text-sm text-[var(--text-muted)]">
+          Train MSE: {trainErr.toFixed(4)} | Test MSE: {testErr.toFixed(4)}
+        </div>
+      </SimulationResults>
+    </SimulationPanel>
   );
 }

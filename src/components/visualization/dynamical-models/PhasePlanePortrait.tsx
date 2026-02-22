@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 /**
  * Interactive 2D phase portrait for a predator-prey (Lotka-Volterra) system.
@@ -53,7 +56,7 @@ function integrateTrajectory(
   return { xs, ys };
 }
 
-export default function PhasePlanePortrait() {
+export default function PhasePlanePortrait({}: SimulationComponentProps) {
   const [alpha, setAlpha] = useState(1.0);
   const [beta, setBeta] = useState(0.1);
   const [gamma, setGamma] = useState(1.5);
@@ -213,32 +216,27 @@ export default function PhasePlanePortrait() {
   }, [vectorField, nullclineData, trajectories, fpX, fpY]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Phase Plane Portrait: Predator-Prey</h3>
-
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+    <SimulationPanel title="Phase Plane Portrait: Predator-Prey">
+      <SimulationConfig>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Prey growth &alpha;: {alpha.toFixed(2)}</label>
+          <SimulationLabel>Prey growth &alpha;: {alpha.toFixed(2)}</SimulationLabel>
           <Slider value={[alpha]} onValueChange={([v]) => setAlpha(v)} min={0.1} max={3} step={0.05} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Predation &beta;: {beta.toFixed(3)}</label>
+          <SimulationLabel>Predation &beta;: {beta.toFixed(3)}</SimulationLabel>
           <Slider value={[beta]} onValueChange={([v]) => setBeta(v)} min={0.01} max={0.5} step={0.005} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Predator death &gamma;: {gamma.toFixed(2)}</label>
+          <SimulationLabel>Predator death &gamma;: {gamma.toFixed(2)}</SimulationLabel>
           <Slider value={[gamma]} onValueChange={([v]) => setGamma(v)} min={0.1} max={3} step={0.05} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Pred. efficiency &delta;: {delta.toFixed(3)}</label>
+          <SimulationLabel>Pred. efficiency &delta;: {delta.toFixed(3)}</SimulationLabel>
           <Slider value={[delta]} onValueChange={([v]) => setDelta(v)} min={0.01} max={0.3} step={0.005} />
         </div>
-      </div>
+      </SimulationConfig>
 
-      <div className="mb-3 text-sm text-[var(--text-muted)] font-mono">
-        Fixed point: ({fpX.toFixed(1)}, {fpY.toFixed(1)})
-      </div>
-
+      <SimulationMain>
       <CanvasChart
         data={chartData}
         layout={{
@@ -256,6 +254,13 @@ export default function PhasePlanePortrait() {
         }}
         style={{ width: '100%' }}
       />
+      </SimulationMain>
+
+      <SimulationResults>
+        <div className="text-sm text-[var(--text-muted)] font-mono">
+          Fixed point: ({fpX.toFixed(1)}, {fpY.toFixed(1)})
+        </div>
+      </SimulationResults>
 
       <div className="mt-4 border-l-4 border-blue-500 pl-4 text-sm text-[var(--text-muted)]">
         <p className="font-medium text-[var(--text-strong)] mb-1">What to notice</p>
@@ -267,6 +272,6 @@ export default function PhasePlanePortrait() {
           The grey arrows show the direction of flow at each point in the phase plane.
         </p>
       </div>
-    </div>
+    </SimulationPanel>
   );
 }

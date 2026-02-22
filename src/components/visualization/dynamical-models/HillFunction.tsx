@@ -1,10 +1,13 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { Slider } from '@/components/ui/slider';
+import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-export default function HillFunction() {
+export default function HillFunction({}: SimulationComponentProps) {
   const [K, setK] = useState(1.0);
   const [H, setH] = useState(1);
 
@@ -40,11 +43,10 @@ export default function HillFunction() {
   };
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Hill Function: Repression and Activation</h3>
-      <div className="grid grid-cols-2 gap-4 mb-4">
+    <SimulationPanel title="Hill Function: Repression and Activation">
+      <SimulationConfig>
         <div>
-          <label className="text-[var(--text-strong)]">Dissociation constant K: {K.toFixed(2)}</label>
+          <SimulationLabel>Dissociation constant K: {K.toFixed(2)}</SimulationLabel>
           <Slider
             min={0.1}
             max={2.5}
@@ -55,7 +57,7 @@ export default function HillFunction() {
           />
         </div>
         <div>
-          <label className="text-[var(--text-strong)]">Hill coefficient H: {H}</label>
+          <SimulationLabel>Hill coefficient H: {H}</SimulationLabel>
           <Slider
             min={1}
             max={10}
@@ -65,8 +67,9 @@ export default function HillFunction() {
             className="w-full"
           />
         </div>
-      </div>
+      </SimulationConfig>
 
+      <SimulationMain>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <CanvasChart
@@ -139,6 +142,7 @@ export default function HillFunction() {
           />
         </div>
       </div>
+      </SimulationMain>
 
       <div className="mt-4 text-sm text-[var(--text-muted)]">
         <p>
@@ -147,6 +151,6 @@ export default function HillFunction() {
           The Hill coefficient <em>H</em> controls the steepness of the response: higher values create a more switch-like behavior.
         </p>
       </div>
-    </div>
+    </SimulationPanel>
   );
 }

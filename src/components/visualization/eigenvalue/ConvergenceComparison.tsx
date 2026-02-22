@@ -1,11 +1,13 @@
-'use client';
+"use client";
 
 import { useMemo } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import { COLORS } from '@/lib/chart-colors';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-export function ConvergenceComparison({}: SimulationComponentProps) {
+export default function ConvergenceComparison({}: SimulationComponentProps) {
   const { data, layout } = useMemo(() => {
     const iterations = 20;
     const trueEigenvalue = 5;
@@ -67,13 +69,10 @@ export function ConvergenceComparison({}: SimulationComponentProps) {
   }, []);
 
   return (
-    <div className="space-y-4">
-      <CanvasChart data={data} layout={layout} style={{ width: '100%', height: 320 }} />
-      <p className="text-sm text-[var(--text-muted)]">
-        Rayleigh quotient iteration achieves cubic convergence, dramatically faster than the linear convergence of power method.
-      </p>
-    </div>
+    <SimulationPanel title="Eigenvalue Algorithm Convergence" caption="Rayleigh quotient iteration achieves cubic convergence, dramatically faster than the linear convergence of power method.">
+      <SimulationMain>
+        <CanvasChart data={data} layout={layout} style={{ width: '100%', height: 320 }} />
+      </SimulationMain>
+    </SimulationPanel>
   );
 }
-
-export default ConvergenceComparison;

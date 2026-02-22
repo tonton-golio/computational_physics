@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useRef, useState, useMemo, useCallback } from 'react';
 import { Canvas } from '@react-three/fiber';
@@ -6,7 +6,8 @@ import { OrbitControls } from '@react-three/drei';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import { Slider } from '@/components/ui/slider';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationLabel, SimulationButton } from '@/components/ui/simulation-panel';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 import { SimulationMain } from '@/components/ui/simulation-main';
 import { useTheme } from '@/lib/use-theme';
 
@@ -291,7 +292,7 @@ function Scene({ sigma, rho, beta, trails, autoRotate, isDark }: SceneProps) {
 // Main exported component
 // ---------------------------------------------------------------------------
 
-export function LorenzAttractor() {
+export default function LorenzAttractor({}: SimulationComponentProps) {
   const theme = useTheme();
   const isDark = theme === 'dark';
   const [sigma, setSigma] = useState([10]);
@@ -303,7 +304,8 @@ export function LorenzAttractor() {
   const toggleAutoRotate = useCallback(() => setAutoRotate((v) => !v), []);
 
   return (
-    <div className="flex flex-col lg:flex-row gap-4">
+    <SimulationPanel title="Lorenz Attractor">
+      <div className="flex flex-col lg:flex-row gap-4">
       {/* 3D Canvas */}
       <SimulationMain
         className="flex-1 w-full rounded-lg overflow-hidden"
@@ -333,108 +335,102 @@ export function LorenzAttractor() {
       </SimulationMain>
 
       {/* Parameters panel */}
-      <Card className="w-full lg:w-80 shrink-0">
-        <CardHeader>
-          <CardTitle>Parameters</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-5">
+      <SimulationConfig className="w-full lg:w-80 shrink-0">
           {/* Sigma */}
           <div>
-            <label className="text-sm font-medium text-[var(--text-strong)]">
+            <SimulationLabel>
               Sigma ({'\u03C3'}): {sigma[0].toFixed(1)}
-            </label>
+            </SimulationLabel>
             <Slider value={sigma} onValueChange={setSigma} min={0} max={20} step={0.1} />
           </div>
 
           {/* Rho */}
           <div>
-            <label className="text-sm font-medium text-[var(--text-strong)]">
+            <SimulationLabel>
               Rho ({'\u03C1'}): {rho[0].toFixed(1)}
-            </label>
+            </SimulationLabel>
             <Slider value={rho} onValueChange={setRho} min={0} max={50} step={0.1} />
           </div>
 
           {/* Beta */}
           <div>
-            <label className="text-sm font-medium text-[var(--text-strong)]">
+            <SimulationLabel>
               Beta ({'\u03B2'}): {beta[0].toFixed(2)}
-            </label>
+            </SimulationLabel>
             <Slider value={beta} onValueChange={setBeta} min={0} max={5} step={0.01} />
           </div>
 
           {/* Trails */}
           <div>
-            <label className="text-sm font-medium text-[var(--text-strong)]">
+            <SimulationLabel>
               Trails: {trails[0]}
-            </label>
+            </SimulationLabel>
             <Slider value={trails} onValueChange={setTrails} min={1} max={3} step={1} />
-            <p className="text-xs text-[var(--text-muted)] mt-1">
+            <p className="text-xs text-[var(--text-soft)] mt-1">
               Multiple trails show sensitivity to initial conditions
             </p>
           </div>
-
+      </SimulationConfig>
+      <SimulationSettings className="w-full lg:w-80 shrink-0">
           {/* Auto-rotate toggle */}
-          <button
+          <SimulationButton
+            variant={autoRotate ? 'primary' : 'secondary'}
             onClick={toggleAutoRotate}
-            className={`w-full px-4 py-2 rounded text-sm font-medium transition-colors ${
-              autoRotate
-                ? 'bg-[var(--accent)] text-white hover:bg-[var(--accent-strong)]'
-                : 'bg-[var(--surface-2)] text-[var(--text-strong)] hover:bg-[var(--surface-3)]'
-            }`}
+            className="w-full"
           >
             Auto-rotate: {autoRotate ? 'ON' : 'OFF'}
-          </button>
+          </SimulationButton>
 
           {/* Presets */}
           <div className="space-y-2">
-            <p className="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wide">
+            <p className="text-xs font-medium text-[var(--text-soft)] uppercase tracking-wide">
               Presets
             </p>
             <div className="flex flex-wrap gap-2">
-              <button
+              <SimulationButton
+                variant="secondary"
                 onClick={() => {
                   setSigma([10]);
                   setRho([28]);
                   setBeta([2.67]);
                 }}
-                className="px-3 py-1.5 text-xs rounded bg-[var(--surface-2)] text-[var(--text-strong)] hover:bg-[var(--surface-3)] transition-colors"
               >
                 Classic
-              </button>
-              <button
+              </SimulationButton>
+              <SimulationButton
+                variant="secondary"
                 onClick={() => {
                   setSigma([10]);
                   setRho([15]);
                   setBeta([2.67]);
                 }}
-                className="px-3 py-1.5 text-xs rounded bg-[var(--surface-2)] text-[var(--text-strong)] hover:bg-[var(--surface-3)] transition-colors"
               >
                 Transient
-              </button>
-              <button
+              </SimulationButton>
+              <SimulationButton
+                variant="secondary"
                 onClick={() => {
                   setSigma([14]);
                   setRho([28]);
                   setBeta([4]);
                 }}
-                className="px-3 py-1.5 text-xs rounded bg-[var(--surface-2)] text-[var(--text-strong)] hover:bg-[var(--surface-3)] transition-colors"
               >
                 Tight Wings
-              </button>
-              <button
+              </SimulationButton>
+              <SimulationButton
+                variant="secondary"
                 onClick={() => {
                   setSigma([10]);
                   setRho([45]);
                   setBeta([2.67]);
                 }}
-                className="px-3 py-1.5 text-xs rounded bg-[var(--surface-2)] text-[var(--text-strong)] hover:bg-[var(--surface-3)] transition-colors"
               >
                 High Rho
-              </button>
+              </SimulationButton>
             </div>
           </div>
-        </CardContent>
-      </Card>
-    </div>
+      </SimulationSettings>
+      </div>
+    </SimulationPanel>
   );
 }

@@ -1,8 +1,10 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 
@@ -21,7 +23,7 @@ function boxMullerNormal(rng: () => number, mu: number, sigma: number): number {
   return mu + sigma * z;
 }
 
-export default function KLDivergence({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function KLDivergence({}: SimulationComponentProps) {
   const [loc1, setLoc1] = useState(5);
   const [scale1, setScale1] = useState(1.0);
   const [loc2, setLoc2] = useState(3);
@@ -99,54 +101,53 @@ export default function KLDivergence({ id }: SimulationComponentProps) { // esli
   }, [loc1, scale1, loc2, scale2]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">KL-Divergence Visualization</h3>
-      <p className="text-[var(--text-muted)] text-sm mb-4">
-        Adjust the parameters of two distributions (P and Q) to see how the KL-divergence changes.
-        The KL-divergence measures how much distribution P diverges from distribution Q.
-      </p>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-        <div>
-          <label className="text-blue-400 text-sm">P mean: {loc1}</label>
-          <Slider
-            min={0} max={10} step={1} value={[loc1]}
-            onValueChange={([v]) => setLoc1(v)}
-            className="w-full"
-          />
+    <SimulationPanel title="KL-Divergence Visualization" caption="Adjust the parameters of two distributions (P and Q) to see how the KL-divergence changes. The KL-divergence measures how much distribution P diverges from distribution Q.">
+      <SimulationConfig>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div>
+            <SimulationLabel className="text-blue-400 text-sm">P mean: {loc1}</SimulationLabel>
+            <Slider
+              min={0} max={10} step={1} value={[loc1]}
+              onValueChange={([v]) => setLoc1(v)}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel className="text-blue-400 text-sm">P std: {scale1.toFixed(1)}</SimulationLabel>
+            <Slider
+              min={0.2} max={5} step={0.1} value={[scale1]}
+              onValueChange={([v]) => setScale1(v)}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel className="text-red-400 text-sm">Q mean: {loc2}</SimulationLabel>
+            <Slider
+              min={0} max={10} step={1} value={[loc2]}
+              onValueChange={([v]) => setLoc2(v)}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel className="text-red-400 text-sm">Q std: {scale2.toFixed(1)}</SimulationLabel>
+            <Slider
+              min={0.2} max={5} step={0.1} value={[scale2]}
+              onValueChange={([v]) => setScale2(v)}
+              className="w-full"
+            />
+          </div>
         </div>
-        <div>
-          <label className="text-blue-400 text-sm">P std: {scale1.toFixed(1)}</label>
-          <Slider
-            min={0.2} max={5} step={0.1} value={[scale1]}
-            onValueChange={([v]) => setScale1(v)}
-            className="w-full"
-          />
-        </div>
-        <div>
-          <label className="text-red-400 text-sm">Q mean: {loc2}</label>
-          <Slider
-            min={0} max={10} step={1} value={[loc2]}
-            onValueChange={([v]) => setLoc2(v)}
-            className="w-full"
-          />
-        </div>
-        <div>
-          <label className="text-red-400 text-sm">Q std: {scale2.toFixed(1)}</label>
-          <Slider
-            min={0.2} max={5} step={0.1} value={[scale2]}
-            onValueChange={([v]) => setScale2(v)}
-            className="w-full"
-          />
-        </div>
-      </div>
+      </SimulationConfig>
 
+      <SimulationMain>
       <CanvasChart
         data={[
           {
             x: result.binCenters,
             y: result.counts1,
             type: 'bar' as const,
-            marker: { color: 'rgba(59,130,246,0.7)' },
+            marker: { color: '#3b82f6' },
+            opacity: 0.7,
             name: 'P (distribution 1)',
             width: result.binEdges[1] - result.binEdges[0],
           },
@@ -154,7 +155,8 @@ export default function KLDivergence({ id }: SimulationComponentProps) { // esli
             x: result.binCenters,
             y: result.counts2,
             type: 'bar' as const,
-            marker: { color: 'rgba(239,68,68,0.5)' },
+            marker: { color: '#ef4444' },
+            opacity: 0.5,
             name: 'Q (distribution 2)',
             width: result.binEdges[1] - result.binEdges[0],
           },
@@ -177,6 +179,7 @@ export default function KLDivergence({ id }: SimulationComponentProps) { // esli
         KL-divergence is non-negative and equals zero if and only if P and Q are identical.
         It is asymmetric: D_KL(P||Q) is generally not equal to D_KL(Q||P).
       </p>
-    </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

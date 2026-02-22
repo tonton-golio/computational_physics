@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 /**
  * Flow through a converging-diverging channel (Venturi tube).
@@ -10,7 +13,7 @@ import { CanvasChart } from '@/components/ui/canvas-chart';
  * Bernoulli's equation and continuity (A * v = const).
  */
 
-export default function BernoulliStreamline() {
+export default function BernoulliStreamline({}: SimulationComponentProps) {
   const [constriction, setConstriction] = useState(0.4); // min area / inlet area
   const [inletVelocity, setInletVelocity] = useState(2.0); // m/s
 
@@ -90,52 +93,46 @@ export default function BernoulliStreamline() {
   ], [areaData]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-2 text-[var(--text-strong)]">
-        Bernoulli&apos;s Equation in a Converging-Diverging Channel
-      </h3>
-      <p className="text-sm text-[var(--text-muted)] mb-4">
-        Continuity requires A&middot;v = const along a streamtube.
-        Where the channel narrows, velocity increases and pressure drops
-        (Bernoulli). Adjust the constriction ratio and inlet velocity.
-      </p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+    <SimulationPanel title="Bernoulli's Equation in a Converging-Diverging Channel" caption="Continuity requires A\u00b7v = const along a streamtube. Where the channel narrows, velocity increases and pressure drops (Bernoulli). Adjust the constriction ratio and inlet velocity.">
+      <SimulationConfig>
         <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">
+          <SimulationLabel>
             Constriction ratio A<sub>min</sub>/A<sub>in</sub>: {constriction.toFixed(2)}
-          </label>
+          </SimulationLabel>
           <Slider min={0.1} max={0.95} step={0.01} value={[constriction]}
             onValueChange={([v]) => setConstriction(v)} className="w-full" />
         </div>
         <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">
+          <SimulationLabel>
             Inlet velocity: {inletVelocity.toFixed(1)} m/s
-          </label>
+          </SimulationLabel>
           <Slider min={0.5} max={10} step={0.1} value={[inletVelocity]}
             onValueChange={([v]) => setInletVelocity(v)} className="w-full" />
         </div>
-      </div>
-      <div className="space-y-4">
-        <CanvasChart
-          data={areaTraces}
-          layout={{ xaxis: { title: { text: 'Position x/L' } }, yaxis: { title: { text: 'A/A_in' } } }}
-          style={{ width: '100%', height: 180 }}
-        />
-        <CanvasChart
-          data={velTraces}
-          layout={{ xaxis: { title: { text: 'Position x/L' } }, yaxis: { title: { text: 'Velocity (m/s)' } } }}
-          style={{ width: '100%', height: 200 }}
-        />
-        <CanvasChart
-          data={pressTraces}
-          layout={{ xaxis: { title: { text: 'Position x/L' } }, yaxis: { title: { text: 'Pressure (kPa)' } } }}
-          style={{ width: '100%', height: 200 }}
-        />
-      </div>
+      </SimulationConfig>
+      <SimulationMain>
+        <div className="space-y-4">
+          <CanvasChart
+            data={areaTraces}
+            layout={{ xaxis: { title: { text: 'Position x/L' } }, yaxis: { title: { text: 'A/A_in' } } }}
+            style={{ width: '100%', height: 180 }}
+          />
+          <CanvasChart
+            data={velTraces}
+            layout={{ xaxis: { title: { text: 'Position x/L' } }, yaxis: { title: { text: 'Velocity (m/s)' } } }}
+            style={{ width: '100%', height: 200 }}
+          />
+          <CanvasChart
+            data={pressTraces}
+            layout={{ xaxis: { title: { text: 'Position x/L' } }, yaxis: { title: { text: 'Pressure (kPa)' } } }}
+            style={{ width: '100%', height: 200 }}
+          />
+        </div>
+      </SimulationMain>
       <p className="mt-3 text-xs text-[var(--text-muted)]">
         Top: channel cross-section area. Middle: velocity along the centreline (peaks at the throat).
         Bottom: pressure (drops at the throat). This is the Venturi effect.
       </p>
-    </div>
+    </SimulationPanel>
   );
 }

@@ -1,13 +1,15 @@
-'use client';
+"use client";
 
 import { useState, useMemo } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import { Slider } from '@/components/ui/slider';
 import { COLORS } from '@/lib/chart-colors';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 import type { Matrix2x2 } from './eigen-utils';
 
-export function HermitianDemo({}: SimulationComponentProps) {
+export default function HermitianDemo({}: SimulationComponentProps) {
   const [offDiag, setOffDiag] = useState(0.8);
 
   const { data, layout } = useMemo(() => {
@@ -69,24 +71,23 @@ export function HermitianDemo({}: SimulationComponentProps) {
   }, [offDiag]);
 
   return (
-    <div className="space-y-4">
-      <CanvasChart data={data} layout={layout} style={{ width: '100%', height: 320 }} />
-      <div className="space-y-2">
-        <label className="text-sm text-[var(--text-muted)]">Symmetric off-diagonal coupling: {offDiag.toFixed(2)}</label>
-        <Slider
-          min={-2}
-          max={2}
-          step={0.05}
-          value={[offDiag]}
-          onValueChange={([v]) => setOffDiag(v)}
-          className="w-full"
-        />
-      </div>
-      <p className="text-xs text-[var(--text-soft)]">
-        Hermitian matrices have real eigenvalues and orthogonal eigenvectors, yielding numerically stable eigendecompositions.
-      </p>
-    </div>
+    <SimulationPanel title="Hermitian Matrix: Real Eigenstructure" caption="Hermitian matrices have real eigenvalues and orthogonal eigenvectors, yielding numerically stable eigendecompositions.">
+      <SimulationConfig>
+        <div className="space-y-2">
+          <SimulationLabel>Symmetric off-diagonal coupling: {offDiag.toFixed(2)}</SimulationLabel>
+          <Slider
+            min={-2}
+            max={2}
+            step={0.05}
+            value={[offDiag]}
+            onValueChange={([v]) => setOffDiag(v)}
+            className="w-full"
+          />
+        </div>
+      </SimulationConfig>
+      <SimulationMain>
+        <CanvasChart data={data} layout={layout} style={{ width: '100%', height: 320 }} />
+      </SimulationMain>
+    </SimulationPanel>
   );
 }
-
-export default HermitianDemo;

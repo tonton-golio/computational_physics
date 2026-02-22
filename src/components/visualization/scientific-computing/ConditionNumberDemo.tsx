@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { Slider } from '@/components/ui/slider';
-import { SimulationPanel, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import { getCanvasTheme } from '@/lib/canvas-theme';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
@@ -21,7 +22,7 @@ const TRACE_COLORS = [
  *
  * Live readout: cond(A), ||dx||/||x||, ||db||/||b||, amplification ratio.
  */
-export function ConditionNumberDemo({}: SimulationComponentProps) {
+export default function ConditionNumberDemo({}: SimulationComponentProps) {
   const [angleDeg, setAngleDeg] = useState(30);
   const [epsilon, setEpsilon] = useState(0.05);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -285,76 +286,74 @@ export function ConditionNumberDemo({}: SimulationComponentProps) {
   }, [draw]);
 
   return (
-    <SimulationPanel>
-      <h3 className="text-lg font-semibold text-[var(--text-strong)]">
-        Condition Number Amplifier
-      </h3>
-      <p className="text-sm text-[var(--text-soft)] mb-4">
-        A small perturbation in the right-hand side b is amplified in the solution x. The amplification factor is bounded by cond(A). Narrow the angle between column vectors to see the condition number explode.
-      </p>
+    <SimulationPanel title="Condition Number Amplifier" caption="A small perturbation in the right-hand side b is amplified in the solution x. The amplification factor is bounded by cond(A). Narrow the angle between column vectors to see the condition number explode.">
+      <SimulationConfig>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <SimulationLabel>
+              Angle between columns: {angleDeg}°
+            </SimulationLabel>
+            <Slider
+              value={[angleDeg]}
+              onValueChange={(val) => setAngleDeg(val[0])}
+              min={1}
+              max={90}
+              step={1}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel>
+              Perturbation size (epsilon): {epsilon.toFixed(3)}
+            </SimulationLabel>
+            <Slider
+              value={[epsilon]}
+              onValueChange={(val) => setEpsilon(val[0])}
+              min={0.001}
+              max={0.2}
+              step={0.001}
+              className="w-full"
+            />
+          </div>
+        </div>
+      </SimulationConfig>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <div>
-          <SimulationLabel>
-            Angle between columns: {angleDeg}°
-          </SimulationLabel>
-          <Slider
-            value={[angleDeg]}
-            onValueChange={(val) => setAngleDeg(val[0])}
-            min={1}
-            max={90}
-            step={1}
-            className="w-full"
-          />
-        </div>
-        <div>
-          <SimulationLabel>
-            Perturbation size (epsilon): {epsilon.toFixed(3)}
-          </SimulationLabel>
-          <Slider
-            value={[epsilon]}
-            onValueChange={(val) => setEpsilon(val[0])}
-            min={0.001}
-            max={0.2}
-            step={0.001}
-            className="w-full"
-          />
-        </div>
-      </div>
+      <SimulationMain scaleMode="contain">
+        <canvas
+          ref={canvasRef}
+          className="w-full rounded-md border border-[var(--border)]"
+          style={{ height: 320 }}
+        />
+      </SimulationMain>
 
-      {/* Readout */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-        <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
-          <div className="text-xs text-[var(--text-muted)]">cond(A)</div>
-          <div className="text-base font-mono font-semibold text-[var(--text-strong)]">
-            {result.condA < 1e6 ? result.condA.toFixed(1) : result.condA.toExponential(1)}
+      <SimulationResults>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
+            <div className="text-xs text-[var(--text-muted)]">cond(A)</div>
+            <div className="text-base font-mono font-semibold text-[var(--text-strong)]">
+              {result.condA < 1e6 ? result.condA.toFixed(1) : result.condA.toExponential(1)}
+            </div>
+          </div>
+          <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
+            <div className="text-xs text-[var(--text-muted)]">||db||/||b||</div>
+            <div className="text-base font-mono font-semibold text-[var(--text-strong)]">
+              {(result.relErrB * 100).toFixed(2)}%
+            </div>
+          </div>
+          <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
+            <div className="text-xs text-[var(--text-muted)]">||dx||/||x||</div>
+            <div className="text-base font-mono font-semibold text-[var(--text-strong)]">
+              {(result.relErrX * 100).toFixed(2)}%
+            </div>
+          </div>
+          <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
+            <div className="text-xs text-[var(--text-muted)]">Amplification</div>
+            <div className="text-base font-mono font-semibold text-[var(--accent)]">
+              {result.amplification.toFixed(1)}x
+            </div>
           </div>
         </div>
-        <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
-          <div className="text-xs text-[var(--text-muted)]">||db||/||b||</div>
-          <div className="text-base font-mono font-semibold text-[var(--text-strong)]">
-            {(result.relErrB * 100).toFixed(2)}%
-          </div>
-        </div>
-        <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
-          <div className="text-xs text-[var(--text-muted)]">||dx||/||x||</div>
-          <div className="text-base font-mono font-semibold text-[var(--text-strong)]">
-            {(result.relErrX * 100).toFixed(2)}%
-          </div>
-        </div>
-        <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
-          <div className="text-xs text-[var(--text-muted)]">Amplification</div>
-          <div className="text-base font-mono font-semibold text-[var(--accent)]">
-            {result.amplification.toFixed(1)}x
-          </div>
-        </div>
-      </div>
-
-      <canvas
-        ref={canvasRef}
-        className="w-full rounded-md border border-[var(--border)]"
-        style={{ height: 320 }}
-      />
+      </SimulationResults>
     </SimulationPanel>
   );
 }

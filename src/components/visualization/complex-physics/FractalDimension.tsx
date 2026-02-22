@@ -1,9 +1,11 @@
-'use client';
+"use client";
 
-import React, { useMemo, useState, useRef, useEffect } from 'react';
+import { useMemo, useState, useRef, useEffect } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { SimulationMain } from '@/components/ui/simulation-main';
 import { Slider } from '@/components/ui/slider';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationAux, SimulationLabel } from '@/components/ui/simulation-panel';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 import { useTheme } from '@/lib/use-theme';
 
 function mandelbrotMask(resolution: number, maxIter: number, exponent: number): number[][] {
@@ -192,7 +194,7 @@ function FractalCanvas({ mask, resolution, isDark }: { mask: number[][]; resolut
 
 // ── Main Component ────────────────────────────────────────────────────
 
-export function FractalDimension() {
+export default function FractalDimension({}: SimulationComponentProps) {
   const theme = useTheme();
   const isDark = theme === 'dark';
   const [resolution, setResolution] = useState(128);
@@ -205,24 +207,24 @@ export function FractalDimension() {
   }, [resolution, maxIter, exponent]);
 
   return (
-    <div className="space-y-6">
-      {/* Controls */}
-      <div className="flex flex-wrap gap-6 items-center">
+    <SimulationPanel title="Fractal Dimension (Box Counting)">
+      <SimulationConfig>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Resolution: {resolution}</label>
+          <SimulationLabel>Resolution: {resolution}</SimulationLabel>
           <Slider value={[resolution]} onValueChange={([v]) => setResolution(v)} min={64} max={512} step={64} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Iterations: {maxIter}</label>
+          <SimulationLabel>Iterations: {maxIter}</SimulationLabel>
           <Slider value={[maxIter]} onValueChange={([v]) => setMaxIter(v)} min={10} max={80} step={1} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Exponent a: {exponent.toFixed(1)}</label>
+          <SimulationLabel>Exponent a: {exponent.toFixed(1)}</SimulationLabel>
           <Slider value={[exponent]} onValueChange={([v]) => setExponent(v)} min={1.5} max={4.0} step={0.1} />
         </div>
-      </div>
-
-      <div className="text-sm text-[var(--text-muted)]">Estimated box-counting fractal dimension D ≈ {boxes.slope.toFixed(3)}</div>
+      </SimulationConfig>
+      <SimulationResults>
+        <div className="text-sm text-[var(--text-muted)]">Estimated box-counting fractal dimension D ≈ {boxes.slope.toFixed(3)}</div>
+      </SimulationResults>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* p5.js Fractal Rendering */}
@@ -231,27 +233,29 @@ export function FractalDimension() {
         </SimulationMain>
 
         {/* Box-counting log-log plot */}
-        <CanvasChart
-          data={[
-            {
-              x: boxes.eps.map(e => Math.log(1 / e)),
-              y: boxes.counts.map(v => Math.log(v)),
-              type: 'scatter',
-              mode: 'lines+markers',
-              line: { color: '#f59e0b', width: 2 },
-              marker: { size: 6 },
-            },
-          ]}
-          layout={{
-            title: { text: 'Box Counting: log(N) vs log(1/epsilon)', font: { size: 13 } },
-            xaxis: { title: { text: 'log(1/epsilon)' } },
-            yaxis: { title: { text: 'log(N)' } },
-            showlegend: false,
-            margin: { t: 40, r: 20, b: 50, l: 60 },
-          }}
-          style={{ width: '100%', height: 360 }}
-        />
+        <SimulationAux>
+          <CanvasChart
+            data={[
+              {
+                x: boxes.eps.map(e => Math.log(1 / e)),
+                y: boxes.counts.map(v => Math.log(v)),
+                type: 'scatter',
+                mode: 'lines+markers',
+                line: { color: '#f59e0b', width: 2 },
+                marker: { size: 6 },
+              },
+            ]}
+            layout={{
+              title: { text: 'Box Counting: log(N) vs log(1/epsilon)', font: { size: 13 } },
+              xaxis: { title: { text: 'log(1/epsilon)' } },
+              yaxis: { title: { text: 'log(N)' } },
+              showlegend: false,
+              margin: { t: 40, r: 20, b: 50, l: 60 },
+            }}
+            style={{ width: '100%', height: 360 }}
+          />
+        </SimulationAux>
       </div>
-    </div>
+    </SimulationPanel>
   );
 }

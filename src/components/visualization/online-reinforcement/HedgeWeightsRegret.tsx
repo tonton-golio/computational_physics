@@ -1,12 +1,14 @@
-'use client';
+"use client";
 
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationLabel, SimulationConfig } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 
-export default function HedgeWeightsRegret({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function HedgeWeightsRegret({}: SimulationComponentProps) {
   const [eta, setEta] = useState(0.3);
   const rounds = 220;
   const experts = 4;
@@ -38,10 +40,14 @@ export default function HedgeWeightsRegret({ id }: SimulationComponentProps) { /
   const x = Array.from({ length: rounds }, (_, i) => i + 1);
 
   return (
-    <div className="w-full rounded-lg bg-[var(--surface-1)] p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-3 text-[var(--text-strong)]">Hedge: Weight Evolution and Regret</h3>
-      <label className="mb-1 block text-sm text-[var(--text-muted)]">Learning rate eta: {eta.toFixed(2)}</label>
-      <Slider value={[eta]} onValueChange={([v]) => setEta(v)} min={0.05} max={1} step={0.05} className="mb-4" />
+    <SimulationPanel title="Hedge: Weight Evolution and Regret">
+      <SimulationConfig>
+        <div>
+          <SimulationLabel>Learning rate eta: {eta.toFixed(2)}</SimulationLabel>
+          <Slider value={[eta]} onValueChange={([v]) => setEta(v)} min={0.05} max={1} step={0.05} />
+        </div>
+      </SimulationConfig>
+      <SimulationMain>
       <CanvasChart
         data={[
           ...probs.map((series, i) => ({ x, y: series.map((v) => v * 10), type: 'scatter' as const, mode: 'lines' as const, name: `Expert ${i + 1} prob (scaled)`, })),
@@ -55,6 +61,7 @@ export default function HedgeWeightsRegret({ id }: SimulationComponentProps) { /
         }}
         style={{ width: '100%' }}
       />
-    </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

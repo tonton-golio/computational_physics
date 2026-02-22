@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { Slider } from '@/components/ui/slider';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationLabel, SimulationButton } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 function runBetHedging(
   p: number,
@@ -33,7 +36,7 @@ function runBetHedging(
   return allCapitals;
 }
 
-export function BetHedging() {
+export default function BetHedging({}: SimulationComponentProps) {
   const [p, setP] = useState(0.05);
   const [noise, setNoise] = useState(1.0);
   const [investPerRound, setInvestPerRound] = useState(0.5);
@@ -52,84 +55,85 @@ export function BetHedging() {
   const colors = ['#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        <div>
-          <label className="text-sm text-[var(--text-muted)] block mb-1">Fear probability p: {p.toFixed(2)}</label>
-          <Slider
-            min={0}
-            max={0.3}
-            step={0.01}
-            value={[p]}
-            onValueChange={([v]) => setP(v)}
-            className="w-full"
-          />
+    <SimulationPanel title="Bet Hedging: Capital Over Time">
+      <SimulationSettings>
+        <SimulationButton variant="primary" onClick={() => setSeed(s => s + 1)}>
+          Re-run
+        </SimulationButton>
+      </SimulationSettings>
+      <SimulationConfig>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div>
+            <SimulationLabel>Fear probability p: {p.toFixed(2)}</SimulationLabel>
+            <Slider
+              min={0}
+              max={0.3}
+              step={0.01}
+              value={[p]}
+              onValueChange={([v]) => setP(v)}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel>Noise: {noise.toFixed(1)}</SimulationLabel>
+            <Slider
+              min={0}
+              max={3}
+              step={0.1}
+              value={[noise]}
+              onValueChange={([v]) => setNoise(v)}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel>Invest fraction: {investPerRound.toFixed(2)}</SimulationLabel>
+            <Slider
+              min={0.01}
+              max={1}
+              step={0.01}
+              value={[investPerRound]}
+              onValueChange={([v]) => setInvestPerRound(v)}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel>Win multiplier: {winMultiplier.toFixed(1)}</SimulationLabel>
+            <Slider
+              min={1}
+              max={4}
+              step={0.1}
+              value={[winMultiplier]}
+              onValueChange={([v]) => setWinMultiplier(v)}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel>Loss multiplier: {lossMultiplier.toFixed(2)}</SimulationLabel>
+            <Slider
+              min={0}
+              max={1}
+              step={0.05}
+              value={[lossMultiplier]}
+              onValueChange={([v]) => setLossMultiplier(v)}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel>Steps: {nsteps}</SimulationLabel>
+            <Slider
+              min={50}
+              max={3000}
+              step={50}
+              value={[nsteps]}
+              onValueChange={([v]) => setNsteps(v)}
+              className="w-full"
+            />
+          </div>
         </div>
-        <div>
-          <label className="text-sm text-[var(--text-muted)] block mb-1">Noise: {noise.toFixed(1)}</label>
-          <Slider
-            min={0}
-            max={3}
-            step={0.1}
-            value={[noise]}
-            onValueChange={([v]) => setNoise(v)}
-            className="w-full"
-          />
-        </div>
-        <div>
-          <label className="text-sm text-[var(--text-muted)] block mb-1">Invest fraction: {investPerRound.toFixed(2)}</label>
-          <Slider
-            min={0.01}
-            max={1}
-            step={0.01}
-            value={[investPerRound]}
-            onValueChange={([v]) => setInvestPerRound(v)}
-            className="w-full"
-          />
-        </div>
-        <div>
-          <label className="text-sm text-[var(--text-muted)] block mb-1">Win multiplier: {winMultiplier.toFixed(1)}</label>
-          <Slider
-            min={1}
-            max={4}
-            step={0.1}
-            value={[winMultiplier]}
-            onValueChange={([v]) => setWinMultiplier(v)}
-            className="w-full"
-          />
-        </div>
-        <div>
-          <label className="text-sm text-[var(--text-muted)] block mb-1">Loss multiplier: {lossMultiplier.toFixed(2)}</label>
-          <Slider
-            min={0}
-            max={1}
-            step={0.05}
-            value={[lossMultiplier]}
-            onValueChange={([v]) => setLossMultiplier(v)}
-            className="w-full"
-          />
-        </div>
-        <div>
-          <label className="text-sm text-[var(--text-muted)] block mb-1">Steps: {nsteps}</label>
-          <Slider
-            min={50}
-            max={3000}
-            step={50}
-            value={[nsteps]}
-            onValueChange={([v]) => setNsteps(v)}
-            className="w-full"
-          />
-        </div>
-      </div>
+      </SimulationConfig>
 
-      <button
-        onClick={() => setSeed(s => s + 1)}
-        className="px-4 py-2 bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white rounded text-sm"
-      >
-        Re-run
-      </button>
-
-      <CanvasChart
+      <SimulationMain>
+        <CanvasChart
         data={results.map((capital, idx) => ({
           y: capital,
           type: 'scatter' as const,
@@ -146,6 +150,7 @@ export function BetHedging() {
         }}
         style={{ width: '100%', height: 400 }}
       />
-    </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

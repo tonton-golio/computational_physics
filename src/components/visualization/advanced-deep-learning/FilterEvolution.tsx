@@ -1,9 +1,11 @@
-'use client';
+"use client";
 
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart, type ChartTrace } from '@/components/ui/canvas-chart';
 import { SimulationMain } from '@/components/ui/simulation-main';
+import { SimulationPanel, SimulationConfig, SimulationAux, SimulationLabel } from '@/components/ui/simulation-panel';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 const FS = 5, NF = 6, CELL = 26;
 const NAMES = ['Horiz. edge', 'Vert. edge', 'Diag. edge', 'Gaussian', 'Laplacian', 'Gabor'];
@@ -35,7 +37,7 @@ function mse(a: number[][], b: number[][]) {
   return s / (FS * FS * 4);
 }
 
-export default function FilterEvolution() {
+export default function FilterEvolution({}: SimulationComponentProps) {
   const [epoch, setEpoch] = useState(0);
   const [selFilter, setSelFilter] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -103,18 +105,19 @@ export default function FilterEvolution() {
   }, [initFilters, selFilter]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Filter Evolution During Training</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">Training epoch: {epoch}</label>
-          <Slider min={0} max={maxEp} step={1} value={[epoch]} onValueChange={([v]) => setEpoch(v)} />
+    <SimulationPanel title="Filter Evolution During Training">
+      <SimulationConfig>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+          <div>
+            <SimulationLabel className="block text-sm text-[var(--text-muted)] mb-1">Training epoch: {epoch}</SimulationLabel>
+            <Slider min={0} max={maxEp} step={1} value={[epoch]} onValueChange={([v]) => setEpoch(v)} />
+          </div>
+          <div>
+            <SimulationLabel className="block text-sm text-[var(--text-muted)] mb-1">Highlight: {NAMES[selFilter]}</SimulationLabel>
+            <Slider min={0} max={NF - 1} step={1} value={[selFilter]} onValueChange={([v]) => setSelFilter(v)} />
+          </div>
         </div>
-        <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">Highlight: {NAMES[selFilter]}</label>
-          <Slider min={0} max={NF - 1} step={1} value={[selFilter]} onValueChange={([v]) => setSelFilter(v)} />
-        </div>
-      </div>
+      </SimulationConfig>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         <SimulationMain scaleMode="contain" className="flex flex-col items-center">
           <p className="text-sm text-[var(--text-muted)] mb-2 font-semibold">
@@ -126,18 +129,20 @@ export default function FilterEvolution() {
             <span><span className="inline-block w-3 h-3 rounded-sm bg-red-500 mr-1 align-middle" /> Negative</span>
           </div>
         </SimulationMain>
-        <CanvasChart data={chartTraces} layout={{ title: { text: 'Filter convergence' },
-          xaxis: { title: { text: 'Epoch' } }, yaxis: { title: { text: 'Convergence' }, range: [0, 1.05] },
-          margin: { t: 40, b: 50, l: 60, r: 20 },
-          shapes: [{ type: 'line', x0: epoch, x1: epoch, y0: 0, y1: 1.05,
-            line: { color: '#f59e0b', width: 1.5, dash: 'dash' } }] }}
-          style={{ width: '100%', height: 370 }} />
+        <SimulationAux>
+          <CanvasChart data={chartTraces} layout={{ title: { text: 'Filter convergence' },
+            xaxis: { title: { text: 'Epoch' } }, yaxis: { title: { text: 'Convergence' }, range: [0, 1.05] },
+            margin: { t: 40, b: 50, l: 60, r: 20 },
+            shapes: [{ type: 'line', x0: epoch, x1: epoch, y0: 0, y1: 1.05,
+              line: { color: '#f59e0b', width: 1.5, dash: 'dash' } }] }}
+            style={{ width: '100%', height: 370 }} />
+        </SimulationAux>
       </div>
       <div className="mt-4 p-3 bg-[var(--surface-2)] rounded text-sm text-[var(--text-muted)]">
         Filters start as random noise and gradually organize into structured patterns during training.
         Early layers typically learn edge detectors, blob detectors, and Gabor-like texture filters.
         Drag the epoch slider to watch the evolution from noise to organized feature detectors.
       </div>
-    </div>
+    </SimulationPanel>
   );
 }

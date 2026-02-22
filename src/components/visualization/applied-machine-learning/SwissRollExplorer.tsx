@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 import { generateSwissRoll, pca2d, tsne } from './ml-utils';
 
 function normalizeRange(arr: number[]): number[] {
@@ -20,7 +23,7 @@ function labelToColor(labels: number[]): string[] {
   });
 }
 
-export default function SwissRollExplorer(): React.ReactElement {
+export default function SwissRollExplorer({}: SimulationComponentProps): React.ReactElement {
   const [nPoints, setNPoints] = useState(800);
   const [perplexity, setPerplexity] = useState(30);
   const [tsneIter, setTsneIter] = useState(300);
@@ -105,31 +108,30 @@ export default function SwissRollExplorer(): React.ReactElement {
   );
 
   return (
-    <div className="w-full rounded-lg bg-[var(--surface-1)] p-6">
-      <h3 className="mb-4 text-xl font-semibold text-[var(--text-strong)]">
-        Swiss Roll Manifold Explorer
-      </h3>
+    <SimulationPanel title="Swiss Roll Manifold Explorer">
+      <SimulationConfig>
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          <div>
+            <SimulationLabel>Points: {nPoints}</SimulationLabel>
+            <Slider min={200} max={2000} step={100} value={[nPoints]} onValueChange={([v]) => setNPoints(v)} />
+          </div>
+          <div>
+            <SimulationLabel>Perplexity (t-SNE): {perplexity}</SimulationLabel>
+            <Slider min={5} max={100} step={5} value={[perplexity]} onValueChange={([v]) => setPerplexity(v)} />
+          </div>
+          <div>
+            <SimulationLabel>n_neighbors (UMAP): {nNeighbors}</SimulationLabel>
+            <Slider min={5} max={50} step={5} value={[nNeighbors]} onValueChange={([v]) => setNNeighbors(v)} />
+          </div>
+          <div>
+            <SimulationLabel>t-SNE iterations: {tsneIter}</SimulationLabel>
+            <Slider min={100} max={800} step={50} value={[tsneIter]} onValueChange={([v]) => setTsneIter(v)} />
+          </div>
+        </div>
+      </SimulationConfig>
 
-      <div className="mb-4 grid grid-cols-2 gap-4 md:grid-cols-4">
-        <div>
-          <label className="text-sm text-[var(--text-muted)]">Points: {nPoints}</label>
-          <Slider min={200} max={2000} step={100} value={[nPoints]} onValueChange={([v]) => setNPoints(v)} />
-        </div>
-        <div>
-          <label className="text-sm text-[var(--text-muted)]">Perplexity (t-SNE): {perplexity}</label>
-          <Slider min={5} max={100} step={5} value={[perplexity]} onValueChange={([v]) => setPerplexity(v)} />
-        </div>
-        <div>
-          <label className="text-sm text-[var(--text-muted)]">n_neighbors (UMAP): {nNeighbors}</label>
-          <Slider min={5} max={50} step={5} value={[nNeighbors]} onValueChange={([v]) => setNNeighbors(v)} />
-        </div>
-        <div>
-          <label className="text-sm text-[var(--text-muted)]">t-SNE iterations: {tsneIter}</label>
-          <Slider min={100} max={800} step={50} value={[tsneIter]} onValueChange={([v]) => setTsneIter(v)} />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+      <SimulationMain>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <div>
           <p className="mb-1 text-center text-sm font-medium text-[var(--text-muted)]">PCA</p>
           <CanvasChart
@@ -168,12 +170,13 @@ export default function SwissRollExplorer(): React.ReactElement {
         </div>
       </div>
 
-      <div className="mt-3 rounded bg-[var(--surface-2,#27272a)] p-3 text-sm text-[var(--text-muted)]">
-        The Swiss Roll is a 2D manifold embedded in 3D space. PCA projects linearly and
-        fails to unroll the manifold — notice how colors (position along the roll) are
-        mixed. t-SNE and UMAP preserve local neighborhoods and successfully unroll the
-        structure.
-      </div>
-    </div>
+        <div className="mt-3 rounded bg-[var(--surface-2,#27272a)] p-3 text-sm text-[var(--text-muted)]">
+          The Swiss Roll is a 2D manifold embedded in 3D space. PCA projects linearly and
+          fails to unroll the manifold — notice how colors (position along the roll) are
+          mixed. t-SNE and UMAP preserve local neighborhoods and successfully unroll the
+          structure.
+        </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

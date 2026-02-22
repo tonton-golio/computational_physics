@@ -1,7 +1,10 @@
-'use client';
+"use client";
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Slider } from '@/components/ui/slider';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationResults, SimulationLabel, SimulationButton } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 function relu(x: number): number {
   return Math.max(0, x);
@@ -66,7 +69,7 @@ function computeNetwork(input: number[]): NetworkState {
   };
 }
 
-export default function ForwardBackwardPass(): React.ReactElement {
+export default function ForwardBackwardPass({}: SimulationComponentProps): React.ReactElement {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [x1, setX1] = useState(0.8);
@@ -282,66 +285,64 @@ export default function ForwardBackwardPass(): React.ReactElement {
   }, [net, phase, animProgress]);
 
   return (
-    <div className="w-full rounded-lg bg-[var(--surface-1)] p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">
-        Forward and Backward Pass
-      </h3>
-
-      <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-4">
-        <div>
-          <label className="text-sm text-[var(--text-muted)]">
-            Input x1: {x1.toFixed(2)}
-          </label>
-          <Slider
-            min={-1}
-            max={1}
-            step={0.05}
-            value={[x1]}
-            onValueChange={([v]) => setX1(v)}
-          />
-        </div>
-        <div>
-          <label className="text-sm text-[var(--text-muted)]">
-            Input x2: {x2.toFixed(2)}
-          </label>
-          <Slider
-            min={-1}
-            max={1}
-            step={0.05}
-            value={[x2]}
-            onValueChange={([v]) => setX2(v)}
-          />
-        </div>
+    <SimulationPanel title="Forward and Backward Pass">
+      <SimulationSettings>
         <div className="flex items-end gap-2">
-          <button
-            onClick={() => animate('forward')}
-            className="rounded bg-blue-600 px-4 py-1.5 text-sm font-medium text-white hover:opacity-90"
-          >
+          <SimulationButton variant="primary" onClick={() => animate('forward')}>
             Forward
-          </button>
-          <button
-            onClick={() => animate('backward')}
-            className="rounded bg-red-600 px-4 py-1.5 text-sm font-medium text-white hover:opacity-90"
-          >
+          </SimulationButton>
+          <SimulationButton variant="primary" onClick={() => animate('backward')}>
             Backward
-          </button>
+          </SimulationButton>
         </div>
+      </SimulationSettings>
+      <SimulationConfig>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div>
+            <SimulationLabel>
+              Input x1: {x1.toFixed(2)}
+            </SimulationLabel>
+            <Slider
+              min={-1}
+              max={1}
+              step={0.05}
+              value={[x1]}
+              onValueChange={([v]) => setX1(v)}
+            />
+          </div>
+          <div>
+            <SimulationLabel>
+              Input x2: {x2.toFixed(2)}
+            </SimulationLabel>
+            <Slider
+              min={-1}
+              max={1}
+              step={0.05}
+              value={[x2]}
+              onValueChange={([v]) => setX2(v)}
+            />
+          </div>
+        </div>
+      </SimulationConfig>
+
+      <SimulationMain scaleMode="contain">
+        <div ref={containerRef} className="w-full">
+          <canvas
+            ref={canvasRef}
+            className="w-full rounded-xl bg-[var(--surface-2,#27272a)]"
+          />
+        </div>
+
+        <div className="mt-3 text-xs text-[var(--text-muted)]">
+          Blue nodes show values flowing forward (input to output). Red glow shows gradient magnitude flowing backward. Green = healthy gradient, amber = shrinking, red = vanishing.
+        </div>
+      </SimulationMain>
+      <SimulationResults>
         <div className="text-sm text-[var(--text-muted)]">
           <div>Output: {net.output.toFixed(4)}</div>
           <div>MSE Loss: {net.loss.toFixed(4)}</div>
         </div>
-      </div>
-
-      <div ref={containerRef} className="w-full">
-        <canvas
-          ref={canvasRef}
-          className="w-full rounded-xl bg-[var(--surface-2,#27272a)]"
-        />
-      </div>
-
-      <div className="mt-3 text-xs text-[var(--text-muted)]">
-        Blue nodes show values flowing forward (input to output). Red glow shows gradient magnitude flowing backward. Green = healthy gradient, amber = shrinking, red = vanishing.
-      </div>
-    </div>
+      </SimulationResults>
+    </SimulationPanel>
   );
 }

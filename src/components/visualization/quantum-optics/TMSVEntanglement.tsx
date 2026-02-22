@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
 import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
-import { SimulationPanel, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import { CanvasChart, type ChartTrace, type ChartLayout } from '@/components/ui/canvas-chart';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
@@ -132,60 +133,58 @@ export default function TMSVEntanglement({}: SimulationComponentProps) {
   };
 
   return (
-    <SimulationPanel>
-      <h3 className="text-lg font-semibold text-[var(--text-strong)]">
-        Two-Mode Squeezed Vacuum Entanglement
-      </h3>
-      <p className="text-sm text-[var(--text-soft)] mb-3">
-        Entanglement properties of the TMSV state. The Duan criterion D(r) drops below 1 for any r &gt; 0, confirming entanglement. Each mode individually looks thermal with mean photon number sinh²(r).
-      </p>
+    <SimulationPanel title="Two-Mode Squeezed Vacuum Entanglement" caption="Entanglement properties of the TMSV state. The Duan criterion D(r) drops below 1 for any r > 0, confirming entanglement. Each mode individually looks thermal with mean photon number sinh²(r).">
+      <SimulationConfig>
+        <div>
+          <SimulationLabel>Squeeze parameter r: {squeezeR.toFixed(2)}</SimulationLabel>
+          <Slider
+            value={[squeezeR]}
+            onValueChange={(v) => setSqueezeR(v[0])}
+            min={0}
+            max={rMax}
+            step={0.01}
+            className="w-full"
+          />
+        </div>
+      </SimulationConfig>
 
-      <div className="mb-4">
-        <SimulationLabel>Squeeze parameter r: {squeezeR.toFixed(2)}</SimulationLabel>
-        <Slider
-          value={[squeezeR]}
-          onValueChange={(v) => setSqueezeR(v[0])}
-          min={0}
-          max={rMax}
-          step={0.01}
-          className="w-full"
-        />
-      </div>
+      <SimulationMain>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <CanvasChart
+            data={duanTraces}
+            layout={duanLayout}
+            style={{ width: '100%', height: '320px' }}
+          />
+          <CanvasChart
+            data={entTraces}
+            layout={entLayout}
+            style={{ width: '100%', height: '320px' }}
+          />
+        </div>
+      </SimulationMain>
 
-      {/* Readout */}
-      <div className="grid grid-cols-3 gap-3 mb-4">
-        <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
-          <div className="text-xs text-[var(--text-muted)]">Duan D(r)</div>
-          <div className="text-base font-mono font-semibold text-[var(--text-strong)]">
-            {currentD.toFixed(4)}
+      <SimulationResults>
+        <div className="grid grid-cols-3 gap-3">
+          <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
+            <div className="text-xs text-[var(--text-muted)]">Duan D(r)</div>
+            <div className="text-base font-mono font-semibold text-[var(--text-strong)]">
+              {currentD.toFixed(4)}
+            </div>
+          </div>
+          <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
+            <div className="text-xs text-[var(--text-muted)]">Thermal n_bar</div>
+            <div className="text-base font-mono font-semibold text-[var(--text-strong)]">
+              {currentNbar.toFixed(2)}
+            </div>
+          </div>
+          <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
+            <div className="text-xs text-[var(--text-muted)]">Log. neg. E_N</div>
+            <div className="text-base font-mono font-semibold text-[var(--text-strong)]">
+              {currentEN.toFixed(2)}
+            </div>
           </div>
         </div>
-        <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
-          <div className="text-xs text-[var(--text-muted)]">Thermal n_bar</div>
-          <div className="text-base font-mono font-semibold text-[var(--text-strong)]">
-            {currentNbar.toFixed(2)}
-          </div>
-        </div>
-        <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
-          <div className="text-xs text-[var(--text-muted)]">Log. neg. E_N</div>
-          <div className="text-base font-mono font-semibold text-[var(--text-strong)]">
-            {currentEN.toFixed(2)}
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <CanvasChart
-          data={duanTraces}
-          layout={duanLayout}
-          style={{ width: '100%', height: '320px' }}
-        />
-        <CanvasChart
-          data={entTraces}
-          layout={entLayout}
-          style={{ width: '100%', height: '320px' }}
-        />
-      </div>
+      </SimulationResults>
     </SimulationPanel>
   );
 }

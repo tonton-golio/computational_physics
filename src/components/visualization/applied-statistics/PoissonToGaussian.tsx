@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 function poissonPMF(k: number, lam: number): number {
   // Use log to avoid overflow for large lambda
@@ -11,7 +14,7 @@ function poissonPMF(k: number, lam: number): number {
   return Math.exp(logP);
 }
 
-export default function PoissonToGaussian() {
+export default function PoissonToGaussian({}: SimulationComponentProps) {
   const [lambda, setLambda] = useState(5);
 
   const { kVals, poissonVals, gaussVals } = useMemo(() => {
@@ -31,14 +34,14 @@ export default function PoissonToGaussian() {
   }, [lambda]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Poisson to Gaussian Convergence</h3>
-      <div className="grid grid-cols-1 gap-6 mb-4">
+    <SimulationPanel title="Poisson to Gaussian Convergence">
+      <SimulationConfig>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">lambda: {lambda}</label>
+          <SimulationLabel>lambda: {lambda}</SimulationLabel>
           <Slider value={[lambda]} onValueChange={([v]) => setLambda(v)} min={1} max={100} step={1} />
         </div>
-      </div>
+      </SimulationConfig>
+      <SimulationMain>
       <CanvasChart
         data={[
           {
@@ -58,6 +61,7 @@ export default function PoissonToGaussian() {
         }}
         style={{ width: '100%' }}
       />
-    </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

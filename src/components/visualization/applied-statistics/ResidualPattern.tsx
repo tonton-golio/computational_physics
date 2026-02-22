@@ -1,10 +1,13 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-export default function ResidualPattern() {
+export default function ResidualPattern({}: SimulationComponentProps) {
   const [curvature, setCurvature] = useState(0.0);
   const [noise, setNoise] = useState(0.5);
 
@@ -34,18 +37,20 @@ export default function ResidualPattern() {
   }, [curvature, noise]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Residual Patterns: Good Fit vs Bad Fit</h3>
-      <div className="grid grid-cols-2 gap-6 mb-4">
-        <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Curvature (quadratic term): {curvature.toFixed(2)}</label>
-          <Slider value={[curvature]} onValueChange={([v]) => setCurvature(v)} min={0} max={0.5} step={0.01} />
+    <SimulationPanel title="Residual Patterns: Good Fit vs Bad Fit">
+      <SimulationConfig>
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <SimulationLabel>Curvature (quadratic term): {curvature.toFixed(2)}</SimulationLabel>
+            <Slider value={[curvature]} onValueChange={([v]) => setCurvature(v)} min={0} max={0.5} step={0.01} />
+          </div>
+          <div>
+            <SimulationLabel>Noise: {noise.toFixed(2)}</SimulationLabel>
+            <Slider value={[noise]} onValueChange={([v]) => setNoise(v)} min={0.1} max={3} step={0.1} />
+          </div>
         </div>
-        <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Noise: {noise.toFixed(2)}</label>
-          <Slider value={[noise]} onValueChange={([v]) => setNoise(v)} min={0.1} max={3} step={0.1} />
-        </div>
-      </div>
+      </SimulationConfig>
+      <SimulationMain>
       <div className="grid grid-cols-2 gap-4">
         <CanvasChart
           data={[
@@ -74,6 +79,7 @@ export default function ResidualPattern() {
           style={{ width: '100%' }}
         />
       </div>
-    </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

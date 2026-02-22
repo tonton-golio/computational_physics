@@ -1,16 +1,14 @@
 # Gravity Waves
 
-## Ripples, Swells, and Tsunamis
+## The Stone in the Pond
 
-Drop a stone in a pond. Ripples spread outward in concentric circles. Stand on a beach and watch the ocean: long, rolling swells march toward shore, steepen, and break. Somewhere on the other side of the Pacific, a submarine earthquake generates a wave that crosses the entire ocean in hours.
+Drop a stone in a pond. Ripples spread outward in concentric circles. Now imagine a fault slipping on the Pacific floor -- the resulting wave crosses the entire ocean in hours, arriving with nearly its original amplitude. Same physics, wildly different scales.
 
-These are all **gravity waves** — waves where gravity provides the restoring force. When water is pushed up above its equilibrium level, gravity pulls it back down, and the resulting oscillation propagates outward.
-
-This section develops the mathematical description of these waves, culminating in the shallow-water equations that govern everything from tidal bores to tsunamis.
+These are **gravity waves**: waves where gravity provides the restoring force. Water gets pushed above its equilibrium level, gravity pulls it back down, inertia carries it past, and the oscillation propagates outward.
 
 ## The Shallow-Water Equations
 
-When the wavelength is much larger than the water depth (think tsunamis in the open ocean, tidal flows in harbors, or flood waves in rivers), we can average the flow over the depth and arrive at the **shallow-water equations**:
+When the wavelength is much larger than the water depth -- tsunamis in the open ocean, tides in harbors, flood waves in rivers -- we can average the flow over depth and arrive at the **shallow-water equations**:
 $$
 \frac{\partial v_x}{\partial t} + (v_x \nabla_x + v_y \nabla_y)v_x = -g_0 \nabla_x \eta + f\,v_y
 $$
@@ -21,49 +19,39 @@ $$
 \frac{\partial \eta}{\partial t} + \nabla_x(h\,v_x) + \nabla_y(h\,v_y) = 0
 $$
 
-Here $\eta$ is the surface elevation, $h$ is the water depth, $f$ is the Coriolis parameter (Earth's rotation matters for large-scale waves), and $v_x$, $v_y$ are the depth-averaged velocities.
+Here $\eta$ is surface elevation, $h$ is water depth, $f$ is the Coriolis parameter, and $v_x$, $v_y$ are depth-averaged velocities. First two equations: momentum (Newton's law for each water column). Third: mass conservation (surface rises where more water flows in than out).
 
-The first two equations are momentum conservation (Newton's second law applied to each column of water). The third is mass conservation (the water surface rises where more water flows in than out).
+## The Shallow-Water Wave Speed
 
-## The Wave Equation and Dispersion
-
-For small-amplitude waves over constant depth $D$, the shallow-water equations linearize to give a **2D wave equation** for the surface elevation:
-$$
-\left(\frac{\partial^2}{\partial t^2} + f^2\right)\eta - g_0 D \, \nabla_H^2 \eta = 0
-$$
-
-Without rotation ($f = 0$), this is a standard wave equation. Waves propagate at speed:
+For small-amplitude waves over constant depth $D$, the equations linearize to a wave equation. The wave speed:
 $$
 c = \sqrt{g_0 D}
 $$
 
-This is the shallow-water wave speed: it depends on depth, not on wavelength. In the deep ocean ($D \approx 4000$ m), this gives $c \approx 200$ m/s $\approx 700$ km/h — which is why tsunamis cross oceans in hours.
+And here's the punchline: it depends on depth, not wavelength. All frequencies travel at the same speed, so the wave shape is preserved as it propagates. This is why tsunamis are so dangerous -- a pulse of energy crosses entire ocean basins without spreading out.
 
-The wave period for a wave of wavelength $\lambda$ is:
-$$
-\tau \approx \frac{\lambda}{\sqrt{g_0 D}}
-$$
+In the deep ocean ($D \approx 4000$ m): $c \approx 200$ m/s $\approx 700$ km/h. A tsunami crossing 8000 km of open Pacific takes roughly 11 hours.
 
-With rotation ($f \neq 0$), the minimum wave frequency is $f$ — waves slower than one cycle per half-day (at mid-latitudes) are deflected by the Coriolis force into rotating patterns rather than propagating freely.
+As it approaches shore and depth decreases, the wave slows down. But energy flux is conserved, so the wave *piles up* -- amplitude grows dramatically. A barely noticeable swell in open water becomes a devastating wall of water near shore.
+
+With Earth's rotation ($f \neq 0$), waves slower than one cycle per half-day get deflected into rotating patterns rather than propagating freely.
 
 [[simulation dispersion-relation]]
 
 ## Big Ideas
 
-* Gravity waves exist because two things compete: gravity pulls displaced water back to its resting level, and inertia carries it past. The oscillation between these two tendencies is the wave.
-* In shallow water ($\text{wavelength} \gg \text{depth}$), the wave speed $c = \sqrt{g_0 D}$ depends only on depth — not on wavelength. All frequencies travel at the same speed, so the wave shape is preserved as it propagates.
-* This dispersionless property explains why tsunamis are so dangerous: a pulse of energy crosses entire ocean basins without spreading out, arriving with nearly its original amplitude.
-* Earth's rotation (the Coriolis force, parameterized by $f$) deflects large-scale gravity waves into rotating patterns and sets a minimum frequency below which free propagation is impossible.
+* Gravity waves exist because gravity and inertia compete: gravity pulls displaced water back, inertia carries it past, and the oscillation propagates.
+* In shallow water, wave speed $c = \sqrt{g_0 D}$ depends only on depth -- all frequencies travel together and wave shapes are preserved.
+* This dispersionless property makes tsunamis lethal: energy crosses oceans without spreading out.
 
 ## What Comes Next
 
-We've now covered the main exact solutions and wave phenomena in fluid mechanics. To solve the Stokes equation for realistic geometries (like Gladys the Glacier flowing through an irregular valley), we need to reformulate it in **weak form** — a step that prepares the equation for numerical solution by the finite element method.
+We've covered the main exact solutions and wave phenomena. To solve the Stokes equation for realistic geometries (like Gladys flowing through an irregular valley), we need to reformulate it in **weak form** -- the step that prepares the equation for the finite element method.
 
 ## Check Your Understanding
 
-1. The deep Pacific Ocean has an average depth of about 4000 m. Estimate the speed of a tsunami in the open ocean in km/h. How long does it take to cross 8000 km of open water?
-2. As a tsunami approaches shore and the water depth decreases from 4000 m to 10 m, by what factor does the wave speed decrease? What must happen to the wave's amplitude to conserve energy flux?
-3. What is the Coriolis parameter $f = 2\Omega\sin\phi$ at your latitude $\phi$? ($\Omega = 7.27 \times 10^{-5}$ rad/s.) What is the minimum wave period that can propagate freely without being deflected into a rotating pattern?
+1. Estimate the speed of a tsunami in the open Pacific (depth ~4000 m) in km/h. How long to cross 8000 km?
+2. As a tsunami approaches shore and depth decreases from 4000 m to 10 m, by what factor does wave speed decrease? What must happen to amplitude to conserve energy flux?
 
 ## Challenge
 

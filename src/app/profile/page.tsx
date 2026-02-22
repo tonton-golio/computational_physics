@@ -1,10 +1,10 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/infra/supabase/server";
 import { ProfileActions } from "./ProfileActions";
 import { SuggestionsTable } from "./SuggestionsTable";
 
 export const metadata = {
-  title: "Profile | Computational Physics",
+  title: "Profile | Koala Brain",
 };
 
 export default async function ProfilePage() {

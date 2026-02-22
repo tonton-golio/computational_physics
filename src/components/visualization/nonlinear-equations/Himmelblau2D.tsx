@@ -2,8 +2,11 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationResults, SimulationLabel, SimulationButton } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-const Himmelblau2D: React.FC = () => {
+const Himmelblau2D: React.FC<SimulationComponentProps> = () => {
   const [method, setMethod] = useState<'gd' | 'newton'>('gd');
   const [lr, setLr] = useState(0.01);
   const [x0, setX0] = useState(-1.0);
@@ -194,75 +197,81 @@ const Himmelblau2D: React.FC = () => {
   }, [x0, y0, method, lr]);
 
   return (
-    <div className="p-4">
-      <div className="grid grid-cols-6 gap-4 mb-4">
+    <SimulationPanel title="Himmelblau Function Optimization">
+      <SimulationSettings>
         <div>
-          <label>Method:</label>
+          <SimulationLabel>Method:</SimulationLabel>
           <select value={method} onChange={(e) => setMethod(e.target.value as 'gd' | 'newton')} className="ml-2">
             <option value="gd">Gradient Descent</option>
             <option value="newton">Newton</option>
           </select>
         </div>
+        <div className="flex items-center">
+          <SimulationButton variant="primary" onClick={() => setShowBasins(!showBasins)}>
+            {showBasins ? 'Hide' : 'Show'} Basins
+          </SimulationButton>
+          <SimulationButton variant="primary" onClick={handleStep}>Step</SimulationButton>
+          <SimulationButton onClick={handleReset}>Reset</SimulationButton>
+        </div>
+      </SimulationSettings>
+      <SimulationConfig>
         <div>
-          <label>LR: {lr.toFixed(3)}</label>
+          <SimulationLabel>LR: {lr.toFixed(3)}</SimulationLabel>
           <Slider min={0.001} max={0.1} step={0.001} value={[lr]} onValueChange={([v]) => setLr(v)} className="ml-2 w-32" />
         </div>
         <div>
-          <label>x₀: {x0.toFixed(1)}</label>
+          <SimulationLabel>x₀: {x0.toFixed(1)}</SimulationLabel>
           <Slider min={-5} max={5} step={0.1} value={[x0]} onValueChange={([v]) => setX0(v)} className="ml-2" />
         </div>
         <div>
-          <label>y₀: {y0.toFixed(1)}</label>
+          <SimulationLabel>y₀: {y0.toFixed(1)}</SimulationLabel>
           <Slider min={-5} max={5} step={0.1} value={[y0]} onValueChange={([v]) => setY0(v)} className="ml-2" />
         </div>
         <div>
-          <label>Steps: {maxSteps}</label>
+          <SimulationLabel>Steps: {maxSteps}</SimulationLabel>
           <Slider min={10} max={50} value={[maxSteps]} onValueChange={([v]) => setMaxSteps(v)} className="ml-2" />
         </div>
-        <div className="flex items-center">
-          <button onClick={() => setShowBasins(!showBasins)} className="bg-green-500 text-white px-4 py-1 rounded mr-2">
-            {showBasins ? 'Hide' : 'Show'} Basins
-          </button>
-          <button onClick={handleStep} className="bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white px-4 py-1 rounded mr-2">Step</button>
-          <button onClick={handleReset} className="bg-[var(--surface-3)] hover:bg-[var(--border-strong)] text-[var(--text-strong)] px-4 py-1 rounded">Reset</button>
+      </SimulationConfig>
+      <SimulationMain>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {showBasins && basinData ? (
+            <CanvasHeatmap
+              data={[{ z: basinData.zbasin, x: basinData.xgrid, y: basinData.ygrid, colorscale: 'Portland' }]}
+              layout={{ title: { text: 'Basins of Attraction' }, xaxis: { title: { text: 'x' } }, yaxis: { title: { text: 'y' } } }}
+              style={{ width: '100%', height: 450 }}
+            />
+          ) : (
+            <CanvasHeatmap
+              data={[{ z: contourData.z, x: contourData.xgrid, y: contourData.ygrid, colorscale: 'Viridis' }]}
+              layout={{ title: { text: 'Himmelblau f(x,y)' }, xaxis: { title: { text: 'x' } }, yaxis: { title: { text: 'y' } } }}
+              style={{ width: '100%', height: 450 }}
+            />
+          )}
+          <CanvasChart
+            data={[
+              pathTrace,
+              {
+                x: [path[0]?.[0] ?? 0],
+                y: [path[0]?.[1] ?? 0],
+                type: 'scatter' as const,
+                mode: 'markers' as const,
+                marker: { size: 12, color: '#22c55e', symbol: 'diamond' },
+                name: 'Start',
+              },
+            ]}
+            layout={{
+              title: { text: `${method.toUpperCase()} Descent Path` },
+              xaxis: { title: { text: 'x' }, range: [-6, 6] },
+              yaxis: { title: { text: 'y' }, range: [-6, 6] },
+            }}
+            style={{ width: '100%', height: 450 }}
+          />
         </div>
-      </div>
-      <div className="text-sm text-[var(--text-muted)] mb-4">Final: ({path[path.length-1]?.[0]?.toFixed(3) || 0}, {path[path.length-1]?.[1]?.toFixed(3) || 0}), f={f(path[path.length-1]?.[0] || 0, path[path.length-1]?.[1] || 0)?.toFixed(2)}</div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {showBasins && basinData ? (
-          <CanvasHeatmap
-            data={[{ z: basinData.zbasin, x: basinData.xgrid, y: basinData.ygrid, colorscale: 'Portland' }]}
-            layout={{ title: { text: 'Basins of Attraction' }, xaxis: { title: { text: 'x' } }, yaxis: { title: { text: 'y' } } }}
-            style={{ width: '100%', height: 450 }}
-          />
-        ) : (
-          <CanvasHeatmap
-            data={[{ z: contourData.z, x: contourData.xgrid, y: contourData.ygrid, colorscale: 'Viridis' }]}
-            layout={{ title: { text: 'Himmelblau f(x,y)' }, xaxis: { title: { text: 'x' } }, yaxis: { title: { text: 'y' } } }}
-            style={{ width: '100%', height: 450 }}
-          />
-        )}
-        <CanvasChart
-          data={[
-            pathTrace,
-            {
-              x: [path[0]?.[0] ?? 0],
-              y: [path[0]?.[1] ?? 0],
-              type: 'scatter' as const,
-              mode: 'markers' as const,
-              marker: { size: 12, color: '#22c55e', symbol: 'diamond' },
-              name: 'Start',
-            },
-          ]}
-          layout={{
-            title: { text: `${method.toUpperCase()} Descent Path` },
-            xaxis: { title: { text: 'x' }, range: [-6, 6] },
-            yaxis: { title: { text: 'y' }, range: [-6, 6] },
-          }}
-          style={{ width: '100%', height: 450 }}
-        />
-      </div>
-    </div>
+      </SimulationMain>
+      <SimulationResults>
+        <div className="text-sm text-[var(--text-muted)]">Final: ({path[path.length-1]?.[0]?.toFixed(3) || 0}, {path[path.length-1]?.[1]?.toFixed(3) || 0}), f={f(path[path.length-1]?.[0] || 0, path[path.length-1]?.[1] || 0)?.toFixed(2)}</div>
+      </SimulationResults>
+    </SimulationPanel>
   );
 };
 

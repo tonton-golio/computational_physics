@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 /**
  * Cross-sectional view of a glacier showing the ice flow velocity profile and
@@ -19,7 +22,7 @@ const rhoIce = 917; // kg/m^3
 const g0 = 9.81;
 const A = 2.4e-24; // Pa^-3 s^-1 (Glen's law rate factor at -10C)
 
-export default function GlacierCrossSection() {
+export default function GlacierCrossSection({}: SimulationComponentProps) {
   const [slopeDeg, setSlopeDeg] = useState(5);
   const [thickness, setThickness] = useState(200); // m
   const [nGlen, setNGlen] = useState(3);
@@ -90,62 +93,55 @@ export default function GlacierCrossSection() {
   }, [slopeDeg, thickness, nGlen]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-2 text-[var(--text-strong)]">
-        Glacier Cross-Section: Velocity and Shear Stress
-      </h3>
-      <p className="text-sm text-[var(--text-muted)] mb-4">
-        A glacier of uniform thickness on a slope. Glen&apos;s flow law (n&asymp;3)
-        produces a &ldquo;plug-like&rdquo; profile: most shearing happens near the bed,
-        while the upper ice moves as a nearly rigid block. Compare with the
-        parabolic Newtonian profile.
-      </p>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+    <SimulationPanel title="Glacier Cross-Section: Velocity and Shear Stress" caption="A glacier of uniform thickness on a slope. Glen's flow law (n\u22483) produces a \u201cplug-like\u201d profile: most shearing happens near the bed, while the upper ice moves as a nearly rigid block. Compare with the parabolic Newtonian profile.">
+      <SimulationConfig>
         <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">
+          <SimulationLabel>
             Slope angle: {slopeDeg.toFixed(1)}&deg;
-          </label>
+          </SimulationLabel>
           <Slider min={1} max={15} step={0.5} value={[slopeDeg]}
             onValueChange={([v]) => setSlopeDeg(v)} className="w-full" />
         </div>
         <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">
+          <SimulationLabel>
             Ice thickness: {thickness} m
-          </label>
+          </SimulationLabel>
           <Slider min={50} max={500} step={10} value={[thickness]}
             onValueChange={([v]) => setThickness(v)} className="w-full" />
         </div>
         <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">
+          <SimulationLabel>
             Glen exponent n: {nGlen}
-          </label>
+          </SimulationLabel>
           <Slider min={1} max={5} step={1} value={[nGlen]}
             onValueChange={([v]) => setNGlen(v)} className="w-full" />
         </div>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <CanvasChart
-          data={velTraces}
-          layout={{
-            xaxis: { title: { text: 'Velocity (m/yr)' } },
-            yaxis: { title: { text: 'Height above bed (m)' } },
-          }}
-          style={{ width: '100%', height: 380 }}
-        />
-        <CanvasChart
-          data={stressTraces}
-          layout={{
-            xaxis: { title: { text: 'Shear stress (kPa)' } },
-            yaxis: { title: { text: 'Height above bed (m)' } },
-          }}
-          style={{ width: '100%', height: 380 }}
-        />
-      </div>
+      </SimulationConfig>
+      <SimulationMain>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <CanvasChart
+            data={velTraces}
+            layout={{
+              xaxis: { title: { text: 'Velocity (m/yr)' } },
+              yaxis: { title: { text: 'Height above bed (m)' } },
+            }}
+            style={{ width: '100%', height: 380 }}
+          />
+          <CanvasChart
+            data={stressTraces}
+            layout={{
+              xaxis: { title: { text: 'Shear stress (kPa)' } },
+              yaxis: { title: { text: 'Height above bed (m)' } },
+            }}
+            style={{ width: '100%', height: 380 }}
+          />
+        </div>
+      </SimulationMain>
       <p className="mt-3 text-xs text-[var(--text-muted)]">
         Left: velocity profile (blue = Glen, dashed = Newtonian). The non-linear
         rheology concentrates shear near the bed. Right: shear stress increases
         linearly from zero at the surface to &tau;<sub>b</sub> = &rho;gH sin&theta; at the bed.
       </p>
-    </div>
+    </SimulationPanel>
   );
 }

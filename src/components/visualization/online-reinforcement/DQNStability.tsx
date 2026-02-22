@@ -1,12 +1,14 @@
-'use client';
+"use client";
 
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationLabel, SimulationConfig } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 
-export default function DQNStability({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function DQNStability({}: SimulationComponentProps) {
   const [steps, setSteps] = useState(300);
   const x = useMemo(() => Array.from({ length: steps }, (_, i) => i + 1), [steps]);
   const withReplay = useMemo(() => x.map((k) => 15 + 185 * (1 - Math.exp(-k / 90)) + 7 * Math.sin(k / 25)), [x]);
@@ -15,10 +17,14 @@ export default function DQNStability({ id }: SimulationComponentProps) { // esli
   const lossNoReplay = useMemo(() => x.map((k) => 0.95 * Math.exp(-k / 35) + 0.2 * Math.abs(Math.sin(k / 7))), [x]);
 
   return (
-    <div className="w-full rounded-lg bg-[var(--surface-1)] p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-3 text-[var(--text-strong)]">DQN Stability: Replay and Target Networks</h3>
-      <label className="mb-1 block text-sm text-[var(--text-muted)]">Training points: {steps}</label>
-      <Slider value={[steps]} onValueChange={([v]) => setSteps(v)} min={100} max={1000} step={20} className="mb-4" />
+    <SimulationPanel title="DQN Stability: Replay and Target Networks">
+      <SimulationConfig>
+        <div>
+          <SimulationLabel>Training points: {steps}</SimulationLabel>
+          <Slider value={[steps]} onValueChange={([v]) => setSteps(v)} min={100} max={1000} step={20} />
+        </div>
+      </SimulationConfig>
+      <SimulationMain>
       <CanvasChart
         data={[
           { x, y: withReplay, type: 'scatter', mode: 'lines', name: 'Reward with replay/target net', line: { color: '#4ade80', width: 2 } },
@@ -34,6 +40,7 @@ export default function DQNStability({ id }: SimulationComponentProps) { // esli
         }}
         style={{ width: '100%' }}
       />
-    </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

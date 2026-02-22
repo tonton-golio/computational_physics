@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 /**
  * Proteome Allocation and Growth Rate
@@ -36,7 +39,7 @@ function describePieSlice(
   ].join(' ');
 }
 
-export default function ProteomeAllocation() {
+export default function ProteomeAllocation({}: SimulationComponentProps) {
   const [phiQ, setPhiQ] = useState(0.4);
   const [phiR, setPhiR] = useState(0.3);
   const [nu, setNu] = useState(2.0);
@@ -118,15 +121,12 @@ export default function ProteomeAllocation() {
   }, [phiRClamped, phiP, phiQ]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Proteome Allocation and Growth Rate</h3>
-
-      {/* Sliders */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+    <SimulationPanel title="Proteome Allocation and Growth Rate">
+      <SimulationConfig>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">
+          <SimulationLabel>
             Ribosome fraction \u03C6_R: {phiRClamped.toFixed(2)}
-          </label>
+          </SimulationLabel>
           <Slider
             value={[phiRClamped]}
             onValueChange={([v]) => setPhiR(v)}
@@ -136,9 +136,9 @@ export default function ProteomeAllocation() {
           />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">
+          <SimulationLabel>
             Housekeeping fraction \u03C6_Q: {phiQ.toFixed(2)}
-          </label>
+          </SimulationLabel>
           <Slider
             value={[phiQ]}
             onValueChange={([v]) => {
@@ -152,9 +152,9 @@ export default function ProteomeAllocation() {
           />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">
+          <SimulationLabel>
             Nutrient quality \u03BD: {nu.toFixed(1)}
-          </label>
+          </SimulationLabel>
           <Slider
             value={[nu]}
             onValueChange={([v]) => setNu(v)}
@@ -164,9 +164,9 @@ export default function ProteomeAllocation() {
           />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">
+          <SimulationLabel>
             Translation rate k: {k.toFixed(1)}
-          </label>
+          </SimulationLabel>
           <Slider
             value={[k]}
             onValueChange={([v]) => setK(v)}
@@ -175,21 +175,9 @@ export default function ProteomeAllocation() {
             step={0.1}
           />
         </div>
-      </div>
+      </SimulationConfig>
 
-      {/* Constraint display */}
-      <div className="mb-4 flex flex-wrap gap-4 text-sm font-mono">
-        <span className="text-[var(--text-muted)]">
-          \u03C6_R = <span className="text-[#3b82f6] font-semibold">{phiRClamped.toFixed(2)}</span>
-        </span>
-        <span className="text-[var(--text-muted)]">
-          \u03C6_P = 1 &minus; \u03C6_Q &minus; \u03C6_R = <span className="text-[#22c55e] font-semibold">{phiP.toFixed(2)}</span>
-        </span>
-        <span className="text-[var(--text-muted)]">
-          \u03C6_Q = <span className="font-semibold" style={{ color: '#9ca3af' }}>{phiQ.toFixed(2)}</span>
-        </span>
-      </div>
-
+      <SimulationMain>
       {/* Two visualizations side by side */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         {/* Left: SVG pie chart */}
@@ -285,9 +273,23 @@ export default function ProteomeAllocation() {
           />
         </div>
       </div>
+      </SimulationMain>
 
+      <SimulationResults>
+      {/* Constraint display */}
+      <div className="flex flex-wrap gap-4 text-sm font-mono">
+        <span className="text-[var(--text-muted)]">
+          \u03C6_R = <span className="text-[#3b82f6] font-semibold">{phiRClamped.toFixed(2)}</span>
+        </span>
+        <span className="text-[var(--text-muted)]">
+          \u03C6_P = 1 &minus; \u03C6_Q &minus; \u03C6_R = <span className="text-[#22c55e] font-semibold">{phiP.toFixed(2)}</span>
+        </span>
+        <span className="text-[var(--text-muted)]">
+          \u03C6_Q = <span className="font-semibold" style={{ color: '#9ca3af' }}>{phiQ.toFixed(2)}</span>
+        </span>
+      </div>
       {/* Growth rate indicator */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4 text-sm">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
         <div className="bg-[var(--surface-1)] border border-[var(--border-strong)] rounded p-3">
           <div className="text-[var(--text-soft)]">Growth rate \u03BB</div>
           <div className="text-[var(--text-strong)] font-mono text-lg">{lambda.toFixed(3)}</div>
@@ -307,6 +309,7 @@ export default function ProteomeAllocation() {
           <div className="text-[var(--text-strong)] font-mono text-lg">{phiROpt.toFixed(3)}</div>
         </div>
       </div>
+      </SimulationResults>
 
       <div className="mt-3 text-sm text-[var(--text-muted)]">
         <p>
@@ -319,6 +322,6 @@ export default function ProteomeAllocation() {
           The optimum occurs where both are equal, at \u03C6_R* = \u03BD(1&minus;\u03C6_Q)/(k+\u03BD).
         </p>
       </div>
-    </div>
+    </SimulationPanel>
   );
 }

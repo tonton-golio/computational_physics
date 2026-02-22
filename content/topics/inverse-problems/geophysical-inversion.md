@@ -42,21 +42,15 @@ We set up a Metropolis sampler (see [Monte Carlo Methods](./monte-carlo-methods)
 
 [[simulation vertical-fault-mcmc]]
 
-Things to look for in the simulation:
-
-* The chain doesn't settle on one answer — it wanders through a cloud of plausible fault configurations
-* Look for the elongated depth-vs-slip trade-off: shallow+large-slip and deep+small-slip produce similar surface data
-* The total seismic moment (depth x slip) is tightly constrained even when individual parameters aren't
-
 [[simulation tradeoff-cloud]]
 
-### What the Posterior Tells Us
+### What the Cloud of Answers Actually Says
 
-Watch the simulation carefully. The chain doesn't settle on a single answer — it wanders through a cloud of plausible fault configurations. Some things are well-determined: the total seismic moment (roughly, depth × slip) is tightly constrained because it controls the total amount of surface displacement. But there's a **trade-off**: a shallow fault with large slip can produce similar surface displacements as a deeper fault with smaller slip.
+Watch the simulation carefully. The chain doesn't settle on a single answer — it wanders through a cloud of plausible fault configurations. Some things are well-determined: the total seismic moment (roughly, depth times slip) is tightly constrained because it controls the total amount of surface displacement. But there's a **trade-off**: a shallow fault with large slip can produce similar surface displacements as a deeper fault with smaller slip.
 
 This shows up as an elongated, tilted cloud in the depth-vs-slip scatter plot. The data alone cannot break this trade-off. You'd need additional information — maybe InSAR data from a different viewing angle, or teleseismic waveforms — to shrink the posterior further.
 
-The Earth doesn't care which of these fault models you pick — they all explain the surface measurements equally well. The whole cloud of models is the honest answer. A single "best" model would hide this fundamental ambiguity.
+The Earth doesn't care which of these fault models you pick — they all explain the surface measurements equally well. The whole cloud is the honest answer. A single "best" model would hide this fundamental ambiguity.
 
 ---
 
@@ -85,23 +79,9 @@ We parameterize the bed as a smooth curve (control points with interpolation) an
 
 [[simulation glacier-thickness-mcmc]]
 
-Things to look for in the simulation:
+The result isn't one bed profile — it's a family of plausible profiles. Where the glacier is thin and surface data is dense, the posterior is narrow — we know the bed pretty well. Near the glacier center, where the ice is thickest, many different bed shapes produce similar surface patterns and the posterior is wide. Some sampled beds show an overdeepening; others don't — the data simply cannot resolve whether this feature exists. That matters hugely for predictions of future glacier retreat, because warm ocean water can intrude into an overdeepening and accelerate melting.
 
-* The posterior is narrow where ice is thin (good constraint) and wide where ice is thick (poor constraint)
-* Some sampled beds show an overdeepening; others don't — the data cannot resolve this feature
-* The smoothness prior prevents geologically absurd bed shapes while the data pulls toward the observations
-
-### A Family of Possible Beds
-
-The result isn't one bed profile — it's a family of plausible profiles. Some key features emerge:
-
-**Well-constrained regions:** Where the glacier is thin and surface data is dense, the posterior is narrow. We know the bed pretty well there.
-
-**Poorly-constrained regions:** Near the glacier center, where the ice is thickest, many different bed shapes produce similar surface patterns. The posterior is wide. We're honestly uncertain.
-
-**The overdeepening question:** Some sampled bed profiles show a deep trough near the glacier center (an "overdeepening"). Others don't. The data alone cannot resolve whether this feature exists. This matters hugely for predictions of future glacier retreat — if there's an overdeepening, warm ocean water can intrude and accelerate melting.
-
-Notice the trade-off between fit quality and physical plausibility: you could create a bed profile with lots of bumps and ridges that fits the data marginally better, but it would be geologically absurd. The prior (smoothness constraint) keeps the bed shapes realistic, while the likelihood (data fit) pulls them toward the observations.
+The smoothness prior keeps the bed shapes geologically realistic while the likelihood pulls them toward the observations. You could create a bumpy bed that fits the data marginally better, but it would be geologically absurd.
 
 ---
 
@@ -125,11 +105,11 @@ Both examples raise a practical question: where in the model can the data actual
 
 Two standard diagnostic tests answer this:
 
-**Spike test.** Place a single compact anomaly — a delta function — at one location in the model. Generate synthetic data and invert. If the recovered anomaly is sharp and localized, that region is well-resolved. If it smears into a broad blob, the data geometry there is poor. In the fault example, a spike near the surface recovers cleanly because surface stations are close. A spike at depth smears because the displacement signal decays and the depth-slip trade-off kicks in.
+**Spike test.** Place a single compact anomaly at one location in the model. Generate synthetic data and invert. If the recovered anomaly is sharp and localized, that region is well-resolved. If it smears into a broad blob, the data geometry there is poor.
 
-**Checkerboard test.** Create an alternating pattern of positive and negative anomalies across the model grid. Generate synthetic data and invert. Where the checkerboard recovers cleanly, you have good resolution. Where it degrades into gray mush, you don't. In the glacier example, a checkerboard in the bed topography recovers well near the glacier edges (thin ice, strong surface signal) and poorly near the center (thick ice, weak sensitivity).
+**Checkerboard test.** Create an alternating pattern of positive and negative anomalies across the model grid. Generate synthetic data and invert. Where the checkerboard recovers cleanly, you have good resolution. Where it degrades into gray mush, you don't.
 
-The smearing pattern tells you exactly what the data can and cannot see — and this depends on the acquisition geometry, not on the inversion algorithm. You can't fix bad survey design with clever math. This is why resolution diagnostics belong alongside the posterior: the posterior tells you *what* the data says, and the resolution analysis tells you *where* the data has the authority to say it.
+The smearing pattern tells you exactly what the data can and cannot see — and this depends on the acquisition geometry, not on the inversion algorithm. You can't fix bad survey design with clever math.
 
 ---
 
@@ -143,20 +123,15 @@ Recall from [Bayesian Inversion](./bayesian-inversion) that Tikhonov regularizat
 
 ---
 
-## Big Ideas
-* A trade-off between depth and slip is not a failure of the inversion — it is a fact about the data. The posterior captures it honestly; a point estimate buries it.
-* Well-constrained and poorly-constrained regions coexist in every real inversion. Identifying which is which is as scientifically important as the best-fit model itself.
-* The smoothness prior is not an arbitrary aesthetic preference — it encodes the physical fact that geological structures do not change abruptly at the meter scale. Without it, any inversion becomes a Rorschach test.
-* Resolution depends on geometry, not just algorithm. Spike tests and checkerboard tests reveal where the data has resolving power — no amount of clever inversion can compensate for a geometry that doesn't illuminate the target.
-* When two different forward models can explain your data equally well, the right response is not to pick one. The right response is to report both, and to quantify what additional data would break the ambiguity.
+So here's what stays with you from these examples: a trade-off between depth and slip is not a failure of the inversion — it's a fact about the data. Well-constrained and poorly-constrained regions coexist in every real inversion, and identifying which is which matters as much as the best-fit model itself. The smoothness prior isn't arbitrary aesthetics — it encodes the physical fact that geological structures don't change abruptly at the meter scale. And when two different models explain your data equally well, the right response is to report both and quantify what additional data would break the ambiguity.
 
 ## What Comes Next
 
 These examples show the posterior distribution as a collection of samples — histograms, scatter plots, families of curves. But how much did the data actually teach us? We can see that the fault depth is uncertain, but is that uncertainty 20% of the prior range or 80%? Is the data worth collecting at all? To answer these questions precisely requires a way to measure information — to quantify the reduction in uncertainty from prior to posterior in consistent units.
 
-That measurement is Shannon entropy and KL divergence, and they provide the deepest unifying framework for everything in this topic. They explain why regularization works, how much an experiment can teach you before you run it, and how to compare competing models when residuals alone are insufficient. The language of information theory is the final vocabulary that ties regularization, Bayesian inference, sampling, and geophysical application into a single coherent story.
+That measurement is Shannon entropy and KL divergence, and they provide the deepest unifying framework for everything in this topic.
 
-## Check Your Understanding
+## Let's Make Sure You Really Got It
 1. In the fault inversion example, the total seismic moment (proportional to depth times slip) is well-constrained while depth and slip individually are not. Explain geometrically why this happens using the shape of the posterior in the depth-slip plane.
 2. In the glacier example, uncertainty in the reconstructed bed is largest where the ice is thickest. What is the physical reason for this — what property of the forward model causes thick ice to be harder to constrain?
 3. The fault inversion uses a nonlinear forward model, which means the posterior cannot be computed analytically. Explain in your own words why nonlinearity of the forward model destroys the possibility of an analytical closed-form posterior, even if the prior and noise model are both Gaussian.
@@ -164,4 +139,3 @@ That measurement is Shannon entropy and KL divergence, and they provide the deep
 ## Challenge
 
 Design a synthetic "survey design" experiment for the glacier problem. Given a fixed budget of $N = 10$ velocity measurement points along the glacier surface, determine the optimal placement of those points to minimize the posterior uncertainty in the bed topography. Define a scalar measure of total uncertainty (for example, the average posterior variance over bed control points), implement the MCMC workflow for each proposed survey design, and compare several designs — uniform spacing, clustering near the glacier center, clustering near the edges. Can you find a placement that substantially outperforms uniform spacing? What does the optimal design tell you about which part of the forward model carries the most information about the bed?
-

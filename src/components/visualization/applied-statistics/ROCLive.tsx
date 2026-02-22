@@ -1,10 +1,13 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-export default function ROCLive() {
+export default function ROCLive({}: SimulationComponentProps) {
   const [threshold, setThreshold] = useState(0.5);
   const [separation, setSeparation] = useState(1.5);
 
@@ -70,21 +73,20 @@ export default function ROCLive() {
   }, [threshold, separation]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Interactive ROC Curve</h3>
-      <div className="grid grid-cols-2 gap-6 mb-4">
-        <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Decision threshold: {threshold.toFixed(2)}</label>
-          <Slider value={[threshold]} onValueChange={([v]) => setThreshold(v)} min={-3} max={separation + 3} step={0.05} />
+    <SimulationPanel title="Interactive ROC Curve">
+      <SimulationConfig>
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <SimulationLabel>Decision threshold: {threshold.toFixed(2)}</SimulationLabel>
+            <Slider value={[threshold]} onValueChange={([v]) => setThreshold(v)} min={-3} max={separation + 3} step={0.05} />
+          </div>
+          <div>
+            <SimulationLabel>Class separation: {separation.toFixed(1)}</SimulationLabel>
+            <Slider value={[separation]} onValueChange={([v]) => setSeparation(v)} min={0.2} max={4} step={0.1} />
+          </div>
         </div>
-        <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Class separation: {separation.toFixed(1)}</label>
-          <Slider value={[separation]} onValueChange={([v]) => setSeparation(v)} min={0.2} max={4} step={0.1} />
-        </div>
-      </div>
-      <div className="mb-3 text-sm text-[var(--text-muted)]">
-        TPR: {tpr.toFixed(3)} | FPR: {fpr.toFixed(3)} | AUC: {auc.toFixed(3)}
-      </div>
+      </SimulationConfig>
+      <SimulationMain>
       <div className="grid grid-cols-2 gap-4">
         <CanvasChart
           data={[
@@ -115,6 +117,12 @@ export default function ROCLive() {
           style={{ width: '100%' }}
         />
       </div>
-    </div>
+      </SimulationMain>
+      <SimulationResults>
+        <div className="text-sm text-[var(--text-muted)]">
+          TPR: {tpr.toFixed(3)} | FPR: {fpr.toFixed(3)} | AUC: {auc.toFixed(3)}
+        </div>
+      </SimulationResults>
+    </SimulationPanel>
   );
 }

@@ -1,12 +1,11 @@
-'use client';
+"use client";
 
 import { useState, useMemo } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { Slider } from '@/components/ui/slider';
-
-interface GANTrainingDynamicsProps {
-  id?: string;
-}
+import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 function mulberry32(seed: number) {
   return function () {
@@ -62,7 +61,7 @@ function simulateGAN(dLR: number, gLR: number, collapseProb: number, seed: numbe
   return { gLoss, dLoss, diversity };
 }
 
-export default function GANTrainingDynamics({ id: _id }: GANTrainingDynamicsProps) {
+export default function GANTrainingDynamics({}: SimulationComponentProps) {
   const [dLR, setDLR] = useState(0.5);
   const [gLR, setGLR] = useState(0.5);
   const [collapseProb, setCollapseProb] = useState(0);
@@ -103,54 +102,54 @@ export default function GANTrainingDynamics({ id: _id }: GANTrainingDynamicsProp
   ];
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">
-        GAN Training Dynamics
-      </h3>
+    <SimulationPanel title="GAN Training Dynamics">
+      <SimulationConfig>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
+          <div>
+            <SimulationLabel className="block text-sm text-[var(--text-muted)] mb-1">
+              Discriminator LR factor: {dLR.toFixed(2)}
+            </SimulationLabel>
+            <Slider min={0.1} max={2} step={0.1} value={[dLR]} onValueChange={([v]) => setDLR(v)} className="w-full" />
+          </div>
+          <div>
+            <SimulationLabel className="block text-sm text-[var(--text-muted)] mb-1">
+              Generator LR factor: {gLR.toFixed(2)}
+            </SimulationLabel>
+            <Slider min={0.1} max={2} step={0.1} value={[gLR]} onValueChange={([v]) => setGLR(v)} className="w-full" />
+          </div>
+          <div>
+            <SimulationLabel className="block text-sm text-[var(--text-muted)] mb-1">
+              Mode collapse risk: {collapseProb.toFixed(0)}%
+            </SimulationLabel>
+            <Slider min={0} max={100} step={5} value={[collapseProb]} onValueChange={([v]) => setCollapseProb(v)} className="w-full" />
+          </div>
+        </div>
+      </SimulationConfig>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">
-            Discriminator LR factor: {dLR.toFixed(2)}
-          </label>
-          <Slider min={0.1} max={2} step={0.1} value={[dLR]} onValueChange={([v]) => setDLR(v)} className="w-full" />
+      <SimulationMain>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <CanvasChart
+            data={lossTraces}
+            layout={{
+              title: { text: 'Generator vs Discriminator Loss' },
+              xaxis: { title: { text: 'Training step' } },
+              yaxis: { title: { text: 'Loss' } },
+              height: 350,
+            }}
+            style={{ width: '100%', height: 350 }}
+          />
+          <CanvasChart
+            data={diversityTraces}
+            layout={{
+              title: { text: 'Output Diversity (Mode Coverage)' },
+              xaxis: { title: { text: 'Training step' } },
+              yaxis: { title: { text: 'Diversity' }, range: [0, 1.1] },
+              height: 350,
+            }}
+            style={{ width: '100%', height: 350 }}
+          />
         </div>
-        <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">
-            Generator LR factor: {gLR.toFixed(2)}
-          </label>
-          <Slider min={0.1} max={2} step={0.1} value={[gLR]} onValueChange={([v]) => setGLR(v)} className="w-full" />
-        </div>
-        <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">
-            Mode collapse risk: {collapseProb.toFixed(0)}%
-          </label>
-          <Slider min={0} max={100} step={5} value={[collapseProb]} onValueChange={([v]) => setCollapseProb(v)} className="w-full" />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <CanvasChart
-          data={lossTraces}
-          layout={{
-            title: { text: 'Generator vs Discriminator Loss' },
-            xaxis: { title: { text: 'Training step' } },
-            yaxis: { title: { text: 'Loss' } },
-            height: 350,
-          }}
-          style={{ width: '100%', height: 350 }}
-        />
-        <CanvasChart
-          data={diversityTraces}
-          layout={{
-            title: { text: 'Output Diversity (Mode Coverage)' },
-            xaxis: { title: { text: 'Training step' } },
-            yaxis: { title: { text: 'Diversity' }, range: [0, 1.1] },
-            height: 350,
-          }}
-          style={{ width: '100%', height: 350 }}
-        />
-      </div>
+      </SimulationMain>
 
       <div className="mt-4 p-3 bg-[var(--surface-2)] rounded text-sm text-[var(--text-muted)]">
         {collapseProb > 30 ? (
@@ -159,6 +158,6 @@ export default function GANTrainingDynamics({ id: _id }: GANTrainingDynamicsProp
           <p>The adversarial training shows characteristic oscillation between generator and discriminator losses. Stable training occurs when neither network dominates. Adjust the learning rate ratio to see how imbalanced training affects convergence.</p>
         )}
       </div>
-    </div>
+    </SimulationPanel>
   );
 }

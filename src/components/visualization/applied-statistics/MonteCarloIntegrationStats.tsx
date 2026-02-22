@@ -1,11 +1,14 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 // Integrate sin(pi*x) from 0 to 1, exact answer = 2/pi ~ 0.6366
-export default function MonteCarloIntegrationStats() {
+export default function MonteCarloIntegrationStats({}: SimulationComponentProps) {
   const [numSamples, setNumSamples] = useState(500);
 
   const { insideX, insideY, outsideX, outsideY, curveX, curveY, estimates, trueVal } = useMemo(() => {
@@ -58,17 +61,14 @@ export default function MonteCarloIntegrationStats() {
   const lastEstimate = estimates.val[estimates.val.length - 1] || 0;
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Monte Carlo Integration</h3>
-      <div className="grid grid-cols-1 gap-6 mb-4">
+    <SimulationPanel title="Monte Carlo Integration">
+      <SimulationConfig>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Samples: {numSamples}</label>
+          <SimulationLabel>Samples: {numSamples}</SimulationLabel>
           <Slider value={[numSamples]} onValueChange={([v]) => setNumSamples(v)} min={50} max={5000} step={50} />
         </div>
-      </div>
-      <div className="mb-3 text-sm text-[var(--text-muted)]">
-        Integral of sin(pi*x) on [0,1] | Estimate: {lastEstimate.toFixed(4)} | True: {trueVal.toFixed(4)} | Error: {Math.abs(lastEstimate - trueVal).toFixed(4)}
-      </div>
+      </SimulationConfig>
+      <SimulationMain>
       <div className="grid grid-cols-2 gap-4">
         <CanvasChart
           data={[
@@ -98,6 +98,12 @@ export default function MonteCarloIntegrationStats() {
           style={{ width: '100%' }}
         />
       </div>
-    </div>
+      </SimulationMain>
+      <SimulationResults>
+        <div className="text-sm text-[var(--text-muted)]">
+          Integral of sin(pi*x) on [0,1] | Estimate: {lastEstimate.toFixed(4)} | True: {trueVal.toFixed(4)} | Error: {Math.abs(lastEstimate - trueVal).toFixed(4)}
+        </div>
+      </SimulationResults>
+    </SimulationPanel>
   );
 }

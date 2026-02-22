@@ -1,12 +1,11 @@
-'use client';
+"use client";
 
 import { useState, useMemo } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { Slider } from '@/components/ui/slider';
-
-interface ActivationFunctionsProps {
-  id?: string;
-}
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 type ActivationName = 'relu' | 'sigmoid' | 'tanh' | 'leaky-relu' | 'softmax' | 'swish';
 
@@ -109,7 +108,7 @@ function computeDerivative(name: ActivationName, x: number): number {
 
 const ALL_ACTIVATION_NAMES: ActivationName[] = ['relu', 'sigmoid', 'tanh', 'leaky-relu', 'softmax', 'swish'];
 
-export default function ActivationFunctions({ id: _id }: ActivationFunctionsProps) {
+export default function ActivationFunctions({}: SimulationComponentProps) {
   const [selected, setSelected] = useState<Set<ActivationName>>(
     new Set(['relu', 'sigmoid', 'tanh'])
   );
@@ -199,111 +198,107 @@ export default function ActivationFunctions({ id: _id }: ActivationFunctionsProp
   };
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">
-        Activation Functions Comparison
-      </h3>
+    <SimulationPanel title="Activation Functions Comparison">
+      <SimulationSettings>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full">
+          <div className="space-y-3">
+            <p className="text-sm text-[var(--text-muted)] font-semibold">Select activations:</p>
+            {ALL_ACTIVATION_NAMES.map((name) => {
+              const info = ACTIVATION_INFO[name];
+              return (
+                <SimulationLabel
+                  key={name}
+                  className="flex items-center gap-2 text-sm cursor-pointer"
+                  style={{ color: selected.has(name) ? info.color : '#666' }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={selected.has(name)}
+                    onChange={() => toggleActivation(name)}
+                    className="accent-blue-500"
+                  />
+                  {info.label}
+                </SimulationLabel>
+              );
+            })}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Controls */}
-        <div className="space-y-3">
-          <p className="text-sm text-[var(--text-muted)] font-semibold">Select activations:</p>
-          {ALL_ACTIVATION_NAMES.map((name) => {
-            const info = ACTIVATION_INFO[name];
-            return (
-              <label
-                key={name}
-                className="flex items-center gap-2 text-sm cursor-pointer"
-                style={{ color: selected.has(name) ? info.color : '#666' }}
-              >
-                <input
-                  type="checkbox"
-                  checked={selected.has(name)}
-                  onChange={() => toggleActivation(name)}
-                  className="accent-blue-500"
-                />
-                {info.label}
-              </label>
-            );
-          })}
+            <hr className="border-[var(--border-strong)] my-3" />
 
-          <hr className="border-[var(--border-strong)] my-3" />
+            <SimulationLabel className="flex items-center gap-2 text-sm text-[var(--text-muted)] cursor-pointer">
+              <input
+                type="checkbox"
+                checked={showDerivatives}
+                onChange={(e) => setShowDerivatives(e.target.checked)}
+                className="accent-blue-500"
+              />
+              Show Derivatives (dashed)
+            </SimulationLabel>
 
-          <label className="flex items-center gap-2 text-sm text-[var(--text-muted)] cursor-pointer">
-            <input
-              type="checkbox"
-              checked={showDerivatives}
-              onChange={(e) => setShowDerivatives(e.target.checked)}
-              className="accent-blue-500"
-            />
-            Show Derivatives (dashed)
-          </label>
+            <SimulationLabel className="flex items-center gap-2 text-sm text-[var(--text-muted)] cursor-pointer">
+              <input
+                type="checkbox"
+                checked={showGradientRegions}
+                onChange={(e) => setShowGradientRegions(e.target.checked)}
+                className="accent-blue-500"
+              />
+              Highlight Vanishing Gradient Regions
+            </SimulationLabel>
 
-          <label className="flex items-center gap-2 text-sm text-[var(--text-muted)] cursor-pointer">
-            <input
-              type="checkbox"
-              checked={showGradientRegions}
-              onChange={(e) => setShowGradientRegions(e.target.checked)}
-              className="accent-blue-500"
-            />
-            Highlight Vanishing Gradient Regions
-          </label>
-
-          <div>
-            <label className="block text-sm text-[var(--text-muted)] mb-1">
-              X Range: [-{xRange}, {xRange}]
-            </label>
-            <Slider
-              min={2}
-              max={10}
-              step={1}
-              value={[xRange]}
-              onValueChange={([v]) => setXRange(v)}
-              className="w-full"
-            />
-          </div>
-
-          {/* Gradient annotation panel */}
-          <div className="mt-3 p-3 bg-[var(--surface-2)] rounded text-xs text-[var(--text-muted)] space-y-2">
-            {ALL_ACTIVATION_NAMES.filter((n) => selected.has(n)).map((name) => (
-              <div key={name} className="space-y-1">
-                <span className="font-semibold" style={{ color: ACTIVATION_INFO[name].color }}>
-                  {ACTIVATION_INFO[name].label}:
-                </span>{' '}
-                {ACTIVATION_INFO[name].description}
-                {showDerivatives && (
-                  <div className="ml-2 mt-1 text-[var(--text-muted)] italic">
-                    Gradient: {ACTIVATION_INFO[name].gradientNote}
+            {/* Gradient annotation panel */}
+            <div className="mt-3 p-3 bg-[var(--surface-2)] rounded text-xs text-[var(--text-muted)] space-y-2">
+              {ALL_ACTIVATION_NAMES.filter((n) => selected.has(n)).map((name) => (
+                <div key={name} className="space-y-1">
+                  <span className="font-semibold" style={{ color: ACTIVATION_INFO[name].color }}>
+                    {ACTIVATION_INFO[name].label}:
+                  </span>{' '}
+                  {ACTIVATION_INFO[name].description}
+                  {showDerivatives && (
+                    <div className="ml-2 mt-1 text-[var(--text-muted)] italic">
+                      Gradient: {ACTIVATION_INFO[name].gradientNote}
+                    </div>
+                  )}
+                  <div className="ml-2 text-blue-400/70">
+                    {ACTIVATION_INFO[name].whyItMatters}
                   </div>
-                )}
-                <div className="ml-2 text-blue-400/70">
-                  {ACTIVATION_INFO[name].whyItMatters}
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
-
-        {/* Plot */}
-        <div className="lg:col-span-2">
-          <CanvasChart
-            data={plotData}
-            layout={{
-              xaxis: {
-                title: { text: 'x' },
-                zerolinewidth: 1,
-              },
-              yaxis: {
-                title: { text: showDerivatives ? 'f(x) / f\'(x)' : 'f(x)' },
-                zerolinewidth: 1,
-              },
-              margin: { t: 30, b: 50, l: 60, r: 30 },
-              autosize: true,
-            }}
-            style={{ width: '100%', height: '450px' }}
+      </SimulationSettings>
+      <SimulationConfig>
+        <div>
+          <SimulationLabel className="block text-sm text-[var(--text-muted)] mb-1">
+            X Range: [-{xRange}, {xRange}]
+          </SimulationLabel>
+          <Slider
+            min={2}
+            max={10}
+            step={1}
+            value={[xRange]}
+            onValueChange={([v]) => setXRange(v)}
+            className="w-full"
           />
         </div>
-      </div>
-    </div>
+      </SimulationConfig>
+      <SimulationMain>
+        <CanvasChart
+          data={plotData}
+          layout={{
+            xaxis: {
+              title: { text: 'x' },
+              zerolinewidth: 1,
+            },
+            yaxis: {
+              title: { text: showDerivatives ? 'f(x) / f\'(x)' : 'f(x)' },
+              zerolinewidth: 1,
+            },
+            margin: { t: 30, b: 50, l: 60, r: 30 },
+            autosize: true,
+          }}
+          style={{ width: '100%', height: '450px' }}
+        />
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

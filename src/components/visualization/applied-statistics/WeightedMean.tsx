@@ -1,12 +1,15 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 const MEASUREMENT_VALUES = [10.2, 10.5, 10.1];
 
-export default function WeightedMean() {
+export default function WeightedMean({}: SimulationComponentProps) {
   const [sigma1, setSigma1] = useState(0.1);
   const [sigma2, setSigma2] = useState(0.5);
   const [sigma3, setSigma3] = useState(0.2);
@@ -44,26 +47,24 @@ export default function WeightedMean() {
   }));
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Weighted Mean: Precision Matters</h3>
-      <div className="grid grid-cols-3 gap-6 mb-4">
-        <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">sigma1: {sigma1.toFixed(2)}</label>
-          <Slider value={[sigma1]} onValueChange={([v]) => setSigma1(v)} min={0.05} max={1.0} step={0.01} />
+    <SimulationPanel title="Weighted Mean: Precision Matters">
+      <SimulationConfig>
+        <div className="grid grid-cols-3 gap-6">
+          <div>
+            <SimulationLabel>sigma1: {sigma1.toFixed(2)}</SimulationLabel>
+            <Slider value={[sigma1]} onValueChange={([v]) => setSigma1(v)} min={0.05} max={1.0} step={0.01} />
+          </div>
+          <div>
+            <SimulationLabel>sigma2: {sigma2.toFixed(2)}</SimulationLabel>
+            <Slider value={[sigma2]} onValueChange={([v]) => setSigma2(v)} min={0.05} max={1.0} step={0.01} />
+          </div>
+          <div>
+            <SimulationLabel>sigma3: {sigma3.toFixed(2)}</SimulationLabel>
+            <Slider value={[sigma3]} onValueChange={([v]) => setSigma3(v)} min={0.05} max={1.0} step={0.01} />
+          </div>
         </div>
-        <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">sigma2: {sigma2.toFixed(2)}</label>
-          <Slider value={[sigma2]} onValueChange={([v]) => setSigma2(v)} min={0.05} max={1.0} step={0.01} />
-        </div>
-        <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">sigma3: {sigma3.toFixed(2)}</label>
-          <Slider value={[sigma3]} onValueChange={([v]) => setSigma3(v)} min={0.05} max={1.0} step={0.01} />
-        </div>
-      </div>
-      <div className="mb-3 text-sm text-[var(--text-muted)] flex flex-wrap gap-4">
-        <span>Arithmetic mean: {arithMean.toFixed(3)}</span>
-        <span>Weighted mean: {wMean.toFixed(3)} +/- {wSigma.toFixed(3)}</span>
-      </div>
+      </SimulationConfig>
+      <SimulationMain>
       <CanvasChart
         data={[
           ...errBars as any,
@@ -80,6 +81,13 @@ export default function WeightedMean() {
         }}
         style={{ width: '100%' }}
       />
-    </div>
+      </SimulationMain>
+      <SimulationResults>
+        <div className="text-sm text-[var(--text-muted)] flex flex-wrap gap-4">
+          <span>Arithmetic mean: {arithMean.toFixed(3)}</span>
+          <span>Weighted mean: {wMean.toFixed(3)} +/- {wSigma.toFixed(3)}</span>
+        </div>
+      </SimulationResults>
+    </SimulationPanel>
   );
 }

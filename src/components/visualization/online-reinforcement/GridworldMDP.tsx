@@ -1,11 +1,13 @@
-'use client';
+"use client";
 
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 
-export default function GridworldMDP({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function GridworldMDP({}: SimulationComponentProps) {
   const n = 6;
   const values = useMemo(() => {
     const goal = [5, 5];
@@ -25,8 +27,8 @@ export default function GridworldMDP({ id }: SimulationComponentProps) { // esli
   const pathY = [0, 0, 1, 1, 2, 3, 3, 4, 5];
 
   return (
-    <div className="w-full rounded-lg bg-[var(--surface-1)] p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-3 text-[var(--text-strong)]">Gridworld MDP: Value Heatmap and Rollout</h3>
+    <SimulationPanel title="Gridworld MDP: Value Heatmap and Rollout">
+      <SimulationMain>
       <CanvasChart
         data={[
           { z: values, type: 'heatmap', colorscale: 'Viridis', showscale: true },
@@ -40,6 +42,7 @@ export default function GridworldMDP({ id }: SimulationComponentProps) { // esli
         }}
         style={{ width: '100%' }}
       />
-    </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

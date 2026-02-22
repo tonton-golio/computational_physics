@@ -1,8 +1,10 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 
@@ -14,7 +16,7 @@ function seededRandom(seed: number): () => number {
   };
 }
 
-export default function MonteCarloIntegration({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function MonteCarloIntegration({}: SimulationComponentProps) {
   const [nPointsExp, setNPointsExp] = useState(10);
   const [nDim, setNDim] = useState(2);
   const [pNorm, setPNorm] = useState(2.0);
@@ -109,40 +111,37 @@ export default function MonteCarloIntegration({ id }: SimulationComponentProps) 
   }, [nPoints, nDim, pNorm]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Monte Carlo Integration: Hypersphere in Hypercube</h3>
-      <p className="text-[var(--text-muted)] text-sm mb-4">
-        Estimate the volume of a unit hypersphere by random sampling. Points inside the unit
-        ball (under the chosen p-norm) are shown in green; points outside are shown in gold.
-        In 2D with p=2, this is a classic way to estimate pi.
-      </p>
-      <div className="grid grid-cols-3 gap-4 mb-4">
-        <div>
-          <label className="text-[var(--text-muted)] text-sm">Points: 2^{nPointsExp} = {nPoints}</label>
-          <Slider
-            min={4} max={14} step={1} value={[nPointsExp]}
-            onValueChange={([v]) => setNPointsExp(v)}
-            className="w-full"
-          />
+    <SimulationPanel title="Monte Carlo Integration: Hypersphere in Hypercube" caption="Estimate the volume of a unit hypersphere by random sampling. Points inside the unit ball (under the chosen p-norm) are shown in green; points outside are shown in gold. In 2D with p=2, this is a classic way to estimate pi.">
+      <SimulationConfig>
+        <div className="grid grid-cols-3 gap-4">
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-sm">Points: 2^{nPointsExp} = {nPoints}</SimulationLabel>
+            <Slider
+              min={4} max={14} step={1} value={[nPointsExp]}
+              onValueChange={([v]) => setNPointsExp(v)}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-sm">Dimensions: {nDim}</SimulationLabel>
+            <Slider
+              min={2} max={10} step={1} value={[nDim]}
+              onValueChange={([v]) => setNDim(v)}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-sm">p-norm: {pNorm.toFixed(1)}</SimulationLabel>
+            <Slider
+              min={0.5} max={8} step={0.1} value={[pNorm]}
+              onValueChange={([v]) => setPNorm(v)}
+              className="w-full"
+            />
+          </div>
         </div>
-        <div>
-          <label className="text-[var(--text-muted)] text-sm">Dimensions: {nDim}</label>
-          <Slider
-            min={2} max={10} step={1} value={[nDim]}
-            onValueChange={([v]) => setNDim(v)}
-            className="w-full"
-          />
-        </div>
-        <div>
-          <label className="text-[var(--text-muted)] text-sm">p-norm: {pNorm.toFixed(1)}</label>
-          <Slider
-            min={0.5} max={8} step={0.1} value={[pNorm]}
-            onValueChange={([v]) => setPNorm(v)}
-            className="w-full"
-          />
-        </div>
-      </div>
+      </SimulationConfig>
 
+      <SimulationMain>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <CanvasChart
           data={[
@@ -205,6 +204,12 @@ export default function MonteCarloIntegration({ id }: SimulationComponentProps) 
         />
       </div>
 
+      <p className="text-[var(--text-soft)] text-xs mt-3">
+        As the number of dimensions grows, the volume of the hypersphere shrinks dramatically relative to the cube.
+        This is the curse of dimensionality: high-dimensional spaces are mostly empty corners.
+      </p>
+      </SimulationMain>
+      <SimulationResults>
       <div className="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
         <div className="bg-[var(--surface-2)] rounded p-3">
           <div className="text-[var(--text-soft)]">Inside / Total</div>
@@ -225,10 +230,7 @@ export default function MonteCarloIntegration({ id }: SimulationComponentProps) 
           </div>
         )}
       </div>
-      <p className="text-[var(--text-soft)] text-xs mt-3">
-        As the number of dimensions grows, the volume of the hypersphere shrinks dramatically relative to the cube.
-        This is the curse of dimensionality: high-dimensional spaces are mostly empty corners.
-      </p>
-    </div>
+      </SimulationResults>
+    </SimulationPanel>
   );
 }

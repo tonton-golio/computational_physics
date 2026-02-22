@@ -2,81 +2,62 @@
 
 > *Remember the [condition number](./bounding-errors)? Watch how it shows up again here — this time deciding whether your linear system's answer is trustworthy or garbage.*
 
+## Big Ideas
+
+* In finite dimensions, every linear map *is* a matrix — the abstract and the concrete are secretly the same thing once you pick a basis.
+* LU decomposition works by recording the steps of Gaussian elimination; solving then costs almost nothing compared to the factorization itself.
+* Never compute $A^{-1}$ explicitly — it amplifies rounding errors. Factorize instead, and solve by substitution.
+* The condition number of the matrix is the multiplier that turns input uncertainty into output uncertainty; a large condition number means the answer is geometrically fragile.
+
 ## Why Linear Systems Matter
-Linear systems are special: they're something we can solve really well, and they cover an enormous amount of problems. Even when you've got a non-linear system, you can isolate the linearity and solve that, and treat the non-linearity in another way.
+
+Linear systems are special: they're something we can solve really well, and they cover an enormous range of problems. Even when you've got a nonlinear system, you can isolate the linearity and solve that, treating the nonlinearity separately.
 
 ## From Abstract Linear Systems to Matrices
-### Going from abstract linear systems to matrices
 
-A **linear function** is anything that behaves in the way we call linear. They exist in vector spaces: A mapping $F: X \rightarrow Y$ (abstract, eg: wave functions) is linear if $F(ax + bx') = aF(x) + bF(x')$.
+A **linear function** is anything that behaves linearly. A mapping $F: X \rightarrow Y$ is linear if $F(ax + bx') = aF(x) + bF(x')$.
 
-*This says: linearity means "scaling and adding inputs does the same thing as scaling and adding outputs." It's the nicest property a function can have.*
+*Linearity means "scaling and adding inputs does the same thing as scaling and adding outputs." It's the nicest property a function can have.*
 
-Linear functions and matrices are the same thing (in finite dimensions, once bases are chosen)!
-* Let's say you have a basis for $X$, eg: $\{e_{1}, e_2, \dots e_n\}$, then any vector $x \in X$ can be written uniquely as $x = a_1e_1 + \dots + a_n e_n$
-* Let $\{f_{1}, f_2, \dots f_n\}$ form a basis for $Y$, any vector $y \in Y$ can be written as $y = b_1f_1 + \dots + b_m f_m$
-* $$F(e_j)=b_{1j}f_1 + \dots + b_{mj}f_m$$
-	We can write it because of linearity, but you'll notice that it's just matrix multiplication.
-* $$ F(x) = F(a_1e_1 + \dots + a_ne_n) = a_1F(e_1) + \dots + a_nF(e_n) $$
-	$$ = \sum_{j=1}^n a_j \sum_{i=1}^m b_{ij} f_i $$
-	$$ = \sum_{i=1}^m f_i \left(\sum_{j=1}^n a_j b_{ij} \right) $$
-	The thing on the right is nothing more than a matrix product. Think of the total thing as:  Representation of $F$ in $e,f$ basis $*$ (Coordinates of $x$ in $e$ basis) = Coordinates of $y$ in $f$ basis
+Linear functions and matrices are the same thing (in finite dimensions, once bases are chosen):
+* Pick a basis $\{e_{1}, e_2, \dots e_n\}$ for $X$, so any $x \in X$ can be written uniquely as $x = a_1e_1 + \dots + a_n e_n$
+* Pick a basis $\{f_{1}, f_2, \dots f_m\}$ for $Y$
+* Then $F(e_j)=b_{1j}f_1 + \dots + b_{mj}f_m$
+* Expand everything out:
+	$$ F(x) = \sum_{i=1}^m f_i \left(\sum_{j=1}^n a_j b_{ij} \right) $$
+	That thing on the right is just a matrix product.
 
-We've shown how an abstract linear problem can be represented with matrices.
-
-We're missing one thing: how do you find $b_{ij}$, the components of the matrix?
-$$b_{ij} = \left< f_i \vert F e_j \right>$$
-For example, $\int f_i(\alpha)(Fe_j)(\alpha) d\alpha$, if $Y$ is a space of functions $f(\alpha)$
+The matrix entries? $b_{ij} = \left< f_i \vert F e_j \right>$.
 
 **Punch Line:** The actions of $F: X\rightarrow Y$ are exactly the same as $F: \mathbb{C}^m \rightarrow \mathbb{C}^n$.
 
-### How to solve linear systems of equations
+### How to solve linear systems
 
-Find all $x \in X$ such that $F(x) = y$ (some known $y\in Y$)
-1. Pick basis sets $\{e_1, \dots, e_n\}$ for $X$, $\{f_1, \dots, f_m\}$ for $Y$
-2. Write down matrix $F$ in $e,f$ basis and RHS $y$ in $f$ basis
-3. Solve matrix equation $Fx=y$, where $F$ and $y$ are known
-4. Dot result $x$ with $e$ basis to get the result in the problem domain $x=x_1e_1+\dots+x_ne_n$
+Find all $x \in X$ such that $F(x) = y$:
+1. Pick basis sets for $X$ and $Y$
+2. Write down matrix $F$ and RHS $y$ in those bases
+3. Solve the matrix equation $Fx=y$
+4. Dot the result with the $e$ basis to get back to the problem domain
 
 ## Existence of Solutions
-### Can we solve $F(x)=y$?
-Yes, when solutions exist!
 
-Today, we'll use the case where $m=n$, i.e, matrix $\underline{F}$ is square.
+Today we use the case where $m=n$ (square matrix). Three cases:
 
-If you apply $F$ to all the vectors in the source space, you get a subset (not proper) of $Y$, which is called the _image_. $Im(F) = \{F(x) \vert x \in X\}$.
+* **$F$ is non-singular**: $Im(F) = Y$, $Rank(\underline{F}) = n$, $det(\underline{F}) \neq 0$, trivial kernel, unique solution exists
+* **$F$ is singular**, $y \not\in Im(F)$: no solutions
+* **$F$ is singular**, $y \in Im(F)$: infinitely many solutions (add anything from the kernel)
 
-In the non-abstract space, it's called the _span_: $Span(\underline{F}) = \{\underline{F} \,\underline{x} \vert \underline{x} \in \mathbb{C}\}$
-
-Three cases when $n=m$
-
-* **$F$ is non-singular**: (if one of them holds, all of them hold: they're equivalent)
-* $Im(F) = Y$ (Dimension of source space $X$ = Dimension of target space $Y$)
-* $Span(\underline{F} = \mathbb{C}^n)$
-* $Rank(\underline{F}) = n$
-* $det(\underline{F}) \neq 0$
-* $\underline{F}\,\underline{x} = 0 \leftrightarrow \underline{x}=0$ (trivial kernel)
-* $\underline{F}$ is invertible (Deterministically find unique solution)
-* **$F$ is singular**:
-* $Im(F) \not\subseteq Y$
-* $Span(\underline{F} \not\subseteq \mathbb{C}^n)$
-* $Rank(\underline{F}) < n$
-* $det(\underline{F}) = 0$
-* There is a non-trivial subspace $Ker(\underline{F})$ such that $\underline{F}(\underline{x})=0$ for $\underline{x}\in Ker(\underline{F})$
-
-Singular $F$ splits into two sub-cases:
-1. $y \not\in Im(F) \implies$ there are no solutions
-2. $y \in Im(F) \implies$ infinitely many solutions (because we can add something from the kernel and get another solution).
-
-That was the mathematical part: Now we're going to look at a case where we have exact solutions: when are the solutions stable, and when do small perturbations cause it to blow up?
+Now the real question: even when exact solutions exist, are they *stable*?
 
 ## Condition Number Interactive Demo
 
 [[simulation condition-number-demo]]
 
-## Sensitivity of a Linear System of Equations
+## Sensitivity of a Linear System
 
-The more orthogonal the matrix is, the lower the condition number. It's ~1 for orthogonal, but as they get closer to one another, i.e, they get closer to being linearly dependent on one another, condition number increases. The webpage has a calculation of the exact condition number.
+The more orthogonal the matrix rows, the lower the condition number. Nearly parallel rows? The condition number explodes.
+
+Picture two lines crossing at a sharp angle — the intersection is well-defined, even if the lines wiggle. Now picture two nearly parallel lines — a tiny wiggle moves the intersection wildly. That's what a high condition number looks like in 2D.
 
 ## Interactive Gaussian Elimination and LU Decomposition
 
@@ -84,27 +65,23 @@ The more orthogonal the matrix is, the lower the condition number. It's ~1 for o
 
 [[simulation lu-decomp-demo]]
 
-## How to build the algorithms from scratch
+## Building the Algorithms
 
-Construct algorithms that transform $b=Ax$ into $x$ using a modest number of operations that are linear, invertible, and simple to compute.
+We want to transform $Ax = b$ into $x$ using operations that are linear, invertible, and cheap.
 
-**Fundamental Property:** if $M$ is invertible, then $MAx = Mb$ has the same solutions as $Ax=b$
+**Fundamental Property:** if $M$ is invertible, then $MAx = Mb$ has the same solutions as $Ax=b$. Multiplying both sides by the same invertible matrix doesn't change the answer — like weighing something on a different scale.
 
-*This says: multiplying both sides of the equation by the same invertible matrix doesn't change the answer. It's like weighing something on a different scale — the object doesn't change.*
+Why not just compute $A^{-1}$ directly? Because computing an inverse is like photocopying a photocopy — each generation loses quality. LU factorization avoids this by never forming the inverse explicitly.
 
-What we know:
-1. Our algorithm must have the same effect as multiplying by the inverse. We avoid explicitly computing $A^{-1}$ and multiplying because inverses amplify rounding errors, especially for ill-conditioned matrices: $A \rightarrowtail I; I \rightarrowtail A; b \rightarrowtail x$
-2. Each step must be linear, invertible
-3. We first want $A = LU$ (lower and upper triangular matrices)
-4. Every step, we want to take an $n\times n$ matrix, and reduce the leftmost column to be zero below the first element. Then, we just recursively continue for an $(n-1)\times(n-1)$ matrix
-5. Row scaling (it's linear and invertible)
-6. Row addition and subtraction is also linear and invertible
-
-We can use 5. and 6. together: just scale the rows (if the leading term is nonzero) and subtract
-
-Why not just compute $A^{-1}$ directly? Because computing an inverse is like photocopying a photocopy — each generation loses quality. With floating-point arithmetic, the rounding errors in computing $A^{-1}$ get amplified when you multiply by it. LU factorization avoids this by never forming the inverse explicitly.
+The strategy:
+1. Factor $A = LU$ (lower and upper triangular)
+2. Each step, zero out one column below the diagonal using row scaling and subtraction
+3. Both operations are linear and invertible
 
 ## lu_factorize
+
+Watch this little magician at work:
+
 ```python
 def lu_factorize(M):
     """
@@ -126,13 +103,12 @@ def lu_factorize(M):
 
 ## forward_substitute
 
-**Back-substitution is like unwrapping a present.** Once you have $LU$, solving $Ly = b$ (forward substitution) is like opening boxes from the outside in. The first equation gives you $y_1$ immediately (one unknown, one equation). Plug that into the second equation and you get $y_2$. Each step peels off one more layer of wrapping until the whole present is unwrapped.
+**Back-substitution is like unwrapping a present.** Once you have $LU$, solving $Ly = b$ is like opening boxes from the outside in. The first equation gives you $y_1$ immediately. Plug that into the second and you get $y_2$. Each step peels off one more layer.
 
 ```python
 def forward_substitute(L, b):
     """
     Solve Ly = b by peeling off one layer at a time.
-    The first equation has only y[0], the second has y[0] and y[1], etc.
     """
     y = np.zeros(np.shape(b))
     for i in range(len(b)):
@@ -142,13 +118,12 @@ def forward_substitute(L, b):
 
 ## backward_substitute
 
-Then $Ux = y$ (backward substitution) goes the other direction — start from the last equation (one unknown) and work backwards, unwrapping from the inside out.
+Then $Ux = y$ goes the other direction — start from the last equation and work backwards:
 
 ```python
 def backward_substitute(U, y):
     """
     Solve Ux = y by working from the bottom up.
-    The last equation has only x[n-1], the second-to-last has x[n-1] and x[n-2], etc.
     """
     x = np.zeros(np.shape(y))
     for i in range(1, 1 + len(x)):
@@ -157,6 +132,7 @@ def backward_substitute(U, y):
 ```
 
 ## solve_lin_eq
+
 ```python
 def solve_lin_eq(M, z):
     """The full solve: factorize, then unwrap twice."""
@@ -168,52 +144,33 @@ def solve_lin_eq(M, z):
 > **Challenge.** Build a 5x5 random matrix in NumPy. Solve $Ax = b$ using your own `solve_lin_eq` and compare with `np.linalg.solve`. How many digits agree? Now make the matrix nearly singular (e.g., make two rows almost identical) and try again. Watch the digits evaporate.
 
 ## Conditioning and Error Analysis
-Consider the matrix equation $Ax=b$.
-For $i = 1, \dots, m$: $a_{i1}x_1 + a_{i2}x_2 + \dots + a_{in}x_n \equiv A_i^T x=b_i$. Each equation defines a hyperplane in $\mathbb{R}^n$.
 
-If there are 2 unknowns, i.e., $n=2$:
-$$a_{11}x_1 + a_{12} x_2 = b_1$$
-$$a_{21}x_1 + a_{22} x_2 = b_2$$
-In two dimensions, these define lines, we can find the slope and y-intercepts. The point of intersection is the solution to the system.
+Consider $Ax=b$. Each equation $a_{i1}x_1 + a_{i2}x_2 + \dots + a_{in}x_n = b_i$ defines a hyperplane.
 
-Assume that there's an error or uncertainty in the data, so that $||\Delta b||_\infty < \delta$. You'll have a region of uncertainity around the lines, transforming them into rectangles. Now, your solution can be anywhere in the shape that's made from the intersection of the rectangles. If we had an error in the matrix, we should have a skew (and a shift in slopes) and not a vertical shift like we do if the error is in $b$.
-
-What does this look like geometrically? Picture two lines crossing at a sharp angle — the intersection point is well-defined, even if the lines wiggle a bit. Now picture two lines that are almost parallel — a tiny wiggle moves the intersection point wildly. That's what a high condition number looks like in 2D.
+In 2D, two equations define two lines. The intersection is the solution. Now add uncertainty: $||\Delta b||_\infty < \delta$. Those lines become ribbons, and the solution becomes a region. Nearly parallel lines? That region is enormous. That's ill-conditioning, visible right there in the geometry.
 
 ### Error bounds:
 
-1. RHS: Assume $A \hat{x} = \hat{b} \implies A(x+\Delta x) = (b+\Delta b)$. That implies:
-	* $||\hat{b}|| = ||A\hat{x}|| \leq ||A||\; ||\hat{x} ||$ and so $||\hat{x}|| \geq \frac{||\hat{b}||}{||A||}$
-	* $|| \Delta x || = || A^{-1} \Delta b || \leq || A^{-1}|| \; ||\Delta b ||$
-	* together, we get $\frac{||\Delta x||}{||\hat{x}||} \leq ||A^{-1}|| \; ||A|| \; \frac{||\Delta b||}{||\hat{b}||} = \text{COND}(A) \frac{||\Delta b||}{||\hat{b}||}$
+$A(x+\Delta x) = (b+\Delta b)$ implies:
 
-*This says: the relative error in your solution is at most COND(A) times the relative error in your data. If COND(A) = 1000 and your data has 0.1% error, your solution could have up to 100% error.*
+$$\frac{||\Delta x||}{||\hat{x}||} \leq \text{COND}(A) \frac{||\Delta b||}{||\hat{b}||}$$
 
-2. Nothing here depends on matrix $A$ being exact, and we can replace $A$ here with $\hat{A}$ everywhere so we can get a calculation even if it's not exact
+*The relative error in your solution is at most COND(A) times the relative error in your data. If COND(A) = 1000 and your data has 0.1% error, your solution could have up to 100% error.*
 
-So how do you know if your answer is any good? Compute the condition number! In NumPy: `np.linalg.cond(A)`. If it's near 1, relax. If it's $10^{10}$, panic (or at least be very suspicious of your answer).
+So how do you know if your answer is any good? Compute `np.linalg.cond(A)`. If it's near 1, relax. If it's $10^{10}$, panic.
 
 ---
 
-## Big Ideas
-
-* In finite dimensions, every linear map *is* a matrix — the abstract and the concrete are secretly the same thing once you pick a basis.
-* LU decomposition works by recording the steps of Gaussian elimination; solving then costs almost nothing compared to the factorization itself.
-* Never compute $A^{-1}$ explicitly — it amplifies rounding errors. Factorize instead, and solve by substitution.
-* The condition number of the matrix is the multiplier that turns input uncertainty into output uncertainty; a large condition number means the answer is geometrically fragile.
-
 ## What Comes Next
 
-Linear systems are the paradise of numerical methods: existence and uniqueness are decided by a single rank check, and the LU algorithm reaches the exact answer in a fixed number of steps. But real data is noisy, and real experiments give you *more* equations than unknowns. When no exact solution exists, you need the best approximate solution — and that is the least-squares problem.
-
-The Householder reflections used to solve least squares are close relatives of the orthogonal operations that appear throughout the rest of the course. The condition-number intuition you built here will return immediately: forming the normal equations squares the condition number, and that single fact motivates everything about how least squares is actually computed.
+Linear systems are paradise: existence and uniqueness are decided by a single rank check, and LU reaches the exact answer in a fixed number of steps. But real data is noisy, and real experiments give you *more* equations than unknowns — that's the least-squares problem, and it's next.
 
 ## Check Your Understanding
 
-1. A matrix has $\det(A) = 10^{-15}$. Does this mean the matrix is ill-conditioned? Explain using the definition of the condition number.
-2. You solve $Ax = b$ using LU decomposition and get a residual $\|b - A\hat{x}\|$ that is nearly zero, yet the true error $\|x - \hat{x}\|$ is large. What property of $A$ makes this possible?
-3. Forward substitution solves $Ly = b$ from top to bottom; backward substitution solves $Ux = y$ from bottom to top. Why does the triangular structure make each step a one-liner rather than another full linear system?
+1. You solve $Ax = b$ using LU decomposition and get a residual $\|b - A\hat{x}\|$ that is nearly zero, yet the true error $\|x - \hat{x}\|$ is large. What property of $A$ makes this possible?
+2. Forward substitution solves $Ly = b$ top to bottom; backward substitution solves $Ux = y$ bottom to top. Why does the triangular structure make each step trivial?
+3. Two nearly parallel lines in 2D give a large condition number. Explain this geometrically.
 
 ## Challenge
 
-Construct a family of $n \times n$ matrices parameterized by an angle $\theta$ whose rows are unit vectors that all point nearly in the same direction (make the angle between adjacent rows equal to $\theta$). Compute the condition number and the relative error in the solution $x$ as a function of $\theta$ for $\theta \in [0.01°, 90°]$. At what angle does the system become effectively unsolvable in double precision? Plot both curves on the same axes and explain the connection between the geometry (nearly parallel rows) and the algebra (large condition number).
+Construct a family of $n \times n$ matrices parameterized by an angle $\theta$ whose rows are unit vectors that all point nearly in the same direction (angle $\theta$ between adjacent rows). Compute the condition number and the relative error in $x$ as a function of $\theta$ for $\theta \in [0.01°, 90°]$. At what angle does the system become effectively unsolvable in double precision?

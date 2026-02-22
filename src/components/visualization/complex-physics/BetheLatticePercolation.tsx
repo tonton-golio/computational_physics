@@ -1,9 +1,11 @@
-'use client';
+"use client";
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { SimulationMain } from '@/components/ui/simulation-main';
 import { Slider } from '@/components/ui/slider';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationAux, SimulationLabel } from '@/components/ui/simulation-panel';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 import { useTheme } from '@/lib/use-theme';
 
 // ---------------------------------------------------------------------------
@@ -314,7 +316,7 @@ function TreeCanvas({
 // Main component
 // ---------------------------------------------------------------------------
 
-export function BetheLatticePercolation() {
+export default function BetheLatticePercolation({}: SimulationComponentProps) {
   const theme = useTheme();
   const isDark = theme === 'dark';
   const [generations, setGenerations] = useState(4);
@@ -344,29 +346,30 @@ export function BetheLatticePercolation() {
   }, [degree, effectiveGens, p, seed]);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap gap-6 items-center">
+    <SimulationPanel title="Bethe Lattice Percolation">
+      <SimulationConfig>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Generations: {effectiveGens}</label>
+          <SimulationLabel>Generations: {effectiveGens}</SimulationLabel>
           <Slider value={[effectiveGens]} onValueChange={([v]) => setGenerations(v)} min={1} max={maxGens} step={1} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Degree z: {degree}</label>
+          <SimulationLabel>Degree z: {degree}</SimulationLabel>
           <Slider value={[degree]} onValueChange={([v]) => setDegree(v)} min={2} max={6} step={1} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">p: {p.toFixed(2)}</label>
+          <SimulationLabel>p: {p.toFixed(2)}</SimulationLabel>
           <Slider value={[p]} onValueChange={([v]) => setP(v)} min={0.01} max={1} step={0.01} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Seed: {seed}</label>
+          <SimulationLabel>Seed: {seed}</SimulationLabel>
           <Slider value={[seed]} onValueChange={([v]) => setSeed(v)} min={1} max={200} step={1} />
         </div>
-      </div>
-
-      <div className="text-sm text-[var(--text-muted)]">
-        {nodes.length} nodes | Theoretical Bethe threshold: p_c = 1/(z−1) = {theoreticalPc.toFixed(3)} | Connected components N(p) = {numComponents}
-      </div>
+      </SimulationConfig>
+      <SimulationResults>
+        <div className="text-sm text-[var(--text-muted)]">
+          {nodes.length} nodes | Theoretical Bethe threshold: p_c = 1/(z-1) = {theoreticalPc.toFixed(3)} | Connected components N(p) = {numComponents}
+        </div>
+      </SimulationResults>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <SimulationMain scaleMode="contain">
@@ -380,34 +383,36 @@ export function BetheLatticePercolation() {
           />
         </SimulationMain>
 
-        <CanvasChart
-          data={[
-            {
-              x: npCurve.ps,
-              y: npCurve.Ns,
-              type: 'scatter',
-              mode: 'lines+markers',
-              line: { color: '#34d399', width: 2 },
-              marker: { size: 5 },
-            },
-            {
-              x: [theoreticalPc, theoreticalPc],
-              y: [Math.min(...npCurve.Ns), Math.max(...npCurve.Ns)],
-              type: 'scatter',
-              mode: 'lines',
-              line: { color: '#ef4444', dash: 'dash' },
-            },
-          ]}
-          layout={{
-            title: { text: 'N(p) for Bethe Lattice Percolation', font: { size: 13 } },
-            xaxis: { title: { text: 'p' } },
-            yaxis: { title: { text: 'Connected Components N' } },
-            showlegend: false,
-            margin: { t: 40, r: 20, b: 50, l: 60 },
-          }}
-          style={{ width: '100%', height: 360 }}
-        />
+        <SimulationAux>
+          <CanvasChart
+            data={[
+              {
+                x: npCurve.ps,
+                y: npCurve.Ns,
+                type: 'scatter',
+                mode: 'lines+markers',
+                line: { color: '#34d399', width: 2 },
+                marker: { size: 5 },
+              },
+              {
+                x: [theoreticalPc, theoreticalPc],
+                y: [Math.min(...npCurve.Ns), Math.max(...npCurve.Ns)],
+                type: 'scatter',
+                mode: 'lines',
+                line: { color: '#ef4444', dash: 'dash' },
+              },
+            ]}
+            layout={{
+              title: { text: 'N(p) for Bethe Lattice Percolation', font: { size: 13 } },
+              xaxis: { title: { text: 'p' } },
+              yaxis: { title: { text: 'Connected Components N' } },
+              showlegend: false,
+              margin: { t: 40, r: 20, b: 50, l: 60 },
+            }}
+            style={{ width: '100%', height: 360 }}
+          />
+        </SimulationAux>
       </div>
-    </div>
+    </SimulationPanel>
   );
 }

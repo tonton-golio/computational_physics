@@ -1,129 +1,91 @@
 # Basic Design of Experiments
 
-So far, you've developed tools for analyzing data *after* it's been collected. But here's a secret that experienced researchers know: the quality of any statistical analysis depends critically on how the data was gathered in the first place. A well-designed experiment can answer your question with 50 observations; a poorly designed one might not answer it with 5000.
-
-Experimental design is where you invest thought *before* spending time and money on data collection. The payoff is enormous.
+Here's a secret experienced researchers know: the quality of any analysis depends on how the data was gathered. A well-designed experiment answers your question with 50 observations. A poorly designed one might not answer it with 5000.
 
 ## Principles of Experimental Design
 
-Three foundational principles guide every well-designed experiment:
+Three principles guide every good experiment:
 
-* **Randomization**: Randomly assign experimental units to treatments to eliminate systematic bias. Without randomization, apparent treatment effects might simply reflect pre-existing differences between groups. **Practical tip**: use a random number generator, not convenience or judgment. Human "random" assignment is notoriously non-random.
-* **Replication**: Repeat measurements to estimate variability and increase precision. A single measurement tells you nothing about reliability. **Practical tip**: determine how many replicates you need *before* starting — we'll see how in the power analysis section below.
-* **Blocking**: Group experimental units by a known source of variability to reduce noise. If you know that batches, days, or operators introduce variability, account for it by design rather than hoping it averages out. Think of it as neutralizing a nuisance variable before it can contaminate your results.
+* **Randomization**: Randomly assign units to treatments. Without it, apparent effects might just reflect pre-existing differences. Use a random number generator -- human "random" assignment is notoriously non-random.
+* **Replication**: Repeat measurements to estimate variability. One measurement tells you nothing about reliability.
+* **Blocking**: Group units by a known source of variability to reduce noise. Think of it as neutralizing a nuisance variable before it contaminates your results.
 
 ## Completely Randomized Design (CRD)
 
-The simplest design assigns all experimental units to treatments purely at random. The CRD is appropriate when units are homogeneous and no blocking variable is identified.
-
-The model is identical to one-way [ANOVA](./anova):
+Assign all units to treatments purely at random. The model is one-way [ANOVA](./anova):
 
 $$
-Y_{ij} = \mu + \tau_i + \varepsilon_{ij},
+Y_{ij} = \mu + \tau_i + \varepsilon_{ij}
 $$
 
-where $\tau_i$ is the treatment effect.
-
-**Advantages**: simple to implement and analyze.
-**Limitation**: if units vary substantially (different ages, batches, instruments), the within-group variance is inflated and power drops. When you suspect heterogeneity, don't ignore it — block on it.
+Simple to implement. But if units vary substantially (different ages, batches, instruments), within-group variance inflates and power drops. When you suspect heterogeneity, block on it.
 
 ## Randomized Block Design (RBD)
 
-When a nuisance variable is known (batch, day, subject), blocking removes its effect from the error term:
+When a nuisance variable is known (batch, day, subject), blocking removes its effect from the error:
 
 $$
-Y_{ij} = \mu + \tau_i + \beta_j + \varepsilon_{ij},
+Y_{ij} = \mu + \tau_i + \beta_j + \varepsilon_{ij}
 $$
 
-where $\beta_j$ is the block effect. Each treatment appears exactly once in each block.
+Each treatment appears once per block. The signal stays the same but the noise goes down.
 
 [[simulation randomization-vs-blocking]]
 
-**Advantage**: removes block-to-block variability from the error term, increasing the F-statistic for the treatment effect. The signal stays the same but the noise goes down.
-
-The **relative efficiency** of blocking compares the precision of RBD to CRD:
-
-$$
-\text{RE} = \frac{\text{MS}_{\text{blocks}} + (b-1)\,\text{MS}_{\text{error,RBD}}}{b\,\text{MS}_{\text{error,RBD}}},
-$$
-
-where $b$ is the number of blocks. Values greater than 1 mean blocking was beneficial. In practice, blocking almost always helps — it rarely hurts and often improves power substantially.
-
-**Practical tip**: when in doubt, block. If the blocking variable turns out to be unimportant, you lose very little (just one degree of freedom per block). If it *is* important and you failed to block, you lose much more.
+**When in doubt, block.** If the blocking variable turns out unimportant, you lose one degree of freedom per block -- almost nothing. If it matters and you didn't block, you may have run an entire experiment that can't answer your question.
 
 ## Power and Sample Size
 
-Before starting an experiment, you should answer the most practical question of all: *how many observations do I need?*
+Before starting, answer the most practical question: *how many observations do I need?*
 
-### The "How Many Patients Do I Really Need?" Story
+Alex is designing a clinical trial. The drug should lower blood pressure by about 5 mmHg, and past studies show $\sigma \approx 12$ mmHg. How many patients per group?
 
-Alex is designing a clinical trial. The new drug is expected to lower blood pressure by about 5 mmHg compared to the control. Alex knows from past studies that blood pressure measurements have a standard deviation of about 12 mmHg. How many patients per group does Alex need?
+Four quantities form a connected system -- fix any three and the fourth is determined:
 
-The answer depends on four quantities that form a connected system — changing one affects the others.
+* **Effect size** ($\delta = 5$ mmHg): what you want to detect.
+* **Sample size** ($n$): what you want to find.
+* **Significance level** ($\alpha = 0.05$): your false-positive tolerance.
+* **Variability** ($\sigma = 12$ mmHg): the noise level.
 
-**Statistical power** is the probability of correctly rejecting $H_0$ when a true effect exists:
+You need roughly **90 patients per group**. That's the number Alex takes to the funding agency. The reasoning: the effect is small compared to the noise ($d = 5/12 \approx 0.4$, a smallish effect size), so you need many patients to see it reliably above the scatter. Shrink the noise (better instruments, blocking) and you need fewer patients. Bigger effect? Fewer patients. No free lunch.
 
-$$
-\text{Power} = 1 - \beta = P(\text{reject } H_0 \mid H_1 \text{ true}).
-$$
+**Cohen's conventions** for $d = \delta/\sigma$: small ($0.2$), medium ($0.5$), large ($0.8$). These are rough benchmarks -- always think about what's scientifically meaningful in your context.
 
-Power depends on:
+### Practical Tips
 
-* **Effect size** ($\delta$): the magnitude of the difference you want to detect. Smaller effects need more data. Alex's 5 mmHg is the effect size.
-* **Sample size** ($n$): more observations increase power. This is what Alex wants to find.
-* **Significance level** ($\alpha$): relaxing $\alpha$ increases power at the cost of more false positives.
-* **Variability** ($\sigma$): less noise increases power. This is where good experimental design (blocking, precise instruments) pays off. Alex's $\sigma = 12$ mmHg is the noise.
+* Determine sample size *before* starting. Running until significance is a recipe for false positives.
+* Use pilot studies (even 10-20 observations) to estimate $\sigma$.
+* **Pre-register** your analysis plan to avoid p-hacking -- trying many analyses and reporting only the significant ones.
 
-For a two-sample t-test, the required sample size per group to achieve power $1 - \beta$ at level $\alpha$ for detecting a difference $\delta$ is approximately:
-
-$$
-n \approx \frac{2(z_{\alpha/2} + z_\beta)^2 \sigma^2}{\delta^2}.
-$$
-
-Plugging in Alex's numbers ($\delta = 5$, $\sigma = 12$, $\alpha = 0.05$, power $= 0.80$): $n \approx 2(1.96 + 0.84)^2 \times 144 / 25 \approx 90$ patients per group. That's a real number Alex can take to the funding agency.
-
-**Cohen's conventions** for effect size $d = \delta/\sigma$: small ($d = 0.2$), medium ($d = 0.5$), large ($d = 0.8$). These are rough benchmarks — always think about what effect size is scientifically meaningful in your specific context rather than blindly adopting conventions.
-
-### Practical Tips for Power Analysis
-
-* Always determine sample size *before* starting the experiment. Running until you get a significant result is a recipe for false positives.
-* Use **pilot studies** to estimate $\sigma$ when it is unknown. Even a small pilot (10-20 observations) gives a rough variance estimate that makes your power calculation much more reliable than guessing.
-* **Pre-register** the analysis plan to avoid p-hacking — the temptation to try many analyses and report only the significant ones.
-* Consider **multiple testing corrections** when evaluating many endpoints. The more tests you run, the more likely one will be "significant" by chance.
+Think of it like a fishing trip. If you keep fishing until you catch something, you'll always catch something -- even in an empty lake. Pre-registration is saying beforehand: "I'm going to fish for exactly two hours in this specific spot." Now your catch means something.
 
 [[simulation interaction-surface]]
 
 ## Simpson's Paradox Revisited
 
-We met Simpson's paradox briefly in [hypothesis testing](./hypothesis-testing), but it deserves special attention here because it's fundamentally a *design* problem. Here's how smart people get fooled by ignoring structure in their data.
+We met Simpson's paradox in [hypothesis testing](./hypothesis-testing), but it's fundamentally a *design* problem. Compare two hospitals: Hospital A has higher overall survival. But A mostly treats mild cases while B takes the severe ones. Within each severity category, B actually performs better. The aggregate reverses the truth.
 
-You compare two hospitals. Hospital A has a higher overall survival rate. You conclude Hospital A is better. But Hospital A mostly treats mild cases, while Hospital B takes the severe ones. Within each severity category, Hospital B actually performs better. The aggregate reverses the trend because the groups were not comparable.
+Randomization prevents this. If patients were randomly assigned, severity would be balanced, and the paradox couldn't arise. When you can't randomize (observational studies), you must identify and adjust for confounders -- which often means recognizing hierarchical structure. That's where [mixed models](./random-effects) come in.
 
-This is exactly the kind of confounding that randomization prevents. If patients were randomly assigned to hospitals, severity would be balanced across both, and Simpson's paradox couldn't arise. When you can't randomize (observational studies), you must identify and adjust for confounders — which often means recognizing that your data has a grouped or hierarchical structure. That's where [mixed models](./random-effects) come in.
-
-Now you know how to plan data collection. But once you've collected data from multiple groups — three fertilizers, four teaching methods, a dozen drug doses — you need a tool that compares them all at once without inflating the false-positive rate. That tool is analysis of variance (ANOVA), and it's where we go next.
-
-> **Challenge.** Explain to a friend why you need to decide your sample size *before* running the experiment, not during it. Use the analogy of a fishing trip: if you keep fishing until you catch something, you'll always catch something — even in an empty lake. One minute.
+> **Challenge.** Explain why you need to decide sample size *before* running the experiment. Use the fishing-trip analogy: if you keep fishing until you catch something, you'll always catch something -- even in an empty lake. One minute.
 
 ## Big Ideas
 
-* Blocking does not cost you anything if the blocking variable turns out to be unimportant; you lose one degree of freedom per block. But if it matters and you failed to block, you may have run an entire experiment that cannot answer your question.
-* Power, sample size, effect size, and significance level are four quantities linked by one relationship — fix any three and the fourth is determined. There is no free lunch: wanting more power without more data requires either a larger effect or a looser threshold.
-* Running until you get a significant result guarantees that you will eventually get a significant result, even in a completely empty lake. Pre-registration is the only defense.
-* Simpson's paradox is fundamentally a design problem: randomization prevents it, because it ensures that confounders are balanced across groups by construction.
+* Blocking costs almost nothing if the variable is unimportant; failing to block when it matters can ruin an entire experiment.
+* Power, sample size, effect size, and significance are linked -- fix three, the fourth is determined. No free lunch.
+* Running until significance guarantees you'll find something, even in an empty lake. Pre-registration is the defense.
+* Simpson's paradox is a design problem: randomization prevents it by balancing confounders.
 
 ## What Comes Next
 
-You now know how to plan data collection systematically: randomize, replicate, block, and compute sample sizes before you start. The next step is analyzing the multi-group data you've so carefully collected.
-
-Analysis of variance (ANOVA) is the tool for comparing three or more group means in a single test. The core idea is a signal-to-noise ratio: how much do the group means spread out relative to how much individual measurements scatter within each group? If the spread between groups is large compared to the scatter within, something real is going on.
+You now know how to plan data collection: randomize, replicate, block, compute sample sizes. Next: analyzing multi-group data. ANOVA compares three or more means in a single test -- the signal-to-noise ratio of group differences vs. individual scatter.
 
 ## Check Your Understanding
 
-1. An experimenter runs a completely randomized design with 5 treatments and 10 replicates per treatment. After collecting the data, they realize that the experiment was conducted over 5 different days, with 10 observations per day. How should this information change the analysis, and what design would have been better?
-2. You want to detect a difference of 10 units between two means, with $\sigma = 25$. If you use $\alpha = 0.05$ and want 80% power, roughly how many observations per group do you need? What happens to this number if the true effect is only 5 units?
-3. A pharmaceutical company runs a clinical trial and plans to analyze the data after every 50 patients, stopping when significance is reached. Explain why this practice inflates the type I error rate, and what it would mean for the reported p-value.
+1. An experimenter runs a CRD with 5 treatments and 10 reps each, then realizes the experiment ran over 5 different days. How should this change the analysis?
+2. You want to detect a 10-unit difference with $\sigma = 25$. At $\alpha = 0.05$ and 80% power, roughly how many per group? What if the effect is only 5 units?
+3. A pharma company analyzes data after every 50 patients, stopping when significance is reached. Why does this inflate type I error?
 
 ## Challenge
 
-You are designing a study to compare three teaching methods across four schools. Each school has multiple classrooms, and you plan to assign one teaching method per classroom. Sketch a design that accounts for: (a) the natural grouping of students within classrooms and classrooms within schools, (b) the need to balance teaching methods across schools, and (c) the desire to detect a medium effect size with 80% power. Identify which features of the design are randomization, which are blocking, and what your unit of replication actually is. Explain why treating individual students as independent replicates would be a mistake.
+You're comparing three teaching methods across four schools. Each school has multiple classrooms, one method per classroom. Sketch a design that accounts for: (a) students within classrooms within schools, (b) balancing methods across schools, (c) detecting a medium effect with 80% power. Identify randomization, blocking, and the unit of replication. Why would treating individual students as independent replicates be a mistake?

@@ -1,9 +1,7 @@
-export interface TopicDefinition {
+import type { TopicConfig } from "@/lib/topic-config";
+
+export interface TopicDefinition extends TopicConfig {
   id: string;
-  title: string;
-  description: string;
-  difficulty: "Beginner" | "Intermediate" | "Advanced" | "Expert";
-  color: string;
   relatedTopics: string[];
 }
 

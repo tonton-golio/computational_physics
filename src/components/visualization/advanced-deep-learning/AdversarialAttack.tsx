@@ -1,9 +1,11 @@
-'use client';
+"use client";
 
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart, type ChartTrace } from '@/components/ui/canvas-chart';
 import { SimulationMain } from '@/components/ui/simulation-main';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationAux, SimulationLabel } from '@/components/ui/simulation-panel';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 const SZ = 12, CELL = 20, NC = 4;
 const CNAMES = ['Circle', 'Cross', 'Line', 'Square'];
@@ -57,7 +59,7 @@ function drawImg(ctx: CanvasRenderingContext2D, img: number[][], ox: number, oy:
   ctx.fillText(label, ox + SZ * CELL / 2, oy + SZ * CELL + 4);
 }
 
-export default function AdversarialAttack() {
+export default function AdversarialAttack({}: SimulationComponentProps) {
   const [epsilon, setEpsilon] = useState(0.1);
   const [patType, setPatType] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -109,41 +111,46 @@ export default function AdversarialAttack() {
   const pred = advConf.indexOf(Math.max(...advConf));
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Adversarial Attack (FGSM)</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">Perturbation epsilon: {epsilon.toFixed(2)}</label>
-          <Slider min={0} max={0.5} step={0.01} value={[epsilon]} onValueChange={([v]) => setEpsilon(v)} />
+    <SimulationPanel title="Adversarial Attack (FGSM)">
+      <SimulationConfig>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+          <div>
+            <SimulationLabel className="block text-sm text-[var(--text-muted)] mb-1">Perturbation epsilon: {epsilon.toFixed(2)}</SimulationLabel>
+            <Slider min={0} max={0.5} step={0.01} value={[epsilon]} onValueChange={([v]) => setEpsilon(v)} />
+          </div>
+          <div>
+            <SimulationLabel className="block text-sm text-[var(--text-muted)] mb-1">Input pattern: {CNAMES[patType]}</SimulationLabel>
+            <Slider min={0} max={NC - 1} step={1} value={[patType]} onValueChange={([v]) => setPatType(v)} />
+          </div>
         </div>
-        <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">Input pattern: {CNAMES[patType]}</label>
-          <Slider min={0} max={NC - 1} step={1} value={[patType]} onValueChange={([v]) => setPatType(v)} />
-        </div>
-      </div>
-      {pred !== patType && (
-        <div className="mb-4 p-3 bg-red-900/20 border border-red-500/30 rounded text-sm text-red-300">
-          Classification flipped: {CNAMES[patType]} {'->'} {CNAMES[pred]} at epsilon = {epsilon.toFixed(2)}
-        </div>
-      )}
+      </SimulationConfig>
       <SimulationMain scaleMode="contain" className="flex justify-center mb-4 overflow-x-auto">
         <div ref={containerRef}><canvas ref={canvasRef} style={{ display: 'block', borderRadius: '4px' }} /></div>
       </SimulationMain>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <CanvasChart data={barTraces} layout={{ title: { text: 'Classifier confidence' },
-          yaxis: { title: { text: 'Probability' }, range: [0, 1] }, margin: { t: 40, b: 50, l: 60, r: 20 },
-          barmode: 'group', bargap: 0.3 }} style={{ width: '100%', height: 320 }} />
-        <CanvasChart data={[...sweepTraces, { x: [epsilon, epsilon], y: [0, 1], type: 'scatter', mode: 'lines',
-          line: { color: '#f59e0b', width: 1.5, dash: 'dash' }, showlegend: false }]}
-          layout={{ title: { text: 'Confidence vs. epsilon' }, xaxis: { title: { text: 'Epsilon' } },
-            yaxis: { title: { text: 'Probability' }, range: [0, 1] }, margin: { t: 40, b: 50, l: 60, r: 20 } }}
-          style={{ width: '100%', height: 320 }} />
-      </div>
+      <SimulationAux>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <CanvasChart data={barTraces} layout={{ title: { text: 'Classifier confidence' },
+            yaxis: { title: { text: 'Probability' }, range: [0, 1] }, margin: { t: 40, b: 50, l: 60, r: 20 },
+            barmode: 'group', bargap: 0.3 }} style={{ width: '100%', height: 320 }} />
+          <CanvasChart data={[...sweepTraces, { x: [epsilon, epsilon], y: [0, 1], type: 'scatter', mode: 'lines',
+            line: { color: '#f59e0b', width: 1.5, dash: 'dash' }, showlegend: false }]}
+            layout={{ title: { text: 'Confidence vs. epsilon' }, xaxis: { title: { text: 'Epsilon' } },
+              yaxis: { title: { text: 'Probability' }, range: [0, 1] }, margin: { t: 40, b: 50, l: 60, r: 20 } }}
+            style={{ width: '100%', height: 320 }} />
+        </div>
+      </SimulationAux>
+      {pred !== patType && (
+        <SimulationResults>
+          <div className="p-3 bg-red-900/20 border border-red-500/30 rounded text-sm text-red-300">
+            Classification flipped: {CNAMES[patType]} {'->'} {CNAMES[pred]} at epsilon = {epsilon.toFixed(2)}
+          </div>
+        </SimulationResults>
+      )}
       <div className="mt-4 p-3 bg-[var(--surface-2)] rounded text-sm text-[var(--text-muted)]">
         FGSM adds a perturbation of magnitude epsilon in the direction that maximally increases the loss.
         Even tiny epsilon values can flip the classifier prediction. The right panel shows how each class
         probability changes as epsilon increases, revealing the decision boundary fragility.
       </div>
-    </div>
+    </SimulationPanel>
   );
 }

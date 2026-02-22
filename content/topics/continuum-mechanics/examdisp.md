@@ -1,22 +1,22 @@
-# The Grand Finale — A Detective Story in Seven Acts
+# The Grand Finale -- A Detective Story in Seven Acts
 
-## Seven Detective Stories — A Recap
+## Seven Detective Stories -- A Recap
 
-Each act below is a mystery we solved during this course. If any feels unfamiliar, revisit the corresponding chapter with fresh eyes.
+A glacier calves an iceberg into the sea. The splash makes waves. The waves carry energy across the ocean. Somewhere a seismograph twitches. Every one of these moments connects back to an idea you've learned. Let's walk through the whole story.
 
-**Act 1 — Why the Iceberg Floats.** We opened with an audacious bet: pretend matter is smooth. The continuum approximation let us write down the hydrostatic equation and Archimedes' principle, explaining why exactly 90% of an iceberg hides below the waterline — and why it stays upright once it gets there.
+**Act 1 -- Why the Iceberg Floats.** Picture a chunk of ice the size of a house sliding off a glacier into the Arctic Ocean. It bobs, tilts, and settles. We opened this course with an audacious bet: pretend matter is smooth. That single trick gave us the hydrostatic equation and Archimedes' principle -- explaining why exactly 90% of the berg hides below the waterline, and why it stays upright.
 
-**Act 2 — The Glacier's Crevasses.** The Cauchy stress tensor and its deviatoric part gave us the language to ask *where* inside a material things break. Crevasses open at the surface where tensile stress dominates and close at depth where compression wins.
+**Act 2 -- The Glacier's Crevasses.** A mountaineer peers into a deep blue crack in the ice. The Cauchy stress tensor and its deviatoric part gave us the language to ask *where* inside a material things break. Crevasses open at the surface where tensile stress dominates and close at depth where compression wins.
 
-**Act 3 — The Earthquake's Double Punch.** Hooke's law in three dimensions spawned two wave speeds: fast compressive P-waves and slower transverse S-waves. The time gap between the two jolts you feel in an earthquake is proportional to your distance from the epicenter.
+**Act 3 -- The Earthquake's Double Punch.** At 3 AM a jolt wakes you -- then a second, rolling shudder a minute later. Hooke's law in 3D spawned two wave speeds: fast compressive P-waves and slower transverse S-waves. The time gap between the two punches tells seismologists the distance to the epicenter.
 
-**Act 4 — One Heartbeat, Many Rhythms.** Cauchy's equation turned out to be the single heartbeat behind every continuous material. Swap in one constitutive law and you get elastic solids; swap in another and you get viscous fluids, power-law glaciers, or anything in between.
+**Act 4 -- One Heartbeat, Many Rhythms.** A rubber ball bounces, honey drips, a glacier creeps. Cauchy's equation turned out to be the single heartbeat behind every continuous material. Swap in one constitutive law and you get elastic solids; swap in another and you get viscous fluids, power-law glaciers, or anything in between.
 
-**Act 5 — Bernoulli's Garden Hose.** Dropping viscosity gave us Euler's equations, Bernoulli's theorem, and the ideas of vorticity and circulation — enough to explain why pinching a hose speeds up the water and why airplanes stay aloft.
+**Act 5 -- Bernoulli's Garden Hose.** You're watering the garden and pinch the hose. The jet speeds up. Dropping viscosity gave us Euler's equations, Bernoulli's theorem, and the trade-off between speed and pressure that keeps airplanes aloft.
 
-**Act 6 — Honey, Ketchup, and Turbulence.** Restoring viscosity brought the Navier-Stokes equations, the Reynolds number, and a zoo of exact solutions for pipes and channels. Non-Newtonian fluids like custard and ketchup showed that real materials can bend the rules in entertaining ways.
+**Act 6 -- Honey, Ketchup, and Turbulence.** Harry the Honey Drop drips slowly off a spoon while the tap water in the sink swirls chaotically. Restoring viscosity brought the Navier-Stokes equations, the Reynolds number, and a zoo of exact solutions for pipes and channels.
 
-**Act 7 — Simulating Gladys the Glacier.** When geometry gets complicated, we turn differential equations into weak forms, project onto finite-element spaces, and let the computer solve the resulting sparse system. FEniCS turned the Stokes equations into a working glacier simulation.
+**Act 7 -- Simulating Gladys the Glacier.** Gladys grinds through her irregular valley, and no closed-form solution will capture it. When geometry gets complicated, we turn PDEs into weak forms, project onto finite-element spaces, and let the computer solve the resulting sparse system.
 
 ---
 
@@ -26,27 +26,25 @@ Each act below is a mystery we solved during this course. If any feels unfamilia
 
 ## The Whole Story in One Breath
 
-We started by pretending matter is smooth. We learned the language of tensors. We pushed on things and watched them push back (stress and strain). We discovered that the same Cauchy equation governs everything from steel beams to ocean currents. We solved beautiful exact problems for pipes and channels, then learned FEM for everything else. And along the way, Rosie stretched, Harry dripped, and Gladys kept grinding slowly toward the sea.
+We started by pretending matter is smooth. We learned the language of tensors. We pushed on things and watched them push back. We discovered that the same Cauchy equation governs everything from steel beams to ocean currents. We solved beautiful exact problems for pipes and channels, then learned FEM for everything else. Rosie stretched, Harry dripped, and Gladys kept grinding slowly toward the sea.
 
-That's continuum mechanics. Now go pass the exam — and never look at a river, a rubber tire, or a cube of cheese the same way again.
+That's continuum mechanics. Now go pass the exam -- and never look at a river, a rubber tire, or a cube of cheese the same way again.
 
 ## Big Ideas
 
-* One equation — $\rho\,D\mathbf{v}/Dt = \mathbf{f} + \nabla\cdot\sigma$ — governs every continuous material. Glaciers, arteries, earthquake waves, and ocean tides all dance to the same heartbeat. What distinguishes them is the constitutive law: the material's personal recipe for turning deformation into stress.
-* The route from a differential equation to a computer solution runs through weak form → Galerkin projection → sparse linear system → FEM solve. Every step has a physical justification, not just a mathematical one.
+* One equation -- $\rho\,D\mathbf{v}/Dt = \mathbf{f} + \nabla\cdot\sigma$ -- governs every continuous material. What distinguishes glaciers from arteries is the constitutive law: the material's personal recipe for turning deformation into stress.
+* The route from PDE to computer solution: weak form --> Galerkin projection --> sparse linear system --> FEM solve. Every step has a physical justification, not just a mathematical one.
 
 ## What Comes Next
 
-This is the end of the continuum mechanics arc — from the audacious claim that matter is smooth, through the language of tensors, through the heartbeat of Cauchy's equation, all the way to a working FEM simulation of a glacier. You've traveled from abstract principles to executable code.
-
-Where do you go from here? The tools you now hold — weak formulations, FEM, dimensional analysis, the Reynolds number — transfer directly to heat transfer, electromagnetic field equations, geophysical modeling, and biomechanics. The constitutive law is what changes; the scaffolding stays the same. Pick a physical system you care about, write down what $\sigma$ looks like for it, and you already know how to solve the problem.
+This is the end of the continuum mechanics arc. The tools you now hold -- weak formulations, FEM, dimensional analysis, the Reynolds number -- transfer directly to heat transfer, electromagnetism, geophysical modeling, and biomechanics. The constitutive law changes; the scaffolding stays the same. Pick a physical system you care about, write down what $\sigma$ looks like, and you already know how to solve the problem.
 
 ## Check Your Understanding
 
-1. Cauchy's equation is the same for elastic solids and viscous fluids. Write down the two constitutive relations that turn it into the Navier-Cauchy equation (for solids) and the Navier-Stokes equation (for fluids). What is the fundamental physical difference between the two?
-2. A tsunami travels across the open Pacific at $\approx 200$ m/s and slows to $\approx 10$ m/s as it approaches a shoreline where the depth has decreased to 10 m. By what factor does its amplitude increase, assuming energy flux is conserved?
-3. The weak form of a PDE requires less smoothness from the solution than the strong form. Give a concrete example of a physical situation where the true solution has a kink or discontinuity — and explain why weak form is the right framework for handling it numerically.
+1. Cauchy's equation is the same for elastic solids and viscous fluids. Write down both constitutive relations. What is the fundamental physical difference?
+2. A tsunami travels at ~200 m/s in the open Pacific and slows to ~10 m/s near shore (depth 10 m). By what factor does amplitude increase, assuming energy flux is conserved?
+3. The weak form requires less smoothness from the solution than the strong form. Give a concrete physical situation where the true solution has a kink -- and explain why weak form is the right framework.
 
 ## Challenge
 
-Design a complete computational study of Gladys the Glacier. Her cross-section is a parabolic valley: $y = x^2/W$ for $-W \leq x \leq W$, with $W = 500$ m and maximum depth 60 m. Ice obeys Glen's flow law (power-law rheology with $n = 3$, $K \approx 2 \times 10^{-24}$ Pa$^{-3}$ s$^{-1}$) under the driving stress of a surface slope of $\theta = 3°$. Formulate the 2D Stokes problem in weak form, identify the appropriate boundary conditions (no-slip at the bedrock, stress-free at the surface), and outline the FEniCS implementation. Without computing, predict qualitatively how the velocity profile across the valley will differ from a Newtonian Poiseuille flow — then explain why that difference matters for predicting how fast icebergs calve from the glacier's terminus.
+Design a complete computational study of Gladys the Glacier. Her cross-section is a parabolic valley: $y = x^2/W$ for $-W \leq x \leq W$, with $W = 500$ m and maximum depth 60 m. Ice obeys Glen's flow law (power-law rheology with $n = 3$, $K \approx 2 \times 10^{-24}$ Pa$^{-3}$ s$^{-1}$) under the driving stress of a surface slope of $\theta = 3$degrees. Formulate the 2D Stokes problem in weak form, identify the appropriate boundary conditions (no-slip at the bedrock, stress-free at the surface), and outline the FEniCS implementation. Without computing, predict qualitatively how the velocity profile across the valley will differ from a Newtonian Poiseuille flow -- then explain why that difference matters for predicting how fast icebergs calve from the glacier's terminus.

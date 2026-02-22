@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
 import React from 'react';
-import { LeastSquaresDemo } from './scientific-computing/LeastSquaresDemo';
-import { ReactionDiffusion } from './scientific-computing/ReactionDiffusion';
-import { LUDecomposition } from './scientific-computing/LUDecomposition';
-import { ConditionNumberDemo } from './scientific-computing/ConditionNumberDemo';
-import { GaussianElimDemo } from './scientific-computing/GaussianElimDemo';
+import LeastSquaresDemo from './scientific-computing/LeastSquaresDemo';
+import ReactionDiffusion from './scientific-computing/ReactionDiffusion';
+import LUDecomposition from './scientific-computing/LUDecomposition';
+import ConditionNumberDemo from './scientific-computing/ConditionNumberDemo';
+import GaussianElimDemo from './scientific-computing/GaussianElimDemo';
 import Himmelblau2D from './nonlinear-equations/Himmelblau2D';
 import Newton1D from './nonlinear-equations/Newton1D';
 import ErrorVsH from './scientific-computing/ErrorVsH';

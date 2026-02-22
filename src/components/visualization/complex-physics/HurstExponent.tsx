@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { Slider } from '@/components/ui/slider';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationLabel, SimulationButton } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 function generateBrownianTimeSeries(length: number, drift: number, volatility: number): number[] {
   const series: number[] = [100]; // starting price
@@ -67,7 +70,7 @@ function computeVarianceVsLag(timeSeries: number[]): { lags: number[]; vars: num
   return { lags, vars };
 }
 
-export function HurstExponent() {
+export default function HurstExponent({}: SimulationComponentProps) {
   const [seriesLength, setSeriesLength] = useState(500);
   const [drift, setDrift] = useState(0.0005);
   const [volatility, setVolatility] = useState(0.02);
@@ -93,10 +96,15 @@ export function HurstExponent() {
   }, [seriesLength, drift, volatility, seed]);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap gap-6 items-center">
+    <SimulationPanel title="Hurst Exponent">
+      <SimulationSettings>
+        <SimulationButton variant="primary" onClick={() => setSeed(s => s + 1)}>
+          Re-generate
+        </SimulationButton>
+      </SimulationSettings>
+      <SimulationConfig>
         <div>
-          <label className="text-sm text-[var(--text-muted)] block mb-1">Series Length: {seriesLength}</label>
+          <SimulationLabel>Series Length: {seriesLength}</SimulationLabel>
           <Slider
             min={100}
             max={2000}
@@ -107,7 +115,7 @@ export function HurstExponent() {
           />
         </div>
         <div>
-          <label className="text-sm text-[var(--text-muted)] block mb-1">Drift: {drift.toFixed(4)}</label>
+          <SimulationLabel>Drift: {drift.toFixed(4)}</SimulationLabel>
           <Slider
             min={-0.005}
             max={0.005}
@@ -118,7 +126,7 @@ export function HurstExponent() {
           />
         </div>
         <div>
-          <label className="text-sm text-[var(--text-muted)] block mb-1">Volatility: {volatility.toFixed(3)}</label>
+          <SimulationLabel>Volatility: {volatility.toFixed(3)}</SimulationLabel>
           <Slider
             min={0.001}
             max={0.1}
@@ -128,16 +136,11 @@ export function HurstExponent() {
             className="w-48"
           />
         </div>
-        <button
-          onClick={() => setSeed(s => s + 1)}
-          className="px-4 py-2 bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white rounded text-sm mt-4"
-        >
-          Re-generate
-        </button>
-      </div>
+      </SimulationConfig>
 
-      {/* Time series and variance */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <SimulationMain>
+        {/* Time series and variance */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <CanvasChart
           data={[{
             y: timeSeries,
@@ -203,6 +206,7 @@ export function HurstExponent() {
         }}
         style={{ width: '100%', height: 300 }}
       />
-    </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

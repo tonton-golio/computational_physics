@@ -1,7 +1,10 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationSettings } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 /**
  * MotifGallery: Interactive gallery of network motifs.
@@ -207,7 +210,7 @@ function simulateToggle(tMax: number, dt: number): { t: number[]; u: number[]; v
   return { t, u, v };
 }
 
-export default function MotifGallery() {
+export default function MotifGallery({}: SimulationComponentProps) {
   const [selectedMotif, setSelectedMotif] = useState<MotifId>('negative-autoregulation');
 
   const selected = MOTIFS.find(m => m.id === selectedMotif)!;
@@ -305,40 +308,39 @@ export default function MotifGallery() {
   }, [selectedMotif]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">
-        Network Motif Gallery
-      </h3>
+    <SimulationPanel title="Network Motif Gallery">
+      <SimulationSettings>
+        {/* Motif selector buttons */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {MOTIFS.map(motif => (
+            <button
+              key={motif.id}
+              onClick={() => setSelectedMotif(motif.id)}
+              className="text-left p-3 rounded-lg border-2 transition-colors"
+              style={{
+                borderColor: selectedMotif === motif.id ? motif.color : 'var(--border-strong)',
+                backgroundColor: selectedMotif === motif.id ? 'var(--surface-2)' : 'transparent',
+              }}
+            >
+              <div className="text-sm font-semibold" style={{ color: motif.color }}>
+                {motif.shortName}
+              </div>
+              <div className="text-xs text-[var(--text-muted)] mt-0.5">
+                {motif.personality}
+              </div>
+            </button>
+          ))}
+        </div>
 
-      {/* Motif selector buttons */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-        {MOTIFS.map(motif => (
-          <button
-            key={motif.id}
-            onClick={() => setSelectedMotif(motif.id)}
-            className="text-left p-3 rounded-lg border-2 transition-colors"
-            style={{
-              borderColor: selectedMotif === motif.id ? motif.color : 'var(--border-strong)',
-              backgroundColor: selectedMotif === motif.id ? 'var(--surface-2)' : 'transparent',
-            }}
-          >
-            <div className="text-sm font-semibold" style={{ color: motif.color }}>
-              {motif.shortName}
-            </div>
-            <div className="text-xs text-[var(--text-muted)] mt-0.5">
-              {motif.personality}
-            </div>
-          </button>
-        ))}
-      </div>
-
-      {/* Selected motif info */}
-      <div className="mb-4 p-3 rounded-lg bg-[var(--surface-2)]">
-        <div className="font-semibold text-[var(--text-strong)] mb-1">{selected.title}</div>
-        <p className="text-sm text-[var(--text-muted)]">{selected.description}</p>
-      </div>
+        {/* Selected motif info */}
+        <div className="p-3 rounded-lg bg-[var(--surface-2)]">
+          <div className="font-semibold text-[var(--text-strong)] mb-1">{selected.title}</div>
+          <p className="text-sm text-[var(--text-muted)]">{selected.description}</p>
+        </div>
+      </SimulationSettings>
 
       {/* Chart */}
+      <SimulationMain>
       <CanvasChart
         data={chartData.traces as any}
         layout={{
@@ -356,6 +358,7 @@ export default function MotifGallery() {
         }}
         style={{ width: '100%' }}
       />
+      </SimulationMain>
 
       {/* Motif-specific observations */}
       <div className="mt-4 border-l-4 pl-4 text-sm text-[var(--text-muted)]"
@@ -392,6 +395,6 @@ export default function MotifGallery() {
           </p>
         )}
       </div>
-    </div>
+    </SimulationPanel>
   );
 }

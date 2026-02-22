@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 /**
  * FEM convergence study: error vs number of elements for the 1D bar problem.
@@ -90,7 +93,7 @@ function computeL2Error(ne: number): number {
   return Math.sqrt(errorSq);
 }
 
-export default function FEMConvergence() {
+export default function FEMConvergence({}: SimulationComponentProps) {
   const [maxElements, setMaxElements] = useState(32);
 
   const { errorTraces, rateInfo } = useMemo(() => {
@@ -151,35 +154,31 @@ export default function FEMConvergence() {
   }, [maxElements]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-2 text-[var(--text-strong)]">
-        FEM Convergence: Error vs Number of Elements
-      </h3>
-      <p className="text-sm text-[var(--text-muted)] mb-4">
-        Linear finite elements approximate the exact solution u(x) = x &minus; x&sup2;/2.
-        The L&sup2; error decreases as O(h&sup2;) for linear elements,
-        confirming optimal convergence. Empirical rate: {rateInfo.toFixed(2)}.
-      </p>
-      <div className="max-w-xs mb-4">
-        <label className="block text-sm text-[var(--text-muted)] mb-1">
-          Max elements: {maxElements}
-        </label>
-        <Slider min={4} max={64} step={1} value={[maxElements]}
-          onValueChange={([v]) => setMaxElements(v)} className="w-full" />
-      </div>
-      <CanvasChart
-        data={errorTraces}
-        layout={{
-          xaxis: { title: { text: 'Number of elements' }, type: 'log' },
-          yaxis: { title: { text: 'L\u00b2 error' }, type: 'log' },
-        }}
-        style={{ width: '100%', height: 400 }}
-      />
+    <SimulationPanel title="FEM Convergence: Error vs Number of Elements" caption={`Linear finite elements approximate the exact solution u(x) = x \u2212 x\u00b2/2. The L\u00b2 error decreases as O(h\u00b2) for linear elements, confirming optimal convergence. Empirical rate: ${rateInfo.toFixed(2)}.`}>
+      <SimulationConfig>
+        <div className="max-w-xs">
+          <SimulationLabel>
+            Max elements: {maxElements}
+          </SimulationLabel>
+          <Slider min={4} max={64} step={1} value={[maxElements]}
+            onValueChange={([v]) => setMaxElements(v)} className="w-full" />
+        </div>
+      </SimulationConfig>
+      <SimulationMain>
+        <CanvasChart
+          data={errorTraces}
+          layout={{
+            xaxis: { title: { text: 'Number of elements' }, type: 'log' },
+            yaxis: { title: { text: 'L\u00b2 error' }, type: 'log' },
+          }}
+          style={{ width: '100%', height: 400 }}
+        />
+      </SimulationMain>
       <p className="mt-3 text-xs text-[var(--text-muted)]">
         Blue: measured L&sup2; error. Red dashed: theoretical O(h&sup2;) convergence for
         linear (p=1) elements. On a log-log plot the slope should approach &minus;2.
         Quadratic elements (p=2) would give O(h&sup3;).
       </p>
-    </div>
+    </SimulationPanel>
   );
 }

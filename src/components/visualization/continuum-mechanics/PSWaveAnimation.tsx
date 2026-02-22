@@ -1,7 +1,10 @@
-'use client';
+"use client";
 
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Slider } from '@/components/ui/slider';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationLabel, SimulationPlayButton, SimulationButton } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 /**
  * Visualises P-wave (longitudinal / compressional) vs S-wave (transverse / shear)
@@ -13,7 +16,7 @@ import { Slider } from '@/components/ui/slider';
 const ROWS = 8;
 const COLS = 20;
 
-export default function PSWaveAnimation() {
+export default function PSWaveAnimation({}: SimulationComponentProps) {
   const [frequency, setFrequency] = useState(1.5);
   const [amplitude, setAmplitude] = useState(0.35);
   const [isPlaying, setIsPlaying] = useState(true);
@@ -148,47 +151,34 @@ export default function PSWaveAnimation() {
   }, [draw]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-2 text-[var(--text-strong)]">
-        P-wave vs S-wave Particle Motion
-      </h3>
-      <p className="text-sm text-[var(--text-muted)] mb-4">
-        P-waves displace particles parallel to the propagation direction
-        (compression/rarefaction). S-waves displace particles perpendicular
-        to propagation (shear). Faint dots show rest positions.
-      </p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+    <SimulationPanel title="P-wave vs S-wave Particle Motion" caption="P-waves displace particles parallel to the propagation direction (compression/rarefaction). S-waves displace particles perpendicular to propagation (shear). Faint dots show rest positions.">
+      <SimulationSettings>
+        <SimulationPlayButton isRunning={isPlaying} onToggle={() => setIsPlaying(!isPlaying)} />
+        <SimulationButton
+          onClick={() => { timeRef.current = 0; if (!isPlaying) draw(); }}
+        >Reset</SimulationButton>
+      </SimulationSettings>
+      <SimulationConfig>
         <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">
+          <SimulationLabel>
             Frequency: {frequency.toFixed(1)}
-          </label>
+          </SimulationLabel>
           <Slider min={0.5} max={4} step={0.1} value={[frequency]}
             onValueChange={([v]) => setFrequency(v)} className="w-full" />
         </div>
         <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">
+          <SimulationLabel>
             Amplitude: {amplitude.toFixed(2)}
-          </label>
+          </SimulationLabel>
           <Slider min={0.1} max={0.6} step={0.02} value={[amplitude]}
             onValueChange={([v]) => setAmplitude(v)} className="w-full" />
         </div>
-      </div>
-      <div className="flex gap-3 mb-4">
-        <button
-          onClick={() => setIsPlaying(!isPlaying)}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-            isPlaying ? 'bg-red-600 hover:bg-red-700 text-white'
-              : 'bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white'
-          }`}
-        >{isPlaying ? 'Pause' : 'Play'}</button>
-        <button
-          onClick={() => { timeRef.current = 0; if (!isPlaying) draw(); }}
-          className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--surface-3)] hover:bg-[var(--border-strong)] text-[var(--text-strong)] transition-colors"
-        >Reset</button>
-      </div>
-      <div ref={containerRef} style={{ width: '100%' }}>
-        <canvas ref={canvasRef} style={{ display: 'block', borderRadius: '4px' }} />
-      </div>
-    </div>
+      </SimulationConfig>
+      <SimulationMain scaleMode="contain">
+        <div ref={containerRef} style={{ width: '100%' }}>
+          <canvas ref={canvasRef} style={{ display: 'block', borderRadius: '4px' }} />
+        </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

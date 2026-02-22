@@ -122,7 +122,7 @@ export function CodeEditor({
       }
 
       const line = lines[i];
-      const indent = line.length - line.trimLeft().length;
+      const indent = line.length - line.trimStart().length;
 
       if (line.startsWith('def ')) {
         // Function definition
@@ -153,7 +153,7 @@ export function CodeEditor({
             let j = i + 1;
             while (j < lines.length) {
               const nextLine = lines[j];
-              const nextIndent = nextLine.length - nextLine.trimLeft().length;
+              const nextIndent = nextLine.length - nextLine.trimStart().length;
               if (nextIndent <= indent && nextLine.trim()) break;
               if (nextLine.startsWith('else:') || nextLine.startsWith('elif ')) {
                 // Handle else/elif - for simplicity, skip to end
@@ -172,7 +172,7 @@ export function CodeEditor({
           let j = i + 1;
           while (j < lines.length) {
             const nextLine = lines[j];
-            const nextIndent = nextLine.length - nextLine.trimLeft().length;
+            const nextIndent = nextLine.length - nextLine.trimStart().length;
             if (nextIndent <= indent && nextLine.trim()) break;
             bodyLines.push(nextLine);
             j++;
@@ -206,7 +206,7 @@ export function CodeEditor({
             let j = i + 1;
             while (j < lines.length) {
               const nextLine = lines[j];
-              const nextIndent = nextLine.length - nextLine.trimLeft().length;
+              const nextIndent = nextLine.length - nextLine.trimStart().length;
               if (nextIndent <= indent && nextLine.trim()) break;
               bodyLines.push(nextLine);
               j++;
@@ -282,10 +282,10 @@ export function CodeEditor({
   };
 
   return (
-    <div className="my-4 rounded-lg border border-gray-200 bg-white dark:bg-gray-900">
-      <div className="border-b border-gray-200 bg-gray-50 px-4 py-2 dark:border-gray-700 dark:bg-gray-800">
+    <div className="my-4 rounded-lg border border-[var(--border-strong)] bg-[var(--surface-1)]">
+      <div className="border-b border-[var(--border-strong)] bg-[var(--surface-2)] px-4 py-2">
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <span className="text-sm font-medium text-[var(--text-muted)]">
             {language}
           </span>
           <div className="flex gap-2">
@@ -312,23 +312,23 @@ export function CodeEditor({
       <textarea
         value={code}
         onChange={(e) => setCode(e.target.value)}
-        className="w-full resize-none border-0 bg-transparent p-4 font-mono text-sm text-gray-900 dark:text-gray-100 focus:outline-none"
+        className="w-full resize-none border-0 bg-transparent p-4 font-mono text-sm text-[var(--foreground)] focus:outline-none"
         rows={Math.max(code.split('\n').length, 5)}
         spellCheck={false}
       />
       {showOutput && (
-        <div className="border-t border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800">
+        <div className="border-t border-[var(--border-strong)] bg-[var(--surface-2)]">
           <div className="px-4 py-2">
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <span className="text-sm font-medium text-[var(--text-muted)]">
               Output:
             </span>
           </div>
-          <pre className="px-4 pb-4 font-mono text-sm text-gray-900 dark:text-gray-100">
+          <pre className="px-4 pb-4 font-mono text-sm text-[var(--foreground)]">
             {output || "Click Run to see output"}
           </pre>
           {isExercise && expectedOutput && (
             <div className="px-4 pb-4">
-              <span className="text-sm text-gray-600 dark:text-gray-400">
+              <span className="text-sm text-[var(--text-soft)]">
                 {checkSolution()}
               </span>
             </div>
@@ -336,7 +336,7 @@ export function CodeEditor({
         </div>
       )}
       {showSolution && solution && (
-        <div className="border-t border-gray-200 bg-green-50 dark:border-gray-700 dark:bg-green-900/20">
+        <div className="border-t border-[var(--border-strong)] bg-green-50 dark:bg-green-900/20">
           <div className="px-4 py-2">
             <span className="text-sm font-medium text-green-700 dark:text-green-300">
               Solution:

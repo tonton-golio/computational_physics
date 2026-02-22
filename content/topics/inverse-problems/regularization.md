@@ -33,6 +33,8 @@ Plot these against each other in log-log space. You get an L-shaped curve. On on
 
 This is the **L-curve method**, and it's pure gold. The data is screaming "fit me!" and the model norm is whispering "don't get crazy." The corner is where they shake hands.
 
+**Rule of thumb you can remember forever:** Sweep $\epsilon$ on a log scale. Plot the L-curve. Pick the corner — the simplest model that still fits the data within its noise level. Everything else is either drunk (overfitting noise) or dead (ignoring data).
+
 ---
 
 ## The Tikhonov Objective
@@ -64,24 +66,14 @@ That $\epsilon^2\mathbf{I}$ term is doing all the heavy lifting. Without it, $\m
 
 Here's the practical recipe:
 
-1. **Sweep** $\epsilon$ over a log-scale range (say, $10^{-4}$ to $10^{2}$)
-2. For each value, solve the regularized problem
-3. **Plot** the L-curve (residual norm vs. model norm)
-4. Pick the corner — the simplest model that still explains the data within its uncertainty
-
-Other approaches exist: the discrepancy principle (choose $\epsilon$ so the residual matches the expected noise level), cross-validation, and Bayesian model selection. But the L-curve is intuitive, visual, and often your best first move.
-
-**Rule of thumb you can remember forever:** Sweep $\epsilon$ on a log scale. Plot the L-curve. Pick the corner — the simplest model that still fits the data within its noise level. Everything else is either drunk (overfitting noise) or dead (ignoring data).
+- Sweep $\epsilon$ over a log-scale range (say, $10^{-4}$ to $10^{2}$)
+- For each value, solve the regularized problem and record residual norm vs. model norm
+- Plot the L-curve
+- Pick the corner — the simplest model that still explains the data within its uncertainty
 
 [[simulation l-curve-construction]]
 
 [[simulation tikhonov-regularization]]
-
-Things to look for in the simulation:
-
-* Drag $\epsilon$ toward zero and watch the solution go wild — that's noise amplification in action
-* Find the "sober" region where the model captures real structure without oscillating
-* Compare the residual norm at different $\epsilon$ values — the corner of the L-curve is where the trade-off bends
 
 ---
 
@@ -95,15 +87,9 @@ Here's a picture that will stay with you. Three regularization regimes, three pe
 
 **The Dead** ($\epsilon$ huge). Too much regularization. The solution is flat, featureless, comatose — so terrified of complexity that it sees nothing at all. This is **underfitting**.
 
-Your entire job in regularization is finding the sober regime — where the party ends and science begins.
+Your entire job in regularization is finding the sober regime. Your whole job is to find the place where the party ends and the science begins.
 
 ---
-
-## Big Ideas
-* Noise amplification is not bad luck — it is the mathematical signature of an ill-conditioned problem. Regularization is how you fight back.
-* The L-curve is a geometric picture of a tug-of-war: data fit on one side, model sanity on the other. The corner is where the two forces reach a truce.
-* Small $\epsilon$ is drunk (fits noise), large $\epsilon$ is dead (ignores data). Your job is to find the sober one in between.
-* Regularization is not a numerical patch applied after the physics is done — it is where your beliefs about the world enter the computation.
 
 ## What Comes Next
 
@@ -111,7 +97,9 @@ The Tikhonov formula gives you a solvable system, but it raises a nagging questi
 
 That reframing — from optimization problem to inference problem — is what Bayesian inversion is about. Once you make the connection, regularization stops feeling like a trick and starts feeling like honest scientific reasoning.
 
-## Check Your Understanding
+So the whole story is this: noise amplification isn't bad luck — it's the mathematical signature of an ill-conditioned problem, and regularization is how you fight back. The L-curve shows you the tug-of-war between data fit and model sanity. And the regularization parameter isn't a knob you fiddle with — it's where your beliefs about the world enter the computation.
+
+## Let's Make Sure You Really Got It
 1. Why does an ill-conditioned matrix $\mathbf{G}$ cause direct inversion to fail catastrophically when the data contains even a small amount of noise?
 2. If you sweep $\epsilon$ from very small to very large and plot the L-curve, describe qualitatively what you expect to see in the model $\hat{\mathbf{m}}$ at each extreme. What feature of the plot indicates the best compromise?
 3. Why does adding $\epsilon^2\mathbf{I}$ to $\mathbf{G}^T\mathbf{G}$ stabilize the inversion? What does this operation do to the eigenvalues of the matrix?
@@ -119,4 +107,3 @@ That reframing — from optimization problem to inference problem — is what Ba
 ## Challenge
 
 Design a controlled numerical experiment to compare two regularization parameter selection methods — the L-curve corner and the discrepancy principle — on the same ill-conditioned system. Generate synthetic data with known noise level $\sigma$, apply both methods across a range of noise realizations, and measure how often each method lands within a factor of 2 of the "oracle" $\epsilon$ (the one that minimizes true model error, which you can compute because you know the truth). Under what noise conditions does the discrepancy principle outperform the L-curve, and why?
-

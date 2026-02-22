@@ -1,9 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { SimulationMain } from '@/components/ui/simulation-main';
 import { Slider } from '@/components/ui/slider';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationAux, SimulationLabel, SimulationButton } from '@/components/ui/simulation-panel';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 import { useTheme } from '@/lib/use-theme';
 
 interface BakSneppenResult {
@@ -196,7 +198,7 @@ function EvolutionCanvas({ chains, size, isDark }: { chains: number[][]; size: n
 
 // ── Main Component ─────────────────────────────────────────────────────
 
-export function BakSneppen() {
+export default function BakSneppen({}: SimulationComponentProps) {
   const theme = useTheme();
   const isDark = theme === 'dark';
   const [size, setSize] = useState(200);
@@ -213,10 +215,15 @@ export function BakSneppen() {
   const subsampledChains = result.chains.filter((_, i) => i % subsampleRate === 0);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap gap-6 items-center">
+    <SimulationPanel title="Bak-Sneppen Evolution">
+      <SimulationSettings>
+        <SimulationButton variant="primary" onClick={() => setSeed(s => s + 1)}>
+          Re-run
+        </SimulationButton>
+      </SimulationSettings>
+      <SimulationConfig>
         <div>
-          <label className="text-sm text-[var(--text-muted)] block mb-1">Chain Size: {size}</label>
+          <SimulationLabel>Chain Size: {size}</SimulationLabel>
           <Slider
             min={50}
             max={500}
@@ -227,7 +234,7 @@ export function BakSneppen() {
           />
         </div>
         <div>
-          <label className="text-sm text-[var(--text-muted)] block mb-1">Steps: {nsteps}</label>
+          <SimulationLabel>Steps: {nsteps}</SimulationLabel>
           <Slider
             min={1000}
             max={30000}
@@ -237,13 +244,7 @@ export function BakSneppen() {
             className="w-48"
           />
         </div>
-        <button
-          onClick={() => setSeed(s => s + 1)}
-          className="px-4 py-2 bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white rounded text-sm mt-4"
-        >
-          Re-run
-        </button>
-      </div>
+      </SimulationConfig>
 
       {/* Chain evolution heatmap (p5.js) */}
       <div>
@@ -259,99 +260,101 @@ export function BakSneppen() {
         </div>
       </div>
 
-      {/* Mean value and argmin plots */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <CanvasChart
-          data={[
-            {
-              y: result.meanValues,
-              type: 'scatter',
-              mode: 'lines',
-              line: { color: '#3b82f6', width: 1 },
-              name: 'Mean value',
-            },
-            {
-              x: [result.skipInit, result.skipInit],
-              y: [Math.min(...result.meanValues), Math.max(...result.meanValues)],
-              type: 'scatter',
-              mode: 'lines',
-              line: { color: '#ef4444', width: 2, dash: 'dash' },
-              name: 'Steady state',
-            },
-          ]}
-          layout={{
-            title: { text: 'Average Value Over Time', font: { size: 13 } },
-            xaxis: { title: { text: 'Timestep' } },
-            yaxis: { title: { text: 'Mean' } },
-            margin: { t: 40, r: 20, b: 50, l: 60 },
-            showlegend: false,
-          }}
-          style={{ width: '100%', height: 280 }}
-        />
-        <CanvasChart
-          data={[
-            {
-              y: result.idxArr,
-              type: 'scatter',
-              mode: 'lines',
-              line: { color: '#10b981', width: 1 },
-              name: 'Argmin index',
-            },
-            {
-              x: [result.skipInit, result.skipInit],
-              y: [0, size],
-              type: 'scatter',
-              mode: 'lines',
-              line: { color: '#ef4444', width: 2, dash: 'dash' },
-              name: 'Steady state',
-            },
-          ]}
-          layout={{
-            title: { text: 'Min-fitness Index Over Time', font: { size: 13 } },
-            xaxis: { title: { text: 'Timestep' } },
-            yaxis: { title: { text: 'Argmin' } },
-            margin: { t: 40, r: 20, b: 50, l: 60 },
-            showlegend: false,
-          }}
-          style={{ width: '100%', height: 280 }}
-        />
-      </div>
-
-      {/* Avalanche distributions */}
-      {result.avalancheTSpans.length > 0 && (
+      {/* Mean value, argmin, and avalanche plots */}
+      <SimulationAux>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <CanvasChart
-            data={[{
-              x: result.avalancheTSpans,
-              type: 'histogram',
-              marker: { color: '#8b5cf6' },
-              nbinsx: 20,
-            }]}
+            data={[
+              {
+                y: result.meanValues,
+                type: 'scatter',
+                mode: 'lines',
+                line: { color: '#3b82f6', width: 1 },
+                name: 'Mean value',
+              },
+              {
+                x: [result.skipInit, result.skipInit],
+                y: [Math.min(...result.meanValues), Math.max(...result.meanValues)],
+                type: 'scatter',
+                mode: 'lines',
+                line: { color: '#ef4444', width: 2, dash: 'dash' },
+                name: 'Steady state',
+              },
+            ]}
             layout={{
-              title: { text: 'Avalanche Duration Distribution', font: { size: 13 } },
-              xaxis: { title: { text: 'Duration (timesteps)' }, type: 'log' },
-              yaxis: { title: { text: 'Frequency' }, type: 'log' },
+              title: { text: 'Average Value Over Time', font: { size: 13 } },
+              xaxis: { title: { text: 'Timestep' } },
+              yaxis: { title: { text: 'Mean' } },
               margin: { t: 40, r: 20, b: 50, l: 60 },
+              showlegend: false,
             }}
             style={{ width: '100%', height: 280 }}
           />
           <CanvasChart
-            data={[{
-              x: result.avalancheXSpans,
-              type: 'histogram',
-              marker: { color: '#ec4899' },
-              nbinsx: 20,
-            }]}
+            data={[
+              {
+                y: result.idxArr,
+                type: 'scatter',
+                mode: 'lines',
+                line: { color: '#10b981', width: 1 },
+                name: 'Argmin index',
+              },
+              {
+                x: [result.skipInit, result.skipInit],
+                y: [0, size],
+                type: 'scatter',
+                mode: 'lines',
+                line: { color: '#ef4444', width: 2, dash: 'dash' },
+                name: 'Steady state',
+              },
+            ]}
             layout={{
-              title: { text: 'Avalanche Spatial Span Distribution', font: { size: 13 } },
-              xaxis: { title: { text: 'Spatial span' }, type: 'log' },
-              yaxis: { title: { text: 'Frequency' }, type: 'log' },
+              title: { text: 'Min-fitness Index Over Time', font: { size: 13 } },
+              xaxis: { title: { text: 'Timestep' } },
+              yaxis: { title: { text: 'Argmin' } },
               margin: { t: 40, r: 20, b: 50, l: 60 },
+              showlegend: false,
             }}
             style={{ width: '100%', height: 280 }}
           />
         </div>
-      )}
-    </div>
+
+        {/* Avalanche distributions */}
+        {result.avalancheTSpans.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <CanvasChart
+              data={[{
+                x: result.avalancheTSpans,
+                type: 'histogram',
+                marker: { color: '#8b5cf6' },
+                nbinsx: 20,
+              }]}
+              layout={{
+                title: { text: 'Avalanche Duration Distribution', font: { size: 13 } },
+                xaxis: { title: { text: 'Duration (timesteps)' }, type: 'log' },
+                yaxis: { title: { text: 'Frequency' }, type: 'log' },
+                margin: { t: 40, r: 20, b: 50, l: 60 },
+              }}
+              style={{ width: '100%', height: 280 }}
+            />
+            <CanvasChart
+              data={[{
+                x: result.avalancheXSpans,
+                type: 'histogram',
+                marker: { color: '#ec4899' },
+                nbinsx: 20,
+              }]}
+              layout={{
+                title: { text: 'Avalanche Spatial Span Distribution', font: { size: 13 } },
+                xaxis: { title: { text: 'Spatial span' }, type: 'log' },
+                yaxis: { title: { text: 'Frequency' }, type: 'log' },
+                margin: { t: 40, r: 20, b: 50, l: 60 },
+              }}
+              style={{ width: '100%', height: 280 }}
+            />
+          </div>
+        )}
+      </SimulationAux>
+    </SimulationPanel>
   );
 }

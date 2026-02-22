@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
 import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
-import { SimulationPanel, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import { CanvasChart, type ChartTrace, type ChartLayout } from '@/components/ui/canvas-chart';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
@@ -88,71 +89,70 @@ export default function JaynesCummingsRevival({}: SimulationComponentProps) {
   };
 
   return (
-    <SimulationPanel>
-      <h3 className="text-lg font-semibold text-[var(--text-strong)]">
-        Jaynes-Cummings Collapse & Revival
-      </h3>
-      <p className="text-sm text-[var(--text-soft)] mb-3">
-        {"Atomic inversion <sigma_z(t)> for an excited atom in a coherent cavity field. Different Fock components oscillate at incommensurable frequencies, causing collapse and then periodic revivals."}
-      </p>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        <div>
-          <SimulationLabel>Mean photon number |alpha|^2: {meanN}</SimulationLabel>
-          <Slider
-            value={[meanN]}
-            onValueChange={(v) => setMeanN(Math.round(v[0]))}
-            min={1}
-            max={50}
-            step={1}
-            className="w-full"
-          />
-        </div>
-        <div>
-          <SimulationLabel>Coupling g: {coupling.toFixed(2)}</SimulationLabel>
-          <Slider
-            value={[coupling]}
-            onValueChange={(v) => setCoupling(v[0])}
-            min={0.1}
-            max={3}
-            step={0.05}
-            className="w-full"
-          />
-        </div>
-        <div>
-          <SimulationLabel>Detuning Delta/g: {(detuning / coupling).toFixed(1)}</SimulationLabel>
-          <Slider
-            value={[detuning]}
-            onValueChange={(v) => setDetuning(v[0])}
-            min={0}
-            max={5}
-            step={0.1}
-            className="w-full"
-          />
-        </div>
-      </div>
-
-      {/* Timescale readout */}
-      <div className="grid grid-cols-2 gap-3 mb-4">
-        <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
-          <div className="text-xs text-[var(--text-muted)]">Collapse time (gt_c)</div>
-          <div className="text-base font-mono font-semibold text-[var(--text-strong)]">
-            {isFinite(collapseTime) ? (collapseTime * coupling).toFixed(2) : '-'}
+    <SimulationPanel title="Jaynes-Cummings Collapse & Revival" caption="Atomic inversion <sigma_z(t)> for an excited atom in a coherent cavity field. Different Fock components oscillate at incommensurable frequencies, causing collapse and then periodic revivals.">
+      <SimulationConfig>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <SimulationLabel>Mean photon number |alpha|^2: {meanN}</SimulationLabel>
+            <Slider
+              value={[meanN]}
+              onValueChange={(v) => setMeanN(Math.round(v[0]))}
+              min={1}
+              max={50}
+              step={1}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel>Coupling g: {coupling.toFixed(2)}</SimulationLabel>
+            <Slider
+              value={[coupling]}
+              onValueChange={(v) => setCoupling(v[0])}
+              min={0.1}
+              max={3}
+              step={0.05}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel>Detuning Delta/g: {(detuning / coupling).toFixed(1)}</SimulationLabel>
+            <Slider
+              value={[detuning]}
+              onValueChange={(v) => setDetuning(v[0])}
+              min={0}
+              max={5}
+              step={0.1}
+              className="w-full"
+            />
           </div>
         </div>
-        <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
-          <div className="text-xs text-[var(--text-muted)]">Revival time (gt_r)</div>
-          <div className="text-base font-mono font-semibold text-[var(--text-strong)]">
-            {isFinite(revivalTime) ? (revivalTime * coupling).toFixed(1) : '-'}
+      </SimulationConfig>
+
+      <SimulationMain>
+        <CanvasChart
+          data={[trace]}
+          layout={layout}
+          style={{ width: '100%', height: '400px' }}
+        />
+      </SimulationMain>
+
+      <SimulationResults>
+        {/* Timescale readout */}
+        <div className="grid grid-cols-2 gap-3">
+          <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
+            <div className="text-xs text-[var(--text-muted)]">Collapse time (gt_c)</div>
+            <div className="text-base font-mono font-semibold text-[var(--text-strong)]">
+              {isFinite(collapseTime) ? (collapseTime * coupling).toFixed(2) : '-'}
+            </div>
+          </div>
+          <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
+            <div className="text-xs text-[var(--text-muted)]">Revival time (gt_r)</div>
+            <div className="text-base font-mono font-semibold text-[var(--text-strong)]">
+              {isFinite(revivalTime) ? (revivalTime * coupling).toFixed(1) : '-'}
+            </div>
           </div>
         </div>
-      </div>
-
-      <CanvasChart
-        data={[trace]}
-        layout={layout}
-        style={{ width: '100%', height: '400px' }}
-      />
+      </SimulationResults>
     </SimulationPanel>
   );
 }

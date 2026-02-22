@@ -1,10 +1,11 @@
-'use client';
+"use client";
 
 import React, { useRef, useState, useCallback, useEffect, useMemo } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { Slider } from '@/components/ui/slider';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationResults, SimulationLabel, SimulationButton } from '@/components/ui/simulation-panel';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 import { SimulationMain } from '@/components/ui/simulation-main';
 import { useTheme } from '@/lib/use-theme';
 
@@ -143,7 +144,7 @@ const ZOOM_SPEED = 1.1;
 // Exported component
 // ---------------------------------------------------------------------------
 
-export function MandelbrotFractal() {
+export default function MandelbrotFractal({}: SimulationComponentProps) {
   const theme = useTheme();
   const isDark = theme === 'dark';
   const [maxIter, setMaxIter] = useState<number[]>([200]);
@@ -230,7 +231,7 @@ export function MandelbrotFractal() {
   };
 
   return (
-    <div className="space-y-4">
+    <SimulationPanel title="Mandelbrot Explorer">
       {/* Canvas container */}
       <SimulationMain
         className="relative w-full rounded-lg overflow-hidden border border-[var(--border-strong)]"
@@ -263,15 +264,16 @@ export function MandelbrotFractal() {
       </SimulationMain>
 
       {/* Controls */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Mandelbrot Explorer</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <SimulationSettings>
+        <SimulationButton variant="secondary" onClick={handleReset}>
+          Reset View
+        </SimulationButton>
+      </SimulationSettings>
+      <SimulationConfig>
           <div>
-            <label className="text-sm font-medium text-[var(--text-strong)]">
+            <SimulationLabel>
               Max Iterations: {maxIter[0]}
-            </label>
+            </SimulationLabel>
             <Slider
               value={maxIter}
               onValueChange={setMaxIter}
@@ -280,25 +282,19 @@ export function MandelbrotFractal() {
               step={10}
             />
           </div>
-
+      </SimulationConfig>
+      <SimulationResults>
           <div className="flex flex-wrap items-center gap-4">
-            <div className="text-sm text-[var(--text-muted)] font-mono space-y-1">
+            <div className="text-sm text-[var(--text-soft)] font-mono space-y-1">
               <div>Center: ({fmt(displayCenter[0])}, {fmt(displayCenter[1])}i)</div>
               <div>Zoom: {displayZoom.toFixed(2)}x</div>
             </div>
-            <button
-              onClick={handleReset}
-              className="ml-auto px-4 py-2 rounded-md text-sm font-medium bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white transition-colors"
-            >
-              Reset View
-            </button>
           </div>
 
-          <p className="text-xs text-[var(--text-muted)]">
+          <p className="text-xs text-[var(--text-soft)]">
             Scroll to zoom. Click and drag to pan. Increase iterations for more detail at deep zoom levels.
           </p>
-        </CardContent>
-      </Card>
-    </div>
+      </SimulationResults>
+    </SimulationPanel>
   );
 }

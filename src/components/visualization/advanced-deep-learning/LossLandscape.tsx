@@ -1,13 +1,12 @@
-'use client';
+"use client";
 
 import { useState, useMemo } from 'react';
 import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
 import { Slider } from '@/components/ui/slider';
 import { useTheme } from '@/lib/use-theme';
-
-interface LossLandscapeProps {
-  id?: string;
-}
+import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 function computeLandscape(sharpness: number, numMinima: number, resolution: number) {
   const range = 4;
@@ -63,7 +62,7 @@ function computeLandscape(sharpness: number, numMinima: number, resolution: numb
   return { x, y, z, criticalPoints };
 }
 
-export default function LossLandscape({ id: _id }: LossLandscapeProps) {
+export default function LossLandscape({}: SimulationComponentProps) {
   const theme = useTheme();
   const isDark = theme === 'dark';
   const [sharpness, setSharpness] = useState(1.5);
@@ -113,29 +112,25 @@ export default function LossLandscape({ id: _id }: LossLandscapeProps) {
   };
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">
-        Loss Landscape Visualization
-      </h3>
-
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+    <SimulationPanel title="Loss Landscape Visualization">
+      <SimulationConfig>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm text-[var(--text-muted)] mb-1">
+            <SimulationLabel className="block text-sm text-[var(--text-muted)] mb-1">
               Minima sharpness: {sharpness.toFixed(1)}
-            </label>
+            </SimulationLabel>
             <Slider min={0.3} max={3} step={0.1} value={[sharpness]} onValueChange={([v]) => setSharpness(v)} className="w-full" />
           </div>
           <div>
-            <label className="block text-sm text-[var(--text-muted)] mb-1">
+            <SimulationLabel className="block text-sm text-[var(--text-muted)] mb-1">
               Number of minima: {numMinima}
-            </label>
+            </SimulationLabel>
             <Slider min={2} max={3} step={1} value={[numMinima]} onValueChange={([v]) => setNumMinima(v)} className="w-full" />
           </div>
           <div>
-            <label className="block text-sm text-[var(--text-muted)] mb-1">
+            <SimulationLabel className="block text-sm text-[var(--text-muted)] mb-1">
               Camera elevation: {viewAngle}
-            </label>
+            </SimulationLabel>
             <Slider min={10} max={80} step={5} value={[viewAngle]} onValueChange={([v]) => setViewAngle(v)} className="w-full" />
           </div>
 
@@ -145,20 +140,19 @@ export default function LossLandscape({ id: _id }: LossLandscapeProps) {
             <p>Saddle points (where curvature is positive in some directions and negative in others) are more common than local minima in high dimensions.</p>
           </div>
         </div>
-
-        <div className="lg:col-span-3">
-          <CanvasHeatmap
-            data={[heatmapTrace, markerTrace]}
-            layout={{
-              xaxis: { title: { text: 'w1' } },
-              yaxis: { title: { text: 'w2' } },
-              margin: { t: 20, b: 50, l: 60, r: 20 },
-              autosize: true,
-            }}
-            style={{ width: '100%', height: '500px' }}
-          />
-        </div>
-      </div>
-    </div>
+      </SimulationConfig>
+      <SimulationMain>
+        <CanvasHeatmap
+          data={[heatmapTrace, markerTrace]}
+          layout={{
+            xaxis: { title: { text: 'w1' } },
+            yaxis: { title: { text: 'w2' } },
+            margin: { t: 20, b: 50, l: 60, r: 20 },
+            autosize: true,
+          }}
+          style={{ width: '100%', height: '500px' }}
+        />
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

@@ -1,12 +1,14 @@
 import { describe, expect, it } from "vitest";
 import {
   getLessonSummary,
-  getOrderedLessonSlugs,
-  getLandingPageSlug,
   isLandingPage,
-  getLessonsForTopic,
   LESSON_SUMMARIES,
 } from "./topic-navigation.server";
+import {
+  getOrderedLessonSlugs,
+  getLandingPageSlug,
+  getLessonsForTopic,
+} from "@/features/content/topic-lessons";
 
 describe("topic-navigation.server", () => {
   describe("getLessonSummary", () => {
@@ -83,11 +85,14 @@ describe("topic-navigation.server", () => {
   });
 
   describe("getLandingPageSlug", () => {
-    it("returns null for topic without landing pages", () => {
-      // Most topics won't have a "home" or "intro" slug
-      const result = getLandingPageSlug("complex-physics");
-      // It may or may not have one — just verify the return type
-      expect(result === null || typeof result === "string").toBe(true);
+    it("returns 'home' for topics with a home.md file", () => {
+      expect(getLandingPageSlug("complex-physics")).toBe("home");
+      expect(getLandingPageSlug("advanced-deep-learning")).toBe("home");
+      expect(getLandingPageSlug("scientific-computing")).toBe("home");
+    });
+
+    it("returns null for nonexistent topic", () => {
+      expect(getLandingPageSlug("nonexistent")).toBeNull();
     });
   });
 

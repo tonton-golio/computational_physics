@@ -34,12 +34,6 @@ Before full inversion, let's build intuition. Suppose you want to estimate the v
 
 [[simulation sphere-in-cube-mc]]
 
-Things to look for in the simulation:
-
-* Watch the estimate converge — noisy at first, then settling down
-* Increase the dimension and see how the sphere's volume fraction collapses (the curse of dimensionality in action)
-* Notice the $1/\sqrt{N}$ convergence: 100x more samples for 10x more accuracy
-
 [[simulation monte-carlo-integration]]
 
 ---
@@ -68,59 +62,33 @@ We need a smarter strategy.
 
 Here's the key insight: instead of generating independent samples from a hard distribution, build a **chain** of samples where each step depends on the previous one. Design the chain so that it spends more time in high-probability regions — exactly where the posterior puts its weight.
 
-The simplest version is the **Metropolis algorithm**:
-
-1. Start at some model $\mathbf{m}_{\text{current}}$
-2. Propose a new model: $\mathbf{m}_{\text{new}} = \mathbf{m}_{\text{current}} + \text{random perturbation}$
-3. Accept the new model with probability:
+The **Metropolis algorithm** tells a simple story: you start somewhere, propose a random step, and ask "is this new spot more probable?" If yes, move there. If no, flip a biased coin — sometimes go anyway, sometimes stay put. The probability of accepting a downhill step is exactly the ratio of the densities:
 
 $$
 p_{\text{accept}} = \min\left(1, \frac{p(\mathbf{m}_{\text{new}})}{p(\mathbf{m}_{\text{current}})}\right)
 $$
 
-4. If accepted, move to $\mathbf{m}_{\text{new}}$. If rejected, stay put. Either way, record the current position.
-5. Repeat. Many, many times.
-
-Imagine the posterior probability landscape as a hilly terrain. The Metropolis walker always prefers to walk uphill (better fit). But occasionally it takes a small downhill step — with probability exactly equal to the ratio of probabilities. That tiny chance of going downhill is what lets the walker escape local valleys and explore the entire mountain range.
-
-The beautiful thing: if the new model is *more* probable, you always accept. If it's *less* probable, you sometimes accept anyway — and the probability of accepting is exactly the ratio of the densities. This is what keeps you from getting trapped in local optima.
-
-After enough steps, the chain "forgets" where it started and its samples are drawn from the true posterior. The histogram of visited models *is* the posterior distribution.
+That tiny chance of going downhill is what lets the walker escape local valleys and explore the entire mountain range. After enough steps, the chain "forgets" where it started and its samples are drawn from the true posterior. The histogram of visited models *is* the posterior distribution.
 
 ---
 
 ## Practical Diagnostics: Is the Chain Working?
 
-Running MCMC is easy. Knowing whether it *worked* is the hard part. Here's what to watch:
+Running MCMC is easy. Knowing whether it *worked* is the hard part.
 
 **Burn-in.** The chain starts wherever you initialized it, which might be far from the posterior. The initial samples are garbage — discard them. How many? Plot the chain's trajectory and look for where it "settles down."
 
 **Acceptance rate.** If you accept everything (rate ~100%), your steps are too tiny and you're barely moving. If you accept almost nothing (rate ~1%), your steps are too big and you keep proposing implausible models. For Gaussian targets, optimal acceptance is around 23% in high dimensions, 44% in one dimension.
 
-**Mixing.** Does the chain explore the full posterior, or does it get stuck in one region? Multiple chains started from different points should converge to the same distribution.
-
-**Autocorrelation.** Consecutive samples are correlated (each step is a small perturbation of the last). Effective sample size is the total number of samples divided by the autocorrelation time. A chain of 100,000 samples with autocorrelation time 50 gives you only ~2,000 independent samples.
-
 ---
 
-## Big Ideas
-* The $O(N^{-1/2})$ convergence of Monte Carlo integration is dimension-independent — the same rate in one dimension as in a thousand. That is the entire reason MCMC exists as a discipline.
-* The Metropolis acceptance rule is not an approximation. When the chain has mixed, the histogram of visited states is the exact posterior. You are not fitting — you are sampling.
-* Acceptance rate, burn-in, and autocorrelation time are not optional diagnostics. They are the only evidence you have that the chain actually worked.
-* A stuck chain with low acceptance rate can look exactly like a well-mixed chain in the wrong metric. Multiple chains started from different points are your insurance policy.
+So here's the thread running through all of this: the $O(N^{-1/2})$ convergence of Monte Carlo is dimension-independent — same rate in one dimension as in a thousand, and that's the entire reason MCMC exists as a discipline. The Metropolis acceptance rule is not an approximation; when the chain has mixed, the histogram of visited states is the exact posterior. And burn-in and acceptance rate are not optional diagnostics — they're the only evidence you have that the chain actually worked.
 
 ## What Comes Next
 
 Monte Carlo methods give you samples from the posterior. But knowing what to do with those samples — and what they mean scientifically — requires applying them to real problems. The theoretical machinery becomes concrete when you run MCMC on an earthquake fault geometry and watch the sampler reveal a trade-off between fault depth and slip that no point estimate could show you. It becomes real when the glacier bed example demonstrates that some features are sharply constrained by the data while others remain genuinely unknown, no matter how long the chain runs.
 
-The geophysical examples also show the full inversion workflow in context: how the forward model feeds the likelihood, how a smoothness prior keeps the solutions physically plausible, and how the resulting posterior distribution — not any single model — is the honest scientific answer to the original question.
-
-## Check Your Understanding
+## Let's Make Sure You Really Got It
 1. Why does rejection sampling fail in high dimensions, even when the proposal distribution is reasonable? Describe what happens geometrically as dimension increases.
 2. You run 100,000 Metropolis steps and compute the acceptance rate as 78%. Should you be worried, and if so, what should you change? What if the rate is 2%?
 3. Two independent Markov chains are started from very different initial points. After 10,000 steps they have converged to the same stationary distribution. What does this tell you — and what does it still not guarantee?
-
-## Challenge
-
-Implement a Metropolis sampler for a two-dimensional posterior that has two separated modes — for example, a mixture of two Gaussians placed far apart. Run a single chain and record how often it successfully crosses between modes as a function of the proposal step size. Then implement a simple parallel tempering scheme (run chains at different "temperatures" and occasionally swap states between adjacent chains) and measure the mode-crossing rate again. How much does tempering improve exploration, and how does it scale with the separation between modes?
-

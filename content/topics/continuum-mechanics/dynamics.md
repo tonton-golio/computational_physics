@@ -1,112 +1,78 @@
-# The Heartbeat Equation — Dynamics of Continua
+# The Heartbeat Equation -- Dynamics of Continua
 
 ## One Equation to Rule Them All
 
-Here's something beautiful: whether you're modeling a glacier grinding through a valley, honey dripping off a spoon, or a steel beam vibrating after being struck — the fundamental equation is *the same*. It's the Cauchy momentum equation, and it's the **heartbeat** of continuum mechanics.
+Imagine you could write a single equation that governs a glacier grinding through a valley, honey dripping off a spoon, *and* a steel beam ringing after being struck. You can. It's the Cauchy momentum equation -- the **heartbeat** of continuum mechanics.
 
-Everything we've done so far — stress tensors, strain tensors, Hooke's law — was building toward this. Now we put it all together.
+Everything so far -- stress tensors, strain tensors, Hooke's law -- was building toward this moment.
 
-## The Ingredients — Mass, Momentum, and Forces
+## The Ingredients -- Mass, Momentum, and Forces
 
-Before we get to the big equation, let's make sure we know what we're tracking. For a chunk of material occupying volume $V$:
+For a chunk of material occupying volume $V$:
 
-**Mass** — how much stuff is there:
-$$
-M = \int_V \rho \, dV
-$$
+**Mass**: $M = \int_V \rho \, dV$
 
-**Momentum** — how much "oomph" does it carry:
-$$
-\mathbf{P} = \int_V \rho \, \mathbf{v} \, dV
-$$
+**Momentum**: $\mathbf{P} = \int_V \rho \, \mathbf{v} \, dV$
 
-**Angular momentum** — how much is it spinning:
-$$
-\mathbf{L} = \int_V \mathbf{x} \times \rho \, \mathbf{v} \, dV
-$$
+**Angular momentum**: $\mathbf{L} = \int_V \mathbf{x} \times \rho \, \mathbf{v} \, dV$
 
-**Kinetic energy** — how much energy is in the motion:
-$$
-K = \int_V \frac{1}{2} \rho \, v^2 \, dV
-$$
+**Kinetic energy**: $K = \int_V \frac{1}{2} \rho \, v^2 \, dV$
 
-## Conservation of Mass — Stuff Doesn't Disappear
+## Conservation of Mass -- Stuff Doesn't Disappear
 
-The simplest conservation law: the mass in a volume $V$ can only change if stuff flows in or out through the surface $S$:
+Mass in a volume $V$ can only change if stuff flows in or out through the surface $S$:
 $$
 \frac{d}{dt} \int_V \rho \, dV = -\oint_S \rho \, \mathbf{v} \cdot \hat{n} \, dA
 $$
 
-Using the divergence theorem to convert the surface integral into a volume integral:
+Using the divergence theorem:
 $$
 \frac{\partial \rho}{\partial t} + \nabla \cdot (\rho \, \mathbf{v}) = 0
 $$
 
-This is the **continuity equation**. It says: the rate at which density changes at a point equals the rate at which mass flows away from that point. Nothing more, nothing less.
+This is the **continuity equation**. Density changes at a point equal the rate mass flows away from it.
 
-## The Material Derivative — Riding the Flow
+## The Material Derivative -- Riding the Flow
 
-Here's a subtlety that trips up everyone the first time. There are two ways to watch a flowing river:
+There are two ways to watch a river. **Stand on the bank** (Eulerian): the water flows past your fixed spot. **Jump in a boat** (Lagrangian): you ride along with the water.
 
-* **Stand on the bank** (Eulerian view): you watch the water flow past you. At your fixed location, the velocity changes over time as different parcels of water arrive.
-* **Jump in a boat** (Lagrangian view): you ride along with the water. The velocity you experience changes because you're moving to new locations.
-
-The **material derivative** $D/Dt$ captures the boat-rider's perspective:
+The **material derivative** $D/Dt$ captures the boat-rider's view:
 $$
 \frac{Dq}{Dt} = \frac{\partial q}{\partial t} + (\mathbf{v} \cdot \nabla) q
 $$
 
-The first term is the *local* change (what happens at your fixed point). The second term is the *advective* change (what changes because you moved to a new location). Together, they give the total rate of change *experienced by a moving parcel of material*.
+First term: local change at your fixed point. Second term: advective change because you moved somewhere new. Together: the total rate of change experienced by a moving parcel.
 
-Think of it this way: imagine you're in a hot air balloon drifting east. The temperature at your location changes for two reasons: (1) the air around you might be heating up (local change), and (2) you're drifting into a region that was already warmer (advective change).
+Think of it this way: you're in a hot air balloon drifting east. Temperature at your location changes because (1) the air around you heats up, and (2) you're drifting into a region that was already warmer.
 
-In the Lagrangian picture, conservation of mass becomes elegantly simple:
-$$
-\frac{DM}{Dt} = 0
-$$
+For incompressible materials ($\nabla \cdot \mathbf{v} = 0$), the density of each parcel doesn't change as it moves.
 
-And the material derivative of density:
-$$
-\frac{D\rho}{Dt} = -\rho (\nabla \cdot \mathbf{v})
-$$
+## Transport of Any Quantity
 
-For an incompressible material ($\nabla \cdot \mathbf{v} = 0$), the density of each parcel doesn't change as it moves — which makes sense, since incompressibility means volumes don't change.
-
-## Transport of Any Quantity — The General Recipe
-
-The material derivative works for *any* quantity, not just density. If $q$ is some specific (per-unit-mass) quantity like temperature or chemical concentration, then the total amount in a volume is $Q = \int_V \rho \, q \, dV$, and:
-$$
-\frac{DQ}{Dt} = \int_V \rho \frac{Dq}{Dt} \, dV
-$$
-
-This is the general transport equation. Imagine a box full of some quantity $q$, drifting with the flow. What enters and leaves through the boundaries changes $Q$:
+The material derivative works for *any* per-unit-mass quantity $q$:
 $$
 \frac{\partial (\rho q)}{\partial t} + \nabla \cdot (\rho q \, \mathbf{v}) = \rho \frac{Dq}{Dt}
 $$
 
-This works because the mass conservation terms cancel, leaving only the "ride along" derivative.
+Mass conservation terms cancel, leaving only the "ride along" derivative.
 
-## Cauchy's Equation — The Heartbeat
+## Cauchy's Equation -- The Heartbeat
 
-Now we're ready. Newton's second law says momentum changes equal forces. For a continuum:
+Newton's second law for a smear of matter:
 $$
 \rho \frac{D\mathbf{v}}{Dt} = \mathbf{f} + \nabla \cdot \sigma
 $$
 
-That's it. That's the heartbeat equation. Let's unpack it:
+That's it. Left side: mass per volume times acceleration (following the flow). $\mathbf{f}$: body forces like gravity. $\nabla \cdot \sigma$: net internal stress force per unit volume.
 
-* **Left side**: mass per unit volume times acceleration (in the material derivative sense — following the flow).
-* **$\mathbf{f}$**: body forces, like gravity ($\rho \, \mathbf{g}$).
-* **$\nabla \cdot \sigma$**: the divergence of the stress tensor — the net force per unit volume from all the internal stresses acting on the material.
+This is **Cauchy's equation**, and it's universal. Solids and fluids differ only in what $\sigma$ looks like:
 
-This is **Cauchy's equation**, and it's universal. It doesn't care whether you're dealing with a solid, a liquid, or anything in between. The difference between solids and fluids comes in *later*, when you specify what $\sigma$ looks like:
-
-* **For an elastic solid**: $\sigma = \lambda \, \text{tr}(\varepsilon) \, \mathbf{I} + 2\mu \, \varepsilon$ → you get the **Navier-Cauchy equation**.
-* **For a viscous fluid**: $\sigma = -p\,\mathbf{I} + 2\eta \, \dot{\varepsilon}$ → you get the **Navier-Stokes equation**.
+* **Elastic solid**: $\sigma = \lambda \, \text{tr}(\varepsilon) \, \mathbf{I} + 2\mu \, \varepsilon$ --> the **Navier-Cauchy equation**.
+* **Viscous fluid**: $\sigma = -p\,\mathbf{I} + 2\eta \, \dot{\varepsilon}$ --> the **Navier-Stokes equation**.
 
 Same heartbeat. Different constitutive law. That's the deep unity of continuum mechanics.
 
-> **Reading Cauchy's equation physically:** The left side, $\rho\,D\mathbf{v}/Dt$, is *how much the velocity of this blob is changing as it rides the flow*. The right side, $\mathbf{f} + \nabla \cdot \sigma$, is *every force that could act on it, per unit volume* — gravity pulling it down, pressure pushing from all sides, viscous stresses dragging on its surfaces. Newton's second law, applied to a smear of matter.
+> **Reading it physically:** The left side is *how much this blob's velocity changes as it rides the flow*. The right side is *every force acting on it per unit volume* -- gravity, pressure, viscous stresses. Newton's second law, applied to a smear of matter.
 
 [[simulation deformation-grid]]
 
@@ -114,19 +80,19 @@ Same heartbeat. Different constitutive law. That's the deep unity of continuum m
 
 ## Big Ideas
 
-* The continuity equation is just "stuff doesn't disappear," written as a PDE. Every conservation law in continuum mechanics has this same structure: a time derivative plus a divergence of flux equals zero.
-* The material derivative $D/Dt = \partial/\partial t + (\mathbf{v} \cdot \nabla)$ is the derivative that rides along with the fluid — it's what an observer in a boat experiences, versus a stationary observer on the bank.
-* Cauchy's equation $\rho\,D\mathbf{v}/Dt = \mathbf{f} + \nabla\cdot\sigma$ is the universal heartbeat. It's Newton's second law for a smear of matter. Solids and fluids are just different choices of what $\sigma$ looks like.
+* The continuity equation is "stuff doesn't disappear" written as a PDE.
+* The material derivative $D/Dt$ is the derivative that rides with the flow -- what a boat observer experiences versus a bank observer.
+* Cauchy's equation $\rho\,D\mathbf{v}/Dt = \mathbf{f} + \nabla\cdot\sigma$ is Newton's second law for continuous matter. Solids and fluids are just different choices for $\sigma$.
 
 ## What Comes Next
 
-Now we know the general equation of motion. What's the simplest thing we can do with it? Drop the inertia. When viscosity dominates so completely that acceleration is negligible, Cauchy's equation collapses to the Stokes equation — and we enter the world of creeping flow, where honey, magma, and glaciers live.
+We know the general equation of motion. What's the simplest thing we can do with it? Drop the inertia. When viscosity dominates so completely that acceleration is negligible, Cauchy's equation collapses to the Stokes equation -- the world of honey, magma, and glaciers.
 
 ## Check Your Understanding
 
-1. The material derivative has two terms: $\partial/\partial t$ and $(\mathbf{v} \cdot \nabla)$. Give a physical example where the local term is zero but the advective term is nonzero. Then give an example of the reverse.
+1. Give a physical example where the local term $\partial/\partial t$ is zero but the advective term $(\mathbf{v} \cdot \nabla)$ is nonzero. Then give an example of the reverse.
 2. For an incompressible material, $D\rho/Dt = 0$. Show that this implies $\nabla \cdot \mathbf{v} = 0$ using the continuity equation.
-3. Cauchy's equation for an elastic solid and a viscous fluid look structurally identical. Where exactly is the difference hiding, and why does that difference matter so enormously for real-world behavior?
+3. Cauchy's equation for an elastic solid and a viscous fluid look structurally identical. Where exactly is the difference hiding, and why does it matter so enormously?
 
 ## Challenge
 

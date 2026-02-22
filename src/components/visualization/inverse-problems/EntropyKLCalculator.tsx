@@ -1,8 +1,10 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 const N_BINS = 6;
@@ -31,7 +33,7 @@ function klDivergence(p: number[], q: number[]): number {
   return kl;
 }
 
-export default function EntropyKLCalculator({ id: _id }: SimulationComponentProps) {
+export default function EntropyKLCalculator({}: SimulationComponentProps) {
   // Control distributions via "concentration" sliders: each adjusts relative weight
   const [pWeights, setPWeights] = useState([3, 2, 4, 1, 2, 3]);
   const [qWeights, setQWeights] = useState([1, 1, 1, 1, 1, 1]);
@@ -72,48 +74,47 @@ export default function EntropyKLCalculator({ id: _id }: SimulationComponentProp
   const xIdx = Array.from({ length: N_BINS }, (_, i) => i);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">
-        Entropy and Divergence Calculator
-      </h3>
-
-      <div className="grid grid-cols-2 gap-6 mb-4">
-        <div>
-          <p className="text-sm font-medium text-blue-400 mb-2">Distribution P</p>
-          <div className="grid grid-cols-3 gap-2">
-            {LABELS.map((label, i) => (
-              <div key={`p-${i}`}>
-                <label className="text-xs text-[var(--text-muted)]">{label}: {pWeights[i]}</label>
-                <Slider value={[pWeights[i]]} onValueChange={([v]) => handleP(i, v)}
-                  min={0} max={10} step={1} />
-              </div>
-            ))}
+    <SimulationPanel title="Entropy and Divergence Calculator">
+      <SimulationConfig>
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <p className="text-sm font-medium text-blue-400 mb-2">Distribution P</p>
+            <div className="grid grid-cols-3 gap-2">
+              {LABELS.map((label, i) => (
+                <div key={`p-${i}`}>
+                  <SimulationLabel className="text-xs text-[var(--text-muted)]">{label}: {pWeights[i]}</SimulationLabel>
+                  <Slider value={[pWeights[i]]} onValueChange={([v]) => handleP(i, v)}
+                    min={0} max={10} step={1} />
+                </div>
+              ))}
+            </div>
+          </div>
+          <div>
+            <p className="text-sm font-medium text-red-400 mb-2">Distribution Q</p>
+            <div className="grid grid-cols-3 gap-2">
+              {LABELS.map((label, i) => (
+                <div key={`q-${i}`}>
+                  <SimulationLabel className="text-xs text-[var(--text-muted)]">{label}: {qWeights[i]}</SimulationLabel>
+                  <Slider value={[qWeights[i]]} onValueChange={([v]) => handleQ(i, v)}
+                    min={0} max={10} step={1} />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-        <div>
-          <p className="text-sm font-medium text-red-400 mb-2">Distribution Q</p>
-          <div className="grid grid-cols-3 gap-2">
-            {LABELS.map((label, i) => (
-              <div key={`q-${i}`}>
-                <label className="text-xs text-[var(--text-muted)]">{label}: {qWeights[i]}</label>
-                <Slider value={[qWeights[i]]} onValueChange={([v]) => handleQ(i, v)}
-                  min={0} max={10} step={1} />
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      </SimulationConfig>
 
+      <SimulationMain>
       <CanvasChart
         data={[
           {
             x: xIdx, y: result.p,
-            type: 'bar', marker: { color: 'rgba(59,130,246,0.7)' },
+            type: 'bar', marker: { color: '#3b82f6' }, opacity: 0.7,
             name: 'P',
           },
           {
             x: xIdx, y: result.q,
-            type: 'bar', marker: { color: 'rgba(239,68,68,0.7)' },
+            type: 'bar', marker: { color: '#ef4444' }, opacity: 0.7,
             name: 'Q',
           },
         ]}
@@ -128,6 +129,19 @@ export default function EntropyKLCalculator({ id: _id }: SimulationComponentProp
         style={{ width: '100%' }}
       />
 
+      <div className="mt-4 border-l-4 border-blue-500 pl-4 text-sm text-[var(--text-muted)]">
+        <p className="font-medium text-[var(--text-strong)] mb-1">What to notice</p>
+        <p>
+          Make P and Q identical and verify all divergences go to zero. Set P to a spike (one
+          bin high, rest zero) and watch H(P) drop to zero while KL divergence grows. Compare
+          D_KL(P||Q) and D_KL(Q||P) to see the asymmetry. The Jensen-Shannon divergence is
+          always symmetric and bounded. Setting any Q bin to zero where P is non-zero sends
+          D_KL(P||Q) to infinity, reflecting the severity of assigning zero probability to
+          possible events.
+        </p>
+      </div>
+      </SimulationMain>
+      <SimulationResults>
       <div className="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-3">
         <div className="rounded p-3 border border-[var(--border-strong)]">
           <div className="text-xs text-[var(--text-muted)]">H(P)</div>
@@ -175,18 +189,7 @@ export default function EntropyKLCalculator({ id: _id }: SimulationComponentProp
           <div className="font-mono text-sm text-[var(--text-strong)]">{result.jsd.toFixed(4)}</div>
         </div>
       </div>
-
-      <div className="mt-4 border-l-4 border-blue-500 pl-4 text-sm text-[var(--text-muted)]">
-        <p className="font-medium text-[var(--text-strong)] mb-1">What to notice</p>
-        <p>
-          Make P and Q identical and verify all divergences go to zero. Set P to a spike (one
-          bin high, rest zero) and watch H(P) drop to zero while KL divergence grows. Compare
-          D_KL(P||Q) and D_KL(Q||P) to see the asymmetry. The Jensen-Shannon divergence is
-          always symmetric and bounded. Setting any Q bin to zero where P is non-zero sends
-          D_KL(P||Q) to infinity, reflecting the severity of assigning zero probability to
-          possible events.
-        </p>
-      </div>
-    </div>
+      </SimulationResults>
+    </SimulationPanel>
   );
 }

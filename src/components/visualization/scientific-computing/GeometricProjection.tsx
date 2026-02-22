@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Html, Line } from '@react-three/drei';
 import * as THREE from 'three';
 import { Slider } from '@/components/ui/slider';
-import { SimulationPanel, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
 import { SimulationMain } from '@/components/ui/simulation-main';
 import { useTheme } from '@/lib/use-theme';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
@@ -313,40 +313,33 @@ export default function GeometricProjection({}: SimulationComponentProps) {
   }, [theta, bAngle]);
 
   return (
-    <SimulationPanel>
-      <h3 className="text-lg font-semibold text-[var(--text-strong)]">
-        Least Squares as Geometric Projection
-      </h3>
-      <p className="text-sm text-[var(--text-soft)] mb-4">
-        The least-squares solution projects <strong>b</strong> onto the column space of A.
-        The residual <strong>r</strong> = b &minus; Ax&#770; is perpendicular to Col(A).
-        Drag to rotate the 3D view.
-      </p>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <div>
-          <SimulationLabel>Angle between columns: {theta}&deg;</SimulationLabel>
-          <Slider
-            value={[theta]}
-            onValueChange={([v]) => setTheta(v)}
-            min={10}
-            max={90}
-            step={1}
-            className="w-full"
-          />
+    <SimulationPanel title="Least Squares as Geometric Projection" caption="The least-squares solution projects b onto the column space of A. The residual r = b \u2212 Ax\u0302 is perpendicular to Col(A). Drag to rotate the 3D view.">
+      <SimulationConfig>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <SimulationLabel>Angle between columns: {theta}&deg;</SimulationLabel>
+            <Slider
+              value={[theta]}
+              onValueChange={([v]) => setTheta(v)}
+              min={10}
+              max={90}
+              step={1}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel>b out-of-plane: {bAngle}&deg;</SimulationLabel>
+            <Slider
+              value={[bAngle]}
+              onValueChange={([v]) => setBAngle(v)}
+              min={5}
+              max={85}
+              step={1}
+              className="w-full"
+            />
+          </div>
         </div>
-        <div>
-          <SimulationLabel>b out-of-plane: {bAngle}&deg;</SimulationLabel>
-          <Slider
-            value={[bAngle]}
-            onValueChange={([v]) => setBAngle(v)}
-            min={5}
-            max={85}
-            step={1}
-            className="w-full"
-          />
-        </div>
-      </div>
+      </SimulationConfig>
 
       <SimulationMain
         className="w-full rounded-md border border-[var(--border)] overflow-hidden"
@@ -363,34 +356,36 @@ export default function GeometricProjection({}: SimulationComponentProps) {
         </Canvas>
       </SimulationMain>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
-        <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
-          <div className="text-xs text-[var(--text-muted)]">||r||</div>
-          <div className="text-sm font-mono font-semibold text-[var(--accent)]">
-            {result.rNorm.toFixed(4)}
+      <SimulationResults>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
+            <div className="text-xs text-[var(--text-muted)]">||r||</div>
+            <div className="text-sm font-mono font-semibold text-[var(--accent)]">
+              {result.rNorm.toFixed(4)}
+            </div>
+          </div>
+          <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
+            <div className="text-xs text-[var(--text-muted)]">r &middot; a1</div>
+            <div className="text-sm font-mono font-semibold text-[var(--text-strong)]">
+              {result.rDotA1.toExponential(2)}
+            </div>
+          </div>
+          <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
+            <div className="text-xs text-[var(--text-muted)]">r &middot; a2</div>
+            <div className="text-sm font-mono font-semibold text-[var(--text-strong)]">
+              {result.rDotA2.toExponential(2)}
+            </div>
+          </div>
+          <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
+            <div className="text-xs text-[var(--text-muted)]">
+              x&#770; = ({result.x0.toFixed(2)}, {result.x1.toFixed(2)})
+            </div>
+            <div className="text-sm font-mono font-semibold text-[var(--text-strong)]">
+              Coefficients
+            </div>
           </div>
         </div>
-        <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
-          <div className="text-xs text-[var(--text-muted)]">r &middot; a1</div>
-          <div className="text-sm font-mono font-semibold text-[var(--text-strong)]">
-            {result.rDotA1.toExponential(2)}
-          </div>
-        </div>
-        <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
-          <div className="text-xs text-[var(--text-muted)]">r &middot; a2</div>
-          <div className="text-sm font-mono font-semibold text-[var(--text-strong)]">
-            {result.rDotA2.toExponential(2)}
-          </div>
-        </div>
-        <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
-          <div className="text-xs text-[var(--text-muted)]">
-            x&#770; = ({result.x0.toFixed(2)}, {result.x1.toFixed(2)})
-          </div>
-          <div className="text-sm font-mono font-semibold text-[var(--text-strong)]">
-            Coefficients
-          </div>
-        </div>
-      </div>
+      </SimulationResults>
     </SimulationPanel>
   );
 }

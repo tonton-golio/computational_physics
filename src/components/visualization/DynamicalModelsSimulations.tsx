@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React from 'react';
 import HillFunction from './dynamical-models/HillFunction';
@@ -7,7 +7,7 @@ import BinomialDistribution from './dynamical-models/BinomialDistribution';
 import PoissonDistribution from './dynamical-models/PoissonDistribution';
 import MichaelisMenten from './dynamical-models/MichaelisMenten';
 import SteadyStateRegulation from './dynamical-models/SteadyStateRegulation';
-import { LotkaVolterraSim } from './dynamical-models/LotkaVolterraSim';
+import LotkaVolterraSim from './dynamical-models/LotkaVolterraSim';
 import BinomialPoissonComparison from './dynamical-models/BinomialPoissonComparison';
 import BathtubDynamics from './dynamical-models/BathtubDynamics';
 import LuriaDelbruckComparison from './dynamical-models/LuriaDelbruckComparison';
@@ -25,26 +25,26 @@ import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 
 export const DYNAMICAL_MODELS_SIMULATIONS: Record<string, React.ComponentType<SimulationComponentProps>> = {
-  'hill-function': HillFunction as React.ComponentType<SimulationComponentProps>,
-  'gene-expression-noise': GeneExpressionNoise as React.ComponentType<SimulationComponentProps>,
-  'binomial-distribution': BinomialDistribution as React.ComponentType<SimulationComponentProps>,
-  'poisson-distribution': PoissonDistribution as React.ComponentType<SimulationComponentProps>,
-  'michaelis-menten': MichaelisMenten as React.ComponentType<SimulationComponentProps>,
-  'steady-state-regulation': SteadyStateRegulation as React.ComponentType<SimulationComponentProps>,
-  'lotka-volterra': LotkaVolterraSim as React.ComponentType<SimulationComponentProps>,
-  'binomial-poisson-comparison': BinomialPoissonComparison as React.ComponentType<SimulationComponentProps>,
-  'bathtub-dynamics': BathtubDynamics as React.ComponentType<SimulationComponentProps>,
-  'luria-delbruck-comparison': LuriaDelbruckComparison as React.ComponentType<SimulationComponentProps>,
-  'bifurcation-diagram': BifurcationDiagram as React.ComponentType<SimulationComponentProps>,
-  'repressilator': Repressilator as React.ComponentType<SimulationComponentProps>,
-  'chemotaxis-adaptation': ChemotaxisAdaptation as React.ComponentType<SimulationComponentProps>,
-  'proteome-allocation': ProteomeAllocation as React.ComponentType<SimulationComponentProps>,
-  'phase-plane-portrait': PhasePlanePortrait as React.ComponentType<SimulationComponentProps>,
-  'bacterial-lineage-tree': BacterialLineageTree as React.ComponentType<SimulationComponentProps>,
-  'gillespie-trajectory': GillespieTrajectory as React.ComponentType<SimulationComponentProps>,
-  'production-degradation-crossings': ProductionDegradationCrossings as React.ComponentType<SimulationComponentProps>,
-  'notch-delta-checkerboard': NotchDeltaCheckerboard as React.ComponentType<SimulationComponentProps>,
-  'motif-gallery': MotifGallery as React.ComponentType<SimulationComponentProps>,
+  'hill-function': HillFunction,
+  'gene-expression-noise': GeneExpressionNoise,
+  'binomial-distribution': BinomialDistribution,
+  'poisson-distribution': PoissonDistribution,
+  'michaelis-menten': MichaelisMenten,
+  'steady-state-regulation': SteadyStateRegulation,
+  'lotka-volterra': LotkaVolterraSim,
+  'binomial-poisson-comparison': BinomialPoissonComparison,
+  'bathtub-dynamics': BathtubDynamics,
+  'luria-delbruck-comparison': LuriaDelbruckComparison,
+  'bifurcation-diagram': BifurcationDiagram,
+  'repressilator': Repressilator,
+  'chemotaxis-adaptation': ChemotaxisAdaptation,
+  'proteome-allocation': ProteomeAllocation,
+  'phase-plane-portrait': PhasePlanePortrait,
+  'bacterial-lineage-tree': BacterialLineageTree,
+  'gillespie-trajectory': GillespieTrajectory,
+  'production-degradation-crossings': ProductionDegradationCrossings,
+  'notch-delta-checkerboard': NotchDeltaCheckerboard,
+  'motif-gallery': MotifGallery,
 };
 
 // ============ CO-LOCATED DESCRIPTIONS ============

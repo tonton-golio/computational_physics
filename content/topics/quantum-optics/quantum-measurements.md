@@ -1,98 +1,81 @@
 # Quantum Measurements
 
-## Measurement in Quantum Mechanics
+## Every click changes the state
 
-In quantum optics, measurement plays a fundamental role: the act of detection irreversibly alters the quantum state of light. The measurement formalism connects the abstract quantum state to experimentally observable quantities like photon counts, quadrature values, and correlation functions.
+In quantum optics, measurement isn't passive reading. Every photon detection event irreversibly alters the quantum state of light. The post-measurement state is just as important as the probability of each outcome. This lesson closes the loop: how do you actually extract information from a quantum field, and what does the extraction cost?
 
-A general quantum measurement is described by a set of **measurement operators** $\{\hat{M}_m\}$ satisfying $\sum_m \hat{M}_m^\dagger \hat{M}_m = \hat{I}$. The probability of outcome $m$ given state $\hat{\rho}$ is
+## The measurement formalism
 
-$$
-p(m) = \operatorname{Tr}[\hat{M}_m^\dagger \hat{M}_m \hat{\rho}],
-$$
-
-and the post-measurement state is $\hat{\rho}_m = \hat{M}_m \hat{\rho} \hat{M}_m^\dagger / p(m)$.
-
-## Projective vs. Generalized Measurements
-
-**Projective (von Neumann) measurements** use orthogonal projectors $\hat{\Pi}_m = |m\rangle\langle m|$ satisfying $\hat{\Pi}_m \hat{\Pi}_n = \delta_{mn}\hat{\Pi}_m$. Photon number detection is a projective measurement in the Fock basis $\{|n\rangle\}$.
-
-**Generalized measurements** (POVMs) allow non-orthogonal outcomes and describe realistic detectors. A **positive operator-valued measure** consists of positive operators $\hat{E}_m \geq 0$ with $\sum_m \hat{E}_m = \hat{I}$, without requiring orthogonality. Heterodyne detection is a POVM with elements $\hat{E}_\alpha = \frac{1}{\pi}|\alpha\rangle\langle\alpha|$ that projects onto coherent states.
-
-## Photon Counting
-
-Ideal **photon-number-resolving** (PNR) detectors measure the Fock state projectors. For a state $\hat{\rho}$, the probability of detecting $n$ photons is $p(n) = \langle n|\hat{\rho}|n\rangle$.
-
-Real single-photon detectors (avalanche photodiodes, superconducting nanowire detectors) are typically **threshold detectors**: they distinguish "no click" from "one or more clicks" but cannot resolve the exact photon number. The POVM elements are
+A general quantum measurement is described by measurement operators $\{\hat{M}_m\}$ satisfying $\sum_m \hat{M}_m^\dag\hat{M}_m = \hat{I}$. The probability of outcome $m$ is:
 
 $$
-\hat{E}_0 = |0\rangle\langle 0|, \qquad \hat{E}_{\text{click}} = \hat{I} - |0\rangle\langle 0|,
+p(m) = \operatorname{Tr}[\hat{M}_m^\dag\hat{M}_m\hat{\rho}]
 $$
 
-with detector efficiency $\eta < 1$ modeled as a beam splitter loss before an ideal detector.
+and the post-measurement state is $\hat{\rho}_m = \hat{M}_m\hat{\rho}\hat{M}_m^\dag/p(m)$.
 
-Transition-edge sensors and superconducting nanowire arrays can resolve photon numbers up to $\sim 10{-}20$, enabling direct measurement of photon statistics and Wigner function negativity.
+## Projective vs. generalized measurements
 
-## Quantum State Tomography
+**Projective (von Neumann) measurements** use orthogonal projectors: $\hat{\Pi}_m = \Ket{m}\Bra{m}$. Photon counting is a projective measurement in the Fock basis.
 
-**Quantum state tomography** reconstructs the full density matrix $\hat{\rho}$ from a set of measurements on many identically prepared copies. For optical fields, this is achieved by:
+**POVMs** (positive operator-valued measures) allow non-orthogonal outcomes. They describe realistic detectors. Heterodyne detection, for instance, is a POVM with elements $\hat{E}_\alpha = \frac{1}{\pi}\Ket{\alpha}\Bra{\alpha}$ that projects onto coherent states. You can't distinguish non-orthogonal states perfectly, but you can make a "best guess" measurement -- and POVMs are the mathematical framework for it.
 
-1. **Homodyne tomography**: Measure the quadrature $\hat{X}_\theta$ for many phase angles $\theta$. The marginal distributions $p(x_\theta)$ are projections of the Wigner function. The state is reconstructed via the inverse Radon transform (same mathematics as medical CT scanning).
+## Photon counting in practice
 
-2. **Maximum likelihood estimation**: Numerically find the density matrix that maximizes the likelihood of the observed data, subject to the constraints that $\hat{\rho}$ is positive semidefinite with unit trace.
+Ideal photon-number-resolving (PNR) detectors measure Fock state projectors: $p(n) = \langle n|\hat{\rho}|n\rangle$.
 
-The Wigner function provides a complete phase-space representation:
+Real single-photon detectors (avalanche photodiodes, superconducting nanowire detectors) are usually **threshold detectors**: they tell you "something clicked" or "nothing clicked," but can't tell you whether it was 1 photon or 10. The POVM elements are:
 
 $$
-W(x, p) = \frac{1}{\pi\hbar}\int_{-\infty}^{\infty} \langle x + y|\hat{\rho}|x - y\rangle e^{-2ipy/\hbar} dy.
+\hat{E}_0 = \Ket{0}\Bra{0}, \qquad \hat{E}_\text{click} = \hat{I} - \Ket{0}\Bra{0}
 $$
 
-Negative values of $W$ indicate non-classical states (e.g., Fock states, cat states).
+Detector inefficiency ($\eta < 1$) is modeled as a beam splitter that tosses away a fraction of the photons before they reach an ideal detector.
+
+Modern transition-edge sensors and nanowire arrays can resolve photon numbers up to about 10-20, enabling direct measurements of photon statistics and Wigner function negativity.
+
+## Quantum state tomography
+
+**Tomography** reconstructs the full density matrix from measurements on many identical copies of the state.
+
+For optical fields, the standard approach is **homodyne tomography**: measure the quadrature $\hat{X}_\theta$ at many phase angles $\theta$. Each angle gives a marginal distribution of the Wigner function -- a "shadow" of the phase-space blob from one direction. Collect enough shadows and you can reconstruct the full Wigner function via the **inverse Radon transform** -- the exact same mathematics that reconstructs a CT scan from X-ray projections.
+
+Alternatively, use **maximum likelihood estimation** to find the density matrix that best explains all your data, subject to the constraint that $\hat{\rho}$ is positive semidefinite with unit trace.
 
 [[simulation homodyne-tomography]]
 
-## Quantum Non-Demolition Measurements
+> **Computational Note.** You can simulate homodyne tomography in Python: generate quadrature samples from a known Wigner function at random angles, then reconstruct the state using the inverse Radon transform (available in `scikit-image`). Start with a coherent state (Gaussian blob) and then try a Fock state $\Ket{1}$ (which has negative Wigner values). About 40 lines of code.
 
-A **quantum non-demolition** (QND) measurement extracts information about an observable without disturbing it. For photon number, the key requirement is $[\hat{n}, \hat{H}_{\text{int}}] = 0$: the interaction used for measurement commutes with the measured observable.
+## Quantum non-demolition measurements
 
-In cavity QED, the dispersive interaction shifts the atomic phase by an amount proportional to $n$ without absorbing photons. By sending probe atoms through the cavity and measuring their phase shift, one can determine $n$ repeatedly and observe quantum jumps as individual photons are lost.
+A **QND measurement** extracts information about an observable without disturbing it. The requirement: $[\hat{n}, \hat{H}_\text{int}] = 0$ -- the interaction commutes with the measured observable.
 
-This was demonstrated by Haroche's group, who tracked the photon number in a microwave cavity decaying from $n = 7$ to $n = 0$ one photon at a time, directly observing the quantum trajectory of the field state.
+In cavity QED, the dispersive interaction shifts the atomic phase by an amount proportional to $n$ without absorbing photons. Send probe atoms through the cavity, measure their phase shifts, and you determine $n$ repeatedly. Haroche's group used this to track a microwave cavity field decaying from $n = 7$ to $n = 0$, one photon at a time, directly observing the quantum trajectory of the field.
 
-## Back-Action and the Uncertainty Principle
+## Back-action and the standard quantum limit
 
-Every measurement has **back-action**: gaining information about one observable increases uncertainty in conjugate observables. For homodyne detection of $\hat{X}$, the back-action appears as increased noise in $\hat{P}$.
+Every measurement has **back-action**. Learn about $\hat{X}$, and you necessarily increase the uncertainty in $\hat{P}$.
 
-The **standard quantum limit** (SQL) for monitoring the position of a free mass is
+For continuously monitoring the position of a free mass, the **standard quantum limit** is:
 
 $$
-\Delta x_{\text{SQL}} = \sqrt{\frac{\hbar t}{2m}},
+\Delta x_\text{SQL} = \sqrt{\frac{\hbar t}{2m}}
 $$
 
-arising from the trade-off between measurement imprecision and radiation-pressure back-action. Beating the SQL requires correlating the measurement and back-action noise, achievable with squeezed light or back-action evasion techniques.
+This comes from the trade-off between measurement imprecision (not enough photons to see clearly) and radiation-pressure back-action (too many photons kick the mirror). Beating the SQL requires correlating these two noise sources -- achievable with squeezed light or back-action evasion techniques.
 
 ## Big Ideas
 
-* Measurement in quantum optics is not passive reading — every detection event irreversibly alters the state of the field, and the post-measurement state is as important as the probability of each outcome.
-* POVMs (positive operator-valued measures) capture the full range of realistic detectors: threshold detectors, homodyne receivers, and heterodyne detectors each correspond to a different set of POVM elements.
-* Quantum state tomography reconstructs the full density matrix from quadrature histograms using the inverse Radon transform — the same mathematics that reconstructs a CT scan from X-ray projections.
-* Back-action is unavoidable: learning about $\hat{X}$ necessarily disturbs $\hat{P}$, and beating the standard quantum limit requires cleverly correlating that disturbance rather than trying to eliminate it.
-
-## What Comes Next
-
-This is where the quantum optics journey culminates. The thread that began with a single field mode in a box has led us through vacuum fluctuations, coherent and squeezed states, photon statistics, atom-field coupling, and cavity QED — all converging on the fundamental question of how information is extracted from a quantum field. The ideas here — POVM measurement, back-action, tomography, quantum jumps — are the operating principles of quantum sensing, quantum communication, and quantum computing built on light.
+- Every detection event changes the quantum state. The post-measurement state matters as much as the outcome probability.
+- POVMs capture realistic detectors: threshold detectors, homodyne, heterodyne -- each corresponds to different POVM elements.
+- Quantum state tomography reconstructs the full density matrix from quadrature histograms via the inverse Radon transform -- same math as CT scanning.
+- Back-action is unavoidable: learning about $\hat{X}$ disturbs $\hat{P}$. Beating the SQL requires correlating the disturbance, not eliminating it.
 
 ## Check Your Understanding
 
-1. A threshold detector has POVM elements $\hat{E}_0 = |0\rangle\langle 0|$ and $\hat{E}_\text{click} = \hat{I} - |0\rangle\langle 0|$. It cannot distinguish $|1\rangle$ from $|2\rangle$ from $|10\rangle$. What information is completely lost by using a threshold detector instead of a photon-number-resolving detector, and why does this matter for reconstructing the Wigner function?
-2. Homodyne tomography measures the quadrature $\hat{X}_\theta$ for many values of $\theta$ and uses the inverse Radon transform to reconstruct $W(x, p)$. How many different phase angles $\theta$ do you need in principle, and what fundamentally limits the precision of the reconstruction for a finite number of measurement trials?
-3. A quantum non-demolition measurement of photon number must satisfy $[\hat{n}, \hat{H}_\text{int}] = 0$. Explain why this condition guarantees that the photon number is undisturbed by the measurement, and give an example of a QND observable and a non-QND observable for the electromagnetic field.
+1. A threshold detector can't distinguish $\Ket{1}$ from $\Ket{10}$. What information is lost compared to a PNR detector, and why does this matter for Wigner function reconstruction?
+2. Homodyne tomography uses the inverse Radon transform. How many phase angles do you need in principle, and what limits precision in practice?
 
 ## Challenge
 
-Model a realistic photon detector with efficiency $\eta < 1$ as a beam splitter that mixes the signal with a vacuum mode, followed by an ideal detector. Derive the POVM elements for this lossy detector and compute the probability $p(n_\text{click})$ of registering $n_\text{click}$ clicks when the input state is a Fock state $|N\rangle$. Show that this gives a binomial distribution with success probability $\eta$. Then consider the post-measurement state: if $n_\text{click}$ clicks are registered from $|N\rangle$, what is the state of the field after detection? This calculation reveals the fundamental distinction between a destructive measurement and a QND measurement of the same photon number.
-
-## Extension: Multi-Photon Entanglement via Linear Optics
-
-**Advanced challenge (optional).** This exercise goes beyond the core material and is aimed at students who want to explore multi-photon entanglement.
-
-**Cluster-state circuit.** Consider three beam splitters arranged so that two photons undergo two successive Hong-Ou-Mandel interactions. Work out the output state when two photons enter the input modes of this network, assuming perfect indistinguishability and balanced (50:50) beam splitters. Identify which output-mode occupation patterns have non-zero probability and which are forbidden by destructive two-photon interference. This computation is the core of linear-optical quantum computing: sketch why the pattern of coincidences cannot be efficiently simulated by sampling from a classical probability distribution.
+Write a Python script that simulates homodyne tomography of a quantum state. Generate quadrature measurement samples at $M$ different phase angles $\theta_k = k\pi/M$ for a known state (start with a coherent state $\Ket{\alpha}$, then try $\Ket{1}$). Use the inverse Radon transform to reconstruct the Wigner function and compare to the exact result. Explore how the reconstruction quality depends on $M$ and on the number of samples per angle. Can you resolve the negative dip at the origin for $\Ket{1}$?

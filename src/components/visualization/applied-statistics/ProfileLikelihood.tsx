@@ -1,10 +1,13 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-export default function ProfileLikelihood() {
+export default function ProfileLikelihood({}: SimulationComponentProps) {
   const [nData, setNData] = useState(20);
 
   const { muVals, profileLL, mle, ci68, ci95 } = useMemo(() => {
@@ -65,17 +68,14 @@ export default function ProfileLikelihood() {
   }, [nData]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Profile Likelihood</h3>
-      <div className="grid grid-cols-1 gap-6 mb-4">
+    <SimulationPanel title="Profile Likelihood">
+      <SimulationConfig>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Number of data points: {nData}</label>
+          <SimulationLabel>Number of data points: {nData}</SimulationLabel>
           <Slider value={[nData]} onValueChange={([v]) => setNData(v)} min={5} max={100} step={1} />
         </div>
-      </div>
-      <div className="mb-3 text-sm text-[var(--text-muted)]">
-        MLE: mu = {mle.toFixed(3)} | 68% CI: [{ci68[0].toFixed(2)}, {ci68[1].toFixed(2)}] | 95% CI: [{ci95[0].toFixed(2)}, {ci95[1].toFixed(2)}]
-      </div>
+      </SimulationConfig>
+      <SimulationMain>
       <CanvasChart
         data={[
           {
@@ -98,6 +98,12 @@ export default function ProfileLikelihood() {
         }}
         style={{ width: '100%' }}
       />
-    </div>
+      </SimulationMain>
+      <SimulationResults>
+        <div className="text-sm text-[var(--text-muted)]">
+          MLE: mu = {mle.toFixed(3)} | 68% CI: [{ci68[0].toFixed(2)}, {ci68[1].toFixed(2)}] | 95% CI: [{ci95[0].toFixed(2)}, {ci95[1].toFixed(2)}]
+        </div>
+      </SimulationResults>
+    </SimulationPanel>
   );
 }

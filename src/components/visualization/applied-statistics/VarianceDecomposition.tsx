@@ -1,10 +1,13 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-export default function VarianceDecomposition() {
+export default function VarianceDecomposition({}: SimulationComponentProps) {
   const [groupSpread, setGroupSpread] = useState(3.0);
   const [withinSpread, setWithinSpread] = useState(1.0);
 
@@ -62,21 +65,20 @@ export default function VarianceDecomposition() {
   const pctWithin = sst > 0 ? (ssw / sst * 100) : 0;
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">ANOVA: Variance Decomposition</h3>
-      <div className="grid grid-cols-2 gap-6 mb-4">
-        <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Between-group spread: {groupSpread.toFixed(1)}</label>
-          <Slider value={[groupSpread]} onValueChange={([v]) => setGroupSpread(v)} min={0} max={5} step={0.1} />
+    <SimulationPanel title="ANOVA: Variance Decomposition">
+      <SimulationConfig>
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <SimulationLabel>Between-group spread: {groupSpread.toFixed(1)}</SimulationLabel>
+            <Slider value={[groupSpread]} onValueChange={([v]) => setGroupSpread(v)} min={0} max={5} step={0.1} />
+          </div>
+          <div>
+            <SimulationLabel>Within-group spread: {withinSpread.toFixed(1)}</SimulationLabel>
+            <Slider value={[withinSpread]} onValueChange={([v]) => setWithinSpread(v)} min={0.1} max={5} step={0.1} />
+          </div>
         </div>
-        <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Within-group spread: {withinSpread.toFixed(1)}</label>
-          <Slider value={[withinSpread]} onValueChange={([v]) => setWithinSpread(v)} min={0.1} max={5} step={0.1} />
-        </div>
-      </div>
-      <div className="mb-3 text-sm text-[var(--text-muted)]">
-        F = {fStat.toFixed(2)} | SS_between = {ssb.toFixed(1)} ({pctBetween.toFixed(0)}%) | SS_within = {ssw.toFixed(1)} ({pctWithin.toFixed(0)}%)
-      </div>
+      </SimulationConfig>
+      <SimulationMain>
       <div className="grid grid-cols-2 gap-4">
         <CanvasChart
           data={dataTraces as any}
@@ -107,6 +109,12 @@ export default function VarianceDecomposition() {
           style={{ width: '100%' }}
         />
       </div>
-    </div>
+      </SimulationMain>
+      <SimulationResults>
+        <div className="text-sm text-[var(--text-muted)]">
+          F = {fStat.toFixed(2)} | SS_between = {ssb.toFixed(1)} ({pctBetween.toFixed(0)}%) | SS_within = {ssw.toFixed(1)} ({pctWithin.toFixed(0)}%)
+        </div>
+      </SimulationResults>
+    </SimulationPanel>
   );
 }

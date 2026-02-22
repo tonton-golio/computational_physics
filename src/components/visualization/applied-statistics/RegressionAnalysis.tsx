@@ -1,8 +1,10 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { Slider } from '@/components/ui/slider';
+import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 // Box-Muller transform for generating normal random variables
@@ -12,7 +14,7 @@ function boxMuller(): number {
   return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
 }
 
-function RegressionAnalysis({}: SimulationComponentProps) {
+export default function RegressionAnalysis({}: SimulationComponentProps) {
   const [mean, setMean] = useState(0);
   const [stdDev, setStdDev] = useState(1);
   const [numSamples, setNumSamples] = useState(1000);
@@ -45,7 +47,7 @@ function RegressionAnalysis({}: SimulationComponentProps) {
       nbinsx: 50,
       name: 'Sample Histogram',
       opacity: 0.7,
-      marker: { color: 'rgba(0, 123, 255, 0.7)' },
+      marker: { color: '#007bff' },
       histnorm: 'probability density' as const,
     },
     {
@@ -59,48 +61,45 @@ function RegressionAnalysis({}: SimulationComponentProps) {
   ];
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Interactive Normal Distribution Simulation</h3>
-      <div className="mb-4">
-        <p className="text-sm text-[var(--text-muted)]">
-          Adjust the mean and standard deviation to see how the theoretical normal distribution (red line) fits the histogram of randomly generated samples.
-        </p>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        <div>
-          <label className="text-[var(--text-strong)] block mb-1">Mean (mu): {mean.toFixed(1)}</label>
-          <Slider
-            min={-3}
-            max={3}
-            step={0.1}
-            value={[mean]}
-            onValueChange={([v]) => setMean(v)}
-            className="w-full"
-          />
+    <SimulationPanel title="Interactive Normal Distribution Simulation" caption="Adjust the mean and standard deviation to see how the theoretical normal distribution (red line) fits the histogram of randomly generated samples.">
+      <SimulationConfig>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <SimulationLabel>Mean (mu): {mean.toFixed(1)}</SimulationLabel>
+            <Slider
+              min={-3}
+              max={3}
+              step={0.1}
+              value={[mean]}
+              onValueChange={([v]) => setMean(v)}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel>Standard Deviation (sigma): {stdDev.toFixed(1)}</SimulationLabel>
+            <Slider
+              min={0.1}
+              max={3}
+              step={0.1}
+              value={[stdDev]}
+              onValueChange={([v]) => setStdDev(v)}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel>Number of Samples: {numSamples}</SimulationLabel>
+            <Slider
+              min={100}
+              max={5000}
+              step={100}
+              value={[numSamples]}
+              onValueChange={([v]) => setNumSamples(v)}
+              className="w-full"
+            />
+          </div>
         </div>
-        <div>
-          <label className="text-[var(--text-strong)] block mb-1">Standard Deviation (sigma): {stdDev.toFixed(1)}</label>
-          <Slider
-            min={0.1}
-            max={3}
-            step={0.1}
-            value={[stdDev]}
-            onValueChange={([v]) => setStdDev(v)}
-            className="w-full"
-          />
-        </div>
-        <div>
-          <label className="text-[var(--text-strong)] block mb-1">Number of Samples: {numSamples}</label>
-          <Slider
-            min={100}
-            max={5000}
-            step={100}
-            value={[numSamples]}
-            onValueChange={([v]) => setNumSamples(v)}
-            className="w-full"
-          />
-        </div>
-      </div>
+      </SimulationConfig>
+      <SimulationMain>
       <CanvasChart
         data={plotData}
         layout={{
@@ -117,12 +116,7 @@ function RegressionAnalysis({}: SimulationComponentProps) {
         }}
         style={{ width: '100%' }}
       />
-      <div className="mt-4 text-sm text-[var(--text-muted)]">
-        <p>The histogram shows the distribution of {numSamples} random samples drawn from a normal distribution.</p>
-        <p>The red line represents the theoretical probability density function.</p>
-      </div>
-    </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }
-
-export default RegressionAnalysis;

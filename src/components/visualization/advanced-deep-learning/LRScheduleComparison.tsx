@@ -1,12 +1,11 @@
-'use client';
+"use client";
 
 import { useState, useMemo } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { Slider } from '@/components/ui/slider';
-
-interface LRScheduleComparisonProps {
-  id?: string;
-}
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationLabel, SimulationCheckbox } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 type ScheduleType = 'step-decay' | 'cosine' | 'warmup-cosine' | 'one-cycle';
 
@@ -77,7 +76,7 @@ function computeSchedule(type: ScheduleType, maxLR: number, totalEpochs: number,
   return lrs;
 }
 
-export default function LRScheduleComparison({ id: _id }: LRScheduleComparisonProps) {
+export default function LRScheduleComparison({}: SimulationComponentProps) {
   const [selected, setSelected] = useState<Set<ScheduleType>>(
     new Set(['cosine', 'warmup-cosine', 'one-cycle'])
   );
@@ -115,37 +114,16 @@ export default function LRScheduleComparison({ id: _id }: LRScheduleComparisonPr
   };
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">
-        Learning Rate Schedule Comparison
-      </h3>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <SimulationPanel title="Learning Rate Schedule Comparison">
+      <SimulationSettings>
         <div className="space-y-3">
           <p className="text-sm text-[var(--text-muted)] font-semibold">Select schedules:</p>
           {(['step-decay', 'cosine', 'warmup-cosine', 'one-cycle'] as ScheduleType[]).map(type => {
             const info = SCHEDULE_INFO[type];
             return (
-              <label key={type} className="flex items-center gap-2 text-sm cursor-pointer"
-                style={{ color: selected.has(type) ? info.color : '#666' }}>
-                <input type="checkbox" checked={selected.has(type)} onChange={() => toggleSchedule(type)} className="accent-blue-500" />
-                {info.label}
-              </label>
+              <SimulationCheckbox key={type} checked={selected.has(type)} onChange={() => toggleSchedule(type)} label={info.label} style={{ color: selected.has(type) ? info.color : '#666' }} />
             );
           })}
-          <hr className="border-[var(--border-strong)]" />
-          <div>
-            <label className="block text-sm text-[var(--text-muted)] mb-1">Max LR: {maxLR}</label>
-            <Slider min={0.001} max={0.1} step={0.001} value={[maxLR]} onValueChange={([v]) => setMaxLR(v)} className="w-full" />
-          </div>
-          <div>
-            <label className="block text-sm text-[var(--text-muted)] mb-1">Total epochs: {totalEpochs}</label>
-            <Slider min={20} max={200} step={10} value={[totalEpochs]} onValueChange={([v]) => setTotalEpochs(v)} className="w-full" />
-          </div>
-          <div>
-            <label className="block text-sm text-[var(--text-muted)] mb-1">Warmup fraction: {warmupFrac.toFixed(2)}</label>
-            <Slider min={0} max={0.3} step={0.01} value={[warmupFrac]} onValueChange={([v]) => setWarmupFrac(v)} className="w-full" />
-          </div>
 
           <div className="mt-3 p-3 bg-[var(--surface-2)] rounded text-xs text-[var(--text-muted)] space-y-2">
             {(['step-decay', 'cosine', 'warmup-cosine', 'one-cycle'] as ScheduleType[]).filter(t => selected.has(t)).map(type => (
@@ -158,20 +136,35 @@ export default function LRScheduleComparison({ id: _id }: LRScheduleComparisonPr
             ))}
           </div>
         </div>
-
-        <div className="lg:col-span-2">
-          <CanvasChart
-            data={plotData}
-            layout={{
-              xaxis: { title: { text: 'Epoch' } },
-              yaxis: { title: { text: 'Learning Rate' } },
-              margin: { t: 30, b: 50, l: 70, r: 30 },
-              autosize: true,
-            }}
-            style={{ width: '100%', height: '400px' }}
-          />
+      </SimulationSettings>
+      <SimulationConfig>
+        <div className="space-y-3">
+          <div>
+            <SimulationLabel className="block text-sm text-[var(--text-muted)] mb-1">Max LR: {maxLR}</SimulationLabel>
+            <Slider min={0.001} max={0.1} step={0.001} value={[maxLR]} onValueChange={([v]) => setMaxLR(v)} className="w-full" />
+          </div>
+          <div>
+            <SimulationLabel className="block text-sm text-[var(--text-muted)] mb-1">Total epochs: {totalEpochs}</SimulationLabel>
+            <Slider min={20} max={200} step={10} value={[totalEpochs]} onValueChange={([v]) => setTotalEpochs(v)} className="w-full" />
+          </div>
+          <div>
+            <SimulationLabel className="block text-sm text-[var(--text-muted)] mb-1">Warmup fraction: {warmupFrac.toFixed(2)}</SimulationLabel>
+            <Slider min={0} max={0.3} step={0.01} value={[warmupFrac]} onValueChange={([v]) => setWarmupFrac(v)} className="w-full" />
+          </div>
         </div>
-      </div>
-    </div>
+      </SimulationConfig>
+      <SimulationMain>
+        <CanvasChart
+          data={plotData}
+          layout={{
+            xaxis: { title: { text: 'Epoch' } },
+            yaxis: { title: { text: 'Learning Rate' } },
+            margin: { t: 30, b: 50, l: 70, r: 30 },
+            autosize: true,
+          }}
+          style={{ width: '100%', height: '400px' }}
+        />
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

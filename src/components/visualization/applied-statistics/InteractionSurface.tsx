@@ -1,10 +1,13 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-export default function InteractionSurface() {
+export default function InteractionSurface({}: SimulationComponentProps) {
   const [mainA, setMainA] = useState(2.0);
   const [mainB, setMainB] = useState(1.5);
   const [interaction, setInteraction] = useState(0.0);
@@ -40,27 +43,24 @@ export default function InteractionSurface() {
   }, [mainA, mainB, interaction]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Factorial Experiment: Interaction Effects</h3>
-      <div className="grid grid-cols-3 gap-6 mb-4">
-        <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Main effect A: {mainA.toFixed(1)}</label>
-          <Slider value={[mainA]} onValueChange={([v]) => setMainA(v)} min={-3} max={5} step={0.1} />
+    <SimulationPanel title="Factorial Experiment: Interaction Effects">
+      <SimulationConfig>
+        <div className="grid grid-cols-3 gap-6">
+          <div>
+            <SimulationLabel>Main effect A: {mainA.toFixed(1)}</SimulationLabel>
+            <Slider value={[mainA]} onValueChange={([v]) => setMainA(v)} min={-3} max={5} step={0.1} />
+          </div>
+          <div>
+            <SimulationLabel>Main effect B: {mainB.toFixed(1)}</SimulationLabel>
+            <Slider value={[mainB]} onValueChange={([v]) => setMainB(v)} min={-3} max={5} step={0.1} />
+          </div>
+          <div>
+            <SimulationLabel>Interaction A*B: {interaction.toFixed(1)}</SimulationLabel>
+            <Slider value={[interaction]} onValueChange={([v]) => setInteraction(v)} min={-3} max={3} step={0.1} />
+          </div>
         </div>
-        <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Main effect B: {mainB.toFixed(1)}</label>
-          <Slider value={[mainB]} onValueChange={([v]) => setMainB(v)} min={-3} max={5} step={0.1} />
-        </div>
-        <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Interaction A*B: {interaction.toFixed(1)}</label>
-          <Slider value={[interaction]} onValueChange={([v]) => setInteraction(v)} min={-3} max={3} step={0.1} />
-        </div>
-      </div>
-      <div className="mb-3 text-sm text-[var(--text-muted)]">
-        {Math.abs(interaction) < 0.3
-          ? 'No interaction: lines are parallel. The effect of A does not depend on B.'
-          : 'Interaction present: lines are not parallel. The effect of A depends on the level of B.'}
-      </div>
+      </SimulationConfig>
+      <SimulationMain>
       <CanvasChart
         data={traces}
         layout={{
@@ -70,6 +70,14 @@ export default function InteractionSurface() {
         }}
         style={{ width: '100%' }}
       />
-    </div>
+      </SimulationMain>
+      <SimulationResults>
+        <div className="text-sm text-[var(--text-muted)]">
+          {Math.abs(interaction) < 0.3
+            ? 'No interaction: lines are parallel. The effect of A does not depend on B.'
+            : 'Interaction present: lines are not parallel. The effect of A depends on the level of B.'}
+        </div>
+      </SimulationResults>
+    </SimulationPanel>
   );
 }

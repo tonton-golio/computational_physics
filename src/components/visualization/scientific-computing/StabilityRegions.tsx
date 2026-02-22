@@ -1,9 +1,10 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
-import { SimulationPanel, SimulationLabel, SimulationToggle } from '@/components/ui/simulation-panel';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationResults, SimulationLabel, SimulationToggle, SimulationButton } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 /**
@@ -155,16 +156,8 @@ export default function StabilityRegions({}: SimulationComponentProps) {
   const methodInfo = METHODS.find((m) => m.key === selectedMethod)!;
 
   return (
-    <SimulationPanel>
-      <h3 className="text-lg font-semibold text-[var(--text-strong)]">
-        Stability Regions of Time-Stepping Methods
-      </h3>
-      <p className="text-sm text-[var(--text-soft)] mb-4">
-        The stability region is where |amplification factor| &le; 1 in the complex h&lambda; plane.
-        Explicit methods have bounded regions; implicit methods cover the left half-plane.
-      </p>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-4">
+    <SimulationPanel title="Stability Regions of Time-Stepping Methods" caption="The stability region is where |amplification factor| \u2264 1 in the complex h\u03BB plane. Explicit methods have bounded regions; implicit methods cover the left half-plane.">
+      <SimulationSettings>
         <div>
           <SimulationLabel>Method</SimulationLabel>
           <SimulationToggle
@@ -173,114 +166,111 @@ export default function StabilityRegions({}: SimulationComponentProps) {
             onChange={(v) => { setSelectedMethod(v as MethodKey); setShowAll(false); }}
           />
         </div>
-        <div className="flex items-end">
-          <button
+        <div className="flex items-center gap-2">
+          <SimulationButton
+            variant="secondary"
             onClick={() => setShowAll(!showAll)}
-            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-              showAll
-                ? 'bg-[var(--accent)] text-white shadow-sm'
-                : 'text-[var(--text-muted)] bg-[var(--surface-2)] border border-[var(--border-strong)] hover:text-[var(--text-strong)]'
-            }`}
           >
             Show All
-          </button>
+          </SimulationButton>
+          <SimulationButton
+            variant="secondary"
+            onClick={() => setShowEigenvalues(!showEigenvalues)}
+          >
+            {showEigenvalues ? 'Hide' : 'Show'} Test Eigenvalues
+          </SimulationButton>
+          {showEigenvalues && (
+            <span className="text-xs text-[var(--text-muted)]">
+              Stiff system: {'\u03BB'} = -1, -{stiffnessRatio}, -{stiffnessRatio / 4} &plusmn; {(stiffnessRatio / 3).toFixed(0)}i
+            </span>
+          )}
         </div>
-        <div>
-          <SimulationLabel>Resolution: {resolution}</SimulationLabel>
-          <Slider
-            value={[resolution]}
-            onValueChange={([v]) => setResolution(v)}
-            min={80}
-            max={400}
-            step={20}
-            className="w-full"
-          />
+      </SimulationSettings>
+      <SimulationConfig>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <SimulationLabel>Resolution: {resolution}</SimulationLabel>
+            <Slider
+              value={[resolution]}
+              onValueChange={([v]) => setResolution(v)}
+              min={80}
+              max={400}
+              step={20}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel>Zoom: {zoom.toFixed(1)}</SimulationLabel>
+            <Slider
+              value={[zoom]}
+              onValueChange={([v]) => setZoom(v)}
+              min={1}
+              max={8}
+              step={0.5}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel>Stiffness ratio: {stiffnessRatio}</SimulationLabel>
+            <Slider
+              value={[stiffnessRatio]}
+              onValueChange={([v]) => setStiffnessRatio(v)}
+              min={2}
+              max={200}
+              step={1}
+              className="w-full"
+            />
+          </div>
         </div>
-        <div>
-          <SimulationLabel>Zoom: {zoom.toFixed(1)}</SimulationLabel>
-          <Slider
-            value={[zoom]}
-            onValueChange={([v]) => setZoom(v)}
-            min={1}
-            max={8}
-            step={0.5}
-            className="w-full"
-          />
-        </div>
-        <div>
-          <SimulationLabel>Stiffness ratio: {stiffnessRatio}</SimulationLabel>
-          <Slider
-            value={[stiffnessRatio]}
-            onValueChange={([v]) => setStiffnessRatio(v)}
-            min={2}
-            max={200}
-            step={1}
-            className="w-full"
-          />
-        </div>
-      </div>
+      </SimulationConfig>
 
-      <div className="flex items-center gap-2 mb-3">
-        <button
-          onClick={() => setShowEigenvalues(!showEigenvalues)}
-          className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-            showEigenvalues
-              ? 'bg-[var(--accent)] text-white shadow-sm'
-              : 'text-[var(--text-muted)] bg-[var(--surface-2)] border border-[var(--border-strong)] hover:text-[var(--text-strong)]'
-          }`}
-        >
-          {showEigenvalues ? 'Hide' : 'Show'} Test Eigenvalues
-        </button>
-        {showEigenvalues && (
-          <span className="text-xs text-[var(--text-muted)]">
-            Stiff system: {'\u03BB'} = -1, -{stiffnessRatio}, -{stiffnessRatio / 4} &plusmn; {(stiffnessRatio / 3).toFixed(0)}i
-          </span>
-        )}
-      </div>
+      <SimulationMain>
+        <CanvasHeatmap
+          data={[
+            {
+              z: heatmapData.z,
+              x: heatmapData.xGrid,
+              y: heatmapData.yGrid,
+              colorscale: showAll ? 'Portland' : 'RdBu',
+              showscale: true,
+              reversescale: !showAll,
+              zmin: showAll ? 0 : 0,
+              zmax: showAll ? 10 : 2,
+            },
+          ]}
+          layout={{
+            title: {
+              text: showAll
+                ? 'Stability Regions (all methods overlaid)'
+                : `|g(h\u03BB)| for ${methodInfo.label} (blue = stable)`,
+            },
+            xaxis: { title: { text: 'Re(h\u03BB)' } },
+            yaxis: { title: { text: 'Im(h\u03BB)' } },
+            margin: { t: 40, r: 60, b: 50, l: 60 },
+            ...(showEigenvalues
+              ? {
+                  annotations: eigenvalueInfo.map((ev) => ({
+                    x: ev.re,
+                    y: ev.im,
+                    text: '\u2716',
+                    showarrow: false,
+                    font: { size: 14, color: '#ffffff' },
+                  })),
+                }
+              : {}),
+          }}
+          style={{ width: '100%', height: 450 }}
+        />
+      </SimulationMain>
 
-      <CanvasHeatmap
-        data={[
-          {
-            z: heatmapData.z,
-            x: heatmapData.xGrid,
-            y: heatmapData.yGrid,
-            colorscale: showAll ? 'Portland' : 'RdBu',
-            showscale: true,
-            reversescale: !showAll,
-            zmin: showAll ? 0 : 0,
-            zmax: showAll ? 10 : 2,
-          },
-        ]}
-        layout={{
-          title: {
-            text: showAll
-              ? 'Stability Regions (all methods overlaid)'
-              : `|g(h\u03BB)| for ${methodInfo.label} (blue = stable)`,
-          },
-          xaxis: { title: { text: 'Re(h\u03BB)' } },
-          yaxis: { title: { text: 'Im(h\u03BB)' } },
-          margin: { t: 40, r: 60, b: 50, l: 60 },
-          ...(showEigenvalues
-            ? {
-                annotations: eigenvalueInfo.map((ev) => ({
-                  x: ev.re,
-                  y: ev.im,
-                  text: '\u2716',
-                  showarrow: false,
-                  font: { size: 14, color: '#ffffff' },
-                })),
-              }
-            : {}),
-        }}
-        style={{ width: '100%', height: 450 }}
-      />
-
-      <div className="mt-3 text-xs text-[var(--text-muted)]">
-        <strong>Key insight:</strong> For the selected stiffness ratio of {stiffnessRatio},
-        Forward Euler needs h &lt; {(2 / stiffnessRatio).toFixed(4)} to be stable,
-        while Backward Euler and Crank-Nicolson are stable for any h.
-        RK4 has a larger but still bounded stability region.
-      </div>
+      <SimulationResults>
+        <div className="text-xs text-[var(--text-muted)]">
+          <strong>Key insight:</strong> For the selected stiffness ratio of {stiffnessRatio},
+          Forward Euler needs h &lt; {(2 / stiffnessRatio).toFixed(4)} to be stable,
+          while Backward Euler and Crank-Nicolson are stable for any h.
+          RK4 has a larger but still bounded stability region.
+        </div>
+      </SimulationResults>
     </SimulationPanel>
   );
 }

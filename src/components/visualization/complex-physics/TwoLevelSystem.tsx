@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { Slider } from '@/components/ui/slider';
+import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 function computeTwoLevel(epsilon: number, tRange: number[]) {
   const Z: number[] = [];
@@ -28,7 +31,7 @@ function computeTwoLevel(epsilon: number, tRange: number[]) {
   return { Z, E, Cv, S };
 }
 
-export function TwoLevelSystem() {
+export default function TwoLevelSystem({}: SimulationComponentProps) {
   const [epsilon, setEpsilon] = useState(1.0);
 
   const tRange = useMemo(() => {
@@ -44,12 +47,12 @@ export function TwoLevelSystem() {
   const lineStyle = { color: '#8b5cf6', width: 2 };
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <SimulationPanel title="Two-Level System Thermodynamics">
+      <SimulationConfig>
         <div>
-          <label className="text-sm text-[var(--text-muted)] block mb-1">
+          <SimulationLabel>
             Energy gap {'\u03B5'}: {epsilon.toFixed(2)}
-          </label>
+          </SimulationLabel>
           <Slider
             min={0.1}
             max={5}
@@ -59,9 +62,10 @@ export function TwoLevelSystem() {
             className="w-full"
           />
         </div>
-      </div>
+      </SimulationConfig>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <SimulationMain>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <CanvasChart
           data={[{
             x: tRange,
@@ -134,7 +138,8 @@ export function TwoLevelSystem() {
           }}
           style={{ width: '100%', height: 250 }}
         />
-      </div>
-    </div>
+        </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

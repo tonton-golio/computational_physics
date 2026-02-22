@@ -1,8 +1,10 @@
-'use client';
+"use client";
 
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationLabel, SimulationButton, SimulationSettings, SimulationConfig } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 
@@ -15,7 +17,7 @@ function mulberry32(a: number) {
   };
 }
 
-export default function StochasticApproximation({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function StochasticApproximation({}: SimulationComponentProps) {
   const [steps, setSteps] = useState(300);
   const [alpha, setAlpha] = useState(0.03);
   const [noiseScale, setNoiseScale] = useState(0.1);
@@ -37,23 +39,25 @@ export default function StochasticApproximation({ id }: SimulationComponentProps
   }, [steps, alpha, noiseScale, seed]);
 
   return (
-    <div className="w-full rounded-lg bg-[var(--surface-1)] p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-3 text-[var(--text-strong)]">Robbins-Monro Stochastic Approximation</h3>
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
+    <SimulationPanel title="Robbins-Monro Stochastic Approximation">
+      <SimulationSettings>
+        <SimulationButton variant="primary" onClick={() => setSeed((s) => s + 1)}>Re-sample</SimulationButton>
+      </SimulationSettings>
+      <SimulationConfig>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Steps: {steps}</label>
+          <SimulationLabel>Steps: {steps}</SimulationLabel>
           <Slider value={[steps]} onValueChange={([v]) => setSteps(v)} min={50} max={1000} step={10} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Step size: {alpha.toFixed(3)}</label>
+          <SimulationLabel>Step size: {alpha.toFixed(3)}</SimulationLabel>
           <Slider value={[alpha]} onValueChange={([v]) => setAlpha(v)} min={0.005} max={0.1} step={0.005} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Noise: {noiseScale.toFixed(2)}</label>
+          <SimulationLabel>Noise: {noiseScale.toFixed(2)}</SimulationLabel>
           <Slider value={[noiseScale]} onValueChange={([v]) => setNoiseScale(v)} min={0} max={0.5} step={0.01} />
         </div>
-        <button onClick={() => setSeed((s) => s + 1)} className="rounded bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white text-sm px-3 py-2">Re-sample</button>
-      </div>
+      </SimulationConfig>
+      <SimulationMain>
       <CanvasChart
         data={[
           { x: Array.from({ length: xs.length }, (_, i) => i), y: xs, type: 'scatter', mode: 'lines', name: 'x_k', line: { color: '#60a5fa', width: 2 } },
@@ -68,6 +72,7 @@ export default function StochasticApproximation({ id }: SimulationComponentProps
         }}
         style={{ width: '100%' }}
       />
-    </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

@@ -1,9 +1,12 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationSettings, SimulationResults, SimulationButton } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-export default function LikelihoodSurface() {
+export default function LikelihoodSurface({}: SimulationComponentProps) {
   const [dataPoints, setDataPoints] = useState<number[]>([2.1, 3.5, 2.8, 4.0, 3.2]);
 
   const { contourTraces, peakMu, peakSig } = useMemo(() => {
@@ -83,16 +86,13 @@ export default function LikelihoodSurface() {
   }, []);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Likelihood Surface (Gaussian mu, sigma)</h3>
-      <div className="flex gap-3 mb-4">
-        <button onClick={addPoint} className="px-3 py-1 rounded bg-[var(--accent)] text-white text-sm">+ Add data point</button>
-        <button onClick={removePoint} className="px-3 py-1 rounded bg-[var(--surface-2)] text-[var(--text-strong)] text-sm border border-[var(--border-strong)]">- Remove</button>
+    <SimulationPanel title="Likelihood Surface (Gaussian mu, sigma)">
+      <SimulationSettings>
+        <SimulationButton variant="primary" onClick={addPoint}>+ Add data point</SimulationButton>
+        <SimulationButton onClick={removePoint}>- Remove</SimulationButton>
         <span className="text-sm text-[var(--text-muted)] self-center">Data: [{dataPoints.map((d) => d.toFixed(1)).join(', ')}]</span>
-      </div>
-      <div className="mb-3 text-sm text-[var(--text-muted)]">
-        MLE: mu = {peakMu.toFixed(2)}, sigma = {peakSig.toFixed(2)} | n = {dataPoints.length}
-      </div>
+      </SimulationSettings>
+      <SimulationMain>
       <CanvasChart
         data={contourTraces}
         layout={{
@@ -102,6 +102,12 @@ export default function LikelihoodSurface() {
         }}
         style={{ width: '100%' }}
       />
-    </div>
+      </SimulationMain>
+      <SimulationResults>
+        <div className="text-sm text-[var(--text-muted)]">
+          MLE: mu = {peakMu.toFixed(2)}, sigma = {peakSig.toFixed(2)} | n = {dataPoints.length}
+        </div>
+      </SimulationResults>
+    </SimulationPanel>
   );
 }

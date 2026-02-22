@@ -1,133 +1,120 @@
 # Quantifying Noise in Gene Expression
 
+> *The universe is not just stranger than we suppose; when it comes to cells, it is stranger than we can suppose -- until we write the equations.*
+
 ## Where we are headed
 
-In [mutational analysis](./mutational-analysis) you saw how the Poisson distribution describes rare mutational events — and you met the Fano factor as a statistical fingerprint. Now we turn those same tools on **gene expression itself**. Remember the bathtub equation from [differential equations](./differential-equations), with its clean, smooth steady state? That steady state is a *lie*. Or rather, it is the average of something much messier. Inside a real cell, molecules are made and destroyed one at a time by random collisions, and when the numbers are small — tens or hundreds of molecules, not trillions — the randomness matters enormously. Today we find out just how noisy gene expression really is, and why that noise is not just a nuisance but a tool that cells use to make life-or-death decisions.
+Remember the bathtub equation's clean, smooth steady state? That steady state is a *lie*. Or rather, it's the average of something much messier. Inside a real cell, molecules are made and destroyed one at a time by random collisions. When the numbers are small -- tens or hundreds of molecules, not trillions -- the randomness matters enormously. Today we find out just how noisy gene expression really is, and why that noise isn't a nuisance but a tool cells use to make life-or-death decisions.
 
 ## The central dogma, revisited
-
-You already know the central dogma:
 
 $$
 \text{DNA} \xrightarrow{\text{transcription}} \text{mRNA} \xrightarrow{\text{translation}} \text{Protein}
 $$
 
-Two molecular machines drive this process: **RNA polymerase** transcribes DNA into mRNA, and the **ribosome** translates mRNA into protein. In our deterministic model, these machines hum along at constant rates. But in reality, every molecular encounter — polymerase finding the promoter, ribosome latching onto the mRNA — is a random event driven by diffusion. The molecules are doing a drunken walk through the cytoplasm, and sometimes they find their target quickly, sometimes slowly.
-
-## Measuring the noise
-
-To see noise in action, biologists fuse a **reporter protein** like GFP (green fluorescent protein) to a gene of interest. The brighter the cell glows, the more protein it has.
-
-* **Bulk measurement** (a tube full of billions of cells): you see the population average. Smooth. Boring.
-* **Single-cell measurement** (microscopy or flow cytometry): you see the full distribution. And it is *wide*. Genetically identical cells, grown in the same conditions, can have two-fold or even ten-fold differences in protein level.
-
-This is not measurement error. It is real, biological noise.
+In our deterministic model, the molecular machines hum along at constant rates. But in reality, every encounter -- polymerase finding the promoter, ribosome latching onto mRNA -- is a random event. The molecules are doing a drunken walk through the cytoplasm.
 
 ## Why is gene expression noisy?
 
-The fundamental reason is **small numbers**. A typical *E. coli* cell has one or two copies of each gene, perhaps a handful of mRNA molecules, and maybe a few hundred to a few thousand proteins from each gene. When you are working with numbers this small, random fluctuations are unavoidable — it is the same reason that flipping a coin 10 times gives a much noisier fraction of heads than flipping it 10,000 times.
+The fundamental reason: **small numbers**. A typical *E. coli* cell has one or two gene copies, a handful of mRNAs, and maybe a few hundred to a few thousand proteins from each gene. With numbers this small, random fluctuations are unavoidable -- same reason flipping a coin 10 times gives a much noisier fraction of heads than flipping it 10,000 times.
 
-This noise has real biological consequences:
+This noise has real consequences. In *B. subtilis*, noisy expression of the master regulator *comK* causes a small fraction of cells to stochastically flip into competence -- a survival strategy. In any bacterial population, noise creates rare persister cells with low metabolic activity that survive antibiotics without resistance mutations.
 
-* **Competence in *B. subtilis***: noisy expression of the master regulator *comK* causes a small fraction of cells to stochastically flip into a state where they can take up DNA from the environment — a survival strategy under stress.
-* **Persister cells**: in a genetically uniform bacterial population, noise creates rare cells with low metabolic activity that survive antibiotic treatment, even without resistance mutations.
+## Stochastic simulation: the Gillespie algorithm
+
+Our deterministic equations give the average but miss the noise entirely. To simulate what actually happens molecule by molecule, we use the **Gillespie algorithm**: compute each reaction's propensity, draw a random waiting time, pick which reaction fires, update counts, repeat. This gives you exact sample trajectories of the stochastic process.
+
+[[simulation gillespie-trajectory]]
+
+Compare the white ODE mean to the colored stochastic trajectories. With high production rate, traces cluster tightly around the mean. Drop $k$ to 5 and watch individual trajectories wander far from the deterministic prediction. That's the small-number effect: when molecules are few, noise dominates.
+
+## Measuring the noise
+
+To see noise in action, biologists fuse a **reporter protein** like GFP to a gene of interest. The brighter the cell, the more protein.
+
+* **Bulk measurement** (billions of cells): you see the average. Smooth. Boring.
+* **Single-cell measurement** (microscopy or flow cytometry): you see the full distribution. And it's *wide*. Genetically identical cells can differ two-fold or even ten-fold in protein level.
+
+This isn't measurement error. It's real biological noise.
 
 ## Quantifying noise: the coefficient of variation
 
-The **coefficient of variation** (CV) measures noise as the ratio of the standard deviation to the mean:
-
-> **Key Equation — Noise Decomposition**
-> $$
-> \eta_{\mathrm{total}}^2 = \eta_{\mathrm{int}}^2 + \eta_{\mathrm{ext}}^2
-> $$
-> Total noise decomposes exactly into intrinsic noise (independent random firing of each gene copy) and extrinsic noise (shared fluctuations across the cell).
+The **coefficient of variation** (CV) measures noise as the ratio of standard deviation to mean:
 
 $$
-\eta = \frac{\sigma}{\langle N \rangle} = \frac{\sqrt{\langle (N - \langle N \rangle)^2 \rangle}}{\langle N \rangle},
+\eta = \frac{\sigma}{\langle N \rangle} = \frac{\sqrt{\langle (N - \langle N \rangle)^2 \rangle}}{\langle N \rangle}.
 $$
 
-where $N$ is the protein copy number in a single cell, and the angle brackets denote the average over the population.
-
-> *In words: the CV tells you how wide the distribution is relative to its center. A CV of 0.5 means the typical fluctuation is about half the mean — that is very noisy.*
-
-## Decomposing noise: the Elowitz experiment
-
-Here is one of the most clever experiments in modern biology. In 2002, Michael Elowitz and colleagues asked: where does the noise come from? Is it because individual gene copies fire randomly (**intrinsic noise**), or because the whole cell's environment fluctuates — varying numbers of ribosomes, polymerases, and metabolites from cell to cell (**extrinsic noise**)?
-
-The trick: put two *different-colored* fluorescent reporters (CFP and YFP) under the control of *identical* promoters in the same cell. If the noise is all extrinsic (upstream fluctuations shared by both genes), the two colors go up and down together — every cell lands on the diagonal of a CFP-vs-YFP plot. If the noise is intrinsic (independent random firing), the colors fluctuate independently — cells scatter off the diagonal.
-
-The math makes this precise. Imagine two glasses of water, one blue and one red, and you are trying to figure out why the water levels fluctuate. One glass might be noisy because the faucet drips unpredictably (intrinsic — each glass has its own random drip). The other source of variation is that some days you leave the tap on longer (extrinsic — both glasses get more or less water together).
-
-**Extrinsic noise** (correlated fluctuations):
-
-$$
-\eta_{\mathrm{ext}}^2 = \frac{\langle N^{(1)} N^{(2)} \rangle - \langle N^{(1)} \rangle \langle N^{(2)} \rangle}{\langle N^{(1)} \rangle \langle N^{(2)} \rangle}.
-$$
-
-**Intrinsic noise** (uncorrelated fluctuations):
-
-$$
-\eta_{\mathrm{int}}^2 = \frac{\langle (N^{(1)} - N^{(2)})^2 \rangle}{2\,\langle N^{(1)} \rangle \langle N^{(2)} \rangle}.
-$$
-
-And the total noise decomposes exactly:
-
-$$
-\eta_{\mathrm{total}}^2 = \eta_{\mathrm{int}}^2 + \eta_{\mathrm{ext}}^2.
-$$
-
-> *The beauty of this decomposition is that you can measure it directly from the two-color data, without knowing anything about the underlying mechanism.*
-
-[[simulation gene-expression-noise]]
-
-Start with a high production rate and watch the protein trace — it should look smooth. Now reduce the production rate by a factor of 10 while keeping the same mean (by reducing degradation too). The trace gets wild and jagged. That is the small-number effect in action. Next, try running two identical genes side by side and watch whether their fluctuations are correlated (extrinsic noise) or independent (intrinsic noise).
+> *A CV of 0.5 means the typical fluctuation is about half the mean -- that's very noisy.*
 
 ## The Fano factor
 
-An alternative way to characterize noise is the **Fano factor**:
+An alternative noise measure:
 
 $$
 F = \frac{\text{Var}[N]}{\langle N \rangle}.
 $$
 
-> *For a Poisson process (completely random, independent events), $F = 1$. If $F > 1$, the noise is "burstier" than Poisson — transcription happens in bursts, with several mRNAs made in quick succession followed by silence. If $F < 1$, the noise is suppressed below Poisson, which can happen when negative feedback clamps down on fluctuations.*
+> *For a Poisson process, $F = 1$. If $F > 1$, transcription is bursty. If $F < 1$, negative feedback is clamping down fluctuations.* The Fano factor is a fingerprint: it tells you about the underlying mechanism from just the variance and mean.
 
-The Fano factor is a fingerprint: it tells you something about the underlying mechanism of gene expression just from measuring the variance and mean of protein levels across cells.
+## Decomposing noise: the Elowitz experiment
 
-## Stochastic simulation: the Gillespie algorithm
+Here's one of the cleverest experiments in modern biology. In 2002, Elowitz and colleagues asked: is the noise from individual gene copies firing randomly (**intrinsic**), or from cell-to-cell variation in shared resources like ribosomes (**extrinsic**)?
 
-Our deterministic equations give us the average, but they miss the noise entirely. To simulate what actually happens inside a single cell, molecule by molecule, we use the **Gillespie algorithm** (also called the stochastic simulation algorithm). The idea is simple: at each step, compute how likely each possible reaction is right now (its *propensity*), draw a random waiting time, pick which reaction fires, update the molecule counts, and repeat. This gives you exact sample trajectories of the chemical master equation — the computational workhorse for studying noise in gene expression.
+The trick: put two *different-colored* reporters (CFP and YFP) under *identical* promoters in the same cell. If noise is all extrinsic, both colors go up and down together -- every cell lands on the diagonal. If noise is intrinsic, the colors fluctuate independently -- cells scatter off the diagonal.
 
-[[simulation gillespie-trajectory]]
+> **Key Equation -- Noise Decomposition**
+> $$
+> \eta_{\mathrm{total}}^2 = \eta_{\mathrm{int}}^2 + \eta_{\mathrm{ext}}^2
+> $$
+> Total noise decomposes exactly into intrinsic noise (independent random firing) and extrinsic noise (shared fluctuations across the cell).
 
-Compare the white ODE mean to the colored stochastic trajectories. With a high production rate (large k), the traces cluster tightly around the mean — the law of large numbers in action. Now reduce k to 5 and watch individual trajectories wander far from the deterministic prediction. This is the small-number effect: when molecules are few, noise dominates.
+**Extrinsic noise** (correlated):
 
-Another major source of noise is what happens at cell division. When a cell splits in two, its molecules are randomly distributed between the daughters — **binomial partitioning**. If a cell has only a handful of molecules, one daughter may get most of them while the other gets almost none.
+$$
+\eta_{\mathrm{ext}}^2 = \frac{\langle N^{(1)} N^{(2)} \rangle - \langle N^{(1)} \rangle \langle N^{(2)} \rangle}{\langle N^{(1)} \rangle \langle N^{(2)} \rangle}.
+$$
+
+**Intrinsic noise** (uncorrelated):
+
+$$
+\eta_{\mathrm{int}}^2 = \frac{\langle (N^{(1)} - N^{(2)})^2 \rangle}{2\,\langle N^{(1)} \rangle \langle N^{(2)} \rangle}.
+$$
+
+> *The beauty: you can measure this directly from two-color data, without knowing anything about the underlying mechanism.*
+
+[[simulation gene-expression-noise]]
+
+Start with high production rate -- smooth trace. Reduce it by 10x (keeping the same mean by adjusting degradation). The trace gets wild and jagged. That's the small-number effect. Run two identical genes side by side and watch whether fluctuations are correlated (extrinsic) or independent (intrinsic).
+
+## Binomial partitioning at division
+
+Another major noise source: when a cell splits, molecules are randomly distributed between daughters. If a cell has only a handful of molecules, one daughter may get most while the other gets nearly none.
 
 [[simulation bacterial-lineage-tree]]
 
-Watch how molecular counts diverge across the lineage tree. Start with 100 molecules and the variation is modest. Reduce to 10 and the leaves show dramatic differences — some cells are molecule-rich, others nearly empty, purely from the randomness of partitioning.
+Watch molecular counts diverge across the lineage. Start with 100 molecules -- modest variation. Drop to 10 and the leaves show dramatic differences, purely from partitioning randomness.
 
 ## Why does nature do it this way?
 
-Noise seems like a problem, and cells do suppress it when precision matters (negative autoregulation, as we will see in [feedback loops](./feedback-loops), exists partly for this purpose). But noise can also be *useful*: a population with noisy gene expression hedges its bets, so that some cells are already in the right state when the environment suddenly changes. This **bet-hedging** strategy explains phenomena like bacterial persistence and stochastic competence.
+Noise seems like a problem, and cells do suppress it when precision matters (negative autoregulation, as you'll see in [feedback loops](./feedback-loops)). But noise can also be *useful*: a population with noisy gene expression hedges its bets, so some cells are already in the right state when the environment suddenly changes.
 
 ## Check your understanding
 
-* If you increase the mean protein level while keeping the variance fixed, what happens to the CV? What does this tell you about noise in highly expressed genes?
-* In the Elowitz two-color experiment, what would the CFP-vs-YFP scatter plot look like if noise were *entirely* intrinsic?
-* A gene has Fano factor $F = 5$. Is transcription happening in bursts, or is it smooth and Poisson-like?
+* If you increase mean protein level while keeping variance fixed, what happens to the CV?
+* In the Elowitz two-color experiment, what would the scatter plot look like if noise were *entirely* intrinsic?
+* A gene has Fano factor $F = 5$. Bursty or Poisson-like?
 
 ## Challenge
 
-Imagine a gene with a mean protein level of $\langle N \rangle = 100$ and variance $\text{Var}[N] = 400$. Compute the CV and the Fano factor. Is this gene's expression burstier than Poisson? Now suppose you add negative feedback that halves the variance without changing the mean. What are the new CV and Fano factor? Has the feedback pushed the system below the Poisson limit?
+A gene has mean $\langle N \rangle = 100$ and $\text{Var}[N] = 400$. Compute the CV and Fano factor. Burstier than Poisson? Now add negative feedback that halves the variance without changing the mean. New CV and Fano factor? Has feedback pushed below the Poisson limit?
 
 ## Big ideas
 
-* **Gene expression is inherently noisy** because it involves small numbers of molecules undergoing random reactions.
-* **Intrinsic noise** comes from the randomness of individual molecular events; **extrinsic noise** comes from cell-to-cell variation in shared factors.
-* **The Fano factor** ($F = \text{Var}/\text{mean}$) is a fingerprint that reveals the underlying mechanism — $F = 1$ is Poisson, $F > 1$ is bursty.
+* Gene expression is inherently noisy because small numbers of molecules undergo random reactions.
+* Intrinsic noise = random molecular firing; extrinsic noise = cell-to-cell variation in shared factors. They add in quadrature.
+* The Fano factor ($F = \text{Var}/\text{mean}$) is a fingerprint: $F = 1$ is Poisson, $F > 1$ is bursty.
 
 ## What comes next
 
-So far we have treated the transcription rate as a fixed number — the gene is either on or off, and we do not ask what controls it. But real genes have a knob. A repressor protein can sit on the promoter and shut it down; an activator can recruit the transcription machinery and crank it up. In the next lesson, we derive the mathematical function that describes this control — the **Hill function** — and you will see how nature turns a gentle dimmer into a sharp on-off switch.
+So far we've treated the transcription rate as a fixed number. But real genes have a knob -- a repressor that shuts them down, an activator that cranks them up. Next, we derive the Hill function and watch nature turn a gentle dimmer into a sharp on-off switch.

@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { Slider } from '@/components/ui/slider';
+import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 function computeLandau(t: number, a4: number) {
   const a2 = 1;
@@ -31,7 +34,7 @@ function computeLandau(t: number, a4: number) {
   return { mRange, F, minima };
 }
 
-export function LandauFreeEnergy() {
+export default function LandauFreeEnergy({}: SimulationComponentProps) {
   const [t, setT] = useState(0.0);
   const [a4, setA4] = useState(1.0);
 
@@ -68,37 +71,40 @@ export function LandauFreeEnergy() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="text-sm text-[var(--text-muted)] block mb-1">
-            Reduced temperature t: {t.toFixed(2)}
-          </label>
-          <Slider
-            min={-1}
-            max={1}
-            step={0.02}
-            value={[t]}
-            onValueChange={([v]) => setT(v)}
-            className="w-full"
-          />
+    <SimulationPanel title="Landau Free Energy F(m)">
+      <SimulationConfig>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <SimulationLabel>
+              Reduced temperature t: {t.toFixed(2)}
+            </SimulationLabel>
+            <Slider
+              min={-1}
+              max={1}
+              step={0.02}
+              value={[t]}
+              onValueChange={([v]) => setT(v)}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel>
+              a{'\u2084'} coefficient: {a4.toFixed(2)}
+            </SimulationLabel>
+            <Slider
+              min={-1}
+              max={1}
+              step={0.02}
+              value={[a4]}
+              onValueChange={([v]) => setA4(v)}
+              className="w-full"
+            />
+          </div>
         </div>
-        <div>
-          <label className="text-sm text-[var(--text-muted)] block mb-1">
-            a{'\u2084'} coefficient: {a4.toFixed(2)}
-          </label>
-          <Slider
-            min={-1}
-            max={1}
-            step={0.02}
-            value={[a4]}
-            onValueChange={([v]) => setA4(v)}
-            className="w-full"
-          />
-        </div>
-      </div>
+      </SimulationConfig>
 
-      <CanvasChart
+      <SimulationMain>
+        <CanvasChart
         data={traces}
         layout={{
           title: { text: 'Landau Free Energy F(m)', font: { size: 14 } },
@@ -110,15 +116,16 @@ export function LandauFreeEnergy() {
         style={{ width: '100%', height: 400 }}
       />
 
-      <p className="text-sm text-[var(--text-muted)]">
-        {t > 0
-          ? 'T > Tc: single minimum at m = 0 (disordered phase).'
-          : t < 0 && a4 > 0
-            ? 'T < Tc with a\u2084 > 0: double-well (second-order transition, spontaneous symmetry breaking).'
-            : t < 0 && a4 < 0
-              ? 'T < Tc with a\u2084 < 0: first-order transition — the minima jump discontinuously.'
-              : 'At the critical point T = Tc.'}
-      </p>
-    </div>
+        <p className="text-sm text-[var(--text-soft)]">
+          {t > 0
+            ? 'T > Tc: single minimum at m = 0 (disordered phase).'
+            : t < 0 && a4 > 0
+              ? 'T < Tc with a\u2084 > 0: double-well (second-order transition, spontaneous symmetry breaking).'
+              : t < 0 && a4 < 0
+                ? 'T < Tc with a\u2084 < 0: first-order transition — the minima jump discontinuously.'
+                : 'At the critical point T = Tc.'}
+        </p>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

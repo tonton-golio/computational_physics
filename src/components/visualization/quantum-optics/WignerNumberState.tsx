@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
 import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
-import { SimulationPanel, SimulationLabel, SimulationToggle } from '@/components/ui/simulation-panel';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationLabel, SimulationToggle } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
@@ -63,83 +64,84 @@ export default function WignerNumberState({}: SimulationComponentProps) {
   }, [photonNumber]);
 
   return (
-    <SimulationPanel>
-      <h3 className="text-lg font-semibold text-[var(--text-strong)]">Number State (Fock State) Wigner Function</h3>
-      <p className="text-sm text-[var(--text-soft)]">
-        {"|ψ⟩ = |n⟩. The Wigner function involves Laguerre polynomials and exhibits negativity for n ≥ 1, demonstrating non-classical behavior."}
-      </p>
-
-      <div>
-        <SimulationLabel>
-          Photon number n: {photonNumber}
-        </SimulationLabel>
-        <Slider
-          value={[photonNumber]}
-          onValueChange={(val) => setPhotonNumber(Math.round(val[0]))}
-          min={0}
-          max={15}
-          step={1}
-          className="w-full max-w-md"
-        />
-      </div>
-
-      <SimulationToggle
-        options={[
-          { label: '2D Contour', value: '2d' },
-          { label: '3D Surface', value: '3d' },
-        ]}
-        value={show3D ? '3d' : '2d'}
-        onChange={(v) => setShow3D(v === '3d')}
-      />
-
-      {!show3D ? (
-        <CanvasHeatmap
-          data={[
-            {
-              z: W,
-              x: xvec,
-              y: pvec,
-              type: 'heatmap',
-              colorscale: 'RdBu',
-              colorbar: { title: { text: 'W(q, p)' } },
-            },
+    <SimulationPanel title="Number State (Fock State) Wigner Function" caption="|ψ⟩ = |n⟩. The Wigner function involves Laguerre polynomials and exhibits negativity for n ≥ 1, demonstrating non-classical behavior.">
+      <SimulationSettings>
+        <SimulationToggle
+          options={[
+            { label: '2D Contour', value: '2d' },
+            { label: '3D Surface', value: '3d' },
           ]}
-          layout={{
-            title: { text: `Fock State |${photonNumber}> W(q, p)` },
-            xaxis: {
-              title: { text: 'q' },
-            },
-            yaxis: {
-              title: { text: 'p' },
-              scaleanchor: 'x',
-            },
-            height: 500,
-            margin: { t: 40, r: 20, b: 50, l: 50 },
-          }}
-          style={{ width: '100%', height: '500px' }}
+          value={show3D ? '3d' : '2d'}
+          onChange={(v) => setShow3D(v === '3d')}
         />
-      ) : (
-        <CanvasHeatmap
-          data={[
-            {
-              z: W,
-              x: xvec,
-              y: pvec,
-              type: 'heatmap',
-              colorscale: 'RdBu',
-              colorbar: { title: { text: 'W(q,p)' } },
-            },
-          ]}
-          layout={{
-            title: { text: `Fock State |${photonNumber}> W(q, p) - 3D` },
-            xaxis: { title: { text: 'q' } },
-            yaxis: { title: { text: 'p' } },
-            height: 500,
-            margin: { t: 40, r: 20, b: 50, l: 50 },
-          }}
-          style={{ width: '100%', height: '500px' }}
-        />
-      )}
+      </SimulationSettings>
+
+      <SimulationConfig>
+        <div>
+          <SimulationLabel>
+            Photon number n: {photonNumber}
+          </SimulationLabel>
+          <Slider
+            value={[photonNumber]}
+            onValueChange={(val) => setPhotonNumber(Math.round(val[0]))}
+            min={0}
+            max={15}
+            step={1}
+            className="w-full max-w-md"
+          />
+        </div>
+      </SimulationConfig>
+
+      <SimulationMain>
+        {!show3D ? (
+          <CanvasHeatmap
+            data={[
+              {
+                z: W,
+                x: xvec,
+                y: pvec,
+                type: 'heatmap',
+                colorscale: 'RdBu',
+                colorbar: { title: { text: 'W(q, p)' } },
+              },
+            ]}
+            layout={{
+              title: { text: `Fock State |${photonNumber}> W(q, p)` },
+              xaxis: {
+                title: { text: 'q' },
+              },
+              yaxis: {
+                title: { text: 'p' },
+                scaleanchor: 'x',
+              },
+              height: 500,
+              margin: { t: 40, r: 20, b: 50, l: 50 },
+            }}
+            style={{ width: '100%', height: '500px' }}
+          />
+        ) : (
+          <CanvasHeatmap
+            data={[
+              {
+                z: W,
+                x: xvec,
+                y: pvec,
+                type: 'heatmap',
+                colorscale: 'RdBu',
+                colorbar: { title: { text: 'W(q,p)' } },
+              },
+            ]}
+            layout={{
+              title: { text: `Fock State |${photonNumber}> W(q, p) - 3D` },
+              xaxis: { title: { text: 'q' } },
+              yaxis: { title: { text: 'p' } },
+              height: 500,
+              margin: { t: 40, r: 20, b: 50, l: 50 },
+            }}
+            style={{ width: '100%', height: '500px' }}
+          />
+        )}
+      </SimulationMain>
     </SimulationPanel>
   );
 }

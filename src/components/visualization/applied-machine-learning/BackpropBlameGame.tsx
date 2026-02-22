@@ -1,7 +1,10 @@
-'use client';
+"use client";
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Slider } from '@/components/ui/slider';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationLabel, SimulationButton } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 type Activation = 'relu' | 'sigmoid';
 
@@ -58,7 +61,7 @@ function computeGradients(
   return gradients;
 }
 
-export default function BackpropBlameGame(): React.ReactElement {
+export default function BackpropBlameGame({}: SimulationComponentProps): React.ReactElement {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [loss, setLoss] = useState(1.0);
   const [layers, setLayers] = useState<LayerConfig[]>(LAYER_DEFAULTS.map((l) => ({ ...l })));
@@ -254,75 +257,69 @@ export default function BackpropBlameGame(): React.ReactElement {
   const vanishing = gradients[0] !== undefined && Math.abs(gradients[0]) < 0.01;
 
   return (
-    <div className="w-full rounded-lg bg-[var(--surface-1)] p-6">
-      <h3 className="mb-4 text-xl font-semibold text-[var(--text-strong)]">
-        Backpropagation: The Blame Game
-      </h3>
-
-      <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-3">
+    <SimulationPanel title="Backpropagation: The Blame Game">
+      <SimulationSettings>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="flex flex-wrap gap-2">
+            {layers.slice(1, -1).map((l, i) => (
+              <SimulationButton
+                key={i}
+                variant={l.activation === 'relu' ? 'primary' : 'secondary'}
+                onClick={() => toggleActivation(i + 1)}
+              >
+                H{i + 1}: {l.activation.toUpperCase()}
+              </SimulationButton>
+            ))}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {layers.slice(1, -1).map((l, i) => (
+              <SimulationButton
+                key={i}
+                variant={l.frozen ? 'danger' : 'secondary'}
+                onClick={() => toggleFreeze(i + 1)}
+              >
+                {l.frozen ? 'Frozen' : 'Freeze'} H{i + 1}
+              </SimulationButton>
+            ))}
+          </div>
+        </div>
+      </SimulationSettings>
+      <SimulationConfig>
         <div>
-          <label className="text-sm text-[var(--text-muted)]">Output loss: {loss.toFixed(2)}</label>
+          <SimulationLabel>Output loss: {loss.toFixed(2)}</SimulationLabel>
           <Slider min={0.1} max={3.0} step={0.1} value={[loss]} onValueChange={([v]) => setLoss(v)} />
         </div>
-        <div className="flex flex-wrap gap-2">
-          {layers.slice(1, -1).map((l, i) => (
-            <button
-              key={i}
-              onClick={() => toggleActivation(i + 1)}
-              className={`rounded px-3 py-1 text-xs font-medium ${
-                l.activation === 'relu'
-                  ? 'bg-emerald-600/80 text-white'
-                  : 'bg-amber-600/80 text-white'
-              }`}
-            >
-              H{i + 1}: {l.activation.toUpperCase()}
-            </button>
-          ))}
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {layers.slice(1, -1).map((l, i) => (
-            <button
-              key={i}
-              onClick={() => toggleFreeze(i + 1)}
-              className={`rounded px-3 py-1 text-xs font-medium ${
-                l.frozen
-                  ? 'bg-gray-600 text-white'
-                  : 'bg-[var(--surface-2,#27272a)] text-[var(--text-strong)]'
-              }`}
-            >
-              {l.frozen ? 'Frozen' : 'Freeze'} H{i + 1}
-            </button>
-          ))}
-        </div>
-      </div>
+      </SimulationConfig>
 
-      <canvas
-        ref={canvasRef}
-        width={700}
-        height={280}
-        className="w-full rounded-xl bg-[var(--surface-2,#27272a)]"
-        style={{ maxWidth: 700 }}
-      />
+      <SimulationMain scaleMode="contain">
+        <canvas
+          ref={canvasRef}
+          width={700}
+          height={280}
+          className="w-full rounded-xl bg-[var(--surface-2,#27272a)]"
+          style={{ maxWidth: 700 }}
+        />
 
-      <div className="mt-2 text-xs text-[var(--text-muted)]">
-        Click activation buttons to switch between ReLU (R) and Sigmoid (S).
-        Arrow thickness = gradient magnitude. Red dots flow backward showing chain rule.
-      </div>
-
-      {vanishing && allSigmoid && (
-        <div className="mt-3 rounded bg-red-900/30 p-3 text-sm text-red-300">
-          Vanishing gradients detected. With all-sigmoid activations, each layer
-          multiplies the gradient by at most 0.25 — after several layers, the
-          gradient effectively disappears. Switch to ReLU to fix this.
+        <div className="mt-2 text-xs text-[var(--text-muted)]">
+          Click activation buttons to switch between ReLU (R) and Sigmoid (S).
+          Arrow thickness = gradient magnitude. Red dots flow backward showing chain rule.
         </div>
-      )}
 
-      {vanishing && !allSigmoid && layers.some((l) => l.frozen) && (
-        <div className="mt-3 rounded bg-amber-900/30 p-3 text-sm text-amber-300">
-          Frozen layers block gradient flow. Earlier layers cannot learn because
-          the chain rule cannot pass through a frozen layer.
-        </div>
-      )}
-    </div>
+        {vanishing && allSigmoid && (
+          <div className="mt-3 rounded bg-red-900/30 p-3 text-sm text-red-300">
+            Vanishing gradients detected. With all-sigmoid activations, each layer
+            multiplies the gradient by at most 0.25 — after several layers, the
+            gradient effectively disappears. Switch to ReLU to fix this.
+          </div>
+        )}
+
+        {vanishing && !allSigmoid && layers.some((l) => l.frozen) && (
+          <div className="mt-3 rounded bg-amber-900/30 p-3 text-sm text-amber-300">
+            Frozen layers block gradient flow. Earlier layers cannot learn because
+            the chain rule cannot pass through a frozen layer.
+          </div>
+        )}
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

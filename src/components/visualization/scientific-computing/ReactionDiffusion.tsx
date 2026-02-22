@@ -1,8 +1,10 @@
-'use client';
+"use client";
 
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
 import { Slider } from '@/components/ui/slider';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationResults, SimulationLabel, SimulationPlayButton, SimulationButton } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 
@@ -12,7 +14,7 @@ const PRESETS: Record<string, { Dp: number; Dq: number; C: number; K: number; la
   stripes: { Dp: 1, Dq: 6, C: 3.5, K: 8, label: "Stripes" },
 };
 
-export function ReactionDiffusion({}: SimulationComponentProps) {
+export default function ReactionDiffusion({}: SimulationComponentProps) {
   const [Dp, setDp] = useState(1);
   const [Dq, setDq] = useState(8);
   const [C, setC] = useState(4.5);
@@ -175,178 +177,178 @@ export function ReactionDiffusion({}: SimulationComponentProps) {
   );
 
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <CanvasHeatmap
-            data={[
-              {
-                z: pGrid,
-                type: 'heatmap' as const,
-                colorscale: 'Hot',
-                showscale: true,
-                colorbar: { title: { text: 'p', side: 'right' as const }, len: 0.8 },
-              },
-            ]}
-            layout={{
-              ...heatmapLayout,
-              title: { text: 'Concentration p', font: { size: 14 } },
-            }}
-            style={{ width: '100%', height: '350px' }}
+    <SimulationPanel title="Reaction-Diffusion Patterns" caption="Gray-Scott reaction-diffusion model solved with forward Euler. Patterns emerge from the interplay of diffusion rates and reaction kinetics. Try different presets to see stripes, spots, and other Turing patterns.">
+      <SimulationSettings>
+        <div className="flex flex-wrap gap-3">
+          <SimulationPlayButton
+            isRunning={isRunning}
+            onToggle={() => setIsRunning(r => !r)}
+            disabled={!stable}
           />
+          <SimulationButton
+            variant="secondary"
+            onClick={handleReset}
+          >
+            Reset
+          </SimulationButton>
+          {Object.entries(PRESETS).map(([key, val]) => (
+            <SimulationButton
+              key={key}
+              variant="secondary"
+              onClick={() => handlePreset(key)}
+            >
+              {val.label}
+            </SimulationButton>
+          ))}
         </div>
-        <div>
-          <CanvasHeatmap
-            data={[
-              {
-                z: qGrid,
-                type: 'heatmap' as const,
-                colorscale: 'Viridis',
-                showscale: true,
-                colorbar: { title: { text: 'q', side: 'right' as const }, len: 0.8 },
-              },
-            ]}
-            layout={{
-              ...heatmapLayout,
-              title: { text: 'Concentration q', font: { size: 14 } },
-            }}
-            style={{ width: '100%', height: '350px' }}
-          />
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <SimulationLabel>
+            dt: <span className="text-[var(--text-strong)]">{dt}</span>
+            <select
+              value={dt}
+              onChange={(e) => setDt(parseFloat(e.target.value))}
+              className="w-full bg-[var(--surface-1)] text-[var(--text-strong)] rounded px-2 py-1 mt-1"
+            >
+              <option value={0.001}>0.001</option>
+              <option value={0.005}>0.005</option>
+              <option value={0.01}>0.01</option>
+              <option value={0.02}>0.02</option>
+              <option value={0.03}>0.03</option>
+            </select>
+          </SimulationLabel>
+          <SimulationLabel>
+            Resolution: <span className="text-[var(--text-strong)]">{resolution}</span>
+            <select
+              value={resolution}
+              onChange={(e) => { setResolution(parseInt(e.target.value)); }}
+              className="w-full bg-[var(--surface-1)] text-[var(--text-strong)] rounded px-2 py-1 mt-1"
+            >
+              <option value={32}>32</option>
+              <option value={48}>48</option>
+              <option value={64}>64</option>
+              <option value={96}>96</option>
+            </select>
+          </SimulationLabel>
+          <SimulationLabel>
+            Steps/frame: <span className="text-[var(--text-strong)]">{stepsPerFrame}</span>
+            <select
+              value={stepsPerFrame}
+              onChange={(e) => setStepsPerFrame(parseInt(e.target.value))}
+              className="w-full bg-[var(--surface-1)] text-[var(--text-strong)] rounded px-2 py-1 mt-1"
+            >
+              <option value={1}>1</option>
+              <option value={5}>5</option>
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+            </select>
+          </SimulationLabel>
         </div>
-      </div>
 
-      {!stable && (
-        <div className="bg-red-900/30 border border-red-700 rounded-lg p-3 text-red-300 text-sm">
-          Simulation became unstable (NaN detected). Try reducing dt or adjusting parameters. Press Reset to restart.
+        {!stable && (
+          <div className="bg-red-900/30 border border-red-700 rounded-lg p-3 text-red-300 text-sm">
+            Simulation became unstable (NaN detected). Try reducing dt or adjusting parameters. Press Reset to restart.
+          </div>
+        )}
+      </SimulationSettings>
+      <SimulationConfig>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <SimulationLabel>
+            D_p: <span className="text-[var(--text-strong)]">{Dp}</span>
+            <Slider
+              min={0.1}
+              max={10}
+              step={0.1}
+              value={[Dp]}
+              onValueChange={([v]) => setDp(v)}
+              className="w-full"
+            />
+          </SimulationLabel>
+          <SimulationLabel>
+            D_q: <span className="text-[var(--text-strong)]">{Dq}</span>
+            <Slider
+              min={0.1}
+              max={15}
+              step={0.1}
+              value={[Dq]}
+              onValueChange={([v]) => setDq(v)}
+              className="w-full"
+            />
+          </SimulationLabel>
+          <SimulationLabel>
+            C: <span className="text-[var(--text-strong)]">{C.toFixed(1)}</span>
+            <Slider
+              min={0.1}
+              max={10}
+              step={0.1}
+              value={[C]}
+              onValueChange={([v]) => setC(v)}
+              className="w-full"
+            />
+          </SimulationLabel>
+          <SimulationLabel>
+            K: <span className="text-[var(--text-strong)]">{K}</span>
+            <Slider
+              min={1}
+              max={15}
+              step={0.5}
+              value={[K]}
+              onValueChange={([v]) => setK(v)}
+              className="w-full"
+            />
+          </SimulationLabel>
         </div>
-      )}
+      </SimulationConfig>
 
-      <div className="flex flex-wrap gap-3">
-        <button
-          onClick={() => setIsRunning(!isRunning)}
-          disabled={!stable}
-          className={`px-4 py-2 rounded text-sm text-white disabled:opacity-50 ${isRunning ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}`}
-        >
-          {isRunning ? 'Pause' : 'Play'}
-        </button>
-        <button
-          onClick={handleReset}
-          className="px-4 py-2 bg-[var(--surface-3)] rounded text-sm hover:bg-[var(--border-strong)] text-[var(--text-strong)]"
-        >
-          Reset
-        </button>
-        {Object.entries(PRESETS).map(([key, val]) => (
-          <button
-            key={key}
-            onClick={() => handlePreset(key)}
-            className="px-3 py-2 bg-[var(--surface-2)] rounded text-sm hover:opacity-80 text-[var(--text-muted)]"
-          >
-            {val.label}
-          </button>
-        ))}
-      </div>
+      <SimulationMain>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <CanvasHeatmap
+              data={[
+                {
+                  z: pGrid,
+                  type: 'heatmap' as const,
+                  colorscale: 'Hot',
+                  showscale: true,
+                  colorbar: { title: { text: 'p', side: 'right' as const }, len: 0.8 },
+                },
+              ]}
+              layout={{
+                ...heatmapLayout,
+                title: { text: 'Concentration p', font: { size: 14 } },
+              }}
+              style={{ width: '100%', height: '350px' }}
+            />
+          </div>
+          <div>
+            <CanvasHeatmap
+              data={[
+                {
+                  z: qGrid,
+                  type: 'heatmap' as const,
+                  colorscale: 'Viridis',
+                  showscale: true,
+                  colorbar: { title: { text: 'q', side: 'right' as const }, len: 0.8 },
+                },
+              ]}
+              layout={{
+                ...heatmapLayout,
+                title: { text: 'Concentration q', font: { size: 14 } },
+              }}
+              style={{ width: '100%', height: '350px' }}
+            />
+          </div>
+        </div>
+      </SimulationMain>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <label className="text-sm text-[var(--text-muted)]">
-          D_p: <span className="text-[var(--text-strong)]">{Dp}</span>
-          <Slider
-            min={0.1}
-            max={10}
-            step={0.1}
-            value={[Dp]}
-            onValueChange={([v]) => setDp(v)}
-            className="w-full"
-          />
-        </label>
-        <label className="text-sm text-[var(--text-muted)]">
-          D_q: <span className="text-[var(--text-strong)]">{Dq}</span>
-          <Slider
-            min={0.1}
-            max={15}
-            step={0.1}
-            value={[Dq]}
-            onValueChange={([v]) => setDq(v)}
-            className="w-full"
-          />
-        </label>
-        <label className="text-sm text-[var(--text-muted)]">
-          C: <span className="text-[var(--text-strong)]">{C.toFixed(1)}</span>
-          <Slider
-            min={0.1}
-            max={10}
-            step={0.1}
-            value={[C]}
-            onValueChange={([v]) => setC(v)}
-            className="w-full"
-          />
-        </label>
-        <label className="text-sm text-[var(--text-muted)]">
-          K: <span className="text-[var(--text-strong)]">{K}</span>
-          <Slider
-            min={1}
-            max={15}
-            step={0.5}
-            value={[K]}
-            onValueChange={([v]) => setK(v)}
-            className="w-full"
-          />
-        </label>
-      </div>
-
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        <label className="text-sm text-[var(--text-muted)]">
-          dt: <span className="text-[var(--text-strong)]">{dt}</span>
-          <select
-            value={dt}
-            onChange={(e) => setDt(parseFloat(e.target.value))}
-            className="w-full bg-[var(--surface-1)] text-[var(--text-strong)] rounded px-2 py-1 mt-1"
-          >
-            <option value={0.001}>0.001</option>
-            <option value={0.005}>0.005</option>
-            <option value={0.01}>0.01</option>
-            <option value={0.02}>0.02</option>
-            <option value={0.03}>0.03</option>
-          </select>
-        </label>
-        <label className="text-sm text-[var(--text-muted)]">
-          Resolution: <span className="text-[var(--text-strong)]">{resolution}</span>
-          <select
-            value={resolution}
-            onChange={(e) => { setResolution(parseInt(e.target.value)); }}
-            className="w-full bg-[var(--surface-1)] text-[var(--text-strong)] rounded px-2 py-1 mt-1"
-          >
-            <option value={32}>32</option>
-            <option value={48}>48</option>
-            <option value={64}>64</option>
-            <option value={96}>96</option>
-          </select>
-        </label>
-        <label className="text-sm text-[var(--text-muted)]">
-          Steps/frame: <span className="text-[var(--text-strong)]">{stepsPerFrame}</span>
-          <select
-            value={stepsPerFrame}
-            onChange={(e) => setStepsPerFrame(parseInt(e.target.value))}
-            className="w-full bg-[var(--surface-1)] text-[var(--text-strong)] rounded px-2 py-1 mt-1"
-          >
-            <option value={1}>1</option>
-            <option value={5}>5</option>
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-            <option value={50}>50</option>
-          </select>
-        </label>
-      </div>
-
-      <div className="flex gap-6 text-sm text-[var(--text-muted)]">
-        <span>Steps: <span className="text-[var(--text-strong)]">{stepCount}</span></span>
-        <span>Time: <span className="text-[var(--text-strong)]">{(stepCount * dt).toFixed(3)}</span></span>
-        <span>Status: <span className={stable ? 'text-green-400' : 'text-red-400'}>{stable ? 'Stable' : 'Unstable'}</span></span>
-      </div>
-
-      <p className="text-xs text-[var(--text-soft)]">
-        Gray-Scott reaction-diffusion model solved with forward Euler. Patterns emerge from the interplay of diffusion rates and reaction kinetics.
-        Try different presets to see stripes, spots, and other Turing patterns.
-      </p>
-    </div>
+      <SimulationResults>
+        <div className="flex gap-6 text-sm text-[var(--text-muted)]">
+          <span>Steps: <span className="text-[var(--text-strong)]">{stepCount}</span></span>
+          <span>Time: <span className="text-[var(--text-strong)]">{(stepCount * dt).toFixed(3)}</span></span>
+          <span>Status: <span className={stable ? 'text-green-400' : 'text-red-400'}>{stable ? 'Stable' : 'Unstable'}</span></span>
+        </div>
+      </SimulationResults>
+    </SimulationPanel>
   );
 }

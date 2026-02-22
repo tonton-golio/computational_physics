@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
 import { useState, useMemo } from 'react';
 import { CanvasChart, type ChartTrace, type ChartLayout } from '@/components/ui/canvas-chart';
 import { Slider } from '@/components/ui/slider';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 function rng(seed: number) {
   return () => { let t = (seed += 0x6d2b79f5); t = Math.imul(t ^ (t >>> 15), t | 1);
@@ -31,7 +34,7 @@ function simulateLRFinder(batchSize: number, complexity: number) {
   return { lrs, losses, smoothed };
 }
 
-export default function LRFinder() {
+export default function LRFinder({}: SimulationComponentProps) {
   const [batchSize, setBatchSize] = useState(64);
   const [complexity, setComplexity] = useState(1.0);
 
@@ -59,29 +62,30 @@ export default function LRFinder() {
   };
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Learning Rate Range Test</h3>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <SimulationPanel title="Learning Rate Range Test">
+      <SimulationConfig>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm text-[var(--text-muted)] mb-1">Batch size: {batchSize}</label>
+            <SimulationLabel className="block text-sm text-[var(--text-muted)] mb-1">Batch size: {batchSize}</SimulationLabel>
             <Slider min={8} max={512} step={8} value={[batchSize]} onValueChange={([v]) => setBatchSize(v)} />
           </div>
           <div>
-            <label className="block text-sm text-[var(--text-muted)] mb-1">Model complexity: {complexity.toFixed(1)}</label>
+            <SimulationLabel className="block text-sm text-[var(--text-muted)] mb-1">Model complexity: {complexity.toFixed(1)}</SimulationLabel>
             <Slider min={0.5} max={3.0} step={0.1} value={[complexity]} onValueChange={([v]) => setComplexity(v)} />
           </div>
-          <div className="p-3 bg-[var(--surface-2)] rounded text-xs text-[var(--text-muted)] space-y-2">
-            <p><span className="text-amber-400 font-semibold">Too small:</span> Loss is flat — the learning rate makes no meaningful progress.</p>
-            <p><span className="text-green-400 font-semibold">Just right:</span> Loss decreases steadily. Suggested LR: {lrs[minIdx]?.toExponential(1)}.</p>
-            <p><span className="text-red-400 font-semibold">Too large:</span> Loss diverges — updates overshoot and destabilize training.</p>
-            <p className="mt-2">Larger batch sizes reduce noise. Higher complexity shifts the optimal range.</p>
-          </div>
         </div>
-        <div className="lg:col-span-2">
-          <CanvasChart data={traces} layout={layout} style={{ width: '100%', height: 420 }} />
+      </SimulationConfig>
+      <SimulationMain>
+        <CanvasChart data={traces} layout={layout} style={{ width: '100%', height: 420 }} />
+      </SimulationMain>
+      <SimulationResults>
+        <div className="p-3 bg-[var(--surface-2)] rounded text-xs text-[var(--text-muted)] space-y-2">
+          <p><span className="text-amber-400 font-semibold">Too small:</span> Loss is flat — the learning rate makes no meaningful progress.</p>
+          <p><span className="text-green-400 font-semibold">Just right:</span> Loss decreases steadily. Suggested LR: {lrs[minIdx]?.toExponential(1)}.</p>
+          <p><span className="text-red-400 font-semibold">Too large:</span> Loss diverges — updates overshoot and destabilize training.</p>
+          <p className="mt-2">Larger batch sizes reduce noise. Higher complexity shifts the optimal range.</p>
         </div>
-      </div>
-    </div>
+      </SimulationResults>
+    </SimulationPanel>
   );
 }

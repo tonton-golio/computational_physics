@@ -1,9 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
+import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 
@@ -111,7 +113,7 @@ function solveTikhonov(G: number[][], d: number[], eps: number): number[] {
   return m;
 }
 
-export default function TikhonovRegularization({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function TikhonovRegularization({}: SimulationComponentProps) {
   const [nDepthCells, setNDepthCells] = useState(20);
   const [epsExpMin, setEpsExpMin] = useState(-13);
   const [epsExpMax, setEpsExpMax] = useState(-9);
@@ -182,31 +184,29 @@ export default function TikhonovRegularization({ id }: SimulationComponentProps)
   }, [nDepthCells, epsExpMin, epsExpMax, nEps]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Tikhonov Regularization: Epsilon Sweep</h3>
-      <p className="text-[var(--text-muted)] text-sm mb-4">
-        Visualize how the regularization parameter epsilon affects the recovered density profile.
-        Small epsilon yields noisy solutions (overfitting); large epsilon yields overly smooth solutions (underfitting).
-      </p>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-        <div>
-          <label className="text-[var(--text-muted)] text-xs">Depth cells: {nDepthCells}</label>
-          <Slider min={8} max={40} step={1} value={[nDepthCells]} onValueChange={([v]) => setNDepthCells(v)} />
+    <SimulationPanel title="Tikhonov Regularization: Epsilon Sweep" caption="Visualize how the regularization parameter epsilon affects the recovered density profile. Small epsilon yields noisy solutions (overfitting); large epsilon yields overly smooth solutions (underfitting).">
+      <SimulationConfig>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-xs">Depth cells: {nDepthCells}</SimulationLabel>
+            <Slider min={8} max={40} step={1} value={[nDepthCells]} onValueChange={([v]) => setNDepthCells(v)} />
+          </div>
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-xs">log10(eps_min): {epsExpMin}</SimulationLabel>
+            <Slider min={-15} max={-5} step={1} value={[epsExpMin]} onValueChange={([v]) => setEpsExpMin(v)} />
+          </div>
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-xs">log10(eps_max): {epsExpMax}</SimulationLabel>
+            <Slider min={-10} max={0} step={1} value={[epsExpMax]} onValueChange={([v]) => setEpsExpMax(v)} />
+          </div>
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-xs">Epsilon steps: {nEps}</SimulationLabel>
+            <Slider min={5} max={30} step={1} value={[nEps]} onValueChange={([v]) => setNEps(v)} />
+          </div>
         </div>
-        <div>
-          <label className="text-[var(--text-muted)] text-xs">log10(eps_min): {epsExpMin}</label>
-          <Slider min={-15} max={-5} step={1} value={[epsExpMin]} onValueChange={([v]) => setEpsExpMin(v)} />
-        </div>
-        <div>
-          <label className="text-[var(--text-muted)] text-xs">log10(eps_max): {epsExpMax}</label>
-          <Slider min={-10} max={0} step={1} value={[epsExpMax]} onValueChange={([v]) => setEpsExpMax(v)} />
-        </div>
-        <div>
-          <label className="text-[var(--text-muted)] text-xs">Epsilon steps: {nEps}</label>
-          <Slider min={5} max={30} step={1} value={[nEps]} onValueChange={([v]) => setNEps(v)} />
-        </div>
-      </div>
+      </SimulationConfig>
 
+      <SimulationMain>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
         <CanvasHeatmap
           data={[{
@@ -286,6 +286,7 @@ export default function TikhonovRegularization({ id }: SimulationComponentProps)
         The L-curve shows the trade-off between data misfit and model complexity. The corner of the L-curve indicates the optimal regularization parameter.
         Precision increases as resolution is refined, but too little regularization amplifies noise.
       </p>
-    </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

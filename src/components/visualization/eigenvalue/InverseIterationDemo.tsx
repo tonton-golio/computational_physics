@@ -1,12 +1,14 @@
-'use client';
+"use client";
 
 import { useState, useMemo } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import { Slider } from '@/components/ui/slider';
 import { COLORS } from '@/lib/chart-colors';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-export function InverseIterationDemo({}: SimulationComponentProps) {
+export default function InverseIterationDemo({}: SimulationComponentProps) {
   const [sigma, setSigma] = useState(2.2);
 
   const { data, layout } = useMemo(() => {
@@ -99,24 +101,23 @@ export function InverseIterationDemo({}: SimulationComponentProps) {
   }, [sigma]);
 
   return (
-    <div className="space-y-4">
-      <CanvasChart data={data} layout={layout} style={{ width: '100%', height: 320 }} />
-      <div className="space-y-2">
-        <label className="text-sm text-[var(--text-muted)]">Shift \u03C3: {sigma.toFixed(2)}</label>
-        <Slider
-          min={0.5}
-          max={4.5}
-          step={0.05}
-          value={[sigma]}
-          onValueChange={([v]) => setSigma(v)}
-          className="w-full"
-        />
-      </div>
-      <p className="text-xs text-[var(--text-soft)]">
-        The iteration converges to the eigenvalue nearest the chosen shift, making interior eigenvalues tractable.
-      </p>
-    </div>
+    <SimulationPanel title="Inverse Iteration (Shift-and-Invert)" caption="The iteration converges to the eigenvalue nearest the chosen shift, making interior eigenvalues tractable.">
+      <SimulationConfig>
+        <div className="space-y-2">
+          <SimulationLabel>Shift \u03C3: {sigma.toFixed(2)}</SimulationLabel>
+          <Slider
+            min={0.5}
+            max={4.5}
+            step={0.05}
+            value={[sigma]}
+            onValueChange={([v]) => setSigma(v)}
+            className="w-full"
+          />
+        </div>
+      </SimulationConfig>
+      <SimulationMain>
+        <CanvasChart data={data} layout={layout} style={{ width: '100%', height: 320 }} />
+      </SimulationMain>
+    </SimulationPanel>
   );
 }
-
-export default InverseIterationDemo;

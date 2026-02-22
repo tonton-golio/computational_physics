@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React, { useMemo } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';

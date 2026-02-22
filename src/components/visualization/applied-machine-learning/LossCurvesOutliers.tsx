@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
 import React, { useMemo, useState } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 import { mulberry32, gaussianPair, linspace } from './ml-utils';
 
 /**
@@ -43,7 +46,7 @@ function fitLine(
   return { a, b };
 }
 
-export default function LossCurvesOutliers(): React.ReactElement {
+export default function LossCurvesOutliers({}: SimulationComponentProps): React.ReactElement {
   const [outlierStrength, setOutlierStrength] = useState(8);
   const [outlierCount, setOutlierCount] = useState(5);
   const [huberDelta, setHuberDelta] = useState(1.0);
@@ -90,54 +93,50 @@ export default function LossCurvesOutliers(): React.ReactElement {
   );
 
   return (
-    <div className="w-full rounded-lg bg-[var(--surface-1)] p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">
-        Loss Curves Under Outliers
-      </h3>
-      <p className="text-sm text-[var(--text-muted)] mb-4">
-        MSE (green) is dragged toward red outlier points. MAE (amber) and Huber (pink) stay anchored to the majority.
-      </p>
+    <SimulationPanel title="Loss Curves Under Outliers" caption="MSE (green) is dragged toward red outlier points. MAE (amber) and Huber (pink) stay anchored to the majority.">
+      <SimulationConfig>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <div>
+            <SimulationLabel>
+              Outlier strength: {outlierStrength.toFixed(1)}
+            </SimulationLabel>
+            <Slider
+              min={1}
+              max={15}
+              step={0.5}
+              value={[outlierStrength]}
+              onValueChange={([v]) => setOutlierStrength(v)}
+            />
+          </div>
+          <div>
+            <SimulationLabel>
+              Outlier count: {outlierCount}
+            </SimulationLabel>
+            <Slider
+              min={1}
+              max={15}
+              step={1}
+              value={[outlierCount]}
+              onValueChange={([v]) => setOutlierCount(v)}
+            />
+          </div>
+          <div>
+            <SimulationLabel>
+              Huber delta: {huberDelta.toFixed(2)}
+            </SimulationLabel>
+            <Slider
+              min={0.1}
+              max={5}
+              step={0.1}
+              value={[huberDelta]}
+              onValueChange={([v]) => setHuberDelta(v)}
+            />
+          </div>
+        </div>
+      </SimulationConfig>
 
-      <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-3">
-        <div>
-          <label className="text-sm text-[var(--text-muted)]">
-            Outlier strength: {outlierStrength.toFixed(1)}
-          </label>
-          <Slider
-            min={1}
-            max={15}
-            step={0.5}
-            value={[outlierStrength]}
-            onValueChange={([v]) => setOutlierStrength(v)}
-          />
-        </div>
-        <div>
-          <label className="text-sm text-[var(--text-muted)]">
-            Outlier count: {outlierCount}
-          </label>
-          <Slider
-            min={1}
-            max={15}
-            step={1}
-            value={[outlierCount]}
-            onValueChange={([v]) => setOutlierCount(v)}
-          />
-        </div>
-        <div>
-          <label className="text-sm text-[var(--text-muted)]">
-            Huber delta: {huberDelta.toFixed(2)}
-          </label>
-          <Slider
-            min={0.1}
-            max={5}
-            step={0.1}
-            value={[huberDelta]}
-            onValueChange={([v]) => setHuberDelta(v)}
-          />
-        </div>
-      </div>
-
-      <CanvasChart
+      <SimulationMain>
+        <CanvasChart
         data={[
           {
             x: xs,
@@ -181,9 +180,10 @@ export default function LossCurvesOutliers(): React.ReactElement {
         style={{ width: '100%', height: 420 }}
       />
 
-      <div className="mt-3 text-xs text-[var(--text-muted)]">
-        Blue dots are clean data; red dots are outliers. Increase outlier strength to see MSE deviate.
-      </div>
-    </div>
+        <div className="mt-3 text-xs text-[var(--text-muted)]">
+          Blue dots are clean data; red dots are outliers. Increase outlier strength to see MSE deviate.
+        </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

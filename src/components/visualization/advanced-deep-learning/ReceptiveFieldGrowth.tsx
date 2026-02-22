@@ -1,15 +1,17 @@
-'use client';
+"use client";
 
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart, type ChartTrace } from '@/components/ui/canvas-chart';
 import { SimulationMain } from '@/components/ui/simulation-main';
+import { SimulationPanel, SimulationConfig, SimulationAux, SimulationLabel } from '@/components/ui/simulation-panel';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 const GRID = 21, CELL = 16;
 
 function rfSize(layers: number, kernel: number) { return 1 + layers * (kernel - 1); }
 
-export default function ReceptiveFieldGrowth() {
+export default function ReceptiveFieldGrowth({}: SimulationComponentProps) {
   const [numLayers, setNumLayers] = useState(3);
   const [kernelSize, setKernelSize] = useState(3);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -74,18 +76,19 @@ export default function ReceptiveFieldGrowth() {
   }, [numLayers, kernelSize, rf]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Receptive Field Growth</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">Conv layers: {numLayers}</label>
-          <Slider min={1} max={8} step={1} value={[numLayers]} onValueChange={([v]) => setNumLayers(v)} />
+    <SimulationPanel title="Receptive Field Growth">
+      <SimulationConfig>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+          <div>
+            <SimulationLabel className="block text-sm text-[var(--text-muted)] mb-1">Conv layers: {numLayers}</SimulationLabel>
+            <Slider min={1} max={8} step={1} value={[numLayers]} onValueChange={([v]) => setNumLayers(v)} />
+          </div>
+          <div>
+            <SimulationLabel className="block text-sm text-[var(--text-muted)] mb-1">Kernel: {kernelSize}x{kernelSize}</SimulationLabel>
+            <Slider min={3} max={7} step={2} value={[kernelSize]} onValueChange={([v]) => setKernelSize(v)} />
+          </div>
         </div>
-        <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">Kernel: {kernelSize}x{kernelSize}</label>
-          <Slider min={3} max={7} step={2} value={[kernelSize]} onValueChange={([v]) => setKernelSize(v)} />
-        </div>
-      </div>
+      </SimulationConfig>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         <SimulationMain scaleMode="contain" className="flex flex-col items-center">
           <p className="text-sm text-[var(--text-muted)] mb-2 font-semibold">
@@ -97,15 +100,17 @@ export default function ReceptiveFieldGrowth() {
             <span><span className="inline-block w-3 h-3 rounded-sm border-2 border-blue-500 mr-1 align-middle" /> RF boundary</span>
           </div>
         </SimulationMain>
-        <CanvasChart data={chartData} layout={{ title: { text: 'RF size vs. depth' },
-          xaxis: { title: { text: 'Number of layers' } }, yaxis: { title: { text: 'Receptive field (px)' } },
-          margin: { t: 40, b: 50, l: 60, r: 20 } }} style={{ width: '100%', height: 370 }} />
+        <SimulationAux>
+          <CanvasChart data={chartData} layout={{ title: { text: 'RF size vs. depth' },
+            xaxis: { title: { text: 'Number of layers' } }, yaxis: { title: { text: 'Receptive field (px)' } },
+            margin: { t: 40, b: 50, l: 60, r: 20 } }} style={{ width: '100%', height: 370 }} />
+        </SimulationAux>
       </div>
       <div className="mt-4 p-3 bg-[var(--surface-2)] rounded text-sm text-[var(--text-muted)]">
         Each {kernelSize}x{kernelSize} conv layer expands the receptive field by {kernelSize - 1} pixels per
         direction. After {numLayers} layer{numLayers > 1 ? 's' : ''}, one neuron sees a {rf}x{rf} input
         region. Dashed rings show the cumulative RF at each depth.
       </div>
-    </div>
+    </SimulationPanel>
   );
 }

@@ -1,5 +1,6 @@
 export type AppErrorCode =
   | "BAD_REQUEST"
+  | "UNAUTHORIZED"
   | "NOT_FOUND"
   | "CONTENT_READ_ERROR"
   | "CONTENT_PARSE_ERROR"

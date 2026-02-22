@@ -1,119 +1,95 @@
 # Analysis of Variance (ANOVA)
 
-Your fertilizer worked... or did it? You tested three different fertilizers on three different fields, and the yields look different. But here's the thing — fields vary naturally. Soil depth, sun exposure, drainage — all of it adds noise. So the real question isn't "are the numbers different?" (they always will be). The real question is: "are the numbers *more* different than you'd expect from noise alone?"
+Your fertilizer worked... or did it? You tested three fertilizers on three fields, and the yields look different. But fields vary naturally -- soil, sun, drainage. So the real question isn't "are the numbers different?" (they always are). It's "are they *more* different than noise alone would produce?"
 
 ## The Idea Behind ANOVA
 
-The t-test from [hypothesis testing](./hypothesis-testing) compares two groups. But experiments often involve three, four, or a dozen groups. You *could* run t-tests on every pair, but this creates a dangerous multiple-testing problem — with enough comparisons, you will find "significant" differences by sheer chance.
+The t-test compares two groups. But experiments often involve three, four, a dozen groups. You *could* run t-tests on every pair, but with enough comparisons, you'll find "significant" differences by sheer luck. With 10 pairwise comparisons at $\alpha = 0.05$, you have nearly a 40% chance of a false positive.
 
-**Analysis of variance** solves this with a single test: do *any* of the group means differ? Despite its name, ANOVA works by comparing variability *between* groups to variability *within* groups. The key insight: if group means differ substantially, the between-group variance will be large relative to the within-group variance. If all groups come from the same population, the two should be similar.
-
-Think of it as a signal-to-noise ratio. The "signal" is how much the group means spread out. The "noise" is how much individual measurements scatter within each group. If the signal is big compared to the noise, something real is going on.
+**ANOVA** solves this with a single test: do *any* group means differ? Despite its name, it works by comparing variability *between* groups to variability *within* groups. Think signal-to-noise ratio. The "signal" is how much group means spread out. The "noise" is how much individuals scatter within each group. Big signal relative to noise? Something real is going on.
 
 ## One-Way ANOVA
 
-For $k$ groups with $n_i$ observations each, the model is:
+For $k$ groups with $n_i$ observations:
 
 $$
-Y_{ij} = \mu + \alpha_i + \varepsilon_{ij}, \qquad \varepsilon_{ij} \sim \mathcal{N}(0, \sigma^2),
+Y_{ij} = \mu + \alpha_i + \varepsilon_{ij}, \qquad \varepsilon_{ij} \sim \mathcal{N}(0, \sigma^2)
 $$
 
-where $\mu$ is the grand mean, $\alpha_i$ is the effect of group $i$, and $\varepsilon_{ij}$ is random error.
-
-The total variability decomposes cleanly:
+Total variability decomposes:
 
 $$
-\text{SS}_{\text{total}} = \text{SS}_{\text{between}} + \text{SS}_{\text{within}}.
+\text{SS}_{\text{total}} = \text{SS}_{\text{between}} + \text{SS}_{\text{within}}
 $$
-
-This decomposition is the heart of ANOVA — it splits the total variation into the part explained by group differences and the part left over as noise.
 
 The **F-statistic** is the ratio:
 
 $$
-F = \frac{\text{SS}_{\text{between}} / (k - 1)}{\text{SS}_{\text{within}} / (N - k)} = \frac{\text{MS}_{\text{between}}}{\text{MS}_{\text{within}}}.
+F = \frac{\text{SS}_{\text{between}} / (k - 1)}{\text{SS}_{\text{within}} / (N - k)} = \frac{\text{MS}_{\text{between}}}{\text{MS}_{\text{within}}}
 $$
 
 [[simulation variance-decomposition]]
 
-Under $H_0: \alpha_1 = \cdots = \alpha_k = 0$, this follows an $F(k-1, N-k)$ distribution. A large $F$ means the group differences are large relative to the noise — evidence that at least one group is different.
+Under $H_0$, $F$ follows an $F(k-1, N-k)$ distribution. Large $F$ means group differences are large relative to noise.
 
-**Assumptions** (check these before trusting the result):
+**Assumptions** (check before trusting):
 
-* Independence of observations.
-* Normality within each group (check with Q-Q plots or the Shapiro-Wilk test).
-* Homogeneity of variances (**homoscedasticity**); checked with Levene's test or Bartlett's test.
+* Independence.
+* Normality within each group (Q-Q plots or Shapiro-Wilk).
+* Equal variances (Levene's or Bartlett's test).
 
 ## Two-Way ANOVA
 
-What if you're varying two factors simultaneously — say, fertilizer type *and* watering schedule? Two-way ANOVA handles this:
+Two factors simultaneously -- say, fertilizer type *and* watering schedule:
 
 $$
-Y_{ijk} = \mu + \alpha_i + \beta_j + (\alpha\beta)_{ij} + \varepsilon_{ijk}.
+Y_{ijk} = \mu + \alpha_i + \beta_j + (\alpha\beta)_{ij} + \varepsilon_{ijk}
 $$
 
-This decomposes variability into three sources:
-
-* Main effect of $A$: do levels of factor $A$ differ on average?
-* Main effect of $B$: do levels of factor $B$ differ on average?
-* **Interaction** $A \times B$: does the effect of $A$ depend on the level of $B$?
-
-The interaction term is often the most scientifically interesting finding. A fertilizer might work brilliantly with daily watering but do nothing with weekly watering — that's an interaction. You might think the two factors work independently — but actually, they can amplify or cancel each other in ways neither factor alone would reveal.
+Three sources of variability: main effect of $A$, main effect of $B$, and the **interaction** $A \times B$. The interaction is often the most interesting finding. A fertilizer that works brilliantly with daily watering but does nothing with weekly watering -- that's an interaction. The two factors can amplify or cancel each other in ways neither alone reveals.
 
 ## Factorial Designs
 
-A **full factorial design** tests all combinations of factor levels. For factors with $a$ and $b$ levels, there are $a \times b$ treatment combinations. Factorial designs are efficient because every observation contributes information about every factor.
+A **full factorial** tests all combinations. For factors with $a$ and $b$ levels: $a \times b$ cells. Efficient because every observation contributes to every factor.
 
-**Balanced designs** (equal sample sizes per cell) simplify the analysis and make the F-tests exact. When balance is lost (due to missing data or unequal groups), the sums of squares are no longer orthogonal, and you need to choose between Type I, II, or III sums of squares — a subtlety that trips up many practitioners.
+**Balanced designs** (equal cell sizes) simplify everything and make F-tests exact. Lose balance, and you must choose between Type I, II, or III sums of squares -- a subtlety that trips up many practitioners.
 
 ## Post-Hoc Tests
 
-ANOVA tells you *that* at least one group differs, but not *which* ones. To find the specific differences, you use post-hoc (after-the-fact) comparisons. Here's the menu, ordered from most to least commonly used:
+ANOVA says *something* differs, not *what*. To find the specific differences:
 
-* **Tukey's HSD**: Compares all pairs of group means. The go-to choice for pairwise comparisons. Controls the simultaneous confidence level.
-* **Bonferroni correction**: Divides $\alpha$ by the number of comparisons. Conservative but general-purpose. Simple to explain and implement.
-* **Scheffé's method**: Allows arbitrary contrasts (not just pairwise). Most conservative. Use it when you want to test combinations like "are groups 1 and 2 together different from group 3?"
-* **Dunnett's test**: Compares each treatment to a single control group. Perfect when you have one reference condition.
+* **Tukey's HSD**: All pairwise comparisons. Go-to choice.
+* **Bonferroni**: Divides $\alpha$ by number of comparisons. Conservative but simple.
+* **Scheffe's method**: Arbitrary contrasts, most conservative.
+* **Dunnett's test**: Each treatment vs. a single control.
 
-All of these control the **family-wise error rate** — the probability of making *any* false discovery across all comparisons. Without this control, the more groups you compare, the more likely you are to find something "significant" that isn't real.
+All control the **family-wise error rate** -- the probability of *any* false discovery across all comparisons.
 
-## What If the Assumptions Fail? Kruskal-Wallis
+## What If Assumptions Fail? Kruskal-Wallis
 
-ANOVA relies on normality and equal variances. But real data is often skewed, heavy-tailed, or heteroscedastic. What then?
+The **Kruskal-Wallis test** is the non-parametric alternative. Instead of comparing means, it compares *ranks*. Robust to outliers, skew, and unequal variances. The trade-off: less power when ANOVA's assumptions are actually met. If significant, follow up with the Dunn test for pairwise comparisons.
 
-The **Kruskal-Wallis test** is a non-parametric alternative to one-way ANOVA. Instead of comparing means, it compares **ranks**: all observations are ranked together, and the test asks whether the mean ranks differ across groups.
+Now you can compare groups. But what happens when data has natural grouping you can't eliminate -- students in classrooms, patients in hospitals? Ignoring that structure inflates your sample size and leads to false discoveries. Random effects models fix this next.
 
-$$
-H = \frac{12}{N(N+1)} \sum_{i=1}^{k} n_i (\bar{R}_i - \bar{R})^2,
-$$
-
-where $\bar{R}_i$ is the mean rank in group $i$. Under $H_0$, $H \sim \chi^2(k-1)$ approximately.
-
-Because it works with ranks rather than raw values, the Kruskal-Wallis test is robust to outliers, skewness, and non-constant variance. The trade-off is reduced power when the ANOVA assumptions *are* met — you pay a price for making fewer assumptions. If the Kruskal-Wallis test is significant, pairwise comparisons can be performed with the **Dunn test** (with Bonferroni correction).
-
-Now you can compare groups and detect real differences. But what happens when the data has a natural grouping structure that you can't eliminate — students nested within classrooms, patients nested within hospitals? Ignoring that structure inflates your effective sample size and leads to false discoveries. Random effects models fix this, and that's where we go next.
-
-> **Challenge.** Explain the F-statistic to a friend using the signal-to-noise analogy. The "signal" is how different the group averages are; the "noise" is how much individuals scatter within each group. If the signal is big compared to the noise, something real is happening. One minute.
+> **Challenge.** Explain the F-statistic using signal-to-noise. The signal is how different the group averages are; the noise is how much individuals scatter within groups. Big signal relative to noise = something real. One minute.
 
 ## Big Ideas
 
-* ANOVA does not actually test means — it tests whether the variance *between* groups is larger than you would expect given the variance *within* groups. The name describes the method, not the question.
-* Running multiple t-tests instead of ANOVA inflates the false-positive rate: with 10 pairwise comparisons at $\alpha = 0.05$, you have nearly a 40% chance of finding at least one "significant" result by luck alone.
-* The interaction term in two-way ANOVA is often the most scientifically interesting result — it reveals when the effect of one factor depends on the level of another, something neither factor alone can show.
-* ANOVA's assumptions are testable, and when they fail, Kruskal-Wallis handles non-normal or heteroscedastic data — you trade some statistical power for broader applicability.
+* ANOVA tests whether between-group variance exceeds what you'd expect from within-group variance. The name describes the method, not the question.
+* Multiple t-tests inflate false positives: 10 comparisons at $\alpha = 0.05$ gives ~40% chance of a false hit.
+* The interaction in two-way ANOVA often contains the most interesting science.
+* Kruskal-Wallis handles non-normal data by working with ranks -- trading some power for broader applicability.
 
 ## What Comes Next
 
-ANOVA tells you that at least one group differs, and post-hoc tests tell you which ones. But what happens when your data has a natural grouping structure — students nested within classrooms, patients nested within hospitals, measurements nested within subjects?
-
-Ignoring that structure and treating all observations as independent inflates effective sample sizes and leads to false discoveries. Random effects models fix this by explicitly partitioning the variability between levels of the hierarchy.
+ANOVA tells you which groups differ. But what happens when your data has nested structure -- students in classrooms in schools? Treating all observations as independent inflates sample sizes and produces false discoveries. Random effects models fix this by partitioning variability across hierarchy levels.
 
 ## Check Your Understanding
 
-1. You test four fertilizers on crop yields and run six pairwise t-tests to find which ones differ. Why is this approach statistically problematic, and what should you do instead?
-2. A one-way ANOVA returns $F = 2.1$ with groups $k = 4$ and total observations $N = 40$. Without a table, explain what you would need to look up to determine whether this is significant, and what the degrees of freedom are.
-3. You find a significant interaction in a two-way ANOVA between fertilizer type and watering frequency. A colleague concludes "so the best fertilizer is whichever one has the highest average yield." Why is this conclusion potentially wrong?
+1. You test four fertilizers with six pairwise t-tests. Why is this problematic? What should you do instead?
+2. One-way ANOVA: $F = 2.1$, $k = 4$, $N = 40$. What degrees of freedom do you need? How would you assess significance?
+3. Significant interaction between fertilizer and watering. "So the best fertilizer is whichever has the highest average yield." Why is this potentially wrong?
 
 ## Challenge
 
-You run a one-way ANOVA on three groups (20 observations per group) and find a significant F-statistic. You then use Tukey's HSD to identify which pairs of means differ significantly. Now suppose a reviewer points out that Levene's test for homogeneity of variance gives $p = 0.02$ — the groups have different variances. Describe what this means for the validity of your analysis, what alternative you might use, and whether your conclusions would likely change if you used a non-parametric alternative. How would your answer differ if the sample sizes were very unequal across groups?
+You run one-way ANOVA on three groups (20 each) and find a significant F. Tukey's HSD identifies the differing pairs. Then Levene's test gives $p = 0.02$ -- unequal variances. What does this mean for validity? What alternative would you use? Would conclusions likely change with a non-parametric test? How would unequal sample sizes make things worse?

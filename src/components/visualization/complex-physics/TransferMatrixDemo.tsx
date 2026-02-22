@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { Slider } from '@/components/ui/slider';
+import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 function computeTransferMatrix(J: number, tRange: number[]) {
   const xi: number[] = [];
@@ -25,7 +28,7 @@ function computeTransferMatrix(J: number, tRange: number[]) {
   return { xi, ratio };
 }
 
-export function TransferMatrixDemo() {
+export default function TransferMatrixDemo({}: SimulationComponentProps) {
   const [J, setJ] = useState(1.0);
   const [currentT, setCurrentT] = useState(2.0);
 
@@ -47,37 +50,40 @@ export function TransferMatrixDemo() {
   }, [J, currentT]);
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="text-sm text-[var(--text-muted)] block mb-1">
-            Coupling J: {J.toFixed(2)}
-          </label>
-          <Slider
-            min={0.1}
-            max={3}
-            step={0.1}
-            value={[J]}
-            onValueChange={([v]) => setJ(v)}
-            className="w-full"
-          />
+    <SimulationPanel title="Transfer Matrix Demo">
+      <SimulationConfig>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <SimulationLabel>
+              Coupling J: {J.toFixed(2)}
+            </SimulationLabel>
+            <Slider
+              min={0.1}
+              max={3}
+              step={0.1}
+              value={[J]}
+              onValueChange={([v]) => setJ(v)}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel>
+              Temperature T: {currentT.toFixed(2)} ({'\u03BE'} = {currentXi.toFixed(2)})
+            </SimulationLabel>
+            <Slider
+              min={0.1}
+              max={10}
+              step={0.1}
+              value={[currentT]}
+              onValueChange={([v]) => setCurrentT(v)}
+              className="w-full"
+            />
+          </div>
         </div>
-        <div>
-          <label className="text-sm text-[var(--text-muted)] block mb-1">
-            Temperature T: {currentT.toFixed(2)} ({'\u03BE'} = {currentXi.toFixed(2)})
-          </label>
-          <Slider
-            min={0.1}
-            max={10}
-            step={0.1}
-            value={[currentT]}
-            onValueChange={([v]) => setCurrentT(v)}
-            className="w-full"
-          />
-        </div>
-      </div>
+      </SimulationConfig>
 
-      <CanvasChart
+      <SimulationMain>
+        <CanvasChart
         data={[
           {
             x: tRange,
@@ -106,9 +112,10 @@ export function TransferMatrixDemo() {
         style={{ width: '100%', height: 400 }}
       />
 
-      <p className="text-sm text-[var(--text-muted)]">
-        The correlation length {'\u03BE'} = -1/ln({'\u03BB'}{'\u208B'}/{'\u03BB'}{'\u208A'}) grows as T {'\u2192'} 0 but never diverges at finite T — confirming no phase transition in 1D.
-      </p>
-    </div>
+        <p className="text-sm text-[var(--text-soft)]">
+          The correlation length {'\u03BE'} = -1/ln({'\u03BB'}{'\u208B'}/{'\u03BB'}{'\u208A'}) grows as T {'\u2192'} 0 but never diverges at finite T — confirming no phase transition in 1D.
+        </p>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

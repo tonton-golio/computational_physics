@@ -44,18 +44,7 @@ Most entries of $\mathbf{G}$ are zero — each ray only crosses a small fraction
 
 ## Building the Sensitivity Matrix
 
-Here's the code that constructs $\mathbf{G}$ for a simple 2D cross-borehole geometry with diagonal rays:
-
-```python
-def make_G(N=13):
-    G_right = [np.eye(N, k=1 + i).flatten() for i in range(N - 2)]
-    G_left = [np.flip(np.eye(N, k=-(1 + i)), axis=0).flatten() for i in range(N - 2)]
-    z = np.zeros((1, N**2))
-    G = np.concatenate([z, G_left[::-1], z, z, G_right, z])
-    return G * (2**0.5) * 1000
-```
-
-Each row is one ray. The non-zero entries mark which cells that ray passes through. The $\sqrt{2} \times 1000$ factor accounts for diagonal path length and unit conversion. Stare at this for a moment — each row is literally the ray's footprint on the grid.
+Each row of $\mathbf{G}$ is literally one ray's footprint on the grid — the non-zero entries mark which cells that ray passes through, weighted by path length inside each cell.
 
 ---
 
@@ -92,38 +81,17 @@ If you've been following along, this should feel familiar — it's exactly the T
 
 [[simulation linear-tomography]]
 
-Things to look for in the simulation:
-
-* Compare the true anomaly pattern with the recovered image — where does the reconstruction succeed? Where does it smear?
-* Change the regularization parameter and watch the image sharpen (small $\epsilon$) or blur (large $\epsilon$)
-* Notice which cells are well-resolved (crossed by many rays) and which are ghostly (sparse coverage)
-
-Resolution and coverage — how to diagnose which parts of your image the data can actually resolve — are critical to interpreting any tomographic result. We return to these tools in the [geophysical examples](./geophysical-inversion), where spike tests and checkerboard tests reveal the resolving power (and blind spots) of real survey geometries.
-
 ---
-
-## The Bridge: Linear to Nonlinear
-
-Everything we've done so far relies on a crucial assumption: the forward model is **linear**. Travel time is a linear function of slowness. The matrix $\mathbf{G}$ doesn't depend on the model.
-
-In the real Earth, this is almost never exactly true. Wave propagation depends on the velocity structure (rays bend). Material properties interact nonlinearly. The forward map $g(\mathbf{m})$ is a complicated function, not a simple matrix multiplication.
-
-When the forward model is nonlinear, we can no longer find the answer with a single matrix inversion — even a regularized one. We have to stop hunting for one best model and start exploring a *family* of plausible models. That's where [Monte Carlo methods](./monte-carlo-methods) come in.
-
----
-
-## Big Ideas
-* The sensitivity matrix $\mathbf{G}$ is not just a computational object — each row is the literal geometric footprint of one measurement on the model. Building it forces you to think carefully about what your data actually sees.
-* Always validate on synthetic data first. If you cannot recover a known model from clean synthetic data, your inversion workflow has a bug. If you can't recover it from noisy synthetic data, you don't have enough coverage.
-* Sparsity of $\mathbf{G}$ is what makes large-scale tomography computationally feasible — each ray only crosses a small fraction of the grid, so matrix-vector products are cheap.
 
 ## What Comes Next
 
-Linear tomography succeeds by assuming that travel time is a linear function of the slowness field — the sensitivity matrix $\mathbf{G}$ does not depend on the model you are trying to find. In the real Earth, this assumption breaks down: wave paths bend as they pass through heterogeneous material, and the forward model becomes a nonlinear function of the unknowns. When linearization fails, a single inversion pass is not enough.
+Linear tomography succeeds by assuming that travel time is a linear function of the slowness field — the sensitivity matrix $\mathbf{G}$ does not depend on the model you are trying to find. In the real Earth, this assumption breaks down: wave paths bend as they pass through heterogeneous material, and the forward model becomes a nonlinear function of the unknowns.
 
 For nonlinear problems, instead of solving once for a best model, you must explore a family of plausible models — characterizing the posterior rather than optimizing it. The computational machinery for doing that at scale is Monte Carlo sampling, which connects the geometric intuition of tomography to the probabilistic framework developed in the Bayesian lessons.
 
-## Check Your Understanding
+So here's the essence: the sensitivity matrix $\mathbf{G}$ is not just a computational object — each row is the literal geometric footprint of one measurement on the model. Always validate on synthetic data first, because if you can't recover a known model from clean data, your workflow has a bug. And the sparsity of $\mathbf{G}$ is what makes the whole enterprise computationally feasible.
+
+## Let's Make Sure You Really Got It
 1. In the matrix $\mathbf{G}$ for 2D tomography, what is the physical meaning of the entry $G_{ij}$? Why are most entries zero for typical ray geometries, and why is this sparsity computationally useful?
 2. You run a delta-function spike test and find that the recovered image is a horizontal smear rather than a compact blob. What does this tell you about the ray geometry in that region of the model?
 3. Explain why a checkerboard pattern that recovers cleanly in the top-left of your image but degrades into a homogeneous gray in the bottom-right is useful information, even if you are primarily interested in a different part of the model.
@@ -131,4 +99,3 @@ For nonlinear problems, instead of solving once for a best model, you must explo
 ## Challenge
 
 Design a cross-borehole tomography survey in 2D with a $20 \times 20$ cell grid. Place sources on the left borehole and receivers on the right, then add a second set with sources on the top and receivers on the bottom. Construct $\mathbf{G}$ for each configuration and compute the resolution matrix $\mathbf{R} = \mathbf{G}(\mathbf{G}^T\mathbf{G} + \epsilon^2\mathbf{I})^{-1}\mathbf{G}^T$ for a fixed $\epsilon$. Compare the diagonal of $\mathbf{R}$ (which measures local resolution) between the single-geometry and combined-geometry surveys. How much does adding the second acquisition direction improve resolution in the center versus the edges of the model?
-

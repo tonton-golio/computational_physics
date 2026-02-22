@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
 import { useMemo, useState } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 function factorial(n: number): number {
   if (n <= 1) return 1;
@@ -16,7 +19,7 @@ function choose(n: number, k: number): number {
   return factorial(n) / (factorial(k) * factorial(n - k));
 }
 
-export default function BinomialPoissonComparison() {
+export default function BinomialPoissonComparison({}: SimulationComponentProps) {
   const [n, setN] = useState(40);
   const [mean, setMean] = useState(6);
 
@@ -30,21 +33,18 @@ export default function BinomialPoissonComparison() {
   }, [n, mean]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8 space-y-4">
-      <h3 className="text-xl font-semibold text-[var(--text-strong)]">Binomial vs Poisson Limit</h3>
-      <p className="text-sm text-[var(--text-muted)]">
-        Compare exact Binomial(n, p) with Poisson(lambda) where lambda = n p.
-      </p>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <SimulationPanel title="Binomial vs Poisson Limit" caption="Compare exact Binomial(n, p) with Poisson(lambda) where lambda = n p.">
+      <SimulationConfig>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">n (trials): {n}</label>
+          <SimulationLabel>n (trials): {n}</SimulationLabel>
           <Slider value={[n]} onValueChange={([v]) => setN(v)} min={10} max={200} step={5} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">lambda = n p: {mean.toFixed(1)}</label>
+          <SimulationLabel>lambda = n p: {mean.toFixed(1)}</SimulationLabel>
           <Slider value={[mean]} onValueChange={([v]) => setMean(v)} min={1} max={20} step={0.5} />
         </div>
-      </div>
+      </SimulationConfig>
+      <SimulationMain>
       <CanvasChart
         data={[
           {
@@ -75,6 +75,7 @@ export default function BinomialPoissonComparison() {
         }}
         style={{ width: '100%', height: 430 }}
       />
-    </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

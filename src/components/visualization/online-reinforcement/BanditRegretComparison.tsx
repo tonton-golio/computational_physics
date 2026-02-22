@@ -1,12 +1,14 @@
-'use client';
+"use client";
 
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationLabel, SimulationConfig } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 
-export default function BanditRegretComparison({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function BanditRegretComparison({}: SimulationComponentProps) {
   const [horizon, setHorizon] = useState(1000);
   const t = useMemo(() => Array.from({ length: horizon }, (_, i) => i + 1), [horizon]);
   const ucb = useMemo(() => t.map((x) => 0.8 * Math.sqrt(x * Math.log(x + 1))), [t]);
@@ -15,10 +17,14 @@ export default function BanditRegretComparison({ id }: SimulationComponentProps)
   const random = useMemo(() => t.map((x) => 0.22 * x), [t]);
 
   return (
-    <div className="w-full rounded-lg bg-[var(--surface-1)] p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-3 text-[var(--text-strong)]">Bandit Regret Comparison</h3>
-      <label className="mb-1 block text-sm text-[var(--text-muted)]">Horizon: {horizon}</label>
-      <Slider value={[horizon]} onValueChange={([v]) => setHorizon(v)} min={200} max={3000} step={100} className="mb-4" />
+    <SimulationPanel title="Bandit Regret Comparison">
+      <SimulationConfig>
+        <div>
+          <SimulationLabel>Horizon: {horizon}</SimulationLabel>
+          <Slider value={[horizon]} onValueChange={([v]) => setHorizon(v)} min={200} max={3000} step={100} />
+        </div>
+      </SimulationConfig>
+      <SimulationMain>
       <CanvasChart
         data={[
           { x: t, y: ucb, type: 'scatter', mode: 'lines', name: 'UCB1 (stochastic)', line: { color: '#4ade80', width: 3 } },
@@ -34,6 +40,7 @@ export default function BanditRegretComparison({ id }: SimulationComponentProps)
         }}
         style={{ width: '100%' }}
       />
-    </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

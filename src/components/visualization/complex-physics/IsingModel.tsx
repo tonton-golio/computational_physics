@@ -1,9 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { SimulationMain } from '@/components/ui/simulation-main';
 import { Slider } from '@/components/ui/slider';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationAux, SimulationLabel, SimulationButton } from '@/components/ui/simulation-panel';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 import { useTheme } from '@/lib/use-theme';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
@@ -136,7 +138,7 @@ function SpinGrid({ grid }: { grid: number[][] }) {
 
 // ---------- Main component ----------
 
-export function IsingModel() {
+export default function IsingModel({}: SimulationComponentProps) {
   const theme = useTheme();
   const isDark = theme === 'dark';
   const [size, setSize] = useState(30);
@@ -166,11 +168,15 @@ export function IsingModel() {
   const cameraDistance = size * 0.9;
 
   return (
-    <div className="space-y-6">
-      {/* Sliders */}
-      <div className="flex flex-wrap gap-6 items-center">
+    <SimulationPanel title="2D Ising Model">
+      <SimulationSettings>
+        <SimulationButton variant="primary" onClick={() => setSeed(s => s + 1)}>
+          Re-run
+        </SimulationButton>
+      </SimulationSettings>
+      <SimulationConfig>
         <div>
-          <label className="text-sm text-[var(--text-muted)] block mb-1">Size: {size}</label>
+          <SimulationLabel>Size: {size}</SimulationLabel>
           <Slider
             min={5}
             max={80}
@@ -181,7 +187,7 @@ export function IsingModel() {
           />
         </div>
         <div>
-          <label className="text-sm text-[var(--text-muted)] block mb-1">Beta (1/T): {beta.toFixed(2)}</label>
+          <SimulationLabel>Beta (1/T): {beta.toFixed(2)}</SimulationLabel>
           <Slider
             min={0.01}
             max={2.0}
@@ -192,7 +198,7 @@ export function IsingModel() {
           />
         </div>
         <div>
-          <label className="text-sm text-[var(--text-muted)] block mb-1">Steps: {nsteps}</label>
+          <SimulationLabel>Steps: {nsteps}</SimulationLabel>
           <Slider
             min={100}
             max={50000}
@@ -202,13 +208,7 @@ export function IsingModel() {
             className="w-48"
           />
         </div>
-        <button
-          onClick={() => setSeed(s => s + 1)}
-          className="px-4 py-2 bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white rounded text-sm mt-4"
-        >
-          Re-run
-        </button>
-      </div>
+      </SimulationConfig>
 
       {/* 3D Spin Grid */}
       <SimulationMain className="w-full rounded-lg overflow-hidden" style={{ height: 400, background: isDark ? '#0a0a0f' : '#f0f4ff' }}>
@@ -273,46 +273,48 @@ export function IsingModel() {
       </div>
 
       {/* Energy and magnetization time series */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <CanvasChart
-          data={[
-            {
-              y: result.energyHistory,
-              type: 'scatter',
-              mode: 'lines',
-              line: { color: '#ef4444', width: 1 },
-              name: 'Energy',
-            },
-          ]}
-          layout={{
-            title: { text: 'Energy vs Time', font: { size: 13 } },
-            xaxis: { title: { text: 'Timestep' } },
-            yaxis: { title: { text: 'Energy' } },
-            margin: { t: 40, r: 20, b: 50, l: 60 },
-            showlegend: false,
-          }}
-          style={{ width: '100%', height: 300 }}
-        />
-        <CanvasChart
-          data={[
-            {
-              y: result.magnetizationHistory.map(Math.abs),
-              type: 'scatter',
-              mode: 'lines',
-              line: { color: '#f59e0b', width: 1 },
-              name: '|Magnetization|',
-            },
-          ]}
-          layout={{
-            title: { text: '|Magnetization| vs Time', font: { size: 13 } },
-            xaxis: { title: { text: 'Timestep' } },
-            yaxis: { title: { text: '|M|' } },
-            margin: { t: 40, r: 20, b: 50, l: 60 },
-            showlegend: false,
-          }}
-          style={{ width: '100%', height: 300 }}
-        />
-      </div>
-    </div>
+      <SimulationAux>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <CanvasChart
+            data={[
+              {
+                y: result.energyHistory,
+                type: 'scatter',
+                mode: 'lines',
+                line: { color: '#ef4444', width: 1 },
+                name: 'Energy',
+              },
+            ]}
+            layout={{
+              title: { text: 'Energy vs Time', font: { size: 13 } },
+              xaxis: { title: { text: 'Timestep' } },
+              yaxis: { title: { text: 'Energy' } },
+              margin: { t: 40, r: 20, b: 50, l: 60 },
+              showlegend: false,
+            }}
+            style={{ width: '100%', height: 300 }}
+          />
+          <CanvasChart
+            data={[
+              {
+                y: result.magnetizationHistory.map(Math.abs),
+                type: 'scatter',
+                mode: 'lines',
+                line: { color: '#f59e0b', width: 1 },
+                name: '|Magnetization|',
+              },
+            ]}
+            layout={{
+              title: { text: '|Magnetization| vs Time', font: { size: 13 } },
+              xaxis: { title: { text: 'Timestep' } },
+              yaxis: { title: { text: '|M|' } },
+              margin: { t: 40, r: 20, b: 50, l: 60 },
+              showlegend: false,
+            }}
+            style={{ width: '100%', height: 300 }}
+          />
+        </div>
+      </SimulationAux>
+    </SimulationPanel>
   );
 }

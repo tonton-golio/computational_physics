@@ -1,4 +1,4 @@
-# Bayesian Inversion
+# Bayesian Inversion — Why Regularization Works
 
 Here's a question that might have been nagging you. In the [regularization lesson](./regularization), we added a penalty term $\epsilon^2\|\mathbf{m}\|^2$ and said "this keeps the model from going crazy." But *why that particular penalty*? Why not something else? And how do we know if $\epsilon$ is too big or too small?
 
@@ -34,13 +34,6 @@ Each colored line in the prior distribution represents a possible model *before*
 
 [[simulation posterior-walker-arena]]
 
-Things to look for in the simulation:
-
-* Set the prior wide and the noise tight — the posterior snaps to the data (data-dominated regime, small $\epsilon$)
-* Set the prior tight and the noise wide — the posterior barely moves from the prior (prior-dominated regime, large $\epsilon$)
-* Watch the effective $\epsilon$ ratio: it is exactly the Tikhonov regularization parameter from the [previous lesson](./regularization)
-* The posterior is always narrower than both the prior and the likelihood — combining information always reduces uncertainty
-
 ---
 
 ## Weighted Formulation: Data and Model Covariance
@@ -69,21 +62,9 @@ Notice what we just did — we turned our beliefs about noise and about geology 
 
 When both the prior and the noise are Gaussian and the forward model is linear, the posterior is also Gaussian — and we can write it down exactly. No sampling, no optimization, just algebra.
 
-The posterior mean (which is also the MAP estimate) is:
+When everything is Gaussian, the MAP estimate and the posterior mean are the same number, and the covariance has a beautiful closed form — but the real point is this: regularization is just a prior in disguise. Set $\mathbf{C}_M = \epsilon^{-2}\mathbf{I}$ and $\mathbf{C}_D = \mathbf{I}$, and you recover the Tikhonov formula from the [regularization lesson](./regularization). The "regularization parameter" $\epsilon$ was the ratio of noise standard deviation to prior standard deviation all along.
 
-$$
-\hat{\mathbf{m}} = \mathbf{C}_M\mathbf{G}^T(\mathbf{G}\mathbf{C}_M\mathbf{G}^T + \mathbf{C}_D)^{-1}(\mathbf{d} - \mathbf{G}\mathbf{m}_{\text{prior}}) + \mathbf{m}_{\text{prior}},
-$$
-
-and the posterior covariance is:
-
-$$
-\tilde{\mathbf{C}}_M = \mathbf{C}_M - \mathbf{C}_M\mathbf{G}^T(\mathbf{G}\mathbf{C}_M\mathbf{G}^T + \mathbf{C}_D)^{-1}\mathbf{G}\mathbf{C}_M.
-$$
-
-Set $\mathbf{C}_M = \epsilon^{-2}\mathbf{I}$ and $\mathbf{C}_D = \mathbf{I}$, and this reduces to the Tikhonov formula from the [regularization lesson](./regularization). The "regularization parameter" $\epsilon$ was the ratio of noise standard deviation to prior standard deviation all along.
-
-Notice something remarkable about $\tilde{\mathbf{C}}_M$: it depends on $\mathbf{G}$, $\mathbf{C}_M$, and $\mathbf{C}_D$, but **not on the data** $\mathbf{d}$. The data shifts the posterior mean but doesn't change its shape. This means you can compute how uncertain your answer will be *before you collect a single measurement* — which is the foundation of experimental design. If two survey configurations give different $\tilde{\mathbf{C}}_M$, you can pick the one with smaller uncertainty and know you're making an optimal investment.
+And here's the gorgeous part: the posterior covariance depends on $\mathbf{G}$, $\mathbf{C}_M$, and $\mathbf{C}_D$, but **not on the data** $\mathbf{d}$. The data shifts the posterior mean but doesn't change its shape. This means you can compute how uncertain your answer will be *before you collect a single measurement* — which is the foundation of experimental design. If two survey configurations give different posterior covariances, you can pick the one with smaller uncertainty and know you're making an optimal investment.
 
 ---
 
@@ -103,11 +84,7 @@ But before we sample — we need to scale up. When the model has millions of par
 
 ---
 
-## Big Ideas
-* Every regularization choice is secretly a prior. The penalty $\epsilon^2\|\mathbf{m}\|^2$ says "I believe the model parameters are small and Gaussian-distributed." Own that belief rather than hiding it in notation.
-* Data covariance and model covariance are not bookkeeping details — they encode everything you know about measurement quality and geological plausibility before the inversion starts.
-* The MAP estimate is one number extracted from a distribution. For linear-Gaussian problems, it is sufficient. For everything else, it is a starting point, not the answer.
-* Asking "how much did the data teach me?" is a well-posed question with a precise mathematical answer — and the framework to compute it lives in information theory.
+So here's the takeaway: every regularization choice is secretly a prior — own that belief rather than hiding it in notation. Data covariance and model covariance encode everything you know before the inversion starts. And the MAP estimate is just one number extracted from a distribution. For linear-Gaussian problems, it's sufficient. For everything else, it's a starting point, not the answer.
 
 ## What Comes Next
 
@@ -115,12 +92,7 @@ Finding the peak of the posterior is tractable for Gaussian problems, but invers
 
 These iterative strategies carry forward the same prior encoded by the regularization term, now expressed as gradient updates rather than a matrix inverse. Understanding how to apply them efficiently — and when to stop early as a form of implicit regularization — opens the door to the large-scale inversions that appear in seismology, climate science, and medical imaging.
 
-## Check Your Understanding
+## Let's Make Sure You Really Got It
 1. Show explicitly why minimizing the Tikhonov objective $\|\mathbf{d} - \mathbf{Gm}\|^2 + \epsilon^2\|\mathbf{m}\|^2$ is equivalent to maximizing a posterior probability with a zero-mean Gaussian prior on $\mathbf{m}$ and Gaussian noise on $\mathbf{d}$. What assumptions are required?
 2. In the weighted formulation, why is it important to whiten the data before solving the standard Tikhonov problem? What goes wrong if you ignore the off-diagonal structure in $\mathbf{C}_D$?
 3. The posterior distribution over a model with a million parameters cannot be visualized directly. How would you extract useful scientific conclusions from it?
-
-## Challenge
-
-Consider an inverse problem where the noise on your data is not Gaussian but Laplacian (double-exponential). Derive the regularized objective that corresponds to MAP estimation under this noise model with a Gaussian prior on the model. How does this objective differ from the standard Tikhonov problem, and what computational challenges arise when solving it? Implement a simple 1D example and compare the recovered models under Gaussian vs. Laplacian noise assumptions when the data actually contains outliers.
-

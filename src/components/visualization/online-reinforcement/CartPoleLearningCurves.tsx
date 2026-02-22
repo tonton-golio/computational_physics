@@ -1,8 +1,10 @@
-'use client';
+"use client";
 
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationLabel, SimulationConfig } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 
@@ -14,7 +16,7 @@ function smooth(values: number[], window: number): number[] {
   });
 }
 
-export default function CartPoleLearningCurves({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function CartPoleLearningCurves({}: SimulationComponentProps) {
   const [episodes, setEpisodes] = useState(250);
   const [noise, setNoise] = useState(20);
 
@@ -31,21 +33,18 @@ export default function CartPoleLearningCurves({ id }: SimulationComponentProps)
   }, [episodes, noise]);
 
   return (
-    <div className="w-full rounded-lg bg-[var(--surface-1)] p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-3 text-[var(--text-strong)]">CartPole Learning Progress</h3>
-      <p className="text-sm text-[var(--text-muted)] mb-4">
-        Episode duration improves as the policy learns to keep the pole balanced for longer horizons.
-      </p>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+    <SimulationPanel title="CartPole Learning Progress" caption="Episode duration improves as the policy learns to keep the pole balanced for longer horizons.">
+      <SimulationConfig>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Episodes: {episodes}</label>
+          <SimulationLabel>Episodes: {episodes}</SimulationLabel>
           <Slider value={[episodes]} onValueChange={([v]) => setEpisodes(v)} min={100} max={1000} step={25} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Noise level: {noise}</label>
+          <SimulationLabel>Noise level: {noise}</SimulationLabel>
           <Slider value={[noise]} onValueChange={([v]) => setNoise(v)} min={0} max={60} step={1} />
         </div>
-      </div>
+      </SimulationConfig>
+      <SimulationMain>
       <CanvasChart
         data={[
           { x: Array.from({ length: raw.length }, (_, i) => i + 1), y: raw, type: 'scatter', mode: 'lines', name: 'Episode duration', line: { color: '#64748b', width: 1 } },
@@ -60,6 +59,7 @@ export default function CartPoleLearningCurves({ id }: SimulationComponentProps)
         }}
         style={{ width: '100%' }}
       />
-    </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

@@ -1,8 +1,10 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationLabel, SimulationButton, SimulationSettings, SimulationConfig, SimulationResults } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 
@@ -100,7 +102,7 @@ function banditRun(
   return rewards;
 }
 
-export default function MultiArmedBandit({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function MultiArmedBandit({}: SimulationComponentProps) {
   const [T, setT] = useState(500);
   const [nExperiments, setNExperiments] = useState(20);
   const [epsilon, setEpsilon] = useState(0.1);
@@ -152,18 +154,15 @@ export default function MultiArmedBandit({ id }: SimulationComponentProps) { // 
   };
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">
-        Multi-Armed Bandit: Strategy Comparison
-      </h3>
-      <p className="text-[var(--text-muted)] text-sm mb-4">
-        A 4-armed bandit with Bernoulli rewards and win-probabilities [0.1, 0.15, 0.2, 0.5].
-        Compare the cumulative reward of Greedy, &epsilon;-Greedy, UCB, and LCB strategies.
-      </p>
-
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+    <SimulationPanel title="Multi-Armed Bandit: Strategy Comparison">
+      <SimulationSettings>
+        <SimulationButton variant="primary" onClick={rerun}>
+          Re-run
+        </SimulationButton>
+      </SimulationSettings>
+      <SimulationConfig>
         <div>
-          <label className="text-[var(--text-strong)] text-sm">Time horizon (T): {T}</label>
+          <SimulationLabel className="text-[var(--text-strong)]">Time horizon (T): {T}</SimulationLabel>
           <Slider
             min={100}
             max={2000}
@@ -174,9 +173,9 @@ export default function MultiArmedBandit({ id }: SimulationComponentProps) { // 
           />
         </div>
         <div>
-          <label className="text-[var(--text-strong)] text-sm">
+          <SimulationLabel className="text-[var(--text-strong)]">
             Experiments: {nExperiments}
-          </label>
+          </SimulationLabel>
           <Slider
             min={1}
             max={100}
@@ -187,9 +186,9 @@ export default function MultiArmedBandit({ id }: SimulationComponentProps) { // 
           />
         </div>
         <div>
-          <label className="text-[var(--text-strong)] text-sm">
+          <SimulationLabel className="text-[var(--text-strong)]">
             Epsilon (&epsilon;): {epsilon.toFixed(2)}
-          </label>
+          </SimulationLabel>
           <Slider
             min={0.01}
             max={0.5}
@@ -199,16 +198,9 @@ export default function MultiArmedBandit({ id }: SimulationComponentProps) { // 
             className="w-full"
           />
         </div>
-        <div className="flex items-end">
-          <button
-            onClick={rerun}
-            className="px-4 py-2 bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white rounded text-sm transition-colors"
-          >
-            Re-run
-          </button>
-        </div>
-      </div>
+      </SimulationConfig>
 
+      <SimulationMain>
       <CanvasChart
         data={methods.map((method) => ({
           x: plotData.timeSteps,
@@ -232,22 +224,24 @@ export default function MultiArmedBandit({ id }: SimulationComponentProps) { // 
         }}
         style={{ width: '100%' }}
       />
-
-      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-[var(--text-muted)]">
-        <div>
-          <strong className="text-[var(--text-strong)]">Arm probabilities:</strong>{' '}
-          {probs.map((p, i) => (
-            <span key={i} className="mr-2">
-              Arm {i + 1}: {p}
-            </span>
-          ))}
+      </SimulationMain>
+      <SimulationResults>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-[var(--text-muted)]">
+          <div>
+            <strong className="text-[var(--text-strong)]">Arm probabilities:</strong>{' '}
+            {probs.map((p, i) => (
+              <span key={i} className="mr-2">
+                Arm {i + 1}: {p}
+              </span>
+            ))}
+          </div>
+          <div>
+            <strong className="text-[var(--text-strong)]">Optimal arm:</strong> Arm 4 (p=0.5),
+            yielding expected cumulative reward of {(0.5 * T).toFixed(0)} over {T}{' '}
+            steps
+          </div>
         </div>
-        <div>
-          <strong className="text-[var(--text-strong)]">Optimal arm:</strong> Arm 4 (p=0.5),
-          yielding expected cumulative reward of {(0.5 * T).toFixed(0)} over {T}{' '}
-          steps
-        </div>
-      </div>
-    </div>
+      </SimulationResults>
+    </SimulationPanel>
   );
 }

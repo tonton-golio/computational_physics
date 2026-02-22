@@ -4,16 +4,50 @@ Writing conventions for lesson markdown files. For file structure, placeholders,
 
 ---
 
-## Voice and Tone — The Feynman Standard
+## Voice and Tone — The Feynman-Urban Standard
 
-Write like Richard Feynman taught: with wonder, honesty, and the conviction that any idea can be made clear if you find the right way to look at it. Every lesson should feel like a brilliant friend is explaining something at a whiteboard — excited, unpretentious, and never afraid to say "nobody really knows why."
+**"The excited friend who just figured out how the universe works and can't wait to tell you."**
 
-* **Exploratory and wonder-driven.** Start from curiosity, not from definitions. Ask "what would happen if…?" and "why should we believe that…?" before giving answers. Make the reader feel they are discovering the idea alongside you, not being lectured at.
-* **Second person ("you") and first-person plural ("we").** Use "you" when addressing the reader and "we" when reasoning through a derivation together. "Let's see what happens" is better than "it can be shown."
-* **Thought experiments over formalism.** Whenever possible, set up a concrete mental picture before introducing equations. Feynman never started with the general case — he started with the simplest possible example that captures the essential physics.
-* **Active voice by default.** Prefer "the algorithm picks the arm with the highest score" over "the arm with the highest score is picked by the algorithm."
-* **Present tense for exposition.** Use past tense only when it serves the narrative.
+Write every sentence as if you are explaining it to a ridiculously clever 15-year-old who has never seen the math before — but who will light up the moment it makes sense. Combine Feynman's wonder and honesty with Tim Urban's big-picture energy and vivid scene-setting.
+
+### Core voice
+
+* **Direct, second-person ("you"), conversational.** Like you are drawing on a napkin together. Use "you" when addressing the reader and "we" when reasoning through a derivation together. "Let's see what happens" is better than "it can be shown."
+* **Feynman wonder + Urban big-picture energy.** Equal parts awe and "this is bananas."
+* **Thought experiments over formalism.** Set up a concrete mental picture before introducing equations. Start with the simplest possible example that captures the essential physics.
+* **Active voice, present tense.** Past tense only when it serves the narrative.
 * **Honest about what is hard.** Do not gloss over subtleties or wave your hands at a gap. If a step is tricky, say so. If something is still an open question, say that too.
+
+### Tone and energy
+
+* **Playful curiosity.** "Wait till you see this…", "And here's the gorgeous part…", "Okay this next bit is ridiculous."
+* **Light irreverence.** Gently mock how weird or counter-intuitive something is.
+* **Never pompous, never dry.** If it sounds like a textbook, kill it.
+
+### Language rules
+
+* Short punchy sentences mixed with longer flowing ones.
+* Analogies everywhere — use everyday objects, games, stories, food, sports.
+* One new idea at a time. Define it simply, then immediately show why it is cool.
+* Contractions (it's, you're, we're), active voice, vivid verbs.
+* Zero filler: "In this section we will explore…" → gone.
+
+### Humor and personality
+
+* Self-deprecating when needed ("I still catch myself staring at this like a confused golden retriever").
+* Exaggeration for delight, not clickbait ("the most unreasonably powerful trick in all of machine learning").
+
+### Visual and mental-image style
+
+* Describe things so clearly the reader can picture them.
+* Suggest simple mental diagrams or "napkin sketches" even when no actual image is shown.
+
+### Signature phrases (use sparingly — they are seasoning)
+
+* "And here's the gorgeous part…"
+* "Okay this next bit is ridiculous…"
+* "And suddenly everything clicks…"
+* "This is the cheat code the universe didn't want us to find."
 
 ### What to avoid
 
@@ -83,7 +117,7 @@ Keep home pages under 30 lines. Their job is to hook the reader and justify why 
 
 ### Closing — Structured Wrap-Up
 
-End every lesson with the following four sections in order. Do not skip any of them, and do not rename them.
+The default closing has four sections in order:
 
 ```md
 ## Big Ideas
@@ -107,10 +141,12 @@ A harder, open-ended problem that pushes the reader beyond the lesson.
 
 Guidelines for each closing section:
 
-* **Big Ideas** — 2-4 bullet points. Write pithy insights, not summaries. Think "the one sentence you would tell a friend at a bar." Avoid restating definitions.
+* **Big Ideas** — 2-5 bullet points. Write pithy insights, not summaries. Think "the one sentence you would tell a friend at a bar." Avoid restating definitions.
 * **What Comes Next** — 1-2 paragraphs that explain *why* the next lesson is the natural question to ask after this one. For the last lesson in a topic, wrap up the topic arc instead. Reference the next lesson by name using a markdown link.
-* **Check Your Understanding** — 3 questions that test understanding, not recall. Ask "why does X happen?" or "what would change if…?" — never "what is the definition of X?"
+* **Check Your Understanding** — Max 3 questions that test understanding, not recall. Ask "why does X happen?" or "what would change if…?" — never "what is the definition of X?" Make them playful, not homework-like.
 * **Challenge** — One genuinely hard, open-ended problem. Prefer problems that require implementation, estimation, or synthesis across ideas. The reader should not be able to answer it by scanning the lesson text.
+
+**Topic-specific editorial overrides.** The four-section default can be adjusted per topic when the editorial feedback calls for it. Some topics keep all four sections (applied-statistics, dynamical-models), some remove CYU and Challenge entirely (advanced-deep-learning, online-reinforcement-learning), and some rename or restyle them. Follow the topic-specific feedback when it conflicts with the default.
 
 Do not use other closing patterns: no `## What We Just Learned`, no bold summary lines (`**What we just learned in one sentence:**`), no italic teaser paragraphs separated by `---`, no `## Further reading`, no `## Takeaway`.
 
@@ -341,6 +377,13 @@ This connects to the [Metropolis algorithm](/topics/complex-physics/metropolis-a
 * "Further reading" sections, textbook citations, inline paper references, or bibliography sections.
 * "It is well known," "one can show," "the reader will recall," "as shown in Ch. 3" — rewrite in Feynman voice.
 * YAML frontmatter keyword blocks (`__Topic 3 keywords__`) or `# Readings` sections — remove these legacy patterns.
+
+### What to ruthlessly cut
+
+* Academic hedging ("it can be shown that", "empirical evidence suggests").
+* Long bullet lists (max 3-4 short ones, or turn into prose).
+* Repeated summaries ("Big Ideas" section only if it adds new delight).
+* Zero-value filler sentences ("In this section we will explore…", "Let us now turn our attention to…").
 
 ### Legacy patterns to watch for
 

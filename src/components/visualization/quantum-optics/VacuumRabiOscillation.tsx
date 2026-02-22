@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
 import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
-import { SimulationPanel, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import { CanvasChart, type ChartTrace, type ChartLayout } from '@/components/ui/canvas-chart';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
@@ -79,66 +80,64 @@ export default function VacuumRabiOscillation({}: SimulationComponentProps) {
   };
 
   return (
-    <SimulationPanel>
-      <h3 className="text-lg font-semibold text-[var(--text-strong)]">
-        Vacuum Rabi Oscillation
-      </h3>
-      <p className="text-sm text-[var(--text-soft)] mb-3">
-        Excited- and ground-state populations for a two-level atom coupled to a single cavity photon. Detuning reduces the oscillation amplitude and increases the frequency.
-      </p>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <div>
-          <SimulationLabel>Coupling g: {coupling.toFixed(3)}</SimulationLabel>
-          <Slider
-            value={[coupling]}
-            onValueChange={(v) => setCoupling(v[0])}
-            min={0.01}
-            max={0.2}
-            step={0.005}
-            className="w-full"
-          />
-        </div>
-        <div>
-          <SimulationLabel>Detuning Delta: {detuning.toFixed(2)}</SimulationLabel>
-          <Slider
-            value={[detuning]}
-            onValueChange={(v) => setDetuning(v[0])}
-            min={-0.5}
-            max={0.5}
-            step={0.01}
-            className="w-full"
-          />
-        </div>
-      </div>
-
-      {/* Readout */}
-      <div className="grid grid-cols-3 gap-3 mb-4">
-        <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
-          <div className="text-xs text-[var(--text-muted)]">Rabi freq. Omega</div>
-          <div className="text-base font-mono font-semibold text-[var(--text-strong)]">
-            {omega.toFixed(4)}
+    <SimulationPanel title="Vacuum Rabi Oscillation" caption="Excited- and ground-state populations for a two-level atom coupled to a single cavity photon. Detuning reduces the oscillation amplitude and increases the frequency.">
+      <SimulationConfig>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <SimulationLabel>Coupling g: {coupling.toFixed(3)}</SimulationLabel>
+            <Slider
+              value={[coupling]}
+              onValueChange={(v) => setCoupling(v[0])}
+              min={0.01}
+              max={0.2}
+              step={0.005}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel>Detuning Delta: {detuning.toFixed(2)}</SimulationLabel>
+            <Slider
+              value={[detuning]}
+              onValueChange={(v) => setDetuning(v[0])}
+              min={-0.5}
+              max={0.5}
+              step={0.01}
+              className="w-full"
+            />
           </div>
         </div>
-        <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
-          <div className="text-xs text-[var(--text-muted)]">Period T</div>
-          <div className="text-base font-mono font-semibold text-[var(--text-strong)]">
-            {isFinite(period) ? period.toFixed(1) : '-'}
-          </div>
-        </div>
-        <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
-          <div className="text-xs text-[var(--text-muted)]">Vacuum Rabi splitting 2g</div>
-          <div className="text-base font-mono font-semibold text-[var(--text-strong)]">
-            {(2 * coupling).toFixed(4)}
-          </div>
-        </div>
-      </div>
+      </SimulationConfig>
 
-      <CanvasChart
-        data={traces}
-        layout={layout}
-        style={{ width: '100%', height: '400px' }}
-      />
+      <SimulationMain>
+        <CanvasChart
+          data={traces}
+          layout={layout}
+          style={{ width: '100%', height: '400px' }}
+        />
+      </SimulationMain>
+
+      <SimulationResults>
+        <div className="grid grid-cols-3 gap-3">
+          <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
+            <div className="text-xs text-[var(--text-muted)]">Rabi freq. Omega</div>
+            <div className="text-base font-mono font-semibold text-[var(--text-strong)]">
+              {omega.toFixed(4)}
+            </div>
+          </div>
+          <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
+            <div className="text-xs text-[var(--text-muted)]">Period T</div>
+            <div className="text-base font-mono font-semibold text-[var(--text-strong)]">
+              {isFinite(period) ? period.toFixed(1) : '-'}
+            </div>
+          </div>
+          <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
+            <div className="text-xs text-[var(--text-muted)]">Vacuum Rabi splitting 2g</div>
+            <div className="text-base font-mono font-semibold text-[var(--text-strong)]">
+              {(2 * coupling).toFixed(4)}
+            </div>
+          </div>
+        </div>
+      </SimulationResults>
     </SimulationPanel>
   );
 }

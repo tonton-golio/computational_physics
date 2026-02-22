@@ -2,118 +2,96 @@
 
 > *Eigenvalues revealed the personality of matrices. The FFT reveals the personality of signals — which frequencies are hiding inside any chunk of data. And it connects back to PDEs at the summit of our course.*
 
-## Suppose you have a song
+## Big Ideas
 
-You hear a chord on a piano — three notes played together. Your ear somehow picks out the individual notes from the combined sound wave. The **Fourier transform** is the mathematical version of your ear: it takes a signal (the combined wave) and tells you exactly which frequencies (notes) are inside it, and how loud each one is.
+* The DFT is a change of basis: from time to frequency. Every signal is secretly a sum of sinusoids; the DFT finds the recipe — but it assumes periodicity over the observation window, so non-periodic signals leak energy across bins.
+* The FFT's $O(N \log N)$ trick is recursive splitting: one big transform = two half-size transforms + cheap combining. A trillion operations become twenty million.
+* Convolution in time is multiplication in frequency — the convolution theorem is why spectral methods can compute derivatives and solve PDEs at the cost of a few FFTs.
+* Aliasing is a mathematical necessity: sample too slowly, and high frequencies masquerade as low ones. The Nyquist rate is the minimum that prevents this.
 
-The **Fast Fourier Transform** is the algorithm that makes this practical. Without it, analyzing a million-sample signal would take a trillion operations. With it, twenty million. That's the difference between "impossible" and "done before you blink."
+## Suppose You Have a Song
 
-## The discrete Fourier transform
+You hear a chord on a piano — three notes played together. Your ear somehow picks out the individual notes from the combined sound wave. The **Fourier transform** is the mathematical version of your ear: it takes a signal and tells you exactly which frequencies are inside it and how loud each one is.
 
-The **discrete Fourier transform** (DFT) converts a sequence of $N$ samples in the time domain into a sequence of $N$ complex coefficients in the frequency domain:
+The **Fast Fourier Transform** makes this practical. Without it, analyzing a million-sample signal would take a trillion operations. With it, twenty million. That's the difference between "impossible" and "done before you blink."
+
+## The Discrete Fourier Transform
+
+The DFT converts $N$ time-domain samples into $N$ frequency-domain coefficients:
 
 $$
 X_k = \sum_{n=0}^{N-1} x_n \, e^{-2\pi i \, kn/N}, \qquad k = 0, 1, \ldots, N-1.
 $$
 
-*This says: for each frequency $k$, multiply the signal by a complex sinusoid at that frequency and add everything up. The result tells you how much of that frequency is present.*
+*For each frequency $k$, multiply the signal by a complex sinusoid at that frequency and add everything up. The result tells you how much of that frequency is present.*
 
-The inverse transform recovers the original signal:
+The inverse recovers the original:
 
 $$
 x_n = \frac{1}{N} \sum_{k=0}^{N-1} X_k \, e^{2\pi i \, kn/N}.
 $$
 
-Each coefficient $X_k$ represents the amplitude and phase of a sinusoidal component at frequency $k/N$ cycles per sample. The **power spectrum** $|X_k|^2$ reveals the dominant frequencies in the signal.
+The **power spectrum** $|X_k|^2$ reveals the dominant frequencies.
 
-Remember that the DFT implicitly treats your finite signal as one period of an infinite periodic extension — forgetting this is the source of spectral leakage.
+Why complex exponentials instead of sines and cosines? Because $e^{i\theta} = \cos\theta + i\sin\theta$ packages both into one expression. The math becomes cleaner — like writing coordinates as $(x, y)$ instead of "x units east and y units north."
 
-Why complex exponentials instead of sines and cosines? Because $e^{i\theta} = \cos\theta + i\sin\theta$ packages both into one elegant expression. The real part gives you cosines, the imaginary part gives you sines, and the math becomes cleaner. It's like writing coordinates as $(x, y)$ instead of "x units east and y units north."
+## The FFT Algorithm
 
-## The FFT algorithm
-
-Computing the DFT directly requires $O(N^2)$ operations. The **fast Fourier transform** (the Cooley-Tukey algorithm) reduces this to $O(N \log N)$ by exploiting the symmetry and periodicity of the complex exponentials.
-
-Here's the trick — split the signal into even and odd samples:
+Computing the DFT directly: $O(N^2)$. The Cooley-Tukey algorithm: $O(N \log N)$. Here's the trick — split into even and odd samples:
 
 $$
 X_k = \underbrace{\sum_{m=0}^{N/2-1} x_{2m} \, e^{-2\pi i \, k(2m)/N}}_{\text{even-indexed DFT}} + e^{-2\pi i \, k/N} \underbrace{\sum_{m=0}^{N/2-1} x_{2m+1} \, e^{-2\pi i \, k(2m)/N}}_{\text{odd-indexed DFT}}.
 $$
 
-*This says: one big DFT of size $N$ equals two half-size DFTs (even samples and odd samples) plus $N$ multiplications to combine them. Apply this recursively and you go from $N^2$ to $N \log N$.*
+*One big DFT = two half-size DFTs + $N$ multiplications. Apply recursively: $N^2 \to N \log N$.*
 
-This splits one $N$-point DFT into two $N/2$-point DFTs plus $O(N)$ multiplications. Applying this recursively yields the $O(N \log N)$ complexity.
+For $N = 10^6$, the FFT is roughly $50{,}000\times$ faster than the direct DFT. This makes real-time audio, MRI, radio astronomy, and modern telecommunications possible. Without it, your phone couldn't decode a WiFi signal fast enough.
 
-**Practical impact**: for $N = 10^6$, the FFT is roughly $50{,}000$ times faster than the direct DFT.
-
-Is this really that big a deal? Yes! The FFT is arguably one of the most important algorithms ever invented. It makes real-time audio processing, medical imaging (MRI), radio astronomy, and modern telecommunications possible. Without it, your phone couldn't decode a WiFi signal fast enough to be useful.
-
-## The convolution theorem
-
-One of the most powerful properties of the DFT is the **convolution theorem**:
+## The Convolution Theorem
 
 $$
-\mathcal{F}\{f * g\} = \mathcal{F}\{f\} \cdot \mathcal{F}\{g\},
+\mathcal{F}\{f * g\} = \mathcal{F}\{f\} \cdot \mathcal{F}\{g\}
 $$
 
-where $*$ denotes convolution and $\cdot$ denotes pointwise multiplication. This means that convolution in the time domain becomes multiplication in the frequency domain.
+*Instead of stirring the whole pot for hours (direct convolution), transform both recipes into ingredient lists, multiply them together, and transform back. Same result, fraction of the time.*
 
-*Think of it like this: instead of stirring the whole pot for hours (direct convolution), transform both recipes into ingredient lists, multiply the ingredients together, and transform back. Same result, fraction of the time.*
+Convolving two length-$N$ sequences via FFT costs $O(N \log N)$ vs. $O(N^2)$ directly. This powers polynomial multiplication, cross-correlation, and spectral PDE methods.
 
-**Practical consequence**: convolving two sequences of length $N$ via the FFT costs $O(N \log N)$, compared to $O(N^2)$ for direct convolution. This speedup is exploited in:
+## Applications
 
-* Polynomial multiplication.
-* Cross-correlation and matched filtering.
-* Solving PDEs with periodic boundary conditions (spectral methods).
+* **Spectral analysis**: periodic components in time series (tides, heartbeats, seismic signals)
+* **Filtering**: multiply the spectrum by a transfer function to remove noise
+* **Interpolation**: zero-padding refines frequency resolution
+* **Image processing**: 2D DFT for compression (JPEG) and enhancement
 
-## Applications in signal processing
+## Aliasing and the Nyquist Frequency
 
-The DFT and FFT are ubiquitous in scientific computing:
+If you don't sample fast enough, high frequencies disguise themselves as low frequencies. It's like a spinning wheel that looks like it's going backwards in a movie — the camera wasn't sampling fast enough.
 
-* **Spectral analysis**: identify periodic components in time series (e.g., tidal data, heart rhythms, seismic signals).
-* **Filtering**: multiply the spectrum by a transfer function to remove noise or isolate frequency bands.
-* **Interpolation and zero-padding**: increasing $N$ by appending zeros refines the frequency resolution.
-* **Image processing**: the 2D DFT decomposes images into spatial frequencies for compression (JPEG) and enhancement.
+The **Nyquist frequency** $f_{\text{Nyq}} = f_s / 2$. The **sampling theorem** says you can perfectly reconstruct a bandlimited signal only if you sample above twice its highest frequency.
 
-## Aliasing and the Nyquist frequency
-
-The DFT assumes the signal is periodic with period $N$. If the signal contains frequencies above the **Nyquist frequency** $f_{\text{Nyq}} = f_s / 2$ (where $f_s$ is the sampling rate), those components are **aliased** into lower frequencies.
-
-*This says: if you don't sample fast enough, high frequencies disguise themselves as low frequencies. It's like a spinning wheel that looks like it's going backwards in a movie — the camera wasn't sampling fast enough.*
-
-The **sampling theorem** (Shannon-Nyquist) states that a bandlimited signal can be perfectly reconstructed from its samples if and only if the sampling rate exceeds twice the highest frequency present.
+(Drag the slider yourself — watch the wheel suddenly spin the wrong way. That's aliasing in action.)
 
 [[simulation aliasing-slider]]
 
 ## Windowing
 
-Real signals are finite in duration. Truncation introduces spectral **leakage**, spreading energy from a true frequency into neighboring bins. **Window functions** (Hann, Hamming, Blackman) taper the signal at the edges to reduce leakage at the cost of slightly reduced frequency resolution.
+Real signals are finite. Truncation introduces spectral **leakage** — energy spreads from a true frequency into neighboring bins. **Window functions** (Hann, Hamming, Blackman) taper the signal at the edges to reduce leakage, at a slight cost to frequency resolution.
 
-> **Challenge.** Generate a signal with two frequencies: `x = sin(2*pi*5*t) + 0.5*sin(2*pi*12*t)` sampled at 100 Hz for 1 second. Take the FFT with `np.fft.fft`, plot the power spectrum `|X|^2`, and find the two peaks at 5 Hz and 12 Hz. Now add noise and see if you can still find them.
+> **Challenge.** Generate a signal with two frequencies: `x = sin(2*pi*5*t) + 0.5*sin(2*pi*12*t)` sampled at 100 Hz for 1 second. Take the FFT, plot the power spectrum, and find the two peaks. Now add noise and see if you can still find them.
 
 ---
 
-**Periodicity caveat.** The statement "every signal is secretly a sum of sinusoids" comes with fine print: the DFT implicitly assumes the $N$ samples repeat forever. It treats your finite data as one period of a periodic signal. If the actual signal is not periodic over the window — and it almost never is — the DFT sees artificial jumps at the window edges, and those jumps smear energy across many frequency bins. This is **spectral leakage**, and it is the reason windowing (Hann, Hamming, etc.) exists: tapered windows smooth out the edge discontinuities at the cost of slightly reduced frequency resolution.
-
-## Big Ideas
-
-* The DFT is a change of basis: from the time domain to the frequency domain. Every signal is secretly a sum of sinusoids; the DFT finds the recipe — but the DFT assumes the signal is periodic over the observation window, so non-periodic signals leak energy across frequency bins.
-* The FFT's $O(N \log N)$ trick is recursive splitting: one big transform equals two half-size transforms plus cheap combining. Applied log $N$ times, this transforms a trillion operations into twenty million.
-* Convolution in time is multiplication in frequency — the convolution theorem is the reason spectral methods can compute derivatives and solve PDEs at the cost of a few FFTs.
-* Aliasing is not a glitch but a mathematical necessity: if you sample too slowly, high frequencies have no choice but to masquerade as low ones. The Nyquist rate is the minimum sampling rate that prevents this.
-
 ## What Comes Next
 
-The FFT is the last of the *static* tools: it analyzes a snapshot of a signal or a fixed spatial domain. The next topic is time itself — how do you march a solution forward step by step through an ordinary differential equation?
-
-Everything learned so far feeds into this: error analysis tells you how to choose a step size, linear algebra appears inside implicit solvers, eigenvalues of the Jacobian determine whether a problem is stiff, and the FFT underlies the spectral methods that discretize the spatial part of PDEs before handing off to an ODE solver.
+The FFT is the last of the *static* tools — it analyzes a snapshot of a signal or a fixed spatial domain. Next: time itself. How do you march a solution forward step by step through a differential equation? Everything feeds into this: error analysis for step sizes, linear algebra inside implicit solvers, eigenvalues for stiffness, and the FFT for spectral spatial discretization.
 
 ## Check Your Understanding
 
-1. A signal is sampled at 1000 Hz. What is the highest frequency the DFT can represent without aliasing, and what happens to a 700 Hz sine wave in this signal?
-2. The naive DFT costs $O(N^2)$ and the FFT costs $O(N \log N)$. For $N = 2^{20} \approx 10^6$, by what factor is the FFT faster?
-3. You want to convolve two signals of length $N = 10^4$ using the FFT. Describe the steps and state the total operation count.
+1. A signal sampled at 1000 Hz. What's the highest frequency the DFT can represent without aliasing, and what happens to a 700 Hz component?
+2. For $N = 2^{20} \approx 10^6$, by what factor is the FFT faster than the naive DFT?
+3. You want to convolve two length-$10^4$ signals via FFT. Describe the steps and state the operation count.
 
 ## Challenge
 
-Generate a noisy signal consisting of three pure tones at 10 Hz, 35 Hz, and 80 Hz with amplitudes 1, 0.5, and 0.3, sampled at 500 Hz for 4 seconds. Add Gaussian noise with standard deviation 0.2. Use the FFT to recover the three frequencies and their amplitudes from the noisy data. Then apply a bandpass filter in the frequency domain to isolate only the 35 Hz component and reconstruct the filtered time-domain signal via the inverse FFT. Plot the original noisy signal, the power spectrum, and the filtered signal on a single figure.
+Generate a noisy signal: three tones at 10 Hz, 35 Hz, and 80 Hz (amplitudes 1, 0.5, 0.3), sampled at 500 Hz for 4 seconds, plus Gaussian noise (std = 0.2). Recover the three frequencies from the power spectrum, then isolate the 35 Hz component with a bandpass filter and reconstruct via inverse FFT.

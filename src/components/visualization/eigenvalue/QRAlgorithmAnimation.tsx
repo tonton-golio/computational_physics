@@ -1,7 +1,9 @@
-'use client';
+"use client";
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
+import { SimulationPanel, SimulationSettings, SimulationButton, SimulationPlayButton } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 function buildQRChartState(A: number[][], iter: number) {
@@ -31,7 +33,7 @@ function buildQRChartState(A: number[][], iter: number) {
   return { data, layout };
 }
 
-export function QRAlgorithmAnimation({}: SimulationComponentProps) {
+export default function QRAlgorithmAnimation({}: SimulationComponentProps) {
   const [iteration, setIteration] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const matrixRef = useRef<number[][]>([[4, 1, 2], [2, 3, 1], [1, 2, 2]]);
@@ -114,27 +116,17 @@ export function QRAlgorithmAnimation({}: SimulationComponentProps) {
   }, [isRunning, step]);
 
   return (
-    <div className="space-y-4">
-      <CanvasHeatmap data={chartState.data} layout={chartState.layout} style={{ width: '100%', height: 320 }} />
-      <div className="flex gap-4 items-center">
-        <button
-          onClick={() => setIsRunning(!isRunning)}
-          className={`px-4 py-2 rounded ${isRunning ? 'bg-red-600' : 'bg-green-600'}`}
-        >
-          {isRunning ? 'Pause' : 'Run'}
-        </button>
-        <button onClick={step} disabled={isRunning} className="px-4 py-2 bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white rounded disabled:opacity-50">
-          Step
-        </button>
-        <button onClick={reset} className="px-4 py-2 bg-[var(--surface-3)] text-[var(--text-strong)] rounded hover:bg-[var(--border-strong)]">
-          Reset
-        </button>
-      </div>
-      <p className="text-sm text-[var(--text-muted)]">
-        QR iteration: A = QR, then A&apos; = RQ. The matrix converges to upper triangular with eigenvalues on the diagonal.
-      </p>
-    </div>
+    <SimulationPanel title="QR Algorithm" caption="QR iteration: A = QR, then A&apos; = RQ. The matrix converges to upper triangular with eigenvalues on the diagonal.">
+      <SimulationSettings>
+        <div className="flex gap-4 items-center">
+          <SimulationPlayButton isRunning={isRunning} onToggle={() => setIsRunning(!isRunning)} />
+          <SimulationButton variant="primary" onClick={step} disabled={isRunning}>Step</SimulationButton>
+          <SimulationButton variant="secondary" onClick={reset}>Reset</SimulationButton>
+        </div>
+      </SimulationSettings>
+      <SimulationMain>
+        <CanvasHeatmap data={chartState.data} layout={chartState.layout} style={{ width: '100%', height: 320 }} />
+      </SimulationMain>
+    </SimulationPanel>
   );
 }
-
-export default QRAlgorithmAnimation;

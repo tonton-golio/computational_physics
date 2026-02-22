@@ -1,8 +1,10 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart, type ChartTrace } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationLabel, SimulationButton, SimulationSettings, SimulationConfig } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 function mulberry32(a: number) {
@@ -35,7 +37,7 @@ function playEpisode(rng: () => number): Episode[] {
   return steps;
 }
 
-export default function BlackjackTrajectory({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function BlackjackTrajectory({}: SimulationComponentProps) {
   const [episodes, setEpisodes] = useState(200);
   const [seed, setSeed] = useState(42);
 
@@ -92,24 +94,19 @@ export default function BlackjackTrajectory({ id }: SimulationComponentProps) { 
   const handleResample = useCallback(() => setSeed((s) => s + 1), []);
 
   return (
-    <div className="w-full rounded-lg bg-[var(--surface-1)] p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-3 text-[var(--text-strong)]">
-        Blackjack Monte Carlo: Episode-Based Value Estimation
-      </h3>
-      <p className="text-sm text-[var(--text-muted)] mb-4">
-        First-visit MC averages returns for each state over complete episodes.
-        As episodes accumulate, value estimates converge from noise to structure.
-      </p>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+    <SimulationPanel title="Blackjack Monte Carlo: Episode-Based Value Estimation" caption="First-visit MC averages returns for each state over complete episodes. As episodes accumulate, value estimates converge from noise to structure.">
+      <SimulationSettings>
+        <SimulationButton variant="primary" onClick={handleResample}>
+          Re-sample
+        </SimulationButton>
+      </SimulationSettings>
+      <SimulationConfig>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Episodes: {episodes}</label>
+          <SimulationLabel>Episodes: {episodes}</SimulationLabel>
           <Slider value={[episodes]} onValueChange={([v]) => setEpisodes(v)} min={20} max={2000} step={20} />
         </div>
-        <button onClick={handleResample}
-          className="rounded bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white text-sm px-3 py-2">
-          Re-sample
-        </button>
-      </div>
+      </SimulationConfig>
+      <SimulationMain>
       <CanvasChart data={valueChart} layout={{
         title: { text: 'Average state value by player sum (marginalized over dealer card)' },
         xaxis: { title: { text: 'player sum' } },
@@ -123,6 +120,7 @@ export default function BlackjackTrajectory({ id }: SimulationComponentProps) { 
         yaxis: { title: { text: 'mean |V|' } },
         height: 280,
       }} style={{ width: '100%' }} />
-    </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

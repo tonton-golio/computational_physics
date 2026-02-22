@@ -1,9 +1,10 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
-import { SimulationPanel, SimulationLabel, SimulationToggle } from '@/components/ui/simulation-panel';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationResults, SimulationLabel, SimulationToggle } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 const FUNCTIONS = [
@@ -99,16 +100,8 @@ export default function ErrorVsH({}: SimulationComponentProps) {
   }, [chosen, machineEps]);
 
   return (
-    <SimulationPanel>
-      <h3 className="text-lg font-semibold text-[var(--text-strong)]">
-        Numerical Error vs Step Size h
-      </h3>
-      <p className="text-sm text-[var(--text-soft)] mb-4">
-        Truncation error shrinks with h, but roundoff error grows. Watch the two forces fight
-        on a log-log plot. The sweet spot is the V-shaped minimum.
-      </p>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+    <SimulationPanel title="Numerical Error vs Step Size h" caption="Truncation error shrinks with h, but roundoff error grows. Watch the two forces fight on a log-log plot. The sweet spot is the V-shaped minimum.">
+      <SimulationSettings>
         <div>
           <SimulationLabel>Function</SimulationLabel>
           <SimulationToggle
@@ -117,6 +110,8 @@ export default function ErrorVsH({}: SimulationComponentProps) {
             onChange={(v) => setFuncIdx(Number(v))}
           />
         </div>
+      </SimulationSettings>
+      <SimulationConfig>
         <div>
           <SimulationLabel>
             Machine epsilon: 10^{epsExponent} = {machineEps.toExponential(1)}
@@ -130,98 +125,102 @@ export default function ErrorVsH({}: SimulationComponentProps) {
             className="w-full"
           />
         </div>
-      </div>
+      </SimulationConfig>
 
-      <CanvasChart
-        data={[
-          {
-            x: data.hValues,
-            y: data.forwardErrors,
-            type: 'scatter',
-            mode: 'lines+markers',
-            line: { color: '#3b82f6', width: 2 },
-            marker: { size: 3 },
-            name: 'Forward O(h)',
-          },
-          {
-            x: data.hValues,
-            y: data.centeredErrors,
-            type: 'scatter',
-            mode: 'lines+markers',
-            line: { color: '#10b981', width: 2 },
-            marker: { size: 3 },
-            name: 'Centered O(h\u00B2)',
-          },
-          {
-            x: data.hValues,
-            y: data.richardsonErrors,
-            type: 'scatter',
-            mode: 'lines+markers',
-            line: { color: '#f59e0b', width: 2 },
-            marker: { size: 3 },
-            name: 'Richardson O(h\u2074)',
-          },
-          {
-            x: data.hValues,
-            y: data.hTheoryO1,
-            type: 'scatter',
-            mode: 'lines',
-            line: { color: '#3b82f6', width: 1, dash: 'dash' },
-            name: 'Theory O(h)',
-          },
-          {
-            x: data.hValues,
-            y: data.hTheoryO2,
-            type: 'scatter',
-            mode: 'lines',
-            line: { color: '#10b981', width: 1, dash: 'dash' },
-            name: 'Theory O(h\u00B2)',
-          },
-          {
-            x: data.hValues,
-            y: data.hTheoryO4,
-            type: 'scatter',
-            mode: 'lines',
-            line: { color: '#f59e0b', width: 1, dash: 'dash' },
-            name: 'Theory O(h\u2074)',
-          },
-        ]}
-        layout={{
-          title: { text: `Error for f'(x) of ${chosen.name}` },
-          xaxis: { title: { text: 'Step size h' }, type: 'log' },
-          yaxis: { title: { text: 'Absolute error' }, type: 'log' },
-          showlegend: true,
-          margin: { t: 40, r: 20, b: 50, l: 60 },
-        }}
-        style={{ width: '100%', height: 420 }}
-      />
+      <SimulationMain>
+        <CanvasChart
+          data={[
+            {
+              x: data.hValues,
+              y: data.forwardErrors,
+              type: 'scatter',
+              mode: 'lines+markers',
+              line: { color: '#3b82f6', width: 2 },
+              marker: { size: 3 },
+              name: 'Forward O(h)',
+            },
+            {
+              x: data.hValues,
+              y: data.centeredErrors,
+              type: 'scatter',
+              mode: 'lines+markers',
+              line: { color: '#10b981', width: 2 },
+              marker: { size: 3 },
+              name: 'Centered O(h\u00B2)',
+            },
+            {
+              x: data.hValues,
+              y: data.richardsonErrors,
+              type: 'scatter',
+              mode: 'lines+markers',
+              line: { color: '#f59e0b', width: 2 },
+              marker: { size: 3 },
+              name: 'Richardson O(h\u2074)',
+            },
+            {
+              x: data.hValues,
+              y: data.hTheoryO1,
+              type: 'scatter',
+              mode: 'lines',
+              line: { color: '#3b82f6', width: 1, dash: 'dash' },
+              name: 'Theory O(h)',
+            },
+            {
+              x: data.hValues,
+              y: data.hTheoryO2,
+              type: 'scatter',
+              mode: 'lines',
+              line: { color: '#10b981', width: 1, dash: 'dash' },
+              name: 'Theory O(h\u00B2)',
+            },
+            {
+              x: data.hValues,
+              y: data.hTheoryO4,
+              type: 'scatter',
+              mode: 'lines',
+              line: { color: '#f59e0b', width: 1, dash: 'dash' },
+              name: 'Theory O(h\u2074)',
+            },
+          ]}
+          layout={{
+            title: { text: `Error for f'(x) of ${chosen.name}` },
+            xaxis: { title: { text: 'Step size h' }, type: 'log' },
+            yaxis: { title: { text: 'Absolute error' }, type: 'log' },
+            showlegend: true,
+            margin: { t: 40, r: 20, b: 50, l: 60 },
+          }}
+          style={{ width: '100%', height: 420 }}
+        />
+      </SimulationMain>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
-        <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
-          <div className="text-xs text-[var(--text-muted)]">Machine eps</div>
-          <div className="text-sm font-mono font-semibold text-[var(--text-strong)]">
-            {machineEps.toExponential(1)}
+      <SimulationResults>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
+            <div className="text-xs text-[var(--text-muted)]">Machine eps</div>
+            <div className="text-sm font-mono font-semibold text-[var(--text-strong)]">
+              {machineEps.toExponential(1)}
+            </div>
+          </div>
+          <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
+            <div className="text-xs text-[var(--text-muted)]">h* (forward)</div>
+            <div className="text-sm font-mono font-semibold text-[var(--accent)]">
+              {optimalH_fwd.toExponential(1)}
+            </div>
+          </div>
+          <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
+            <div className="text-xs text-[var(--text-muted)]">h* (centered)</div>
+            <div className="text-sm font-mono font-semibold text-[var(--accent)]">
+              {optimalH_ctr.toExponential(1)}
+            </div>
+          </div>
+          <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
+            <div className="text-xs text-[var(--text-muted)]">True f&apos;(x)</div>
+            <div className="text-sm font-mono font-semibold text-[var(--text-strong)]">
+              {chosen.fprime.toFixed(6)}
+            </div>
           </div>
         </div>
-        <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
-          <div className="text-xs text-[var(--text-muted)]">h* (forward)</div>
-          <div className="text-sm font-mono font-semibold text-[var(--accent)]">
-            {optimalH_fwd.toExponential(1)}
-          </div>
-        </div>
-        <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
-          <div className="text-xs text-[var(--text-muted)]">h* (centered)</div>
-          <div className="text-sm font-mono font-semibold text-[var(--accent)]">
-            {optimalH_ctr.toExponential(1)}
-          </div>
-        </div>
-        <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
-          <div className="text-xs text-[var(--text-muted)]">True f&apos;(x)</div>
-          <div className="text-sm font-mono font-semibold text-[var(--text-strong)]">
-            {chosen.fprime.toFixed(6)}
-          </div>
-        </div>
-      </div>
+      </SimulationResults>
     </SimulationPanel>
   );
 }

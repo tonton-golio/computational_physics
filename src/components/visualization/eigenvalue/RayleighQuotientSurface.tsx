@@ -1,10 +1,12 @@
-'use client';
+"use client";
 
 import { useMemo } from 'react';
 import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
+import { SimulationPanel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-export function RayleighQuotientSurface({}: SimulationComponentProps) {
+export default function RayleighQuotientSurface({}: SimulationComponentProps) {
   const { data, layout } = useMemo(() => {
     // Matrix: [[4, 1], [2, 3]]
     const a = 4, b = 1, c = 2, d = 3;
@@ -48,13 +50,10 @@ export function RayleighQuotientSurface({}: SimulationComponentProps) {
   }, []);
 
   return (
-    <div className="space-y-4">
-      <CanvasHeatmap data={data} layout={layout} style={{ width: '100%', height: 320 }} />
-      <p className="text-sm text-[var(--text-muted)]">
-        The Rayleigh quotient surface has stationary points at eigenvectors, where the value equals the eigenvalue.
-      </p>
-    </div>
+    <SimulationPanel title="Rayleigh Quotient Surface" caption="The Rayleigh quotient surface has stationary points at eigenvectors, where the value equals the eigenvalue.">
+      <SimulationMain>
+        <CanvasHeatmap data={data} layout={layout} style={{ width: '100%', height: 320 }} />
+      </SimulationMain>
+    </SimulationPanel>
   );
 }
-
-export default RayleighQuotientSurface;

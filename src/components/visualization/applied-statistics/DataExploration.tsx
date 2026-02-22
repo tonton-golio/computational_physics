@@ -1,13 +1,15 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import * as math from 'mathjs';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { Slider } from '@/components/ui/slider';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 
-export default function AppliedStatsSim1({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function AppliedStatsSim1({}: SimulationComponentProps) {
   const [noise, setNoise] = useState(1);
   const [sampleSize, setSampleSize] = useState(20);
 
@@ -107,43 +109,34 @@ export default function AppliedStatsSim1({ id }: SimulationComponentProps) { // 
   ];
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Interactive Linear Regression Simulation</h3>
-      <div className="mb-4">
-        <p className="text-sm text-[var(--text-muted)]">
-          Generate noisy data points around a true linear relationship (y = 2 + 1.5x + e), fit a line using least squares,
-          and visualize the fitted line, residuals, and confidence intervals.
-        </p>
-      </div>
-      <div className="grid grid-cols-2 gap-4 mb-4">
-        <div>
-          <label className="text-[var(--text-strong)]">Noise Level (sigma): {noise.toFixed(1)}</label>
-          <Slider
-            min={0.1}
-            max={5}
-            step={0.1}
-            value={[noise]}
-            onValueChange={([v]) => setNoise(v)}
-            className="w-full"
-          />
+    <SimulationPanel title="Interactive Linear Regression Simulation" caption="Generate noisy data points around a true linear relationship (y = 2 + 1.5x + e), fit a line using least squares, and visualize the fitted line, residuals, and confidence intervals.">
+      <SimulationConfig>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <SimulationLabel>Noise Level (sigma): {noise.toFixed(1)}</SimulationLabel>
+            <Slider
+              min={0.1}
+              max={5}
+              step={0.1}
+              value={[noise]}
+              onValueChange={([v]) => setNoise(v)}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel>Sample Size: {sampleSize}</SimulationLabel>
+            <Slider
+              min={10}
+              max={100}
+              step={5}
+              value={[sampleSize]}
+              onValueChange={([v]) => setSampleSize(v)}
+              className="w-full"
+            />
+          </div>
         </div>
-        <div>
-          <label className="text-[var(--text-strong)]">Sample Size: {sampleSize}</label>
-          <Slider
-            min={10}
-            max={100}
-            step={5}
-            value={[sampleSize]}
-            onValueChange={([v]) => setSampleSize(v)}
-            className="w-full"
-          />
-        </div>
-      </div>
-      <div className="mb-4 text-[var(--text-muted)]">
-        <p>Fitted Line: y = {data.beta0.toFixed(3)} + {data.beta1.toFixed(3)}x</p>
-        <p>R-squared: {data.rSquared.toFixed(3)}</p>
-        <p>Chi-square: {data.chiSquare.toFixed(3)}</p>
-      </div>
+      </SimulationConfig>
+      <SimulationMain>
       <CanvasChart
         data={plotData as any}
         layout={{
@@ -153,6 +146,14 @@ export default function AppliedStatsSim1({ id }: SimulationComponentProps) { // 
           height: 500,
         }}
       />
-    </div>
+      </SimulationMain>
+      <SimulationResults>
+        <div className="text-[var(--text-muted)]">
+          <p>Fitted Line: y = {data.beta0.toFixed(3)} + {data.beta1.toFixed(3)}x</p>
+          <p>R-squared: {data.rSquared.toFixed(3)}</p>
+          <p>Chi-square: {data.chiSquare.toFixed(3)}</p>
+        </div>
+      </SimulationResults>
+    </SimulationPanel>
   );
 }

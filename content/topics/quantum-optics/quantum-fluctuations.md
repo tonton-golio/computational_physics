@@ -1,170 +1,72 @@
 # Quantum Fluctuations and Quadrature Operators
 
-## The vacuum is not empty
+## The vacuum won't sit still
 
-The most startling prediction of quantum field theory is that "nothing" is not silent. Strip away every photon from a cavity — cool it, shield it, pump it down to the absolute quantum ground state — and the electric field is still fluctuating. Not because of stray photons leaking in, and not because of thermal noise, but because the uncertainty principle forbids the field from sitting perfectly still. The vacuum state $|0\rangle$ has zero average field yet non-zero field variance. Those irreducible fluctuations drive the Casimir effect, set the noise floor for every optical measurement, and determine the fundamental sensitivity limit of interferometers like LIGO.
+Strip away every photon from a cavity. Cool it, shield it, pump it down to the absolute ground state. And the electric field is *still fluctuating*. Not because of stray photons, not because of thermal noise, but because the uncertainty principle flat-out forbids the field from sitting perfectly still.
 
-## Quantum fluctuations
-Time average of electric field is
-$$
-\begin{aligned}
-    \left<
-        \hat{\vec{E}}
-    \right>
-    &=
-    \Braket{n|\hat{\vec{E}}|n}
-    \\&=
-    \sqrt{
-        \frac{\hbar \omega}{\epsilon_0 V}
-    }
-    \sin (kz)
-    \Braket{n|\left(\hat{a}+\hat{a}^\dag\right)|n}
-    \\&=
-    0
-\end{aligned}
-$$
-I see. How about variance?
-$$
-\begin{aligned}
-    \left<
-        \hat{\vec{E}}^2
-    \right>
-    &=
-    \Braket{n|\hat{\vec{E}}^2|n}
-    \\&=
-    \frac{\hbar \omega}{\epsilon_0 V}
-    \sin^2 (kz)
-    \Braket{
-        n|
-        \left(
-        \hat{a}^2 + {\hat{a}^\dag}^2 + \hat{a}\hat{a}^\dag + \hat{a}^\dag\hat{a}
-        \right)
-        |n
-    }
-    \\&=
-    \frac{\hbar \omega}{\epsilon_0 V}
-    \sin^2 (kz)
-    \left(
-        n+\frac{1}{2}
-    \right)
-\end{aligned}
-$$
-Wow! Even in the vacuum state ($n=0$), electric field fluctuates!!
+Let's prove it.
 
-## Quadrature Operators
-Similar to $\hat{q}$ and $\hat{p}$ operators, we introduce quadrature operators
-$\hat{X_1}$ and $\hat{X_2}$..
-$$
-    \hat{X_1}
-    =
-    \frac{\hat{a} + \hat{a}^\dag}{2}
-    \propto
-    \hat{q}(t)
-$$
-$$
-    \hat{X_2}
-    =
-    -i
-    \frac{\hat{a} - \hat{a}^\dag}{2}
-    \propto
-    \hat{p}(t)
-$$
-$$
-    \left[
-        \hat{X_1}, \hat{X_2}
-    \right]
-    =
-    \frac{1}{2}
-$$
-Notice that quadrature operators are observable and homodyne technique is used for
-that.
-And these operators does not commute. This is because Heisenberg's uncertainty.
+## The field averages to zero -- but it's not zero
 
-We can rewrite electric field with quadrature operators.
+Take a number state $\Ket{n}$ and compute the average electric field:
+
 $$
-\begin{aligned}
-    \hat{E_x}
-    &=
-    \mathcal{E}_0
-    \left[
-        \hat{a}e^{-i\omega t}
-        +
-        \hat{a}^\dag e^{i\omega t}
-    \right]
-    \sin (kz)
-    \\&=
-    \mathcal{E}_0
-    \sin (kz)
-    \left[
-        \left(
-            \hat{a}
-            +
-            \hat{a}^\dag
-        \right)
-        \cos \omega t
-        -
-        i
-        \left(
-            \hat{a}
-            -
-            \hat{a}^\dag
-        \right)
-        \sin \omega t
-    \right]
-    \\&=
-    2
-    \mathcal{E}_0
-    \sin (kz)
-    \left[
-        \hat{X_1}
-        \cos \omega t
-        +
-        \hat{X_2}
-        \sin \omega t
-    \right]
-\end{aligned}
+\langle\hat{\vec{E}}\rangle = \Braket{n|\hat{\vec{E}}|n} = \sqrt{\frac{\hbar\omega}{\epsilon_0 V}}\sin(kz)\,\Braket{n|(\hat{a} + \hat{a}^\dag)|n} = 0
 $$
-Important staff of quadrature operators is their uncertainty.
+
+Zero. The field averages to nothing. But now check the *variance*:
+
 $$
-    \left<
-        \left(
-            \Delta \hat{X}_1
-        \right)^2
-    \right>
-    \left<
-        \left(
-            \Delta \hat{X}_2
-        \right)^2
-    \right>
-    \ge
-    \frac{1}{4}
-    \left|
-        \left<
-            \left[
-                \hat{X}_1, \hat{X}_2
-            \right]
-        \right>
-    \right|^2
-    \ge
-    \frac{1}{16}
+\langle\hat{\vec{E}}^2\rangle = \frac{\hbar\omega}{\epsilon_0 V}\sin^2(kz)\left(n + \frac{1}{2}\right)
 $$
+
+Even when $n = 0$ -- zero photons, total vacuum -- the field is fluctuating with variance $\frac{\hbar\omega}{2\epsilon_0 V}$. The vacuum is buzzing. These aren't instrument artifacts. They're structural features of quantum mechanics.
+
+## Quadrature operators
+
+To track these fluctuations properly, we introduce the **quadrature operators** -- the quantum analogs of the two components of a classical oscillation:
+
+$$
+\hat{X}_1 = \frac{\hat{a} + \hat{a}^\dag}{2}, \qquad \hat{X}_2 = -i\frac{\hat{a} - \hat{a}^\dag}{2}
+$$
+
+They're proportional to the "position" $\hat{q}$ and "momentum" $\hat{p}$ of our field oscillator. Both are Hermitian (observable!), and they don't commute:
+
+$$
+[\hat{X}_1, \hat{X}_2] = \frac{i}{2}
+$$
+
+You can rewrite the electric field in terms of quadratures:
+
+$$
+\hat{E}_x = 2\mathcal{E}_0\sin(kz)\left[\hat{X}_1\cos\omega t + \hat{X}_2\sin\omega t\right]
+$$
+
+Think of $\hat{X}_1$ and $\hat{X}_2$ as the two "directions" the field can wiggle. Measuring one necessarily fuzzes up the other.
+
+## The uncertainty bound
+
+Because the quadratures don't commute, Heisenberg gives us a hard floor:
+
+$$
+\langle(\Delta\hat{X}_1)^2\rangle\,\langle(\Delta\hat{X}_2)^2\rangle \ge \frac{1}{16}
+$$
+
+This isn't a statement about your instruments being lousy. It's a structural feature of the quantum field. You *cannot* know both quadratures precisely, no matter how clever you are.
+
+States that *saturate* this bound -- where the product equals exactly $1/16$ -- are called **minimum-uncertainty states**. The vacuum is one of them, with equal noise in both directions: $\langle(\Delta\hat{X}_1)^2\rangle = \langle(\Delta\hat{X}_2)^2\rangle = 1/4$. A perfect, symmetric fuzzy blob in phase space.
 
 ## Big Ideas
 
-* A number state has zero average electric field but non-zero variance — the field is fluctuating even when its mean is completely silent.
-* The quadrature operators $\hat{X}_1$ and $\hat{X}_2$ decompose the field into two orthogonal oscillation components; measuring one unavoidably disturbs the other.
-* The uncertainty product $\langle(\Delta\hat{X}_1)^2\rangle\langle(\Delta\hat{X}_2)^2\rangle \geq \frac{1}{16}$ is not a limitation of our instruments — it is a structural feature of the quantum field.
-
-## What Comes Next
-
-We now know that number states fluctuate in both quadratures, and that those fluctuations cannot be reduced below the uncertainty bound. The next lesson asks: are there states of the field that look as classical as possible — states that achieve the minimum uncertainty and whose average field behaves like a classical sine wave? The answer is yes, and they are called coherent states.
+- Number states have zero average field but nonzero variance -- the field fluctuates even when its mean is silent.
+- The quadrature operators $\hat{X}_1$ and $\hat{X}_2$ decompose the field into two oscillation components; measuring one unavoidably disturbs the other.
+- The uncertainty product $\langle(\Delta\hat{X}_1)^2\rangle\langle(\Delta\hat{X}_2)^2\rangle \ge 1/16$ is not an instrumental limitation -- it's built into the structure of the quantum field.
 
 ## Check Your Understanding
 
-1. For a number state $|n\rangle$ the mean electric field is zero, yet the mean-square field grows with $n$. Explain physically what is fluctuating and why more photons produce larger fluctuations rather than a more definite field value.
-2. The quadrature operators are defined as specific linear combinations of $\hat{a}$ and $\hat{a}^\dagger$. Why do we call them quadratures, and what is the physical interpretation of measuring $\hat{X}_1$ versus $\hat{X}_2$?
-3. The Heisenberg uncertainty product $\langle(\Delta\hat{X}_1)^2\rangle\langle(\Delta\hat{X}_2)^2\rangle \geq \frac{1}{16}$ holds for all states. Which states saturate the inequality, and what special property does that saturation imply?
+1. For $\Ket{n}$, the mean field is zero but the mean-square field grows with $n$. What's physically fluctuating, and why do more photons produce *larger* fluctuations rather than a more definite field?
+2. Why are $\hat{X}_1$ and $\hat{X}_2$ called "quadratures"? What does measuring one versus the other physically correspond to?
 
 ## Challenge
 
-The vacuum state $|0\rangle$ satisfies $\hat{a}|0\rangle = 0$. Use this to prove directly that $\langle(\Delta\hat{X}_1)^2\rangle = \langle(\Delta\hat{X}_2)^2\rangle = \frac{1}{4}$ for the vacuum, confirming it is a minimum-uncertainty state with equal noise in both quadratures. Then construct any state of the form $|\psi\rangle = c_0|0\rangle + c_1|1\rangle$ (normalized) and compute both quadrature variances. Under what conditions on $c_0, c_1$ does the state achieve minimum uncertainty?
+Write a Python script that computes $\langle(\Delta\hat{X}_1)^2\rangle$ and $\langle(\Delta\hat{X}_2)^2\rangle$ for the vacuum state $\Ket{0}$ and for superposition states $\Ket{\psi} = c_0\Ket{0} + c_1\Ket{1}$ using matrix representations in a truncated Fock space. Verify that the vacuum saturates the uncertainty bound. Then sweep over different $(c_0, c_1)$ values and find which superpositions are also minimum-uncertainty states.

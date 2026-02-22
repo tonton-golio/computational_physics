@@ -1,7 +1,10 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { Slider } from '@/components/ui/slider';
+import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 /**
  * Floating body stability visualisation. Shows a rectangular cross-section
@@ -10,7 +13,7 @@ import { Slider } from '@/components/ui/slider';
  * centre, centre of gravity, and metacentre are drawn to illustrate stability.
  */
 
-export default function ArchimedesStability() {
+export default function ArchimedesStability({}: SimulationComponentProps) {
   const [densityRatio, setDensityRatio] = useState(0.6); // rho_obj / rho_water
   const [tiltDeg, setTiltDeg] = useState(0);
   const [bodyWidth, setBodyWidth] = useState(2.0);
@@ -171,45 +174,39 @@ export default function ArchimedesStability() {
   }, [draw, deps]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-2 text-[var(--text-strong)]">
-        Archimedes&apos; Principle and Floating Stability
-      </h3>
-      <p className="text-sm text-[var(--text-muted)] mb-4">
-        A rectangular body floats according to its density ratio &rho;<sub>obj</sub>/&rho;<sub>water</sub>.
-        The metacentre M must lie above the centre of gravity G for the body to be stable.
-        Tall, narrow bodies can become top-heavy and capsize.
-      </p>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+    <SimulationPanel title="Archimedes' Principle and Floating Stability" caption="A rectangular body floats according to its density ratio \u03c1_obj/\u03c1_water. The metacentre M must lie above the centre of gravity G for the body to be stable. Tall, narrow bodies can become top-heavy and capsize.">
+      <SimulationConfig>
         <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">
+          <SimulationLabel>
             Density ratio: {densityRatio.toFixed(2)}
-          </label>
+          </SimulationLabel>
           <Slider min={0.1} max={0.95} step={0.01} value={[densityRatio]}
             onValueChange={([v]) => setDensityRatio(v)} className="w-full" />
         </div>
         <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">
+          <SimulationLabel>
             Body width: {bodyWidth.toFixed(1)} m
-          </label>
+          </SimulationLabel>
           <Slider min={0.5} max={4} step={0.1} value={[bodyWidth]}
             onValueChange={([v]) => setBodyWidth(v)} className="w-full" />
         </div>
         <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">
+          <SimulationLabel>
             Tilt angle: {tiltDeg.toFixed(1)}&deg;
-          </label>
+          </SimulationLabel>
           <Slider min={-30} max={30} step={0.5} value={[tiltDeg]}
             onValueChange={([v]) => setTiltDeg(v)} className="w-full" />
         </div>
-      </div>
-      <div ref={containerRef} style={{ width: '100%' }}>
-        <canvas ref={canvasRef} style={{ display: 'block', borderRadius: '4px' }} />
-      </div>
+      </SimulationConfig>
+      <SimulationMain scaleMode="contain">
+        <div ref={containerRef} style={{ width: '100%' }}>
+          <canvas ref={canvasRef} style={{ display: 'block', borderRadius: '4px' }} />
+        </div>
+      </SimulationMain>
       <p className="mt-3 text-xs text-[var(--text-muted)]">
         G = centre of gravity (red), B = centre of buoyancy (blue), M = metacentre (green).
         Stability requires GM &gt; 0, i.e. M above G. Try making the body narrower until it becomes unstable.
       </p>
-    </div>
+    </SimulationPanel>
   );
 }

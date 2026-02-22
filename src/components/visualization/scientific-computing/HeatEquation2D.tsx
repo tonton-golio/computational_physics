@@ -1,9 +1,10 @@
-'use client';
+"use client";
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
-import { SimulationPanel, SimulationLabel, SimulationToggle } from '@/components/ui/simulation-panel';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationResults, SimulationLabel, SimulationToggle, SimulationPlayButton, SimulationButton } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 /**
@@ -156,16 +157,8 @@ export default function HeatEquation2D({}: SimulationComponentProps) {
   const yGrid = Array.from({ length: GRID_SIZE }, (_, i) => i * dx);
 
   return (
-    <SimulationPanel>
-      <h3 className="text-lg font-semibold text-[var(--text-strong)]">
-        2D Heat Equation Solver
-      </h3>
-      <p className="text-sm text-[var(--text-soft)] mb-4">
-        Watch heat diffuse from an initial distribution. The FTCS scheme solves
-        u_t = &alpha;(u_xx + u_yy) with zero boundary conditions.
-      </p>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+    <SimulationPanel title="2D Heat Equation Solver" caption="Watch heat diffuse from an initial distribution. The FTCS scheme solves u_t = \u03B1(u_xx + u_yy) with zero boundary conditions.">
+      <SimulationSettings>
         <div>
           <SimulationLabel>Initial condition</SimulationLabel>
           <SimulationToggle
@@ -178,85 +171,91 @@ export default function HeatEquation2D({}: SimulationComponentProps) {
             onChange={(v) => setInitType(v as InitCondition)}
           />
         </div>
-        <div>
-          <SimulationLabel>Diffusivity &alpha;: {diffusivity.toFixed(2)}</SimulationLabel>
-          <Slider
-            value={[diffusivity]}
-            onValueChange={([v]) => setDiffusivity(v)}
-            min={0.05}
-            max={2.0}
-            step={0.05}
-            className="w-full"
-          />
-        </div>
-        <div>
-          <SimulationLabel>Speed (steps/frame): {stepsPerFrame}</SimulationLabel>
-          <Slider
-            value={[stepsPerFrame]}
-            onValueChange={([v]) => setStepsPerFrame(v)}
-            min={1}
-            max={20}
-            step={1}
-            className="w-full"
-          />
-        </div>
         <div className="flex items-end gap-2">
-          <button
-            onClick={() => setPlaying(!playing)}
-            className="px-4 py-1.5 text-sm font-medium rounded-md bg-[var(--accent)] text-white hover:bg-[var(--accent-strong)] transition-colors"
-          >
-            {playing ? 'Pause' : 'Play'}
-          </button>
-          <button
+          <SimulationPlayButton
+            isRunning={playing}
+            onToggle={() => setPlaying(p => !p)}
+          />
+          <SimulationButton
+            variant="secondary"
             onClick={reset}
-            className="px-4 py-1.5 text-sm font-medium rounded-md bg-[var(--surface-3)] text-[var(--text-strong)] hover:bg-[var(--border-strong)] transition-colors"
           >
             Reset
-          </button>
+          </SimulationButton>
         </div>
-      </div>
+      </SimulationSettings>
+      <SimulationConfig>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <SimulationLabel>Diffusivity &alpha;: {diffusivity.toFixed(2)}</SimulationLabel>
+            <Slider
+              value={[diffusivity]}
+              onValueChange={([v]) => setDiffusivity(v)}
+              min={0.05}
+              max={2.0}
+              step={0.05}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel>Speed (steps/frame): {stepsPerFrame}</SimulationLabel>
+            <Slider
+              value={[stepsPerFrame]}
+              onValueChange={([v]) => setStepsPerFrame(v)}
+              min={1}
+              max={20}
+              step={1}
+              className="w-full"
+            />
+          </div>
+        </div>
+      </SimulationConfig>
 
-      <CanvasHeatmap
-        data={[
-          {
-            z: heatmapZ,
-            x: xGrid,
-            y: yGrid,
-            colorscale: 'Inferno',
-            showscale: true,
-            zmin: 0,
-            zmax: 1,
-          },
-        ]}
-        layout={{
-          title: { text: `Temperature at t = ${stats.time.toFixed(4)}` },
-          xaxis: { title: { text: 'x' } },
-          yaxis: { title: { text: 'y' } },
-          margin: { t: 40, r: 60, b: 50, l: 60 },
-        }}
-        style={{ width: '100%', height: 450 }}
-      />
+      <SimulationMain>
+        <CanvasHeatmap
+          data={[
+            {
+              z: heatmapZ,
+              x: xGrid,
+              y: yGrid,
+              colorscale: 'Inferno',
+              showscale: true,
+              zmin: 0,
+              zmax: 1,
+            },
+          ]}
+          layout={{
+            title: { text: `Temperature at t = ${stats.time.toFixed(4)}` },
+            xaxis: { title: { text: 'x' } },
+            yaxis: { title: { text: 'y' } },
+            margin: { t: 40, r: 60, b: 50, l: 60 },
+          }}
+          style={{ width: '100%', height: 450 }}
+        />
+      </SimulationMain>
 
-      <div className="grid grid-cols-3 gap-3 mt-4">
-        <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
-          <div className="text-xs text-[var(--text-muted)]">Max temperature</div>
-          <div className="text-sm font-mono font-semibold text-[var(--accent)]">
-            {stats.maxTemp.toFixed(4)}
+      <SimulationResults>
+        <div className="grid grid-cols-3 gap-3">
+          <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
+            <div className="text-xs text-[var(--text-muted)]">Max temperature</div>
+            <div className="text-sm font-mono font-semibold text-[var(--accent)]">
+              {stats.maxTemp.toFixed(4)}
+            </div>
+          </div>
+          <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
+            <div className="text-xs text-[var(--text-muted)]">Total energy</div>
+            <div className="text-sm font-mono font-semibold text-[var(--text-strong)]">
+              {stats.totalEnergy.toFixed(2)}
+            </div>
+          </div>
+          <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
+            <div className="text-xs text-[var(--text-muted)]">Time steps</div>
+            <div className="text-sm font-mono font-semibold text-[var(--text-strong)]">
+              {timeStep}
+            </div>
           </div>
         </div>
-        <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
-          <div className="text-xs text-[var(--text-muted)]">Total energy</div>
-          <div className="text-sm font-mono font-semibold text-[var(--text-strong)]">
-            {stats.totalEnergy.toFixed(2)}
-          </div>
-        </div>
-        <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
-          <div className="text-xs text-[var(--text-muted)]">Time steps</div>
-          <div className="text-sm font-mono font-semibold text-[var(--text-strong)]">
-            {timeStep}
-          </div>
-        </div>
-      </div>
+      </SimulationResults>
     </SimulationPanel>
   );
 }

@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 /** Log-space factorial using Stirling-like summation for large n */
 function logFactorial(n: number): number {
@@ -22,7 +25,7 @@ function binomialPMF(k: number, N: number, p: number): number {
   return Math.exp(logP);
 }
 
-export default function BinomialDistribution() {
+export default function BinomialDistribution({}: SimulationComponentProps) {
   const [N1, setN1] = useState(10);
   const [p1, setP1] = useState(0.17);
   const [N2, setN2] = useState(20);
@@ -44,24 +47,23 @@ export default function BinomialDistribution() {
   }, [N1, p1, N2, p2]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Binomial Distribution</h3>
-
-      <div className="grid grid-cols-2 gap-6 mb-4">
+    <SimulationPanel title="Binomial Distribution">
+      <SimulationConfig>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Distribution 1: N = {N1}</label>
+          <SimulationLabel>Distribution 1: N = {N1}</SimulationLabel>
           <Slider value={[N1]} onValueChange={([v]) => setN1(v)} min={1} max={50} step={1} />
-          <label className="mb-1 mt-2 block text-sm text-[var(--text-muted)]">p = {p1.toFixed(2)}</label>
+          <SimulationLabel className="mt-2">p = {p1.toFixed(2)}</SimulationLabel>
           <Slider value={[p1]} onValueChange={([v]) => setP1(v)} min={0.01} max={1} step={0.01} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Distribution 2: N = {N2}</label>
+          <SimulationLabel>Distribution 2: N = {N2}</SimulationLabel>
           <Slider value={[N2]} onValueChange={([v]) => setN2(v)} min={1} max={50} step={1} />
-          <label className="mb-1 mt-2 block text-sm text-[var(--text-muted)]">p = {p2.toFixed(2)}</label>
+          <SimulationLabel className="mt-2">p = {p2.toFixed(2)}</SimulationLabel>
           <Slider value={[p2]} onValueChange={([v]) => setP2(v)} min={0.01} max={1} step={0.01} />
         </div>
-      </div>
+      </SimulationConfig>
 
+      <SimulationMain>
       <CanvasChart
         data={[
           {
@@ -93,6 +95,7 @@ export default function BinomialDistribution() {
         }}
         style={{ width: '100%' }}
       />
+      </SimulationMain>
 
       <div className="mt-3 text-sm text-[var(--text-muted)]">
         <p>
@@ -101,6 +104,6 @@ export default function BinomialDistribution() {
           Mean = Np, Variance = Np(1-p).
         </p>
       </div>
-    </div>
+    </SimulationPanel>
   );
 }

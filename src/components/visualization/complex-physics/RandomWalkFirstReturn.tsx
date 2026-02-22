@@ -1,9 +1,11 @@
-'use client';
+"use client";
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { SimulationMain } from '@/components/ui/simulation-main';
 import { Slider } from '@/components/ui/slider';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationResults, SimulationAux, SimulationLabel, SimulationButton } from '@/components/ui/simulation-panel';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 import { useTheme } from '@/lib/use-theme';
 
 function mulberry32(seed: number) {
@@ -209,7 +211,7 @@ function WalkCanvas({ path, pathSteps, isDark }: { path: { x: number[]; y: numbe
 
 /* ---------- Main component ---------- */
 
-export function RandomWalkFirstReturn() {
+export default function RandomWalkFirstReturn({}: SimulationComponentProps) {
   const theme = useTheme();
   const isDark = theme === 'dark';
   const [maxSteps, setMaxSteps] = useState(1200);
@@ -230,28 +232,31 @@ export function RandomWalkFirstReturn() {
   const finite2d = ret2d.filter(v => v < cutoff);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap gap-6 items-center">
+    <SimulationPanel title="Random Walk First Return">
+      <SimulationSettings>
+        <SimulationButton variant="primary" onClick={() => setRerun(v => v + 1)}>
+          Re-run
+        </SimulationButton>
+      </SimulationSettings>
+      <SimulationConfig>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Max Steps: {maxSteps}</label>
+          <SimulationLabel>Max Steps: {maxSteps}</SimulationLabel>
           <Slider value={[maxSteps]} onValueChange={([v]) => setMaxSteps(v)} min={200} max={3000} step={100} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Trials: {trials}</label>
+          <SimulationLabel>Trials: {trials}</SimulationLabel>
           <Slider value={[trials]} onValueChange={([v]) => setTrials(v)} min={100} max={3000} step={100} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Path Steps: {pathSteps}</label>
+          <SimulationLabel>Path Steps: {pathSteps}</SimulationLabel>
           <Slider value={[pathSteps]} onValueChange={([v]) => setPathSteps(v)} min={50} max={1200} step={50} />
         </div>
-        <button onClick={() => setRerun(v => v + 1)} className="px-4 py-2 bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white rounded text-sm mt-4">
-          Re-run
-        </button>
-      </div>
-
-      <div className="text-sm text-[var(--text-muted)]">
-        Returned before cutoff: 1D {finite1d.length}/{trials} | 2D {finite2d.length}/{trials}
-      </div>
+      </SimulationConfig>
+      <SimulationResults>
+        <div className="text-sm text-[var(--text-muted)]">
+          Returned before cutoff: 1D {finite1d.length}/{trials} | 2D {finite2d.length}/{trials}
+        </div>
+      </SimulationResults>
 
       {/* p5.js animated 2D walk trail */}
       <SimulationMain
@@ -263,28 +268,30 @@ export function RandomWalkFirstReturn() {
       </SimulationMain>
 
       {/* Histograms */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <CanvasChart
-          data={[{ x: finite1d, type: 'histogram', marker: { color: '#60a5fa' }, nbinsx: 40 }]}
-          layout={{
-            title: { text: 'First Return Distribution (1D)', font: { size: 13 } },
-            xaxis: { title: { text: 'Return Step' } },
-            yaxis: { title: { text: 'Count' } },
-            margin: { t: 40, r: 20, b: 50, l: 60 },
-          }}
-          style={{ width: '100%', height: 320 }}
-        />
-        <CanvasChart
-          data={[{ x: finite2d, type: 'histogram', marker: { color: '#34d399' }, nbinsx: 40 }]}
-          layout={{
-            title: { text: 'First Return Distribution (2D)', font: { size: 13 } },
-            xaxis: { title: { text: 'Return Step' } },
-            yaxis: { title: { text: 'Count' } },
-            margin: { t: 40, r: 20, b: 50, l: 60 },
-          }}
-          style={{ width: '100%', height: 320 }}
-        />
-      </div>
-    </div>
+      <SimulationAux>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <CanvasChart
+            data={[{ x: finite1d, type: 'histogram', marker: { color: '#60a5fa' }, nbinsx: 40 }]}
+            layout={{
+              title: { text: 'First Return Distribution (1D)', font: { size: 13 } },
+              xaxis: { title: { text: 'Return Step' } },
+              yaxis: { title: { text: 'Count' } },
+              margin: { t: 40, r: 20, b: 50, l: 60 },
+            }}
+            style={{ width: '100%', height: 320 }}
+          />
+          <CanvasChart
+            data={[{ x: finite2d, type: 'histogram', marker: { color: '#34d399' }, nbinsx: 40 }]}
+            layout={{
+              title: { text: 'First Return Distribution (2D)', font: { size: 13 } },
+              xaxis: { title: { text: 'Return Step' } },
+              yaxis: { title: { text: 'Count' } },
+              margin: { t: 40, r: 20, b: 50, l: 60 },
+            }}
+            style={{ width: '100%', height: 320 }}
+          />
+        </div>
+      </SimulationAux>
+    </SimulationPanel>
   );
 }

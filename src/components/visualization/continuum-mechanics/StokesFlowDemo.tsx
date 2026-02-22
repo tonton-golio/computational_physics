@@ -1,9 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { SimulationMain } from '@/components/ui/simulation-main';
+import { SimulationPanel, SimulationConfig, SimulationAux, SimulationLabel } from '@/components/ui/simulation-panel';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 /**
  * Creeping (Stokes) flow around a sphere. Shows streamlines at very low Re,
@@ -11,7 +13,7 @@ import { SimulationMain } from '@/components/ui/simulation-main';
  * Stokes drag D = 6*pi*eta*a*U vs velocity (linear scaling).
  */
 
-export default function StokesFlowDemo() {
+export default function StokesFlowDemo({}: SimulationComponentProps) {
   const [viscosity, setViscosity] = useState(1.0); // Pa.s
   const [radius, setRadius] = useState(0.01); // m
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -159,49 +161,43 @@ export default function StokesFlowDemo() {
   }, [viscosity, radius]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-2 text-[var(--text-strong)]">
-        Stokes (Creeping) Flow Around a Sphere
-      </h3>
-      <p className="text-sm text-[var(--text-muted)] mb-4">
-        At Re &laquo; 1, viscosity dominates and the flow is fore-aft symmetric.
-        Drag scales linearly with velocity: D = 6&pi;&eta;aU (Stokes&apos; law),
-        unlike turbulent drag which scales as v&sup2;.
-      </p>
+    <SimulationPanel title="Stokes (Creeping) Flow Around a Sphere" caption="At Re \u00ab 1, viscosity dominates and the flow is fore-aft symmetric. Drag scales linearly with velocity: D = 6\u03c0\u03b7aU (Stokes' law), unlike turbulent drag which scales as v\u00b2.">
+      <SimulationConfig>
+        <div>
+          <SimulationLabel>
+            Viscosity &eta;: {viscosity.toFixed(2)} Pa&middot;s
+          </SimulationLabel>
+          <Slider min={0.01} max={10} step={0.01} value={[viscosity]}
+            onValueChange={([v]) => setViscosity(v)} className="w-full" />
+        </div>
+        <div>
+          <SimulationLabel>
+            Sphere radius a: {(radius * 1000).toFixed(1)} mm
+          </SimulationLabel>
+          <Slider min={0.001} max={0.05} step={0.001} value={[radius]}
+            onValueChange={([v]) => setRadius(v)} className="w-full" />
+        </div>
+      </SimulationConfig>
       <SimulationMain scaleMode="contain" className="w-full">
         <div ref={containerRef} style={{ width: '100%' }}>
           <canvas ref={canvasRef} style={{ display: 'block', borderRadius: '4px' }} />
         </div>
       </SimulationMain>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 my-4">
-        <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">
-            Viscosity &eta;: {viscosity.toFixed(2)} Pa&middot;s
-          </label>
-          <Slider min={0.01} max={10} step={0.01} value={[viscosity]}
-            onValueChange={([v]) => setViscosity(v)} className="w-full" />
-        </div>
-        <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">
-            Sphere radius a: {(radius * 1000).toFixed(1)} mm
-          </label>
-          <Slider min={0.001} max={0.05} step={0.001} value={[radius]}
-            onValueChange={([v]) => setRadius(v)} className="w-full" />
-        </div>
-      </div>
-      <CanvasChart
-        data={dragData}
-        layout={{
-          xaxis: { title: { text: 'Velocity (m/s)' } },
-          yaxis: { title: { text: 'Drag force (N)' } },
-        }}
-        style={{ width: '100%', height: 300 }}
-      />
+      <SimulationAux>
+        <CanvasChart
+          data={dragData}
+          layout={{
+            xaxis: { title: { text: 'Velocity (m/s)' } },
+            yaxis: { title: { text: 'Drag force (N)' } },
+          }}
+          style={{ width: '100%', height: 300 }}
+        />
+      </SimulationAux>
       <p className="mt-3 text-xs text-[var(--text-muted)]">
         Blue: Stokes drag (linear in v). Red dashed: turbulent drag (quadratic in v).
         At low velocities Stokes drag dominates; at higher speeds the turbulent
         regime takes over.
       </p>
-    </div>
+    </SimulationPanel>
   );
 }

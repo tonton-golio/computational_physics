@@ -2,43 +2,39 @@
 
 ## The Drunkard's Walk to Gaussian
 
-Imagine a drunkard stumbling home from a bar. Each step is random — left, right, long, short, forward, backward. After one step, the drunkard could be anywhere. After ten steps, the position is hard to predict. But after a *thousand* steps? Something remarkable happens: if you repeated this walk many times, the final positions would form a bell curve. Every time. No matter how erratic each individual step is.
+Picture a drunkard stumbling home. Each step is random -- left, right, long, short. After one step, the position could be anywhere. After a thousand? Here's the crazy thing: if you repeated the walk many times, the final positions would form a bell curve. Every single time. No matter how wild each step is.
 
-That is the **central limit theorem** (CLT) in action. Take $N$ independent samples from *any* distribution (as long as it has finite variance), compute their mean, and that mean will be approximately Gaussian. The more samples you average, the better the approximation. The original distribution can be uniform, exponential, bimodal, or anything else — the average still converges to a bell curve.
+That's the **central limit theorem**. Take $N$ independent samples from *any* distribution (with finite variance), average them, and that average is approximately Gaussian. The original distribution can be uniform, exponential, bimodal, whatever -- the average converges to a bell curve.
 
 [[simulation applied-stats-sim-3]]
 
-This is why Gaussian error analysis works almost everywhere. Your measurement is typically the result of many small, independent influences added together. Each influence might follow some complicated distribution, but their sum — your measurement — will be Gaussian. The CLT is the license that lets you use Gaussian statistics.
+This is why Gaussian error analysis works almost everywhere. Your measurement is typically many small independent influences added together. Each might follow some weird distribution, but their sum -- your measurement -- is Gaussian. The CLT is your license to use Gaussian statistics.
 
-But there are caveats. For the CLT to work well, the contributing distributions should have similar standard deviations. If one source of variation dwarfs all others, the sum looks like that dominant source, not a Gaussian. And distributions with very heavy tails (like the Cauchy distribution, which has no finite variance) never converge — no amount of averaging tames them.
+**Caveats**: the contributing distributions should have similar standard deviations. If one source dwarfs the others, the sum looks like that dominant source. And distributions with no finite variance (like the Cauchy) never converge -- no amount of averaging tames them.
 
-**The practical rule**: if each contribution has finite variance and no single contribution dominates, the sum is approximately Gaussian. This is the foundation on which the rest of the course builds.
-
-> **Challenge.** Roll a single die and note the result. Now roll five dice and compute the average. Do this twenty times. Plot your twenty averages on a number line. You'll see them clustering around 3.5 in a roughly bell-shaped pattern — even though a single die roll is perfectly uniform. That's the CLT at work.
+> **Challenge.** Roll a single die -- perfectly uniform, not a bell curve at all. Now roll five dice and average them. Do this twenty times. Plot your averages. They'll cluster around 3.5 in a bell shape. That's the CLT at work, turning uniform randomness into Gaussian.
 
 ## Error Propagation
 
-Now suppose you've measured some input quantities $x_i$, each with uncertainty $\sigma(x_i)$, and you compute a derived quantity $y(x_i)$. What is the uncertainty on $y$?
+You've measured some inputs $x_i$ with uncertainties $\sigma(x_i)$ and you compute a derived quantity $y(x_i)$. What's the uncertainty on $y$?
 
-The intuition is simple: a small wiggle in the input causes a wiggle in the output. The size of that output wiggle depends on how steeply $y$ changes with respect to $x$. If $y$ varies gently, input errors stay small. If $y$ varies steeply, input errors get amplified.
+Here's the intuition: imagine walking on a hill. A small wobble in your position causes a wobble in your altitude. On a **steep** hill, a tiny wobble produces a big altitude change. On a **flat** hill, the same wobble barely matters. Error propagation is the same idea -- the steeper $y$ changes with $x$, the more the input error gets amplified.
 
-Think of it this way. You measure the radius of a circle with some uncertainty, and you want the area $A = \pi r^2$. The derivative $dA/dr = 2\pi r$ tells you that a 1% error in $r$ becomes roughly a 2% error in $A$ — the squaring amplifies it. For the volume of a sphere ($V = \frac{4}{3}\pi r^3$), the same 1% error in $r$ becomes a 3% error in $V$. The steeper the function, the bigger the amplification.
+Measure the radius of a circle with some uncertainty, and you want the area $A = \pi r^2$. The derivative $dA/dr = 2\pi r$ says a 1% error in $r$ becomes roughly a 2% error in $A$. For a sphere's volume ($V = \frac{4}{3}\pi r^3$), that same 1% becomes 3%. The steeper the function, the bigger the amplification.
 
-Formally, for a function of one variable:
+Formally, for one variable:
 
 $$
 \sigma(y) = \frac{\partial y}{\partial x}\sigma(x_i)
 $$
 
-This works when $y$ is smooth around $x_i$ — when the slope is roughly constant over the uncertainty range.
-
-For multiple variables with correlations, the general formula uses the covariance matrix $V_{ij}$ (which we met in [introduction and concepts](./introduction-concepts)):
+For multiple variables with correlations, using the covariance matrix $V_{ij}$ (from [introduction and concepts](./introduction-concepts)):
 
 $$
 \sigma_y^2 = \sum_{i,j}^n \frac{\partial y}{\partial x_i} \frac{\partial y}{\partial x_j} V_{ij}
 $$
 
-If there are no correlations between the inputs, only the diagonal terms survive — each input contributes independently to the total uncertainty. This lets you identify which measurement dominates the error budget and focus your effort on improving *that* one.
+If inputs are uncorrelated, only diagonal terms survive. This tells you which measurement dominates the error budget -- improve *that* one.
 
 ### Addition
 
@@ -46,7 +42,7 @@ $$
 y = x_1 + x_2 \implies \sigma_y^2 = \sigma_{x_1}^2 + \sigma_{x_2}^2 + 2V_{x_1, x_2}
 $$
 
-Errors add in quadrature (when uncorrelated). This is why combining independent measurements always improves precision.
+Errors add in quadrature when uncorrelated. Combining independent measurements always improves precision.
 
 ### Multiplication
 
@@ -54,39 +50,33 @@ $$
 y = x_1 x_2 \implies \sigma_y^2 = (x_2\sigma_{x_1})^2 + (x_1\sigma_{x_2})^2 + 2x_1 x_2 V_{x_1, x_2}
 $$
 
-Dividing by $y^2$ gives the relative uncertainties. Here's a beautiful consequence: by engineering *negative* error correlations, you can make errors partially cancel.
-
-Alex encounters this trick in the lab. Harrison's gridiron pendulum uses two metals with different thermal expansion coefficients — brass and steel — arranged so that when temperature rises, the brass rods push the pendulum bob *down* while the steel rods push it *up*. The expansions partially cancel, keeping the pendulum length stable. The key insight: the two metals expand in the same direction physically, but their *contributions to the total length* have opposite signs. Harrison exploited the covariance term $V_{x_1, x_2}$ to engineer a pendulum that barely changes length with temperature — a mechanical implementation of error cancellation, two centuries before anyone wrote down the formula.
+And here's a beautiful consequence: by engineering *negative* error correlations, you can make errors partially cancel. Harrison's gridiron pendulum is a gorgeous example. He arranged brass and steel rods so that thermal expansion in one partially cancels the other -- the two metals expand in the same direction, but their contributions to the pendulum length have opposite signs. He exploited that covariance term two centuries before anyone wrote the formula.
 
 ### When Analytical Propagation Fails
 
-The formulas above assume $y(x)$ is smooth and approximately linear over the uncertainty range. When that breaks down — sharp thresholds, discontinuities, highly nonlinear functions — you need a different approach: **simulation**.
-
-Choose random inputs $x_i$ from their error distributions, compute $y$ for each draw, and look at the resulting spread in $y$. This Monte Carlo approach (developed fully in the next section) handles arbitrary functions, non-Gaussian inputs, and complex correlations. If $y(x)$ is not smooth, the output distribution may not be Gaussian even when the inputs are — the simulation reveals this automatically.
+The formulas assume $y(x)$ is smooth and roughly linear over the uncertainty range. When that breaks down -- thresholds, discontinuities, wild nonlinearity -- you simulate instead. Draw random inputs from their error distributions, compute $y$ for each draw, and look at the spread. This Monte Carlo approach (next section) handles anything.
 
 [[simulation applied-stats-sim-8]]
 
-> **Challenge.** Explain error propagation to a friend using only the example of measuring a room's area from its length and width. No equations. One minute.
+> **Challenge.** Explain error propagation using only the example of measuring a room's area from length and width. No equations. One minute.
 
 ## Big Ideas
 
-* The central limit theorem is the reason Gaussian error analysis works anywhere: averages of random quantities converge to a bell curve regardless of what those quantities individually look like.
-* Error propagation is really just asking "how steeply does my answer change when I wiggle each input?" — steep functions amplify errors, shallow functions suppress them.
-* Negative covariance between inputs is not a problem; it is an opportunity. Harrison's gridiron pendulum exploited it deliberately to cancel thermal expansion across two centuries before anyone wrote down the covariance formula.
-* When the function is not smooth or the relationship is strongly nonlinear, the derivative formula fails — and simulation is the honest alternative.
+* The CLT is why Gaussian error analysis works: averages of random quantities converge to bell curves, no matter what the individuals look like.
+* Error propagation asks "how steeply does my answer change when I wiggle each input?" Steep functions amplify errors; shallow ones suppress them.
+* Negative covariance is an opportunity, not a problem. Harrison exploited it to cancel thermal drift two centuries early.
+* When the function isn't smooth, the derivative formula fails -- simulation is the honest alternative.
 
 ## What Comes Next
 
-The CLT and error propagation give you analytical tools for tracking uncertainty through calculations. But these tools assume your function is smooth, your errors are Gaussian, and the relationships are tractable enough to differentiate on paper. In real experiments, none of these conditions are guaranteed.
-
-The next section replaces the pen-and-paper calculation with direct simulation: generate random inputs, push them through the calculation a million times, and look at the spread of the outputs. This Monte Carlo approach handles arbitrary functions, non-Gaussian inputs, and complex correlations — and it connects back to the CLT in a satisfying way.
+The CLT and error propagation give you pen-and-paper tools for tracking uncertainty. But they assume smooth functions, Gaussian errors, and tractable derivatives. When those assumptions break, you replace the calculation with brute-force simulation: generate random inputs, push them through a million times, and look at the spread. That's Monte Carlo -- and it connects back to the CLT in a satisfying way.
 
 ## Check Your Understanding
 
-1. You measure the sides of a square and find $L = 10.0 \pm 0.2$ cm. What is the uncertainty on the area? Show how the derivative formula gives you a factor of 2 automatically, and explain in words why squaring a measurement amplifies its relative error.
-2. You measure two correlated quantities $x$ and $y$ where $V_{xy} < 0$. How does this correlation affect the uncertainty on $z = x + y$? Can the total uncertainty be smaller than either individual uncertainty?
-3. A classmate claims: "If I average enough measurements, the CLT guarantees my result will be Gaussian, no matter what." Under what conditions is this claim wrong?
+1. You measure $L = 10.0 \pm 0.2$ cm for the side of a square. What's the uncertainty on the area? Show how the derivative formula gives a factor of 2, and explain in words why squaring amplifies relative error.
+2. Two correlated quantities with $V_{xy} < 0$. How does this affect the uncertainty on $z = x + y$? Can the total uncertainty be smaller than either individual one?
+3. "If I average enough measurements, the CLT guarantees Gaussianity, no matter what." When is this wrong?
 
 ## Challenge
 
-Design an experiment to measure the volume of a small irregularly shaped rock using only a ruler and a graduated cylinder of water. Write down the formula for the volume, identify all the input measurements and their uncertainties, and propagate those uncertainties to get an uncertainty on the volume. Now consider: one of your measurements (perhaps the water level before and after) has an uncertainty that enters the formula as a difference. What does this do to the relative uncertainty on the volume compared to measuring a rectangular block?
+Design an experiment to measure the volume of a small irregular rock using a ruler and a graduated cylinder. Write down the formula, identify all inputs and uncertainties, and propagate them. One of your measurements enters as a *difference* (water level before and after). What does this do to the relative uncertainty compared to measuring a rectangular block?

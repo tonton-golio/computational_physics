@@ -2,139 +2,115 @@
 
 ## The Grand Finale
 
-Machine learning is just statistics with really good marketing — and now you know all the tricks inside the black box.
+Machine learning is statistics with really good marketing -- and now you know all the tricks inside the black box.
 
-Seriously. Logistic regression? That's maximum likelihood estimation ([PDFs](./probability-density-functions)) applied to classification. Regularization? The frequentist cousin of Bayesian priors ([Bayesian statistics](./bayesian-statistics)). Cross-validation? A practical implementation of the model comparison ideas from [advanced fitting](./advanced-fitting-calibration). The Fisher discriminant? [ANOVA](./anova)'s variance decomposition in disguise. Everything you've learned — likelihoods, priors, uncertainty quantification, model selection, error propagation — is secretly running inside every modern ML algorithm.
+Logistic regression? Maximum likelihood ([PDFs](./probability-density-functions)) applied to classification. Cross-validation? Model comparison from [advanced fitting](./advanced-fitting-calibration). Fisher's discriminant? [ANOVA](./anova)'s variance decomposition in disguise. Everything you've learned is secretly running inside every modern ML algorithm.
 
-This section makes those connections explicit and introduces the algorithms that have become essential tools in experimental physics and data analysis. ML methods complement traditional techniques for three core tasks: **classification** (separating signal from background), **regression** (predicting continuous quantities), and **clustering** (discovering structure in unlabelled data).
-
-ML algorithms fall into two broad categories. **Supervised learning** trains on labelled examples and predicts labels for new data. **Unsupervised learning** finds structure without labels.
+ML methods handle three core tasks: **classification** (signal vs. background), **regression** (predicting continuous quantities), and **clustering** (discovering structure without labels). **Supervised learning** trains on labeled examples. **Unsupervised learning** finds structure without them.
 
 ## Supervised Learning: Classification
 
-Given training data $\{(\mathbf{x}_i, y_i)\}$ where $y_i \in \{0, 1\}$ labels signal vs. background, a classifier learns a decision boundary in feature space. This is the ML version of the [hypothesis testing](./hypothesis-testing) problem: is this event signal or background?
+Given $\{(\mathbf{x}_i, y_i)\}$ with $y_i \in \{0, 1\}$, a classifier learns a decision boundary. This is the ML version of [hypothesis testing](./hypothesis-testing): is this event signal or background?
 
 ### Logistic Regression
 
-**Logistic regression** models the probability of the positive class as:
-
 $$
-P(y=1 | \mathbf{x}) = \frac{1}{1 + e^{-\mathbf{w}^T \mathbf{x} - b}},
+P(y=1 | \mathbf{x}) = \frac{1}{1 + e^{-\mathbf{w}^T \mathbf{x} - b}}
 $$
 
-where $\mathbf{w}$ and $b$ are learned by maximizing the likelihood — the same MLE principle from [probability density functions](./probability-density-functions), just applied to a different model. Despite its simplicity, logistic regression is effective when classes are approximately linearly separable and serves as a useful baseline before trying more complex methods.
+Parameters learned by maximizing likelihood -- same MLE principle, different model. Effective when classes are roughly linearly separable. A solid baseline before trying fancier things.
 
 ### Decision Trees and Ensembles
 
-**Decision trees** recursively partition feature space by selecting the feature and threshold that best separates classes at each node. They are interpretable — you can read off the decision rules — but prone to overfitting. They memorize noise in the training data.
+**Decision trees** recursively partition feature space. Interpretable -- you can read the rules -- but prone to overfitting. They memorize noise.
 
-Two ensemble strategies fix this:
+Two fixes:
 
-* **Random forests** reduce overfitting by averaging predictions from many trees, each trained on a bootstrap sample with a random subset of features. The averaging smooths out the noise that individual trees memorize.
-* **Boosted decision trees** (BDT) build an ensemble sequentially, with each new tree focusing on the examples the previous ones got wrong. Gradient boosting (e.g., XGBoost) is among the most powerful classifiers for tabular data and is widely used in particle physics for event selection.
+* **Random forests**: average many trees, each trained on a bootstrap sample with random feature subsets. Averaging smooths out the noise.
+* **Boosted decision trees** (BDT): build an ensemble sequentially, each new tree targeting the mistakes of the previous ones. Among the most powerful classifiers for tabular data.
 
 ## The Fisher Linear Discriminant
 
-The **Fisher discriminant** finds the single linear combination of features that best separates two classes. It connects directly to the variance decomposition from [ANOVA](./anova): just as ANOVA separates between-group from within-group variance, Fisher finds the direction that maximizes the ratio of between-class to within-class scatter.
-
-The discriminant direction is:
+The direction that best separates two classes:
 
 $$
 \mathbf{w} = S^{-1}(\boldsymbol{\mu}_0 - \boldsymbol{\mu}_1)
 $$
 
-where $\boldsymbol{\mu}_0$ and $\boldsymbol{\mu}_1$ are the class means and $S$ is the **pooled within-class covariance matrix**:
-
-$$
-S = \frac{1}{n}(S_0 + S_1)
-$$
-
-A new observation $\mathbf{x}$ is classified by projecting onto $\mathbf{w}$ and comparing to a threshold. This method assumes normally distributed classes with equal covariance matrices — the same assumptions that underlie ANOVA. When those assumptions are violated, quadratic discriminant analysis or nonlinear classifiers should be used.
+where $S = (S_0 + S_1)/n$ is the pooled within-class covariance. This is ANOVA's between/within variance ratio, pointing in the optimal direction. Same assumptions (normal classes, equal covariance) and same fallback when they fail (quadratic or nonlinear classifiers).
 
 ## Supervised Learning: Regression
 
-For predicting continuous targets, the same algorithms adapt. Linear regression minimizes squared residuals (the [chi-square method](./chi-square-method) without the weighting by uncertainties). **Ridge** and **lasso** regression add penalty terms:
+Linear regression minimizes squared residuals -- [chi-square](./chi-square-method) without the per-point weighting. **Ridge** and **lasso** add penalties:
 
 $$
-\hat{\mathbf{w}} = \arg\min_{\mathbf{w}} \sum_i (y_i - \mathbf{w}^T\mathbf{x}_i)^2 + \lambda \|\mathbf{w}\|_p^p.
+\hat{\mathbf{w}} = \arg\min_{\mathbf{w}} \sum_i (y_i - \mathbf{w}^T\mathbf{x}_i)^2 + \lambda \|\mathbf{w}\|_p^p
 $$
 
-These penalties serve the same purpose as the nuisance parameter constraints in [advanced fitting](./advanced-fitting-calibration) — they prevent the model from over-adapting to noise:
-
-* **Lasso** ($p=1$) performs automatic feature selection by driving irrelevant coefficients to exactly zero. Useful when you suspect many features are unimportant.
-* **Ridge** ($p=2$) shrinks all coefficients toward zero without eliminating any. Better when features are correlated.
-
-The penalty $\lambda \|\mathbf{w}\|^2$ is mathematically identical to placing a Gaussian prior on $\mathbf{w}$ and doing MAP estimation ([Bayesian statistics](./bayesian-statistics)). Regularization *is* Bayesian inference. The "regularization strength" $\lambda$ is the prior's precision. This isn't just an analogy — it's an exact mathematical equivalence.
+* **Lasso** ($p=1$): drives irrelevant coefficients to exactly zero. Automatic feature selection.
+* **Ridge** ($p=2$): shrinks all coefficients toward zero. Better when features are correlated.
 
 ## Neural Networks
 
-A feedforward neural network with $L$ layers computes:
+A neural network is just a giant pile of weighted averages with wiggly nonlinear functions in between:
 
 $$
-\mathbf{h}^{(l)} = \sigma\bigl(W^{(l)} \mathbf{h}^{(l-1)} + \mathbf{b}^{(l)}\bigr), \quad l = 1, \ldots, L,
+\mathbf{h}^{(l)} = \sigma\bigl(W^{(l)} \mathbf{h}^{(l-1)} + \mathbf{b}^{(l)}\bigr), \quad l = 1, \ldots, L
 $$
 
-where $\sigma$ is a nonlinear activation function (ReLU, sigmoid, or tanh) and $\mathbf{h}^{(0)} = \mathbf{x}$. The parameters are optimized by **backpropagation** using gradient descent on a loss function.
+They can approximate any continuous function (universal approximation theorem) and excel when you don't know which feature combinations matter. The price: large training sets, careful regularization, and harder interpretation.
 
-Neural networks can approximate any continuous function (universal approximation theorem) and excel when feature engineering is difficult — when you don't know in advance which combinations of inputs matter. The price is that they require large training sets, careful regularization, and produce models that are harder to interpret than tree-based methods.
+And here is the climax that ties everything together. That penalty term $\lambda\|\mathbf{w}\|^2$ in regularized regression and neural networks? It's mathematically identical to placing a Gaussian prior on $\mathbf{w}$ and doing MAP estimation ([Bayesian statistics](./bayesian-statistics)). **Regularization *is* Bayesian inference.** The regularization strength $\lambda$ is the prior's precision. This isn't an analogy -- it's an exact equivalence. Every regularized model is secretly doing Bayesian inference whether it knows it or not.
+
+The ridge penalty is a Gaussian prior. Lasso is a Laplace prior. The whole framework of [advanced fitting](./advanced-fitting-calibration) -- nuisance parameters, constraint terms, profile likelihoods -- is the same operation in different clothes. Statistics and machine learning aren't separate fields. They're the same field, wearing different hats.
 
 ## Unsupervised Learning
 
-Sometimes you don't have labels — you just have data and want to find structure.
+No labels -- just data and a search for structure.
 
-**k-means clustering** partitions data into $k$ groups by iteratively assigning points to the nearest centroid and updating centroids. It requires specifying $k$ in advance and assumes roughly spherical clusters. Think of it as ANOVA in reverse — instead of testing whether known groups differ, you *discover* the groups from the data.
+**k-means clustering** partitions data into $k$ groups by iterating: assign points to nearest centroid, update centroids. Think ANOVA in reverse -- instead of testing known groups, you *discover* them.
 
-**Principal component analysis** (PCA) finds the directions of maximum variance in the data. The principal components are the eigenvectors of the covariance matrix (which you first encountered in [introduction and concepts](./introduction-concepts)). Projecting onto the top $d$ components reduces dimensionality while preserving the most information — useful for visualization and for removing noise before applying other methods.
+**PCA** finds directions of maximum variance. The principal components are eigenvectors of the covariance matrix (from [introduction](./introduction-concepts)). Project onto the top $d$ to reduce dimensionality while preserving the most information.
 
-**Factor analysis** identifies latent (hidden) factors that explain correlations among observed variables. Unlike PCA, which simply finds directions of maximum variance, factor analysis posits a generative model: observations are linear combinations of a smaller number of unobserved factors plus noise. It answers the question: what underlying causes could produce the correlations we see?
+**Factor analysis** posits a generative model: observations are linear combinations of hidden factors plus noise. Unlike PCA (which just finds directions), factor analysis asks: what underlying *causes* produce the correlations we see?
 
 ## Model Evaluation
 
-The critical concern in ML is **generalization**: how well does the model perform on data it has never seen? A model that memorizes the training set perfectly but fails on new data is useless — it has learned the noise, not the signal.
+The critical concern: **generalization**. A model that memorizes training data but fails on new data is useless -- it learned noise, not signal.
 
-**Cross-validation** provides a practical estimate of generalization error. Split the data into $k$ folds, train on $k-1$, and test on the held-out fold, rotating through all folds. The average test performance estimates how the model will perform in the wild. This is the model comparison idea from [advanced fitting](./advanced-fitting-calibration), made practical.
+**Cross-validation** estimates generalization error: split into $k$ folds, train on $k-1$, test on the held-out fold. Rotate. Average.
 
-For classifiers, key metrics include:
+For classifiers, think about what kind of mistakes you care about. **Precision** answers "of the events I flagged, how many were real?" -- it's the purity of your selection. **Recall** answers "of all the real events, how many did I find?" -- it's the efficiency. There's always a tension: a police officer who arrests everyone has perfect recall but terrible precision. One who never arrests anyone has perfect precision (vacuously) but zero recall.
 
-* **Accuracy**: Fraction of correct predictions. Simple but misleading when classes are imbalanced.
-* **Precision**: $\text{TP} / (\text{TP} + \text{FP})$ — of the events you selected, how many were actually signal? This is the purity of your selection.
-* **Recall (sensitivity)**: $\text{TP} / (\text{TP} + \text{FN})$ — of all the signal events that existed, how many did you find? This is the efficiency.
-* **ROC curve**: Plots true positive rate vs. false positive rate as the decision threshold varies. The area under the curve (AUC) summarizes discrimination power in a single number.
+The **ROC curve** plots true positive rate vs. false positive rate as you vary the threshold. The area under it (AUC) summarizes discrimination power in one number.
 
 [[simulation overfitting-carousel]]
 
 [[simulation roc-live]]
 
-**Overfitting** occurs when the model memorizes training noise rather than learning the underlying pattern. It's detected by a gap between training and validation performance. Mitigation strategies include regularization (penalty terms, as in ridge/lasso), early stopping (halting training before over-adaptation), and ensemble methods (averaging over multiple models).
+**Overfitting** is the gap between training and test performance. Mitigation: regularization, early stopping, ensembles.
 
-> **Challenge.** Explain overfitting to a friend. Use this analogy: memorizing the textbook word-for-word lets you ace the practice test, but if the exam has different questions, you fail. A student who *understands* the material can handle both. One minute.
+> **Challenge.** Explain overfitting: memorizing the textbook word-for-word aces the practice test, but if the exam has new questions, you fail. Understanding beats memorization. One minute.
 
 ## Big Ideas
 
-* Machine learning is not a new field — it is statistics, rebranded and turbocharged by computation. Recognizing the statistical ideas inside the algorithms lets you reason about when they will work and when they will fail.
-* Regularization and Bayesian priors are the same operation. A ridge penalty on model weights is a Gaussian prior; lasso is a Laplace prior. The "regularization strength" is the prior's precision.
-* Cross-validation is the empirical implementation of the model selection idea from advanced fitting: hold out data, measure performance on the held-out set, and use that as your honest estimate of generalization error.
-* Overfitting is not a flaw of ML — it is a fundamental tension between fitting the data you have and generalizing to data you haven't seen. Every model selection decision is a navigation of this trade-off.
+* ML is statistics rebranded and turbocharged by computation. Recognizing the statistical ideas lets you reason about when algorithms work and when they fail.
+* Regularization and Bayesian priors are the same operation. Ridge = Gaussian prior, lasso = Laplace prior.
+* Cross-validation is empirical model selection: honest generalization estimates from held-out data.
+* Overfitting is the fundamental tension between fitting what you have and generalizing to what you haven't seen.
 
 ## What Comes Next
 
-You have now traveled the full arc of applied statistics: summarizing data, modeling it with distributions, propagating uncertainties, fitting models, testing hypotheses, comparing groups, designing experiments, handling hierarchical and longitudinal structure, reasoning Bayesian-style, managing systematics in complex fits, and connecting all of it to machine learning.
+You've traveled the full arc: summarizing data, modeling with distributions, propagating uncertainties, fitting models, testing hypotheses, comparing groups, designing experiments, handling hierarchy and time, reasoning Bayesian-style, managing systematics, and connecting it all to machine learning.
 
-These tools do not exist in isolation — each lesson built on the previous ones, and the connections run in both directions. The chi-square statistic is maximum likelihood in disguise. ANOVA is a special case of regression. Regularization is a Bayesian prior. The deepest skill this topic teaches is not any individual method, but the habit of asking: what is the underlying probabilistic structure of my problem, and which tool is honestly suited to answer my question given the data I actually have?
+The deepest skill isn't any individual method. It's the habit of asking: what is the probabilistic structure of my problem, and which tool honestly answers my question given the data I actually have?
 
 ## Check Your Understanding
 
-1. A neural network achieves 99% accuracy on the training set and 72% on the validation set. A decision tree achieves 91% on training and 89% on validation. Which model is preferable for deployment, and what does the gap between training and validation accuracy tell you in each case?
-2. Ridge regression and lasso regression both add a penalty term to the loss function. In what sense is ridge regression placing a Gaussian prior on the coefficients, and what prior corresponds to lasso? Why does lasso produce sparse solutions while ridge does not?
-3. You apply PCA to a dataset with 50 features and find that the first two principal components explain 85% of the variance. A colleague suggests you should always retain enough components to explain at least 95% of the variance. What is wrong with this as a universal rule, and what should you consider instead?
+1. A neural network: 99% training accuracy, 72% validation. A decision tree: 91% training, 89% validation. Which do you deploy, and what does each gap tell you?
+2. In what sense is ridge regression a Gaussian prior on coefficients? What prior is lasso? Why does lasso produce sparse solutions?
+3. PCA on 50 features: first two components explain 85% of variance. "Always retain enough for 95%." What's wrong with this rule?
 
 ## Challenge
 
-You are classifying particle physics events as signal or background using a boosted decision tree trained on simulated data. After deployment on real data, the model's performance degrades. Diagnose what might have gone wrong:
-
-* **Simulation–reality mismatch** — Compare feature distributions between simulation and real data; retrain or reweight if they diverge.
-* **Overfitting to simulation artifacts** — Check for a large gap between training and validation performance; apply stronger regularization or prune features unique to the simulation.
-* **Feature drift over time** — Monitor feature distributions across data-taking periods; re-calibrate or retrain on recent data if shifts appear.
-* **Uncertainty quantification** — Use confidence intervals on the classifier output, systematic uncertainty bands, and calibration curves to detect and bound each of the above problems.
-
-For each bullet, sketch a concrete diagnostic test and a mitigation strategy.
+You classify particle physics events with a BDT trained on simulation. On real data, performance degrades. Diagnose: simulation-reality mismatch, overfitting to simulation artifacts, feature drift over time. For each, sketch a diagnostic test and a mitigation strategy.

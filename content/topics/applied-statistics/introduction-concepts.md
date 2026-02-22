@@ -1,23 +1,19 @@
 # Introduction and General Concepts
 
-You have a pile of numbers. Maybe they're pendulum timings, patient blood pressures, or photon counts from a distant star. Before you build any model or run any test, you need to answer two questions: *where* does the data cluster, and *how much does it scatter?*
-
-These sound simple. They aren't. The "center" of a dataset is not a single concept, and neither is "spread." Different situations demand different summaries. Picking the wrong one can lead you astray before you've even started your analysis.
-
-Alex, our experimentalist, has just measured the gravitational acceleration ten times and gotten values between 9.78 and 9.84 m/s$^2$. What should Alex report as "the" value? And how uncertain should Alex be? That's what this section is about.
+You have a pile of numbers -- pendulum timings, blood pressures, photon counts. Before you build any model, you need two things: *where* does the data cluster, and *how much does it scatter?*
 
 ## Measures of Central Tendency
 
-The "center" of a dataset depends on what question you're asking. Here is the menu, ordered from most familiar to most specialized.
+The "center" of a dataset depends on the question you're asking.
 
 ### Arithmetic Mean
 
 [[simulation which-average]]
 
-The most familiar average. You add up all the values and divide by how many there are:
+Add everything up, divide by how many you have:
 
 $$
-\hat{\mu} = \bar{x} = \langle x \rangle = \frac{1}{N}\sum_i^N x_i
+\hat{\mu} = \bar{x} = \frac{1}{N}\sum_i^N x_i
 $$
 
 ```python
@@ -26,17 +22,17 @@ def arithmetic_mean(arr):
     # or equivalently: np.mean(arr)
 ```
 
-The arithmetic mean is sensitive to extreme values — a single outlier can drag it far from where most of the data sits. If Alex's ten measurements include one wild reading of 10.5 (a bumped table, perhaps), the mean shifts noticeably. That's not always what you want.
+The arithmetic mean is sensitive to extremes. One wild reading of 10.5 (a bumped table, maybe) drags the mean away from where most of the data sits.
 
 ### Geometric Mean
 
-When your data are multiplicative in nature (growth rates, ratios, concentrations spanning orders of magnitude), the geometric mean is more appropriate. It is the $n$-th root of the product:
+When your data are multiplicative -- growth rates, ratios, concentrations spanning orders of magnitude -- take the $n$-th root of the product:
 
 $$
 \bar{x}_\text{geo} = \left( \prod_i^n x_i\right)^{1/n} = \exp\left(\frac{1}{n}\sum_{i}^n\ln x_i \right)
 $$
 
-This is equivalent to taking the arithmetic mean in log-space, which is why it works well for data that are log-normally distributed. If your data span several orders of magnitude, the geometric mean lives where the data actually cluster — not where the arithmetic mean gets dragged by the largest values.
+This is the arithmetic mean in log-space. If your data span several orders of magnitude, the geometric mean lives where the data actually cluster.
 
 ```python
 def geometric_mean(arr):
@@ -47,7 +43,7 @@ def geometric_mean(arr):
 
 ### Median
 
-The middle value when the data are sorted. Unlike the mean, the median is robust to outliers — even wild values at the extremes do not shift it much. If Alex had that one bumped-table reading of 10.5, the median wouldn't flinch.
+The middle value when sorted. Even wild outliers don't shift it. If you had that bumped-table reading, the median wouldn't flinch.
 
 ```python
 def median(arr):
@@ -60,7 +56,7 @@ def median(arr):
 
 ### Mode
 
-The most frequently occurring value. For continuous data, the mode is estimated from a histogram or kernel density estimate. It tells you where the data piles up the most — useful when your distribution has a clear peak.
+The most frequently occurring value. For continuous data, estimate it from a histogram or kernel density estimate.
 
 ### Harmonic Mean
 
@@ -68,7 +64,7 @@ $$
 \bar{x}_\text{harm} = \left[\frac{1}{n}\sum_i^n \frac{1}{x_i}\right]^{-1}
 $$
 
-The harmonic mean is the right choice when you're averaging *rates*. Suppose you drive 60 km/h for the first half of a trip and 40 km/h for the second half. The harmonic mean (48 km/h) gives the correct average speed, not the arithmetic mean (50 km/h). The difference matters.
+The harmonic mean is right when you're averaging *rates*. Drive 60 km/h for the first half and 40 km/h for the second half. The harmonic mean (48 km/h) gives the correct average speed, not the arithmetic mean (50 km/h).
 
 ```python
 def harmonic_mean(x):
@@ -77,7 +73,7 @@ def harmonic_mean(x):
 
 ### Truncated Mean
 
-A compromise between the sensitivity of the mean and the robustness of the median: compute the arithmetic mean after throwing away the most extreme values on both ends.
+A compromise: compute the mean after tossing the most extreme values on both ends.
 
 ```python
 def truncated_mean(arr, k):
@@ -85,21 +81,21 @@ def truncated_mean(arr, k):
     return np.mean(arr_sorted[k:-k])
 ```
 
-> **Challenge.** Take ten measurements of anything — your walking time to class, the temperature outside, the number of words per sentence in a book. Compute the mean and the median. Are they close? If not, you probably have outliers or a skewed distribution. That's already telling you something about the data.
+> **Challenge.** Measure ten of anything -- walking time, temperature, words per sentence. Compute the mean and the median. Are they close? If not, you probably have outliers or skew. That's already telling you something.
 
 ## Measures of Spread
 
-Knowing the center is only half the story. Two datasets can have the same mean but look completely different — one tightly clustered, the other scattered across a huge range. You need a number that captures *how much the data wanders*.
+Two datasets can have the same mean but look completely different. You need a number that says *how much the data wanders*.
 
 ### Standard Deviation
 
-Standard deviation measures how much data points typically deviate from the mean. Think of it as the "average distance" from the center:
+Think of it as the "average distance" from the center:
 
 $$
 \hat{\sigma} = \sqrt{\frac{1}{N}\sum_i^N (x_i - \mu)^2}
 $$
 
-This formula assumes you know the true mean $\mu$. In practice, you use the sample mean $\bar{x}$, which introduces a subtle bias. Here is the surprising thing: the sample mean is always a little closer to the data than the true mean is, so the raw formula systematically underestimates the spread. **Bessel's correction** compensates by dividing by $N-1$ instead of $N$, accounting for the lost degree of freedom:
+Here's the catch: if you use the sample mean $\bar{x}$ instead of the true mean $\mu$, the formula systematically underestimates the spread. Why? Because $\bar{x}$ is always a little closer to the data than $\mu$ is -- it was *computed* from the data, so it cheats slightly. **Bessel's correction** fixes this -- think of it as paying for the drinks you actually drank, not the drinks someone else ordered:
 
 $$
 \tilde{\sigma} = \sqrt{\frac{1}{N-1}\sum_i(x_i-\bar{x})^2}
@@ -107,31 +103,23 @@ $$
 
 ### Weighted Mean
 
-When measurements come with different uncertainties, you should trust the precise ones more. The weighted mean does exactly this — measurements with smaller error bars get larger weights.
-
-Imagine each measurement standing on a seesaw. A precise measurement (small $\sigma$) is a heavy person near the fulcrum — it has more say in where the balance point lands. The weighted mean is simply where the seesaw balances.
+When measurements come with different uncertainties, you should trust precise ones more. Imagine a seesaw: a precise measurement (small $\sigma$) is a heavy person near the fulcrum -- it has more say in where the balance point lands.
 
 $$
 \hat{\mu} = \frac{\sum x_i / \sigma_i^2}{\sum 1 / \sigma_i^2}, \qquad \hat{\sigma}_\mu = \sqrt{\frac{1}{\sum 1/\sigma_i^2}}
 $$
 
-The uncertainty on the weighted mean decreases with the number of samples:
-
-$$
-\hat{\sigma}_\mu = \hat{\sigma}/\sqrt{N}.
-$$
-
 [[simulation weighted-mean]]
 
-Alex has three measurements of the same length: $10.2 \pm 0.1$, $10.5 \pm 0.5$, and $10.1 \pm 0.2$ cm. The weighted mean pulls toward 10.2, because that measurement is the most precise. This is your first taste of a powerful idea: *let the data tell you how much to trust each piece of information*. You'll see this idea again when we meet likelihood in [probability density functions](./probability-density-functions) and [chi-square fitting](./chi-square-method).
+Three measurements of a length: $10.2 \pm 0.1$, $10.5 \pm 0.5$, $10.1 \pm 0.2$ cm. The weighted mean pulls toward 10.2 because that's the most precise one. This is your first taste of a powerful idea: *let the data tell you how much to trust each piece*. You'll see it again in [likelihood](./probability-density-functions) and [chi-square fitting](./chi-square-method).
 
 ## From Individual Variables to Relationships
 
-So far you've described single variables in isolation: their centers and their spreads. But the most interesting questions in science are about *relationships*. Does one quantity vary in step with another? If temperature goes up, does reaction rate go up too? This is where **correlation** enters.
+So far you've described single variables. But the juicy questions are about *relationships*. Does temperature drive reaction rate? That's where **correlation** enters.
 
 ### Covariance and Pearson's Correlation
 
-The natural extension of variance to two variables is the **covariance** — it measures whether $x$ and $y$ tend to move together:
+Covariance measures whether $x$ and $y$ move together:
 
 $$
 \begin{aligned}
@@ -144,52 +132,37 @@ V_{xy} &= E[(x_i-\mu_x)(y_i-\mu_y)] =
 \end{aligned}
 $$
 
-Normalizing by the widths of each distribution gives **Pearson's (linear) correlation coefficient**, which lives between $-1$ and $+1$:
+Normalizing by the widths gives **Pearson's correlation**, which lives between $-1$ and $+1$:
 
 $$
 \rho_{xy} = \frac{V_{xy}}{\sigma_x\sigma_y}, \qquad -1 \leq \rho_{xy} \leq 1
 $$
 
-A value of $+1$ means perfect positive linear relationship; $-1$ means perfect negative; $0$ means no *linear* relationship. But here is the catch — and this is important: $\rho_{xy} = 0$ does **not** mean the variables are unrelated.
+Here's the catch: $\rho_{xy} = 0$ does **not** mean the variables are unrelated. Picture a perfect parabola $y = x^2$. Complete dependence -- but Pearson is zero, because the relationship isn't linear. A perfect circle? Same thing. Always plot the data.
 
-Picture four scatter plots. In the first, points fall neatly along a rising line — Pearson catches this perfectly. In the second, the same rising trend with more scatter — Pearson is smaller but still positive. In the third, the points form a perfect parabola — $y = x^2$ — but Pearson is zero, because the relationship isn't linear. In the fourth, the points form a perfect circle — complete dependence, but Pearson sees nothing at all. Always plot the data.
+### Beyond Pearson
 
-### Beyond Pearson: Other Correlation Measures
+Pearson only sees linear relationships. **Spearman's $\rho$** replaces values with ranks and catches any monotonic trend -- like study hours vs. exam scores, where the first few hours help enormously but later ones add less. For truly complex, non-monotonic dependencies, information-theoretic measures (Mutual Information, Distance Correlation) detect relationships of any shape, at the cost of harder interpretation.
 
-Pearson's $\rho$ only detects *linear* relationships — a perfect parabola or circle scores zero. A family of alternative measures captures progressively more general patterns. **Spearman's $\rho$** replaces values with ranks and then computes Pearson on those ranks, so it catches any monotonic trend (e.g., study hours vs. exam scores, where the first few hours help enormously but later ones add less). **Kendall's $\tau$** counts concordant vs. discordant pairs and is more robust when the sample is small or contains many ties. For truly complex, non-monotonic dependencies, information-theoretic measures such as the **Maximal Information Coefficient (MIC)**, **Mutual Information (MI)**, and **Distance Correlation (DC)** can detect relationships of any shape, at the cost of higher computation and harder interpretation. The progression from Pearson to Spearman to MIC/MI/DC mirrors a trade-off: each step captures more general relationships, at the cost of simplicity.
-
-| Measure | What it captures | When to use |
-|---|---|---|
-| Pearson $\rho$ | Linear association | Default first check; data roughly bivariate-normal |
-| Spearman $\rho$ | Any monotonic trend | Ordinal data, outliers, or curved-but-monotonic relationships |
-| Kendall $\tau$ | Monotonic trend (rank-based) | Small samples or many tied values |
-| MIC | Any functional relationship | Exploratory screening for complex patterns |
-| Mutual Information | Any statistical dependency | High-dimensional or strongly non-linear data |
-| Distance Correlation | Any dependency (zero iff independent) | Rigorous independence testing |
-
-Everything in this section describes data you already have. But the deeper question is: what *process* generated that data? If you can describe the underlying mechanism with a mathematical function, you unlock the ability to predict, extrapolate, and quantify uncertainty. That's the idea of a probability density function — and it's where we go next.
-
-> **Challenge.** Explain to a friend, using only words a 12-year-old would understand, why the average can be misleading when there's an outlier. You have one minute.
+> **Challenge.** Explain to a 12-year-old why the average can be misleading when there's an outlier. One minute.
 
 ## Big Ideas
 
-* The "right" average depends on the structure of your data: arithmetic means for additive quantities, geometric means for multiplicative ones, harmonic means for rates — there is no universal champion.
-* Bessel's correction ($N-1$ instead of $N$) exists because the sample mean is always closer to the data than the true mean is, so the naive formula systematically underestimates spread.
-* A correlation of zero does not mean independence — a perfect circle has Pearson's $\rho = 0$. Always plot before you summarize.
-* Giving imprecise measurements equal weight with precise ones throws away information; the weighted mean is how you let uncertainty tell you how much to trust each reading.
+* The "right" average depends on structure: arithmetic for additive quantities, geometric for multiplicative, harmonic for rates.
+* Bessel's correction ($N-1$) exists because the sample mean cheats -- it's always a bit closer to the data than the true mean.
+* Correlation zero does not mean independence. A perfect circle has $\rho = 0$. Always plot first.
+* The weighted mean lets uncertainty tell you how much to trust each reading.
 
 ## What Comes Next
 
-Everything in this section describes data you already have — summaries, centers, spreads, relationships. But the deeper question is: what *process* generated that data? If you can describe the underlying mechanism with a mathematical function, you unlock the ability to predict, extrapolate, and quantify uncertainty in a principled way.
-
-That function is the probability density function, and it is where the course goes next. The weighted mean you computed here will reappear there as a special case of maximum likelihood estimation — the same idea, made general.
+Everything here describes data you already have. But what *process* generated it? If you can describe the mechanism with a mathematical function, you unlock prediction, extrapolation, and principled uncertainty. That function is the probability density function -- and the weighted mean you just computed will reappear as a special case of maximum likelihood estimation.
 
 ## Check Your Understanding
 
-1. You have salary data for a company where the CEO earns 200 times the median worker's salary. Which measure of central tendency gives a more honest picture of what a typical employee earns, and why?
-2. Two datasets have identical means and standard deviations but very different shapes. What does this tell you about what the mean and standard deviation do and do not capture?
-3. Two variables have a Pearson correlation of $\rho = 0$. A classmate concludes they are independent. What example would you use to show this conclusion is wrong?
+1. Salary data where the CEO earns 200x the median worker. Which central tendency gives a more honest picture of a typical employee, and why?
+2. Two datasets have identical means and standard deviations but very different shapes. What does this tell you about what those summaries capture and miss?
+3. Two variables have $\rho = 0$. A classmate says they're independent. What example kills this claim?
 
 ## Challenge
 
-Design a measurement scheme for estimating the average commute time in a city. Your dataset will inevitably include some extreme outliers (people who commute three hours each way). Write down: which measure of central tendency you would report and why, how you would quantify the spread, and what a "weighted" version of your estimate might look like if some respondents kept more careful time logs than others. Then consider: if a journalist reports the arithmetic mean and a union reports the median, and the numbers are very different, who is lying?
+Design a scheme for estimating average commute time in a city. Some people commute three hours each way. Write down: which central tendency you'd report and why, how you'd quantify spread, and what a "weighted" version looks like if some respondents kept more careful logs. Then consider: if a journalist reports the arithmetic mean and a union reports the median, and the numbers differ wildly, who is lying?

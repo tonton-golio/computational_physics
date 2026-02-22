@@ -1,10 +1,12 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { runLotkaVolterraWorker, type LotkaVolterraResult } from '@/features/simulation/simulation-worker.client';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 function solveLotkaVolterra(alpha: number, beta: number, gamma: number, delta: number, x0: number, y0: number, dt: number, steps: number): { t: number[], x: number[], y: number[] } {
   const t: number[] = [];
@@ -86,7 +88,7 @@ function getCachedBifurcation(
   return result;
 }
 
-export function LotkaVolterraSim() {
+export default function LotkaVolterraSim({}: SimulationComponentProps) {
   const [alpha, setAlpha] = useState([1.0]);
   const [beta, setBeta] = useState([0.1]);
   const [gamma, setGamma] = useState([1.5]);
@@ -209,93 +211,83 @@ export function LotkaVolterraSim() {
   }, [betaValue, gammaValue, deltaValue, x0Value, y0Value]);
 
   return (
-    <div className="space-y-8">
-      <Card>
-        <CardHeader>
-          <CardTitle>Lotka-Volterra Predator-Prey Model</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Time Series</h3>
-              {timeSeriesData && (
-                <CanvasChart
-                  data={timeSeriesData as any}
-                  layout={{
-                    width: 400,
-                    height: 300,
-                    xaxis: { title: { text: 'Time' } },
-                    yaxis: { title: { text: 'Population' } },
-                    margin: { t: 20, b: 40, l: 60, r: 20 },
-                  }}
-                />
-              )}
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Phase Portrait</h3>
-              {phasePortraitData && (
-                <CanvasChart
-                  data={phasePortraitData as any}
-                  layout={{
-                    width: 400,
-                    height: 300,
-                    xaxis: { title: { text: 'Prey' } },
-                    yaxis: { title: { text: 'Predator' } },
-                    margin: { t: 20, b: 40, l: 60, r: 20 },
-                  }}
-                />
-              )}
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Bifurcation Diagram (vs Alpha)</h3>
-              {bifurcationData && (
-                <CanvasChart
-                  data={bifurcationData as any}
-                  layout={{
-                    width: 400,
-                    height: 300,
-                    xaxis: { title: { text: 'Alpha' } },
-                    yaxis: { title: { text: 'Population' } },
-                    margin: { t: 20, b: 40, l: 60, r: 20 },
-                  }}
-                />
-              )}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+    <SimulationPanel title="Lotka-Volterra Predator-Prey Model">
+      <SimulationConfig>
+        <div>
+          <SimulationLabel>Alpha (prey growth): {alpha[0].toFixed(2)}</SimulationLabel>
+          <Slider value={alpha} onValueChange={setAlpha} min={0} max={3} step={0.01} />
+        </div>
+        <div>
+          <SimulationLabel>Beta (predation): {beta[0].toFixed(3)}</SimulationLabel>
+          <Slider value={beta} onValueChange={setBeta} min={0} max={0.5} step={0.001} />
+        </div>
+        <div>
+          <SimulationLabel>Gamma (predator death): {gamma[0].toFixed(2)}</SimulationLabel>
+          <Slider value={gamma} onValueChange={setGamma} min={0} max={3} step={0.01} />
+        </div>
+        <div>
+          <SimulationLabel>Delta (predator efficiency): {delta[0].toFixed(3)}</SimulationLabel>
+          <Slider value={delta} onValueChange={setDelta} min={0} max={0.2} step={0.001} />
+        </div>
+        <div>
+          <SimulationLabel>Initial Prey: {x0[0].toFixed(1)}</SimulationLabel>
+          <Slider value={x0} onValueChange={setX0} min={1} max={50} step={0.1} />
+        </div>
+        <div>
+          <SimulationLabel>Initial Predator: {y0[0].toFixed(1)}</SimulationLabel>
+          <Slider value={y0} onValueChange={setY0} min={1} max={50} step={0.1} />
+        </div>
+      </SimulationConfig>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Parameters</CardTitle>
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div>
-            <label className="text-sm font-medium">Alpha (prey growth): {alpha[0].toFixed(2)}</label>
-            <Slider value={alpha} onValueChange={setAlpha} min={0} max={3} step={0.01} />
-          </div>
-          <div>
-            <label className="text-sm font-medium">Beta (predation): {beta[0].toFixed(3)}</label>
-            <Slider value={beta} onValueChange={setBeta} min={0} max={0.5} step={0.001} />
-          </div>
-          <div>
-            <label className="text-sm font-medium">Gamma (predator death): {gamma[0].toFixed(2)}</label>
-            <Slider value={gamma} onValueChange={setGamma} min={0} max={3} step={0.01} />
-          </div>
-          <div>
-            <label className="text-sm font-medium">Delta (predator efficiency): {delta[0].toFixed(3)}</label>
-            <Slider value={delta} onValueChange={setDelta} min={0} max={0.2} step={0.001} />
-          </div>
-          <div>
-            <label className="text-sm font-medium">Initial Prey: {x0[0].toFixed(1)}</label>
-            <Slider value={x0} onValueChange={setX0} min={1} max={50} step={0.1} />
-          </div>
-          <div>
-            <label className="text-sm font-medium">Initial Predator: {y0[0].toFixed(1)}</label>
-            <Slider value={y0} onValueChange={setY0} min={1} max={50} step={0.1} />
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+      <SimulationMain>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div>
+          <h3 className="text-lg font-semibold mb-4">Time Series</h3>
+          {timeSeriesData && (
+            <CanvasChart
+              data={timeSeriesData as any}
+              layout={{
+                width: 400,
+                height: 300,
+                xaxis: { title: { text: 'Time' } },
+                yaxis: { title: { text: 'Population' } },
+                margin: { t: 20, b: 40, l: 60, r: 20 },
+              }}
+            />
+          )}
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold mb-4">Phase Portrait</h3>
+          {phasePortraitData && (
+            <CanvasChart
+              data={phasePortraitData as any}
+              layout={{
+                width: 400,
+                height: 300,
+                xaxis: { title: { text: 'Prey' } },
+                yaxis: { title: { text: 'Predator' } },
+                margin: { t: 20, b: 40, l: 60, r: 20 },
+              }}
+            />
+          )}
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold mb-4">Bifurcation Diagram (vs Alpha)</h3>
+          {bifurcationData && (
+            <CanvasChart
+              data={bifurcationData as any}
+              layout={{
+                width: 400,
+                height: 300,
+                xaxis: { title: { text: 'Alpha' } },
+                yaxis: { title: { text: 'Population' } },
+                margin: { t: 20, b: 40, l: 60, r: 20 },
+              }}
+            />
+          )}
+        </div>
+      </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

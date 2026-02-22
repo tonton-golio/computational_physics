@@ -1,12 +1,11 @@
-'use client';
+"use client";
 
 import { useState, useMemo } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { Slider } from '@/components/ui/slider';
-
-interface RegularizationEffectsProps {
-  id?: string;
-}
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationResults, SimulationLabel, SimulationCheckbox } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 function mulberry32(seed: number) {
   return function () {
@@ -42,7 +41,7 @@ function generateCurves(dropout: number, weightDecay: number, seed: number) {
   return { trainLoss, valLoss };
 }
 
-export default function RegularizationEffects({ id: _id }: RegularizationEffectsProps) {
+export default function RegularizationEffects({}: SimulationComponentProps) {
   const [dropout, setDropout] = useState(0);
   const [weightDecay, setWeightDecay] = useState(0);
   const [showNoReg, setShowNoReg] = useState(true);
@@ -94,55 +93,50 @@ export default function RegularizationEffects({ id: _id }: RegularizationEffects
   const noRegGap = noRegCurves.valLoss[99] - noRegCurves.trainLoss[99];
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">
-        Regularization Effects on Training
-      </h3>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <SimulationPanel title="Regularization Effects on Training">
+      <SimulationSettings>
+        <SimulationCheckbox checked={showNoReg} onChange={setShowNoReg} label="Show no-regularization baseline" />
+      </SimulationSettings>
+      <SimulationConfig>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm text-[var(--text-muted)] mb-1">
+            <SimulationLabel className="block text-sm text-[var(--text-muted)] mb-1">
               Dropout rate: {dropout.toFixed(2)}
-            </label>
+            </SimulationLabel>
             <Slider min={0} max={0.5} step={0.05} value={[dropout]} onValueChange={([v]) => setDropout(v)} className="w-full" />
           </div>
           <div>
-            <label className="block text-sm text-[var(--text-muted)] mb-1">
+            <SimulationLabel className="block text-sm text-[var(--text-muted)] mb-1">
               Weight decay: {weightDecay.toFixed(3)}
-            </label>
+            </SimulationLabel>
             <Slider min={0} max={0.05} step={0.005} value={[weightDecay]} onValueChange={([v]) => setWeightDecay(v)} className="w-full" />
           </div>
-          <label className="flex items-center gap-2 text-sm text-[var(--text-muted)] cursor-pointer">
-            <input type="checkbox" checked={showNoReg} onChange={(e) => setShowNoReg(e.target.checked)} className="accent-blue-500" />
-            Show no-regularization baseline
-          </label>
-
-          <div className="p-3 bg-[var(--surface-2)] rounded text-sm text-[var(--text-muted)] space-y-2">
-            <p><strong className="text-[var(--text-strong)]">Generalization gap</strong> (train-val difference at epoch 100):</p>
-            {showNoReg && (
-              <p>No regularization: <span className="text-orange-400">{noRegGap.toFixed(3)}</span></p>
-            )}
-            <p>With regularization: <span className="text-green-400">{gap.toFixed(3)}</span></p>
-            {gap < noRegGap * 0.7 && (
-              <p className="text-blue-400">Regularization is significantly reducing overfitting.</p>
-            )}
-          </div>
         </div>
-
-        <div className="lg:col-span-2">
-          <CanvasChart
-            data={traces}
-            layout={{
-              xaxis: { title: { text: 'Epoch' } },
-              yaxis: { title: { text: 'Loss' } },
-              margin: { t: 30, b: 50, l: 60, r: 30 },
-              autosize: true,
-            }}
-            style={{ width: '100%', height: '400px' }}
-          />
+      </SimulationConfig>
+      <SimulationMain>
+        <CanvasChart
+          data={traces}
+          layout={{
+            xaxis: { title: { text: 'Epoch' } },
+            yaxis: { title: { text: 'Loss' } },
+            margin: { t: 30, b: 50, l: 60, r: 30 },
+            autosize: true,
+          }}
+          style={{ width: '100%', height: '400px' }}
+        />
+      </SimulationMain>
+      <SimulationResults>
+        <div className="p-3 bg-[var(--surface-2)] rounded text-sm text-[var(--text-muted)] space-y-2">
+          <p><strong className="text-[var(--text-strong)]">Generalization gap</strong> (train-val difference at epoch 100):</p>
+          {showNoReg && (
+            <p>No regularization: <span className="text-orange-400">{noRegGap.toFixed(3)}</span></p>
+          )}
+          <p>With regularization: <span className="text-green-400">{gap.toFixed(3)}</span></p>
+          {gap < noRegGap * 0.7 && (
+            <p className="text-blue-400">Regularization is significantly reducing overfitting.</p>
+          )}
         </div>
-      </div>
-    </div>
+      </SimulationResults>
+    </SimulationPanel>
   );
 }

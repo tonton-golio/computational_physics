@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
 import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
-import { SimulationPanel, SimulationLabel, SimulationToggle } from '@/components/ui/simulation-panel';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationLabel, SimulationToggle } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
 import { CanvasChart, type ChartTrace, type ChartLayout } from '@/components/ui/canvas-chart';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
@@ -280,7 +281,7 @@ export default function PhaseSpaceExplorer({}: SimulationComponentProps) {
     x: ns,
     y: probs,
     type: 'bar',
-    marker: { color: 'var(--accent)' },
+    marker: { color: '#3b82f6' },
     name: 'P(n)',
   };
 
@@ -293,90 +294,91 @@ export default function PhaseSpaceExplorer({}: SimulationComponentProps) {
   };
 
   return (
-    <SimulationPanel>
-      <h3 className="text-lg font-semibold text-[var(--text-strong)]">Phase-Space Explorer</h3>
-      <p className="text-sm text-[var(--text-soft)] mb-3">
-        Select a quantum state and visualize its Wigner or Q function alongside its photon number distribution.
-      </p>
+    <SimulationPanel title="Phase-Space Explorer" caption="Select a quantum state and visualize its Wigner or Q function alongside its photon number distribution.">
+      <SimulationSettings>
+        {/* State selector */}
+        <div>
+          <SimulationToggle
+            options={STATE_OPTIONS}
+            value={stateType}
+            onChange={(v) => setStateType(v as StateType)}
+          />
+        </div>
 
-      {/* State selector */}
-      <div className="mb-4">
-        <SimulationToggle
-          options={STATE_OPTIONS}
-          value={stateType}
-          onChange={(v) => setStateType(v as StateType)}
-        />
-      </div>
+        {/* Display mode */}
+        <div>
+          <SimulationToggle
+            options={DISPLAY_OPTIONS}
+            value={displayMode}
+            onChange={(v) => setDisplayMode(v as DisplayMode)}
+          />
+        </div>
+      </SimulationSettings>
 
-      {/* Display mode */}
-      <div className="mb-4">
-        <SimulationToggle
-          options={DISPLAY_OPTIONS}
-          value={displayMode}
-          onChange={(v) => setDisplayMode(v as DisplayMode)}
-        />
-      </div>
+      <SimulationConfig>
+        {/* Sliders */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {showAlpha && (
+            <>
+              <div>
+                <SimulationLabel>Re(alpha): {alphaRe.toFixed(2)}</SimulationLabel>
+                <Slider value={[alphaRe]} onValueChange={(v) => setAlphaRe(v[0])} min={-4} max={4} step={0.1} className="w-full" />
+              </div>
+              <div>
+                <SimulationLabel>Im(alpha): {alphaIm.toFixed(2)}</SimulationLabel>
+                <Slider value={[alphaIm]} onValueChange={(v) => setAlphaIm(v[0])} min={-4} max={4} step={0.1} className="w-full" />
+              </div>
+            </>
+          )}
+          {showSqueeze && (
+            <>
+              <div>
+                <SimulationLabel>Squeeze r: {squeezeR.toFixed(2)}</SimulationLabel>
+                <Slider value={[squeezeR]} onValueChange={(v) => setSqueezeR(v[0])} min={0} max={2} step={0.05} className="w-full" />
+              </div>
+              <div>
+                <SimulationLabel>Squeeze theta: {(squeezeTheta * 180 / Math.PI).toFixed(0)}°</SimulationLabel>
+                <Slider value={[squeezeTheta]} onValueChange={(v) => setSqueezeTheta(v[0])} min={0} max={2 * Math.PI} step={0.05} className="w-full" />
+              </div>
+            </>
+          )}
+          {showN && (
+            <div>
+              <SimulationLabel>Photon number n: {nState}</SimulationLabel>
+              <Slider value={[nState]} onValueChange={(v) => setNState(Math.round(v[0]))} min={0} max={8} step={1} className="w-full" />
+            </div>
+          )}
+        </div>
+      </SimulationConfig>
 
-      {/* Sliders */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        {showAlpha && (
-          <>
-            <div>
-              <SimulationLabel>Re(alpha): {alphaRe.toFixed(2)}</SimulationLabel>
-              <Slider value={[alphaRe]} onValueChange={(v) => setAlphaRe(v[0])} min={-4} max={4} step={0.1} className="w-full" />
-            </div>
-            <div>
-              <SimulationLabel>Im(alpha): {alphaIm.toFixed(2)}</SimulationLabel>
-              <Slider value={[alphaIm]} onValueChange={(v) => setAlphaIm(v[0])} min={-4} max={4} step={0.1} className="w-full" />
-            </div>
-          </>
-        )}
-        {showSqueeze && (
-          <>
-            <div>
-              <SimulationLabel>Squeeze r: {squeezeR.toFixed(2)}</SimulationLabel>
-              <Slider value={[squeezeR]} onValueChange={(v) => setSqueezeR(v[0])} min={0} max={2} step={0.05} className="w-full" />
-            </div>
-            <div>
-              <SimulationLabel>Squeeze theta: {(squeezeTheta * 180 / Math.PI).toFixed(0)}°</SimulationLabel>
-              <Slider value={[squeezeTheta]} onValueChange={(v) => setSqueezeTheta(v[0])} min={0} max={2 * Math.PI} step={0.05} className="w-full" />
-            </div>
-          </>
-        )}
-        {showN && (
-          <div>
-            <SimulationLabel>Photon number n: {nState}</SimulationLabel>
-            <Slider value={[nState]} onValueChange={(v) => setNState(Math.round(v[0]))} min={0} max={8} step={1} className="w-full" />
-          </div>
-        )}
-      </div>
-
-      {/* Visualizations */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <CanvasHeatmap
-          data={[{
-            z: W,
-            x: xvec,
-            y: pvec,
-            type: 'heatmap',
-            colorscale: 'RdBu',
-            colorbar: { title: { text: displayMode === 'wigner' ? 'W(q,p)' : 'Q(q,p)' } },
-          }]}
-          layout={{
-            title: { text: displayMode === 'wigner' ? 'Wigner Function' : 'Husimi Q Function' },
-            xaxis: { title: { text: 'q' } },
-            yaxis: { title: { text: 'p' }, scaleanchor: 'x' },
-            height: 400,
-            margin: { t: 35, r: 20, b: 45, l: 50 },
-          }}
-          style={{ width: '100%', height: '400px' }}
-        />
-        <CanvasChart
-          data={[barTrace]}
-          layout={barLayout}
-          style={{ width: '100%', height: '400px' }}
-        />
-      </div>
+      <SimulationMain>
+        {/* Visualizations */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <CanvasHeatmap
+            data={[{
+              z: W,
+              x: xvec,
+              y: pvec,
+              type: 'heatmap',
+              colorscale: 'RdBu',
+              colorbar: { title: { text: displayMode === 'wigner' ? 'W(q,p)' : 'Q(q,p)' } },
+            }]}
+            layout={{
+              title: { text: displayMode === 'wigner' ? 'Wigner Function' : 'Husimi Q Function' },
+              xaxis: { title: { text: 'q' } },
+              yaxis: { title: { text: 'p' }, scaleanchor: 'x' },
+              height: 400,
+              margin: { t: 35, r: 20, b: 45, l: 50 },
+            }}
+            style={{ width: '100%', height: '400px' }}
+          />
+          <CanvasChart
+            data={[barTrace]}
+            layout={barLayout}
+            style={{ width: '100%', height: '400px' }}
+          />
+        </div>
+      </SimulationMain>
     </SimulationPanel>
   );
 }

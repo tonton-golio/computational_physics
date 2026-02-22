@@ -1,8 +1,10 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationLabel, SimulationConfig, SimulationResults } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 
@@ -16,7 +18,7 @@ function mulberry32(a: number) {
   };
 }
 
-export default function ConcentrationBounds({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function ConcentrationBounds({}: SimulationComponentProps) {
   const [nExperiments, setNExperiments] = useState(500);
   const [nSamples, setNSamples] = useState(50);
   const [threshold, setThreshold] = useState(0.15);
@@ -92,20 +94,12 @@ export default function ConcentrationBounds({ id }: SimulationComponentProps) { 
   const currentMarkov = currentIdx >= 0 ? plotData.markov[currentIdx] : 0;
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">
-        Concentration Inequalities: Hoeffding, Markov, Chebyshev
-      </h3>
-      <p className="text-[var(--text-muted)] text-sm mb-4">
-        Draw <strong>n</strong> samples from Uniform[0,1] and compute sample means across many experiments.
-        Compare the empirical tail probability P(|X&#772; - 0.5| &ge; t) against theoretical bounds.
-      </p>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+    <SimulationPanel title="Concentration Inequalities: Hoeffding, Markov, Chebyshev">
+      <SimulationConfig>
         <div>
-          <label className="text-[var(--text-strong)] text-sm">
+          <SimulationLabel className="text-[var(--text-strong)]">
             Experiments: {nExperiments}
-          </label>
+          </SimulationLabel>
           <Slider
             min={100}
             max={5000}
@@ -116,9 +110,9 @@ export default function ConcentrationBounds({ id }: SimulationComponentProps) { 
           />
         </div>
         <div>
-          <label className="text-[var(--text-strong)] text-sm">
+          <SimulationLabel className="text-[var(--text-strong)]">
             Samples per experiment (n): {nSamples}
-          </label>
+          </SimulationLabel>
           <Slider
             min={5}
             max={500}
@@ -129,9 +123,9 @@ export default function ConcentrationBounds({ id }: SimulationComponentProps) { 
           />
         </div>
         <div>
-          <label className="text-[var(--text-strong)] text-sm">
+          <SimulationLabel className="text-[var(--text-strong)]">
             Threshold (t): {threshold.toFixed(2)}
-          </label>
+          </SimulationLabel>
           <Slider
             min={0.01}
             max={0.5}
@@ -141,23 +135,9 @@ export default function ConcentrationBounds({ id }: SimulationComponentProps) { 
             className="w-full"
           />
         </div>
-      </div>
+      </SimulationConfig>
 
-      <div className="mb-4 text-sm text-[var(--text-muted)] grid grid-cols-2 md:grid-cols-4 gap-2">
-        <div>
-          Empirical: <span className="text-blue-400 font-mono">{currentEmpirical.toFixed(4)}</span>
-        </div>
-        <div>
-          Hoeffding: <span className="text-green-400 font-mono">{currentHoeffding.toFixed(4)}</span>
-        </div>
-        <div>
-          Chebyshev: <span className="text-yellow-400 font-mono">{currentChebyshev.toFixed(4)}</span>
-        </div>
-        <div>
-          Markov: <span className="text-red-400 font-mono">{currentMarkov.toFixed(4)}</span>
-        </div>
-      </div>
-
+      <SimulationMain>
       <CanvasChart
         data={[
           {
@@ -216,6 +196,23 @@ export default function ConcentrationBounds({ id }: SimulationComponentProps) { 
         }}
         style={{ width: '100%' }}
       />
-    </div>
+      </SimulationMain>
+      <SimulationResults>
+        <div className="text-sm text-[var(--text-muted)] grid grid-cols-2 md:grid-cols-4 gap-2">
+        <div>
+          Empirical: <span className="text-blue-400 font-mono">{currentEmpirical.toFixed(4)}</span>
+        </div>
+        <div>
+          Hoeffding: <span className="text-green-400 font-mono">{currentHoeffding.toFixed(4)}</span>
+        </div>
+        <div>
+          Chebyshev: <span className="text-yellow-400 font-mono">{currentChebyshev.toFixed(4)}</span>
+        </div>
+        <div>
+          Markov: <span className="text-red-400 font-mono">{currentMarkov.toFixed(4)}</span>
+        </div>
+        </div>
+      </SimulationResults>
+    </SimulationPanel>
   );
 }

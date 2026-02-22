@@ -1,12 +1,14 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 
-export default function StressTensor({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function StressTensor({}: SimulationComponentProps) {
   const [sigmaXX, setSigmaXX] = useState(100); // MPa
   const [sigmaYY, setSigmaYY] = useState(-50);
   const [tauXY, setTauXY] = useState(40);
@@ -189,21 +191,12 @@ export default function StressTensor({ id }: SimulationComponentProps) { // esli
   }, [mohrData]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">
-        2D Mohr&apos;s Circle Visualization
-      </h3>
-      <p className="text-[var(--text-muted)] text-sm mb-4">
-        Enter the components of a 2D stress tensor to visualize the
-        corresponding Mohr&apos;s circle showing principal stresses, maximum
-        shear stress, and the current stress state.
-      </p>
-
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+    <SimulationPanel title="2D Mohr's Circle Visualization" caption="Enter the components of a 2D stress tensor to visualize the corresponding Mohr's circle showing principal stresses, maximum shear stress, and the current stress state.">
+      <SimulationConfig>
         <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">
+          <SimulationLabel>
             &sigma;<sub>xx</sub>: {sigmaXX} MPa
-          </label>
+          </SimulationLabel>
           <Slider
             min={-200}
             max={200}
@@ -214,9 +207,9 @@ export default function StressTensor({ id }: SimulationComponentProps) { // esli
           />
         </div>
         <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">
+          <SimulationLabel>
             &sigma;<sub>yy</sub>: {sigmaYY} MPa
-          </label>
+          </SimulationLabel>
           <Slider
             min={-200}
             max={200}
@@ -227,9 +220,9 @@ export default function StressTensor({ id }: SimulationComponentProps) { // esli
           />
         </div>
         <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">
+          <SimulationLabel>
             &tau;<sub>xy</sub>: {tauXY} MPa
-          </label>
+          </SimulationLabel>
           <Slider
             min={-150}
             max={150}
@@ -239,41 +232,43 @@ export default function StressTensor({ id }: SimulationComponentProps) { // esli
             className="w-full"
           />
         </div>
-      </div>
+      </SimulationConfig>
 
-      {/* Results summary */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-        <div className="bg-[var(--surface-2)] rounded-lg p-3 text-center">
-          <div className="text-xs text-[var(--text-soft)] mb-1">Principal &sigma;<sub>1</sub></div>
-          <div className="text-lg font-mono text-green-400">
-            {mohrData.sigma1.toFixed(1)} MPa
+      <SimulationMain>
+        <CanvasChart
+          data={plotData.data}
+          layout={plotData.layout}
+          style={{ width: '100%', height: 550 }}
+        />
+      </SimulationMain>
+      <SimulationResults>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="bg-[var(--surface-2)] rounded-lg p-3 text-center">
+            <div className="text-xs text-[var(--text-soft)] mb-1">Principal &sigma;<sub>1</sub></div>
+            <div className="text-lg font-mono text-green-400">
+              {mohrData.sigma1.toFixed(1)} MPa
+            </div>
+          </div>
+          <div className="bg-[var(--surface-2)] rounded-lg p-3 text-center">
+            <div className="text-xs text-[var(--text-soft)] mb-1">Principal &sigma;<sub>2</sub></div>
+            <div className="text-lg font-mono text-green-400">
+              {mohrData.sigma2.toFixed(1)} MPa
+            </div>
+          </div>
+          <div className="bg-[var(--surface-2)] rounded-lg p-3 text-center">
+            <div className="text-xs text-[var(--text-soft)] mb-1">Max Shear &tau;<sub>max</sub></div>
+            <div className="text-lg font-mono text-pink-400">
+              {mohrData.tauMax.toFixed(1)} MPa
+            </div>
+          </div>
+          <div className="bg-[var(--surface-2)] rounded-lg p-3 text-center">
+            <div className="text-xs text-[var(--text-soft)] mb-1">Principal Angle &theta;<sub>p</sub></div>
+            <div className="text-lg font-mono text-purple-400">
+              {mohrData.theta_p.toFixed(1)}&deg;
+            </div>
           </div>
         </div>
-        <div className="bg-[var(--surface-2)] rounded-lg p-3 text-center">
-          <div className="text-xs text-[var(--text-soft)] mb-1">Principal &sigma;<sub>2</sub></div>
-          <div className="text-lg font-mono text-green-400">
-            {mohrData.sigma2.toFixed(1)} MPa
-          </div>
-        </div>
-        <div className="bg-[var(--surface-2)] rounded-lg p-3 text-center">
-          <div className="text-xs text-[var(--text-soft)] mb-1">Max Shear &tau;<sub>max</sub></div>
-          <div className="text-lg font-mono text-pink-400">
-            {mohrData.tauMax.toFixed(1)} MPa
-          </div>
-        </div>
-        <div className="bg-[var(--surface-2)] rounded-lg p-3 text-center">
-          <div className="text-xs text-[var(--text-soft)] mb-1">Principal Angle &theta;<sub>p</sub></div>
-          <div className="text-lg font-mono text-purple-400">
-            {mohrData.theta_p.toFixed(1)}&deg;
-          </div>
-        </div>
-      </div>
-
-      <CanvasChart
-        data={plotData.data}
-        layout={plotData.layout}
-        style={{ width: '100%', height: 550 }}
-      />
+      </SimulationResults>
 
       <div className="mt-4 text-sm text-[var(--text-muted)] space-y-1">
         <p>
@@ -290,6 +285,6 @@ export default function StressTensor({ id }: SimulationComponentProps) { // esli
           measured from the x-axis to the direction of &sigma;<sub>1</sub>.
         </p>
       </div>
-    </div>
+    </SimulationPanel>
   );
 }

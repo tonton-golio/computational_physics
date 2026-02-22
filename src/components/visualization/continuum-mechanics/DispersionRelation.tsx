@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart, type ChartTrace } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationLabel, SimulationCheckbox } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 /**
  * Plots the full gravity-capillary wave dispersion relation:
@@ -16,7 +19,7 @@ const g = 9.81;
 const sigma = 0.073; // N/m surface tension (water-air)
 const rho = 1000;
 
-export default function DispersionRelation() {
+export default function DispersionRelation({}: SimulationComponentProps) {
   const [depth, setDepth] = useState(100); // metres
   const [showCapillary, setShowCapillary] = useState(true);
 
@@ -112,56 +115,45 @@ export default function DispersionRelation() {
   }, [depth, showCapillary]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-2 text-[var(--text-strong)]">
-        Gravity-Capillary Wave Dispersion Relation
-      </h3>
-      <p className="text-sm text-[var(--text-muted)] mb-4">
-        The dispersion relation &omega;&sup2; = (gk + (&sigma;/&rho;)k&sup3;)tanh(kD)
-        determines how wave frequency depends on wavenumber. At low k, gravity
-        dominates; at high k, surface tension takes over. In shallow water
-        (small D), waves become non-dispersive.
-      </p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+    <SimulationPanel title="Gravity-Capillary Wave Dispersion Relation" caption="The dispersion relation \u03c9\u00b2 = (gk + (\u03c3/\u03c1)k\u00b3)tanh(kD) determines how wave frequency depends on wavenumber. At low k, gravity dominates; at high k, surface tension takes over. In shallow water (small D), waves become non-dispersive.">
+      <SimulationSettings>
+        <SimulationCheckbox checked={showCapillary} onChange={setShowCapillary} label="Include capillary waves" />
+      </SimulationSettings>
+      <SimulationConfig>
         <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">
+          <SimulationLabel>
             Water depth D: {depth.toFixed(0)} m
-          </label>
+          </SimulationLabel>
           <Slider min={0.1} max={500} step={0.5} value={[depth]}
             onValueChange={([v]) => setDepth(v)} className="w-full" />
         </div>
-        <div className="flex items-end">
-          <label className="flex items-center gap-2 text-sm text-[var(--text-muted)] cursor-pointer select-none">
-            <input type="checkbox" checked={showCapillary}
-              onChange={(e) => setShowCapillary(e.target.checked)} className="rounded" />
-            Include capillary waves
-          </label>
+      </SimulationConfig>
+      <SimulationMain>
+        <div className="space-y-4">
+          <CanvasChart
+            data={omegaTraces}
+            layout={{
+              xaxis: { title: { text: 'Wavenumber k (rad/m)' }, type: 'log' },
+              yaxis: { title: { text: '\u03c9 (rad/s)' }, type: 'log' },
+            }}
+            style={{ width: '100%', height: 300 }}
+          />
+          <CanvasChart
+            data={velocityTraces}
+            layout={{
+              xaxis: { title: { text: 'Wavenumber k (rad/m)' }, type: 'log' },
+              yaxis: { title: { text: 'Velocity (m/s)' }, type: 'log' },
+            }}
+            style={{ width: '100%', height: 300 }}
+          />
         </div>
-      </div>
-      <div className="space-y-4">
-        <CanvasChart
-          data={omegaTraces}
-          layout={{
-            xaxis: { title: { text: 'Wavenumber k (rad/m)' }, type: 'log' },
-            yaxis: { title: { text: '\u03c9 (rad/s)' }, type: 'log' },
-          }}
-          style={{ width: '100%', height: 300 }}
-        />
-        <CanvasChart
-          data={velocityTraces}
-          layout={{
-            xaxis: { title: { text: 'Wavenumber k (rad/m)' }, type: 'log' },
-            yaxis: { title: { text: 'Velocity (m/s)' }, type: 'log' },
-          }}
-          style={{ width: '100%', height: 300 }}
-        />
-      </div>
+      </SimulationMain>
       <p className="mt-3 text-xs text-[var(--text-muted)]">
         Top: dispersion relation. Bottom: phase and group velocities. The
         minimum phase velocity near k ~ 370 rad/m marks the crossover between
         gravity waves and capillary waves. Reduce depth to see the shallow-water
         limit where c &rarr; &radic;(gD).
       </p>
-    </div>
+    </SimulationPanel>
   );
 }

@@ -1,8 +1,10 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationLabel, SimulationConfig } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 
@@ -15,7 +17,7 @@ function mulberry32(a: number) {
   };
 }
 
-export default function BernoulliTrials({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function BernoulliTrials({}: SimulationComponentProps) {
   const [pHeads, setPHeads] = useState(0.5);
   const [nDraws, setNDraws] = useState(20);
   const [nExp, setNExp] = useState(10000);
@@ -84,20 +86,12 @@ export default function BernoulliTrials({ id }: SimulationComponentProps) { // e
   }, [pHeads, nDraws, nExp]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">
-        Bernoulli Trials: Bounds Illustration
-      </h3>
-      <p className="text-[var(--text-muted)] text-sm mb-4">
-        Draw {nDraws} Bernoulli random variables {nExp.toLocaleString()} times with bias p.
-        Compare empirical tail probability with Markov, Chebyshev, and Hoeffding bounds.
-      </p>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+    <SimulationPanel title="Bernoulli Trials: Bounds Illustration">
+      <SimulationConfig>
         <div>
-          <label className="text-[var(--text-strong)] text-sm">
+          <SimulationLabel className="text-[var(--text-strong)]">
             Probability of heads (p): {pHeads.toFixed(2)}
-          </label>
+          </SimulationLabel>
           <Slider
             min={0.05}
             max={0.95}
@@ -108,9 +102,9 @@ export default function BernoulliTrials({ id }: SimulationComponentProps) { // e
           />
         </div>
         <div>
-          <label className="text-[var(--text-strong)] text-sm">
+          <SimulationLabel className="text-[var(--text-strong)]">
             Number of draws (n): {nDraws}
-          </label>
+          </SimulationLabel>
           <Slider
             min={5}
             max={100}
@@ -121,9 +115,9 @@ export default function BernoulliTrials({ id }: SimulationComponentProps) { // e
           />
         </div>
         <div>
-          <label className="text-[var(--text-strong)] text-sm">
+          <SimulationLabel className="text-[var(--text-strong)]">
             Number of experiments: {nExp.toLocaleString()}
-          </label>
+          </SimulationLabel>
           <Slider
             min={1000}
             max={50000}
@@ -133,8 +127,9 @@ export default function BernoulliTrials({ id }: SimulationComponentProps) { // e
             className="w-full"
           />
         </div>
-      </div>
+      </SimulationConfig>
 
+      <SimulationMain>
       <CanvasChart
         data={[
           {
@@ -186,6 +181,7 @@ export default function BernoulliTrials({ id }: SimulationComponentProps) { // e
         }}
         style={{ width: '100%' }}
       />
+      </SimulationMain>
 
       <div className="mt-3 text-xs text-[var(--text-soft)]">
         <p>
@@ -194,6 +190,6 @@ export default function BernoulliTrials({ id }: SimulationComponentProps) { // e
           the tightest for larger thresholds.
         </p>
       </div>
-    </div>
+    </SimulationPanel>
   );
 }

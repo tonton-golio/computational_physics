@@ -1,6 +1,9 @@
-'use client';
+"use client";
 
-import React, { useRef, useEffect, useCallback } from 'react';
+import { useRef, useEffect, useCallback } from 'react';
+import { SimulationPanel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 /**
  * Overview "map" of continuum mechanics showing connections between key concepts.
@@ -56,7 +59,7 @@ const EDGES: Edge[] = [
   { from: 'stok', to: 'glac', label: 'power-law' },
 ];
 
-export default function UnifiedMap() {
+export default function UnifiedMap({}: SimulationComponentProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -171,23 +174,17 @@ export default function UnifiedMap() {
   }, [draw]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-2 text-[var(--text-strong)]">
-        The Map of Continuum Mechanics
-      </h3>
-      <p className="text-sm text-[var(--text-muted)] mb-4">
-        How the key concepts connect. Every path starts from the continuum
-        approximation, passes through tensors and Cauchy&apos;s equation, then
-        branches into solids, inviscid flow, viscous flow, and numerical methods.
-      </p>
-      <div ref={containerRef} style={{ width: '100%' }}>
-        <canvas ref={canvasRef} style={{ display: 'block', borderRadius: '4px' }} />
-      </div>
+    <SimulationPanel title="The Map of Continuum Mechanics" caption="How the key concepts connect. Every path starts from the continuum approximation, passes through tensors and Cauchy's equation, then branches into solids, inviscid flow, viscous flow, and numerical methods.">
+      <SimulationMain scaleMode="contain">
+        <div ref={containerRef} style={{ width: '100%' }}>
+          <canvas ref={canvasRef} style={{ display: 'block', borderRadius: '4px' }} />
+        </div>
+      </SimulationMain>
       <p className="mt-3 text-xs text-[var(--text-muted)]">
         Arrows show the logical dependency between topics. The constitutive law
         (Hooke&apos;s law for solids, Newtonian viscosity for fluids) is the fork
         that separates the elastic and fluid branches.
       </p>
-    </div>
+    </SimulationPanel>
   );
 }

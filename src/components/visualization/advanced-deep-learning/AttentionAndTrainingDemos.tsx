@@ -1,9 +1,11 @@
-'use client';
+"use client";
 
 import { useMemo, useState } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
+import { SimulationPanel, SimulationConfig, SimulationSettings, SimulationLabel, SimulationCheckbox } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 
 function linspace(start: number, end: number, n: number): number[] {
   return Array.from({ length: n }, (_, i) => start + ((end - start) * i) / (n - 1));
@@ -43,55 +45,58 @@ export function AttentionHeatmapDemo() {
   const headLabels = ['Head 1 (local)', 'Head 2 (broad)', 'Head 3 (distant)'];
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8 space-y-4">
-      <h3 className="text-xl font-semibold text-[var(--text-strong)]">Transformer Attention Heatmap</h3>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div>
-          <label className="text-sm text-[var(--text-muted)]">Token count: {tokens}</label>
-          <Slider min={6} max={20} step={1} value={[tokens]} onValueChange={([v]) => setTokens(v)} />
-        </div>
-        <div>
-          <label className="text-sm text-[var(--text-muted)]">Focus position: {focus.toFixed(2)}</label>
-          <Slider min={0} max={1} step={0.01} value={[focus]} onValueChange={([v]) => setFocus(v)} />
-        </div>
-        <div>
-          <label className="text-sm text-[var(--text-muted)]">Attention heads: {numHeads}</label>
-          <Slider min={1} max={3} step={1} value={[numHeads]} onValueChange={([v]) => setNumHeads(v)} />
-        </div>
-      </div>
-      <div className={`grid gap-4 ${numHeads === 1 ? 'grid-cols-1' : numHeads === 2 ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1 lg:grid-cols-3'}`}>
-        {heads.map((z, h) => (
-          <div key={h}>
-            {numHeads > 1 && (
-              <p className="text-center text-sm text-[var(--text-muted)] mb-1 font-semibold">
-                {headLabels[h]}
-              </p>
-            )}
-            <CanvasHeatmap
-              data={[{
-                z,
-                type: 'heatmap',
-                colorscale: 'Viridis',
-                x: tokenLabels,
-                y: tokenLabels,
-                showscale: h === 0,
-              }]}
-              layout={{
-                title: numHeads === 1 ? { text: 'Causal self-attention weights' } : undefined,
-                margin: { t: numHeads === 1 ? 40 : 20, r: 20, b: 60, l: 70 },
-                xaxis: { title: { text: 'Key token' } },
-                yaxis: { title: { text: 'Query token' } },
-              }}
-              style={{ width: '100%', height: numHeads === 1 ? 420 : 350 }}
-            />
+    <SimulationPanel title="Transformer Attention Heatmap">
+      <SimulationConfig>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
+          <div>
+            <SimulationLabel className="text-sm text-[var(--text-muted)]">Token count: {tokens}</SimulationLabel>
+            <Slider min={6} max={20} step={1} value={[tokens]} onValueChange={([v]) => setTokens(v)} />
           </div>
-        ))}
-      </div>
+          <div>
+            <SimulationLabel className="text-sm text-[var(--text-muted)]">Focus position: {focus.toFixed(2)}</SimulationLabel>
+            <Slider min={0} max={1} step={0.01} value={[focus]} onValueChange={([v]) => setFocus(v)} />
+          </div>
+          <div>
+            <SimulationLabel className="text-sm text-[var(--text-muted)]">Attention heads: {numHeads}</SimulationLabel>
+            <Slider min={1} max={3} step={1} value={[numHeads]} onValueChange={([v]) => setNumHeads(v)} />
+          </div>
+        </div>
+      </SimulationConfig>
+      <SimulationMain>
+        <div className={`grid gap-4 ${numHeads === 1 ? 'grid-cols-1' : numHeads === 2 ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1 lg:grid-cols-3'}`}>
+          {heads.map((z, h) => (
+            <div key={h}>
+              {numHeads > 1 && (
+                <p className="text-center text-sm text-[var(--text-muted)] mb-1 font-semibold">
+                  {headLabels[h]}
+                </p>
+              )}
+              <CanvasHeatmap
+                data={[{
+                  z,
+                  type: 'heatmap',
+                  colorscale: 'Viridis',
+                  x: tokenLabels,
+                  y: tokenLabels,
+                  showscale: h === 0,
+                }]}
+                layout={{
+                  title: numHeads === 1 ? { text: 'Causal self-attention weights' } : undefined,
+                  margin: { t: numHeads === 1 ? 40 : 20, r: 20, b: 60, l: 70 },
+                  xaxis: { title: { text: 'Key token' } },
+                  yaxis: { title: { text: 'Query token' } },
+                }}
+                style={{ width: '100%', height: numHeads === 1 ? 420 : 350 }}
+              />
+            </div>
+          ))}
+        </div>
+      </SimulationMain>
       <div className="p-3 bg-[var(--surface-2)] rounded text-sm text-[var(--text-muted)]">
         The causal mask ensures each token can only attend to itself and previous tokens (lower-left triangle).
         {numHeads > 1 && ' Different heads learn different attention patterns: Head 1 focuses locally, Head 2 has broader context, and Head 3 attends to more distant tokens.'}
       </div>
-    </div>
+    </SimulationPanel>
   );
 }
 
@@ -237,54 +242,53 @@ export function OptimizerTrajectoryDemo() {
   }
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8 space-y-4">
-      <h3 className="text-xl font-semibold text-[var(--text-strong)]">Optimizer Trajectory Comparison</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="text-sm text-[var(--text-muted)]">Learning rate: {lr.toFixed(3)}</label>
-          <Slider min={0.01} max={0.2} step={0.005} value={[lr]} onValueChange={([v]) => setLr(v)} />
+    <SimulationPanel title="Optimizer Trajectory Comparison">
+      <SimulationSettings>
+        <div className="flex flex-wrap gap-3">
+          {(['sgd', 'sgd-momentum', 'adam'] as OptimizerType[]).map(opt => {
+            const label = opt === 'sgd' ? 'SGD' : opt === 'sgd-momentum' ? 'SGD + Momentum' : 'Adam';
+            return (
+              <SimulationCheckbox key={opt} checked={selectedOptimizers.has(opt)} onChange={() => toggleOptimizer(opt)} label={label} style={{ color: selectedOptimizers.has(opt) ? OPTIMIZER_COLORS[opt] : '#666' }} />
+            );
+          })}
+          <SimulationCheckbox checked={showContours} onChange={setShowContours} label="Show contours" />
         </div>
-        <div>
-          <label className="text-sm text-[var(--text-muted)]">Momentum: {momentum.toFixed(2)}</label>
-          <Slider min={0} max={0.95} step={0.01} value={[momentum]} onValueChange={([v]) => setMomentum(v)} />
+      </SimulationSettings>
+      <SimulationConfig>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+          <div>
+            <SimulationLabel className="text-sm text-[var(--text-muted)]">Learning rate: {lr.toFixed(3)}</SimulationLabel>
+            <Slider min={0.01} max={0.2} step={0.005} value={[lr]} onValueChange={([v]) => setLr(v)} />
+          </div>
+          <div>
+            <SimulationLabel className="text-sm text-[var(--text-muted)]">Momentum: {momentum.toFixed(2)}</SimulationLabel>
+            <Slider min={0} max={0.95} step={0.01} value={[momentum]} onValueChange={([v]) => setMomentum(v)} />
+          </div>
         </div>
-      </div>
-      <div className="flex flex-wrap gap-3">
-        {(['sgd', 'sgd-momentum', 'adam'] as OptimizerType[]).map(opt => {
-          const label = opt === 'sgd' ? 'SGD' : opt === 'sgd-momentum' ? 'SGD + Momentum' : 'Adam';
-          return (
-            <label key={opt} className="flex items-center gap-2 text-sm cursor-pointer" style={{ color: selectedOptimizers.has(opt) ? OPTIMIZER_COLORS[opt] : '#666' }}>
-              <input type="checkbox" checked={selectedOptimizers.has(opt)} onChange={() => toggleOptimizer(opt)} className="accent-blue-500" />
-              {label}
-            </label>
-          );
-        })}
-        <label className="flex items-center gap-2 text-sm text-[var(--text-muted)] cursor-pointer">
-          <input type="checkbox" checked={showContours} onChange={(e) => setShowContours(e.target.checked)} className="accent-blue-500" />
-          Show contours
-        </label>
-      </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <CanvasChart
-          data={trajectoryTraces}
-          layout={{
-            title: { text: 'Parameter trajectory' },
-            xaxis: { title: { text: 'w1' }, range: [-3, 3] },
-            yaxis: { title: { text: 'w2' }, range: [-3, 3] },
-          }}
-          style={{ width: '100%', height: 380 }}
-        />
-        <CanvasChart
-          data={lossTraces}
-          layout={{
-            title: { text: 'Loss by iteration' },
-            xaxis: { title: { text: 'Iteration' } },
-            yaxis: { title: { text: 'Loss' }, type: 'log' },
-          }}
-          style={{ width: '100%', height: 380 }}
-        />
-      </div>
-    </div>
+      </SimulationConfig>
+      <SimulationMain>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <CanvasChart
+            data={trajectoryTraces}
+            layout={{
+              title: { text: 'Parameter trajectory' },
+              xaxis: { title: { text: 'w1' }, range: [-3, 3] },
+              yaxis: { title: { text: 'w2' }, range: [-3, 3] },
+            }}
+            style={{ width: '100%', height: 380 }}
+          />
+          <CanvasChart
+            data={lossTraces}
+            layout={{
+              title: { text: 'Loss by iteration' },
+              xaxis: { title: { text: 'Iteration' } },
+              yaxis: { title: { text: 'Loss' }, type: 'log' },
+            }}
+            style={{ width: '100%', height: 380 }}
+          />
+        </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }
 
@@ -354,14 +358,9 @@ export function LatentInterpolationDemo() {
   ];
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8 space-y-4">
-      <h3 className="text-xl font-semibold text-[var(--text-strong)]">Latent Space Interpolation (VAE Intuition)</h3>
-      <div className="flex flex-wrap gap-4">
-        <div className="flex-1 min-w-[200px]">
-          <label className="text-sm text-[var(--text-muted)]">Interpolation factor alpha: {alpha.toFixed(2)}</label>
-          <Slider min={0} max={1} step={0.01} value={[alpha]} onValueChange={([v]) => setAlpha(v)} />
-        </div>
-        <label className="flex items-center gap-2 text-sm text-[var(--text-muted)] cursor-pointer">
+    <SimulationPanel title="Latent Space Interpolation (VAE Intuition)">
+      <SimulationSettings>
+        <SimulationLabel className="flex items-center gap-2 text-sm text-[var(--text-muted)] cursor-pointer">
           <input
             type="checkbox"
             checked={showGrid}
@@ -369,30 +368,38 @@ export function LatentInterpolationDemo() {
             className="accent-blue-500"
           />
           Show 2D decoded grid
-        </label>
-      </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {showGrid && (
-          <CanvasHeatmap
-            data={[{ z: gridData.values, x: gridData.z1Range, y: gridData.z2Range, colorscale: 'Viridis' }]}
-            layout={{ title: { text: 'Decoded Latent Grid' }, xaxis: { title: { text: 'z1' } }, yaxis: { title: { text: 'z2' } } }}
+        </SimulationLabel>
+      </SimulationSettings>
+      <SimulationConfig>
+        <div className="flex-1 min-w-[200px]">
+          <SimulationLabel className="text-sm text-[var(--text-muted)]">Interpolation factor alpha: {alpha.toFixed(2)}</SimulationLabel>
+          <Slider min={0} max={1} step={0.01} value={[alpha]} onValueChange={([v]) => setAlpha(v)} />
+        </div>
+      </SimulationConfig>
+      <SimulationMain>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {showGrid && (
+            <CanvasHeatmap
+              data={[{ z: gridData.values, x: gridData.z1Range, y: gridData.z2Range, colorscale: 'Viridis' }]}
+              layout={{ title: { text: 'Decoded Latent Grid' }, xaxis: { title: { text: 'z1' } }, yaxis: { title: { text: 'z2' } } }}
+              style={{ width: '100%', height: 450 }}
+            />
+          )}
+          <CanvasChart
+            data={scatterTraces}
+            layout={{
+              title: { text: 'Interpolation through latent manifold' },
+              xaxis: { title: { text: 'z1' }, range: [-3.5, 3.5] },
+              yaxis: { title: { text: 'z2' }, range: [-3.5, 3.5] },
+            }}
             style={{ width: '100%', height: 450 }}
           />
-        )}
-        <CanvasChart
-          data={scatterTraces}
-          layout={{
-            title: { text: 'Interpolation through latent manifold' },
-            xaxis: { title: { text: 'z1' }, range: [-3.5, 3.5] },
-            yaxis: { title: { text: 'z2' }, range: [-3.5, 3.5] },
-          }}
-          style={{ width: '100%', height: 450 }}
-        />
-      </div>
+        </div>
+      </SimulationMain>
       <div className="p-3 bg-[var(--surface-2)] rounded text-sm text-[var(--text-muted)]">
         The 2D grid shows decoded values across the latent space. A well-trained VAE produces smooth transitions: nearby latent points decode to similar outputs.
         The interpolation path demonstrates that moving linearly through latent space produces semantically meaningful intermediate samples.
       </div>
-    </div>
+    </SimulationPanel>
   );
 }

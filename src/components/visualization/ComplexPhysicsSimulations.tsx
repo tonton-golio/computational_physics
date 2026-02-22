@@ -1,26 +1,26 @@
-'use client';
+"use client";
 
 import React from 'react';
-import { GameOfLife } from './complex-physics/GameOfLife';
-import { LorenzAttractor } from './complex-physics/LorenzAttractor';
-import { MandelbrotFractal } from './complex-physics/MandelbrotFractal';
-import { IsingModel } from './complex-physics/IsingModel';
-import { PercolationSim } from './complex-physics/PercolationSim';
-import { BakSneppen } from './complex-physics/BakSneppen';
-import { BetHedging } from './complex-physics/BetHedging';
-import { HurstExponent } from './complex-physics/HurstExponent';
-import { ScaleFreeNetwork } from './complex-physics/ScaleFreeNetwork';
-import { PhaseTransitionIsing1D } from './complex-physics/PhaseTransitionIsing1D';
-import { BetheLatticePercolation } from './complex-physics/BetheLatticePercolation';
-import { FractalDimension } from './complex-physics/FractalDimension';
-import { RandomWalkFirstReturn } from './complex-physics/RandomWalkFirstReturn';
-import { SandpileModel } from './complex-physics/SandpileModel';
-import { StockVariance } from './complex-physics/StockVariance';
-import { TwoLevelSystem } from './complex-physics/TwoLevelSystem';
-import { LandauFreeEnergy } from './complex-physics/LandauFreeEnergy';
-import { TransferMatrixDemo } from './complex-physics/TransferMatrixDemo';
-import { DataCollapse } from './complex-physics/DataCollapse';
-import { VicsekFlocking } from './complex-physics/VicsekFlocking';
+import GameOfLife from './complex-physics/GameOfLife';
+import LorenzAttractor from './complex-physics/LorenzAttractor';
+import MandelbrotFractal from './complex-physics/MandelbrotFractal';
+import IsingModel from './complex-physics/IsingModel';
+import PercolationSim from './complex-physics/PercolationSim';
+import BakSneppen from './complex-physics/BakSneppen';
+import BetHedging from './complex-physics/BetHedging';
+import HurstExponent from './complex-physics/HurstExponent';
+import ScaleFreeNetwork from './complex-physics/ScaleFreeNetwork';
+import PhaseTransitionIsing1D from './complex-physics/PhaseTransitionIsing1D';
+import BetheLatticePercolation from './complex-physics/BetheLatticePercolation';
+import FractalDimension from './complex-physics/FractalDimension';
+import RandomWalkFirstReturn from './complex-physics/RandomWalkFirstReturn';
+import SandpileModel from './complex-physics/SandpileModel';
+import StockVariance from './complex-physics/StockVariance';
+import TwoLevelSystem from './complex-physics/TwoLevelSystem';
+import LandauFreeEnergy from './complex-physics/LandauFreeEnergy';
+import TransferMatrixDemo from './complex-physics/TransferMatrixDemo';
+import DataCollapse from './complex-physics/DataCollapse';
+import VicsekFlocking from './complex-physics/VicsekFlocking';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 

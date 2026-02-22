@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 /**
  * Steady-state concentration for positive and negative regulation.
@@ -15,7 +18,7 @@ import { CanvasChart } from '@/components/ui/canvas-chart';
  *   dP/dt = 1 / (1 + P^H) - Gamma_P * P
  *   Steady states are intersections of y = 1/(1+P^H) and y = Gamma_P * P
  */
-export default function SteadyStateRegulation() {
+export default function SteadyStateRegulation({}: SimulationComponentProps) {
   const [H, setH] = useState(1);
   const [gammaP, setGammaP] = useState(0.5);
 
@@ -53,20 +56,19 @@ export default function SteadyStateRegulation() {
   };
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Steady-State Concentration: Positive vs. Negative Regulation</h3>
-
-      <div className="grid grid-cols-2 gap-6 mb-4">
+    <SimulationPanel title="Steady-State Concentration: Positive vs. Negative Regulation">
+      <SimulationConfig>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Hill coefficient H: {H}</label>
+          <SimulationLabel>Hill coefficient H: {H}</SimulationLabel>
           <Slider value={[H]} onValueChange={([v]) => setH(v)} min={1} max={10} step={1} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Degradation rate Gamma_P: {gammaP.toFixed(2)}</label>
+          <SimulationLabel>Degradation rate Gamma_P: {gammaP.toFixed(2)}</SimulationLabel>
           <Slider value={[gammaP]} onValueChange={([v]) => setGammaP(v)} min={0.05} max={1.0} step={0.05} />
         </div>
-      </div>
+      </SimulationConfig>
 
+      <SimulationMain>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <CanvasChart
@@ -117,6 +119,7 @@ export default function SteadyStateRegulation() {
           />
         </div>
       </div>
+      </SimulationMain>
 
       <div className="mt-4 text-sm text-[var(--text-muted)]">
         <p>
@@ -127,6 +130,6 @@ export default function SteadyStateRegulation() {
           For <em>negative regulation</em>, there is always a unique steady state.
         </p>
       </div>
-    </div>
+    </SimulationPanel>
   );
 }

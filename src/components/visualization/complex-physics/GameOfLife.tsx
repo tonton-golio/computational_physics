@@ -1,7 +1,10 @@
-'use client';
+"use client";
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
+import { Slider } from '@/components/ui/slider';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationResults, SimulationLabel, SimulationPlayButton, SimulationButton } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 import { useTheme } from '@/lib/use-theme';
 
 const SIZE = 50;
@@ -211,7 +214,7 @@ function GameOfLifeCanvas({ gridRef, isDark, onCellToggle }: CanvasProps) {
 // Main Component
 // ---------------------------------------------------------------------------
 
-export function GameOfLife() {
+export default function GameOfLife({}: SimulationComponentProps) {
   const theme = useTheme();
   const isDark = theme === 'dark';
   const [grid, setGrid] = useState(createRandomGrid);
@@ -240,9 +243,6 @@ export function GameOfLife() {
   }, [running, speed]);
 
   const population = grid.reduce((sum, row) => sum + row.reduce((s, c) => s + c, 0), 0);
-
-  const start = useCallback(() => setRunning(true), []);
-  const stop = useCallback(() => setRunning(false), []);
 
   const reset = useCallback(() => {
     setRunning(false);
@@ -292,20 +292,12 @@ export function GameOfLife() {
   }, []);
 
   return (
-    <div>
-      {/* Controls */}
-      <div className="mb-4 flex gap-2 flex-wrap items-center">
-        <Button onClick={start} disabled={running}>Play</Button>
-        <Button onClick={stop} disabled={!running}>Pause</Button>
-        <Button onClick={reset}>Reset</Button>
-        <span className="text-sm text-[var(--text-muted)] ml-2">
-          Gen: {generation} | Pop: {population}
-        </span>
-      </div>
-
-      <div className="mb-4 flex gap-4 flex-wrap items-center">
+    <SimulationPanel title="Conway's Game of Life" caption="Click on cells to toggle them.">
+      <SimulationSettings>
+        <SimulationPlayButton isRunning={running} onToggle={() => setRunning(r => !r)} />
+        <SimulationButton variant="secondary" onClick={reset}>Reset</SimulationButton>
         <div>
-          <label className="text-[var(--text-strong)] mr-2">Initial Pattern:</label>
+          <SimulationLabel>Initial Pattern:</SimulationLabel>
           <select
             value={selectedPattern}
             onChange={(e) => selectPattern(e.target.value)}
@@ -320,30 +312,34 @@ export function GameOfLife() {
             <option value="beehive">Beehive</option>
           </select>
         </div>
+      </SimulationSettings>
+      <SimulationConfig>
         <div className="flex items-center gap-2">
-          <label className="text-[var(--text-strong)]">Speed:</label>
-          <input
-            type="range"
+          <SimulationLabel>Speed: {speed}ms</SimulationLabel>
+          <Slider
             min={50}
             max={500}
             step={10}
-            value={speed}
-            onChange={(e) => setSpeed(Number(e.target.value))}
-            className="w-32 accent-[var(--accent)]"
+            value={[speed]}
+            onValueChange={([v]) => setSpeed(v)}
+            className="w-32"
           />
-          <span className="text-[var(--text-muted)] text-sm w-16">{speed}ms</span>
         </div>
-      </div>
+      </SimulationConfig>
 
       {/* 2D Canvas */}
-      <div
+      <SimulationMain
+        scaleMode="contain"
         className="w-full rounded-lg overflow-hidden"
         style={{ background: isDark ? '#070710' : '#f0f4ff' }}
       >
         <GameOfLifeCanvas gridRef={gridRef} isDark={isDark} onCellToggle={toggleCell} />
-      </div>
-
-      <p className="text-xs text-[var(--text-muted)] mt-2">Click on cells to toggle them.</p>
-    </div>
+      </SimulationMain>
+      <SimulationResults>
+        <span className="text-sm text-[var(--text-muted)]">
+          Gen: {generation} | Pop: {population}
+        </span>
+      </SimulationResults>
+    </SimulationPanel>
   );
 }

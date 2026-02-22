@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationResults, SimulationLabel, SimulationButton, SimulationPlayButton } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 import { mulberry32, gaussianPair, linspace } from './ml-utils';
 
 interface TrainingState {
@@ -80,7 +83,7 @@ function initState(): TrainingState {
   };
 }
 
-export default function GanForgerArena(): React.ReactElement {
+export default function GanForgerArena({}: SimulationComponentProps): React.ReactElement {
   const [state, setState] = useState<TrainingState>(initState);
   const [running, setRunning] = useState(false);
   const [modeCollapse, setModeCollapse] = useState(false);
@@ -206,73 +209,53 @@ export default function GanForgerArena(): React.ReactElement {
     : diversityScore(genSamples);
 
   return (
-    <div className="w-full rounded-lg bg-[var(--surface-1)] p-6">
-      <h3 className="mb-4 text-xl font-semibold text-[var(--text-strong)]">
-        GAN Forger Arena
-      </h3>
-
-      <div className="mb-4 grid grid-cols-2 gap-4 md:grid-cols-4">
+    <SimulationPanel title="GAN Forger Arena">
+      <SimulationSettings>
         <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => trainN(5)}
-            disabled={running || state.epoch >= 200}
-            className="rounded bg-[var(--surface-2,#27272a)] px-3 py-1.5 text-xs font-medium text-[var(--text-strong)] hover:opacity-90 disabled:opacity-50"
-          >
+          <SimulationButton variant="primary" onClick={() => trainN(5)} disabled={running || state.epoch >= 200}>
             Train D 5 steps
-          </button>
-          <button
-            onClick={() => trainN(5)}
-            disabled={running || state.epoch >= 200}
-            className="rounded bg-[var(--surface-2,#27272a)] px-3 py-1.5 text-xs font-medium text-[var(--text-strong)] hover:opacity-90 disabled:opacity-50"
-          >
+          </SimulationButton>
+          <SimulationButton variant="primary" onClick={() => trainN(5)} disabled={running || state.epoch >= 200}>
             Train G 5 steps
-          </button>
-          <button
-            onClick={() => setRunning((r) => !r)}
+          </SimulationButton>
+          <SimulationPlayButton
+            isRunning={running}
+            onToggle={() => setRunning((r) => !r)}
+            labels={{ play: 'Full Training', pause: 'Pause' }}
             disabled={state.epoch >= 200}
-            className={`rounded px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50 ${
-              running ? 'bg-red-600' : 'bg-emerald-600'
-            }`}
-          >
-            {running ? 'Pause' : 'Full Training'}
-          </button>
-          <button
-            onClick={() => setState(initState())}
-            className="rounded bg-[var(--surface-2,#27272a)] px-3 py-1.5 text-xs font-medium text-[var(--text-strong)]"
-          >
+          />
+          <SimulationButton variant="secondary" onClick={() => setState(initState())}>
             Reset
-          </button>
-        </div>
-        <div>
-          <label className="text-sm text-[var(--text-muted)]">Speed: {speed}</label>
-          <Slider min={10} max={100} step={5} value={[speed]} onValueChange={([v]) => setSpeed(v)} />
+          </SimulationButton>
         </div>
         <div className="flex flex-col gap-1">
-          <label className="flex items-center gap-2 text-sm text-[var(--text-muted)]">
+          <SimulationLabel className="flex items-center gap-2">
             <input
               type="checkbox"
               checked={wasserstein}
               onChange={(e) => setWasserstein(e.target.checked)}
             />
             Wasserstein loss
-          </label>
-          <label className="flex items-center gap-2 text-sm text-[var(--text-muted)]">
+          </SimulationLabel>
+          <SimulationLabel className="flex items-center gap-2">
             <input
               type="checkbox"
               checked={modeCollapse}
               onChange={(e) => setModeCollapse(e.target.checked)}
             />
             Force mode collapse
-          </label>
+          </SimulationLabel>
         </div>
-        <div className="text-sm text-[var(--text-muted)]">
-          Epoch: {state.epoch}/200
-          <br />
-          Diversity: {currentDiversity.toFixed(2)}
+      </SimulationSettings>
+      <SimulationConfig>
+        <div>
+          <SimulationLabel>Speed: {speed}</SimulationLabel>
+          <Slider min={10} max={100} step={5} value={[speed]} onValueChange={([v]) => setSpeed(v)} />
         </div>
-      </div>
+      </SimulationConfig>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <SimulationMain>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {/* Distribution comparison */}
         <div>
           <p className="mb-1 text-center text-sm text-[var(--text-muted)]">
@@ -344,24 +327,32 @@ export default function GanForgerArena(): React.ReactElement {
             </div>
           )}
         </div>
-      </div>
-
-      {modeCollapse && currentDiversity < 1.5 && state.epoch > 10 && (
-        <div className="mt-3 rounded bg-red-900/30 p-3 text-sm text-red-300">
-          Mode collapse detected. The generator is only producing samples from
-          one mode of the target distribution. Diversity score dropped to{' '}
-          {currentDiversity.toFixed(2)}. In real GANs, this happens when the
-          generator finds one pattern that fools the discriminator and keeps repeating it.
         </div>
-      )}
 
-      {!modeCollapse && state.epoch >= 150 && currentDiversity > 2.0 && (
-        <div className="mt-3 rounded bg-emerald-900/30 p-3 text-sm text-emerald-300">
-          Near equilibrium. The generator has learned to match all three modes of the
-          target distribution. Both networks have become experts at their respective
-          tasks.
+        {modeCollapse && currentDiversity < 1.5 && state.epoch > 10 && (
+          <div className="mt-3 rounded bg-red-900/30 p-3 text-sm text-red-300">
+            Mode collapse detected. The generator is only producing samples from
+            one mode of the target distribution. Diversity score dropped to{' '}
+            {currentDiversity.toFixed(2)}. In real GANs, this happens when the
+            generator finds one pattern that fools the discriminator and keeps repeating it.
+          </div>
+        )}
+
+        {!modeCollapse && state.epoch >= 150 && currentDiversity > 2.0 && (
+          <div className="mt-3 rounded bg-emerald-900/30 p-3 text-sm text-emerald-300">
+            Near equilibrium. The generator has learned to match all three modes of the
+            target distribution. Both networks have become experts at their respective
+            tasks.
+          </div>
+        )}
+      </SimulationMain>
+      <SimulationResults>
+        <div className="text-sm text-[var(--text-muted)]">
+          Epoch: {state.epoch}/200
+          <br />
+          Diversity: {currentDiversity.toFixed(2)}
         </div>
-      )}
-    </div>
+      </SimulationResults>
+    </SimulationPanel>
   );
 }

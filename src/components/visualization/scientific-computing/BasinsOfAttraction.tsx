@@ -1,9 +1,10 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
-import { SimulationPanel, SimulationLabel, SimulationToggle } from '@/components/ui/simulation-panel';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationResults, SimulationLabel, SimulationToggle } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 /**
@@ -197,17 +198,8 @@ export default function BasinsOfAttraction({}: SimulationComponentProps) {
   }, [poly.roots.length]);
 
   return (
-    <SimulationPanel>
-      <h3 className="text-lg font-semibold text-[var(--text-strong)]">
-        Newton&apos;s Method: Basins of Attraction
-      </h3>
-      <p className="text-sm text-[var(--text-soft)] mb-4">
-        Each point in the complex plane is colored by which root Newton&apos;s method converges
-        to. The fractal boundaries reveal the chaotic sensitivity to initial conditions.
-        Brighter colors indicate faster convergence.
-      </p>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+    <SimulationPanel title="Newton's Method: Basins of Attraction" caption="Each point in the complex plane is colored by which root Newton's method converges to. The fractal boundaries reveal the chaotic sensitivity to initial conditions. Brighter colors indicate faster convergence.">
+      <SimulationSettings>
         <div>
           <SimulationLabel>Polynomial</SimulationLabel>
           <SimulationToggle
@@ -216,72 +208,80 @@ export default function BasinsOfAttraction({}: SimulationComponentProps) {
             onChange={(v) => setPolyIdx(Number(v))}
           />
         </div>
-        <div>
-          <SimulationLabel>Resolution: {resolution} x {resolution}</SimulationLabel>
-          <Slider
-            value={[resolution]}
-            onValueChange={([v]) => setResolution(v)}
-            min={80}
-            max={400}
-            step={20}
-            className="w-full"
-          />
+      </SimulationSettings>
+      <SimulationConfig>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <SimulationLabel>Resolution: {resolution} x {resolution}</SimulationLabel>
+            <Slider
+              value={[resolution]}
+              onValueChange={([v]) => setResolution(v)}
+              min={80}
+              max={400}
+              step={20}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel>Max iterations: {maxIter}</SimulationLabel>
+            <Slider
+              value={[maxIter]}
+              onValueChange={([v]) => setMaxIter(v)}
+              min={10}
+              max={80}
+              step={5}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel>Zoom: {zoom.toFixed(1)}</SimulationLabel>
+            <Slider
+              value={[zoom]}
+              onValueChange={([v]) => setZoom(v)}
+              min={0.5}
+              max={4}
+              step={0.1}
+              className="w-full"
+            />
+          </div>
         </div>
-        <div>
-          <SimulationLabel>Max iterations: {maxIter}</SimulationLabel>
-          <Slider
-            value={[maxIter]}
-            onValueChange={([v]) => setMaxIter(v)}
-            min={10}
-            max={80}
-            step={5}
-            className="w-full"
-          />
-        </div>
-        <div>
-          <SimulationLabel>Zoom: {zoom.toFixed(1)}</SimulationLabel>
-          <Slider
-            value={[zoom]}
-            onValueChange={([v]) => setZoom(v)}
-            min={0.5}
-            max={4}
-            step={0.1}
-            className="w-full"
-          />
-        </div>
-      </div>
+      </SimulationConfig>
 
-      <CanvasHeatmap
-        data={[
-          {
-            z: basinData.z,
-            x: basinData.xGrid,
-            y: basinData.yGrid,
-            colorscale,
-            showscale: false,
-          },
-        ]}
-        layout={{
-          title: { text: `Basins for ${poly.label} = 0` },
-          xaxis: { title: { text: 'Re(z)' } },
-          yaxis: { title: { text: 'Im(z)' } },
-          margin: { t: 40, r: 20, b: 50, l: 60 },
-        }}
-        style={{ width: '100%', height: 450 }}
-      />
+      <SimulationMain>
+        <CanvasHeatmap
+          data={[
+            {
+              z: basinData.z,
+              x: basinData.xGrid,
+              y: basinData.yGrid,
+              colorscale,
+              showscale: false,
+            },
+          ]}
+          layout={{
+            title: { text: `Basins for ${poly.label} = 0` },
+            xaxis: { title: { text: 'Re(z)' } },
+            yaxis: { title: { text: 'Im(z)' } },
+            margin: { t: 40, r: 20, b: 50, l: 60 },
+          }}
+          style={{ width: '100%', height: 450 }}
+        />
+      </SimulationMain>
 
-      <div className="mt-3 flex flex-wrap gap-3">
-        {poly.roots.map((root, i) => {
-          const [r, g, b] = hslToRgb(ROOT_HUES[i % ROOT_HUES.length], 0.9, 0.5);
-          const color = `rgb(${Math.round(r * 255)},${Math.round(g * 255)},${Math.round(b * 255)})`;
-          return (
-            <div key={i} className="flex items-center gap-2 text-sm text-[var(--text-muted)]">
-              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />
-              Root {i + 1}: ({root[0].toFixed(3)}, {root[1].toFixed(3)}i)
-            </div>
-          );
-        })}
-      </div>
+      <SimulationResults>
+        <div className="flex flex-wrap gap-3">
+          {poly.roots.map((root, i) => {
+            const [r, g, b] = hslToRgb(ROOT_HUES[i % ROOT_HUES.length], 0.9, 0.5);
+            const color = `rgb(${Math.round(r * 255)},${Math.round(g * 255)},${Math.round(b * 255)})`;
+            return (
+              <div key={i} className="flex items-center gap-2 text-sm text-[var(--text-muted)]">
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />
+                Root {i + 1}: ({root[0].toFixed(3)}, {root[1].toFixed(3)}i)
+              </div>
+            );
+          })}
+        </div>
+      </SimulationResults>
     </SimulationPanel>
   );
 }

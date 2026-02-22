@@ -1,9 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 /**
@@ -11,7 +13,7 @@ import type { SimulationComponentProps } from '@/shared/types/simulation';
  * where a=conditionNumber, b=1. Minimum at origin.
  */
 
-export default function ConjugateGradientRace({ id: _id }: SimulationComponentProps) {
+export default function ConjugateGradientRace({}: SimulationComponentProps) {
   const [condNum, setCondNum] = useState(10);
   const [startX, setStartX] = useState(4);
   const [startY, setStartY] = useState(3);
@@ -125,39 +127,37 @@ export default function ConjugateGradientRace({ id: _id }: SimulationComponentPr
   const iterAxis = Array.from({ length: maxIter }, (_, i) => i);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Conjugate Gradient vs Steepest Descent</h3>
-      <p className="text-[var(--text-muted)] text-sm mb-4">
-        Both methods minimize a 2D elliptical quadratic with adjustable condition number.
-        CG (green) converges in at most 2 steps for a 2D quadratic; SD (cyan) zigzags in narrow valleys.
-      </p>
-      <div className="grid grid-cols-3 gap-4 mb-4">
-        <div>
-          <label className="text-[var(--text-muted)] text-sm">Condition number: {condNum}</label>
-          <Slider
-            min={1} max={100} step={1} value={[condNum]}
-            onValueChange={([v]) => setCondNum(v)}
-            className="w-full"
-          />
+    <SimulationPanel title="Conjugate Gradient vs Steepest Descent" caption="Both methods minimize a 2D elliptical quadratic with adjustable condition number. CG (green) converges in at most 2 steps for a 2D quadratic; SD (cyan) zigzags in narrow valleys.">
+      <SimulationConfig>
+        <div className="grid grid-cols-3 gap-4">
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-sm">Condition number: {condNum}</SimulationLabel>
+            <Slider
+              min={1} max={100} step={1} value={[condNum]}
+              onValueChange={([v]) => setCondNum(v)}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-sm">Start x: {startX.toFixed(1)}</SimulationLabel>
+            <Slider
+              min={-4.5} max={4.5} step={0.1} value={[startX]}
+              onValueChange={([v]) => setStartX(v)}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-sm">Start y: {startY.toFixed(1)}</SimulationLabel>
+            <Slider
+              min={-4.5} max={4.5} step={0.1} value={[startY]}
+              onValueChange={([v]) => setStartY(v)}
+              className="w-full"
+            />
+          </div>
         </div>
-        <div>
-          <label className="text-[var(--text-muted)] text-sm">Start x: {startX.toFixed(1)}</label>
-          <Slider
-            min={-4.5} max={4.5} step={0.1} value={[startX]}
-            onValueChange={([v]) => setStartX(v)}
-            className="w-full"
-          />
-        </div>
-        <div>
-          <label className="text-[var(--text-muted)] text-sm">Start y: {startY.toFixed(1)}</label>
-          <Slider
-            min={-4.5} max={4.5} step={0.1} value={[startY]}
-            onValueChange={([v]) => setStartY(v)}
-            className="w-full"
-          />
-        </div>
-      </div>
+      </SimulationConfig>
 
+      <SimulationMain>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="relative">
           <CanvasHeatmap
@@ -261,7 +261,12 @@ export default function ConjugateGradientRace({ id: _id }: SimulationComponentPr
           style={{ width: '100%' }}
         />
       </div>
-
+      <p className="text-[var(--text-soft)] text-xs mt-2">
+        For a 2D quadratic, CG converges in exactly 2 steps regardless of condition number.
+        SD zigzags more as the condition number increases.
+      </p>
+      </SimulationMain>
+      <SimulationResults>
       <div className="mt-3 grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
         <div className="text-[var(--text-muted)]">
           SD steps: <span className="text-[#22d3ee] font-mono">{sdSteps}</span>
@@ -276,10 +281,7 @@ export default function ConjugateGradientRace({ id: _id }: SimulationComponentPr
           CG final cost: <span className="text-[#4ade80] font-mono">{cgFinal.toExponential(2)}</span>
         </div>
       </div>
-      <p className="text-[var(--text-soft)] text-xs mt-2">
-        For a 2D quadratic, CG converges in exactly 2 steps regardless of condition number.
-        SD zigzags more as the condition number increases.
-      </p>
-    </div>
+      </SimulationResults>
+    </SimulationPanel>
   );
 }

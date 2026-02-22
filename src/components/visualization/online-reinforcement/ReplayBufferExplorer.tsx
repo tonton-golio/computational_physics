@@ -1,8 +1,10 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart, type ChartTrace } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationLabel, SimulationButton, SimulationSettings, SimulationConfig } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 function mulberry32(a: number) {
@@ -65,7 +67,7 @@ function simulate(bufferSize: number, batchSize: number, steps: number, seed: nu
   return { lossReplay, lossNoReplay, fillLevel, bufferAge, bufferIdx, sampledSlots, actualBatch };
 }
 
-export default function ReplayBufferExplorer({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function ReplayBufferExplorer({}: SimulationComponentProps) {
   const [bufferSize, setBufferSize] = useState(200);
   const [batchSize, setBatchSize] = useState(32);
   const [steps, setSteps] = useState(300);
@@ -106,32 +108,27 @@ export default function ReplayBufferExplorer({ id }: SimulationComponentProps) {
   const handleResample = useCallback(() => setSeed((s) => s + 1), []);
 
   return (
-    <div className="w-full rounded-lg bg-[var(--surface-1)] p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-3 text-[var(--text-strong)]">
-        Experience Replay Buffer Explorer
-      </h3>
-      <p className="text-sm text-[var(--text-muted)] mb-4">
-        A circular buffer stores transitions (s, a, r, s&apos;). Training samples random mini-batches,
-        breaking temporal correlation and stabilizing learning.
-      </p>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+    <SimulationPanel title="Experience Replay Buffer Explorer" caption="A circular buffer stores transitions (s, a, r, s'). Training samples random mini-batches, breaking temporal correlation and stabilizing learning.">
+      <SimulationSettings>
+        <SimulationButton variant="primary" onClick={handleResample}>
+          Re-sample
+        </SimulationButton>
+      </SimulationSettings>
+      <SimulationConfig>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Buffer size: {bufferSize}</label>
+          <SimulationLabel>Buffer size: {bufferSize}</SimulationLabel>
           <Slider value={[bufferSize]} onValueChange={([v]) => setBufferSize(v)} min={50} max={1000} step={50} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Batch size: {batchSize}</label>
+          <SimulationLabel>Batch size: {batchSize}</SimulationLabel>
           <Slider value={[batchSize]} onValueChange={([v]) => setBatchSize(v)} min={8} max={128} step={8} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Training steps: {steps}</label>
+          <SimulationLabel>Training steps: {steps}</SimulationLabel>
           <Slider value={[steps]} onValueChange={([v]) => setSteps(v)} min={100} max={600} step={25} />
         </div>
-      </div>
-      <button onClick={handleResample}
-        className="rounded bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white text-sm px-3 py-2 mb-4">
-        Re-sample
-      </button>
+      </SimulationConfig>
+      <SimulationMain>
       <CanvasChart data={lossTraces} layout={{
         title: { text: 'Training loss: replay vs sequential updates' },
         xaxis: { title: { text: 'training step' } },
@@ -145,6 +142,7 @@ export default function ReplayBufferExplorer({ id }: SimulationComponentProps) {
         yaxis: { title: { text: 'transition timestep' } },
         height: 260,
       }} style={{ width: '100%' }} />
-    </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

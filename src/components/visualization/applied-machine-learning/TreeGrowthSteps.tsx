@@ -1,7 +1,10 @@
-'use client';
+"use client";
 
 import React, { useMemo, useState } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationSettings, SimulationResults, SimulationButton } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 import { mulberry32, gaussianPair } from './ml-utils';
 
 interface Split {
@@ -71,7 +74,7 @@ function majorityLabel(labels: number[], indices: number[]): number {
   return sum / indices.length >= 0.5 ? 1 : 0;
 }
 
-export default function TreeGrowthSteps(): React.ReactElement {
+export default function TreeGrowthSteps({}: SimulationComponentProps): React.ReactElement {
   const [step, setStep] = useState(0);
   const [seed, setSeed] = useState(42);
 
@@ -209,41 +212,26 @@ export default function TreeGrowthSteps(): React.ReactElement {
     xs.length;
 
   return (
-    <div className="w-full rounded-lg bg-[var(--surface-1)] p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">
-        Decision Tree: Step-by-Step Growth
-      </h3>
+    <SimulationPanel title="Decision Tree: Step-by-Step Growth">
+      <SimulationSettings>
+        <div className="flex flex-wrap items-center gap-3">
+          <SimulationButton variant="secondary" onClick={() => setStep((s) => Math.max(0, s - 1))} disabled={step === 0}>
+            Previous
+          </SimulationButton>
+          <SimulationButton variant="primary" onClick={() => setStep((s) => Math.min(maxStep, s + 1))} disabled={step >= maxStep}>
+            Next Split
+          </SimulationButton>
+          <SimulationButton variant="secondary" onClick={() => {
+              setStep(0);
+              setSeed((s) => s + 1);
+            }}>
+            New Data
+          </SimulationButton>
+        </div>
+      </SimulationSettings>
 
-      <div className="mb-4 flex flex-wrap items-center gap-3">
-        <button
-          onClick={() => setStep((s) => Math.max(0, s - 1))}
-          disabled={step === 0}
-          className="rounded bg-[var(--surface-2,#27272a)] px-4 py-1.5 text-sm font-medium text-[var(--text-strong)] hover:opacity-90 disabled:opacity-50"
-        >
-          Previous
-        </button>
-        <button
-          onClick={() => setStep((s) => Math.min(maxStep, s + 1))}
-          disabled={step >= maxStep}
-          className="rounded bg-[var(--accent,#3b82f6)] px-4 py-1.5 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50"
-        >
-          Next Split
-        </button>
-        <button
-          onClick={() => {
-            setStep(0);
-            setSeed((s) => s + 1);
-          }}
-          className="rounded bg-[var(--surface-2,#27272a)] px-4 py-1.5 text-sm font-medium text-[var(--text-strong)] hover:opacity-90"
-        >
-          New Data
-        </button>
-        <span className="text-sm text-[var(--text-muted)]">
-          Step {step}/{maxStep} | Regions: {currentRegions.length} | Avg Gini: {avgGini.toFixed(3)}
-        </span>
-      </div>
-
-      <CanvasChart
+      <SimulationMain>
+        <CanvasChart
         data={[
           {
             x: xs,
@@ -265,9 +253,15 @@ export default function TreeGrowthSteps(): React.ReactElement {
         style={{ width: '100%', height: 420 }}
       />
 
-      <div className="mt-3 text-xs text-[var(--text-muted)]">
-        Each step splits the region with the highest Gini impurity. Yellow lines show decision boundaries.
-      </div>
-    </div>
+        <div className="mt-3 text-xs text-[var(--text-muted)]">
+          Each step splits the region with the highest Gini impurity. Yellow lines show decision boundaries.
+        </div>
+      </SimulationMain>
+      <SimulationResults>
+        <span className="text-sm text-[var(--text-muted)]">
+          Step {step}/{maxStep} | Regions: {currentRegions.length} | Avg Gini: {avgGini.toFixed(3)}
+        </span>
+      </SimulationResults>
+    </SimulationPanel>
   );
 }

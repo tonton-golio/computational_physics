@@ -1,7 +1,10 @@
-'use client';
+"use client";
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Slider } from '@/components/ui/slider';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 const DEFAULT_SENTENCE =
   'The author who grew up in Paris and studied mathematics at the Sorbonne finally published her long-awaited book about topology';
@@ -48,7 +51,7 @@ function simulateLSTM(
   return states;
 }
 
-export default function RnnMemoryHighway(): React.ReactElement {
+export default function RnnMemoryHighway({}: SimulationComponentProps): React.ReactElement {
   const rnnCanvasRef = useRef<HTMLCanvasElement>(null);
   const lstmCanvasRef = useRef<HTMLCanvasElement>(null);
   const [sentence, setSentence] = useState(DEFAULT_SENTENCE);
@@ -160,77 +163,78 @@ export default function RnnMemoryHighway(): React.ReactElement {
   }, [drawTimeline, rnnStates, lstmStates]);
 
   return (
-    <div className="w-full rounded-lg bg-[var(--surface-1)] p-6">
-      <h3 className="mb-4 text-xl font-semibold text-[var(--text-strong)]">
-        RNN vs LSTM: Memory Highway
-      </h3>
-
-      <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-3">
+    <SimulationPanel title="RNN vs LSTM: Memory Highway">
+      <SimulationSettings>
         <div>
-          <label className="text-sm text-[var(--text-muted)]">Highlight word: {highlightIdx}</label>
-          <Slider
-            min={0}
-            max={Math.max(0, effectiveSteps - 1)}
-            step={1}
-            value={[highlightIdx]}
-            onValueChange={([v]) => setHighlightIdx(v)}
+          <input
+            type="text"
+            value={sentence}
+            onChange={(e) => setSentence(e.target.value)}
+            className="w-full rounded bg-[var(--surface-2,#27272a)] px-3 py-2 text-sm text-[var(--text-strong)]"
+            placeholder="Type a sentence..."
           />
         </div>
-        <div>
-          <label className="text-sm text-[var(--text-muted)]">RNN decay: {rnnDecay.toFixed(2)}</label>
-          <Slider
-            min={0.3}
-            max={0.95}
-            step={0.01}
-            value={[rnnDecay]}
-            onValueChange={([v]) => setRnnDecay(v)}
+      </SimulationSettings>
+      <SimulationConfig>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <div>
+            <SimulationLabel>Highlight word: {highlightIdx}</SimulationLabel>
+            <Slider
+              min={0}
+              max={Math.max(0, effectiveSteps - 1)}
+              step={1}
+              value={[highlightIdx]}
+              onValueChange={([v]) => setHighlightIdx(v)}
+            />
+          </div>
+          <div>
+            <SimulationLabel>RNN decay: {rnnDecay.toFixed(2)}</SimulationLabel>
+            <Slider
+              min={0.3}
+              max={0.95}
+              step={0.01}
+              value={[rnnDecay]}
+              onValueChange={([v]) => setRnnDecay(v)}
+            />
+          </div>
+          <div>
+            <SimulationLabel>Timesteps: {nSteps}</SimulationLabel>
+            <Slider
+              min={10}
+              max={60}
+              step={1}
+              value={[nSteps]}
+              onValueChange={([v]) => setNSteps(v)}
+            />
+          </div>
+        </div>
+      </SimulationConfig>
+
+      <SimulationMain scaleMode="contain">
+        <div className="space-y-4">
+          <canvas
+            ref={rnnCanvasRef}
+            width={700}
+            height={120}
+            className="w-full rounded-lg bg-[var(--surface-2,#27272a)]"
+            style={{ maxWidth: 700 }}
+          />
+          <canvas
+            ref={lstmCanvasRef}
+            width={700}
+            height={120}
+            className="w-full rounded-lg bg-[var(--surface-2,#27272a)]"
+            style={{ maxWidth: 700 }}
           />
         </div>
-        <div>
-          <label className="text-sm text-[var(--text-muted)]">Timesteps: {nSteps}</label>
-          <Slider
-            min={10}
-            max={60}
-            step={1}
-            value={[nSteps]}
-            onValueChange={([v]) => setNSteps(v)}
-          />
+
+        <div className="mt-3 rounded bg-[var(--surface-2,#27272a)] p-3 text-sm text-[var(--text-muted)]">
+          Move the highlight slider to pick a word. Watch how the Simple RNN&apos;s
+          memory (red) fades rapidly with distance, while the LSTM&apos;s cell-state
+          highway (green) preserves information across long sequences. The LSTM&apos;s
+          forget gate stays near 1.0, allowing gradients to flow without vanishing.
         </div>
-      </div>
-
-      <div className="mb-3">
-        <input
-          type="text"
-          value={sentence}
-          onChange={(e) => setSentence(e.target.value)}
-          className="w-full rounded bg-[var(--surface-2,#27272a)] px-3 py-2 text-sm text-[var(--text-strong)]"
-          placeholder="Type a sentence..."
-        />
-      </div>
-
-      <div className="space-y-4">
-        <canvas
-          ref={rnnCanvasRef}
-          width={700}
-          height={120}
-          className="w-full rounded-lg bg-[var(--surface-2,#27272a)]"
-          style={{ maxWidth: 700 }}
-        />
-        <canvas
-          ref={lstmCanvasRef}
-          width={700}
-          height={120}
-          className="w-full rounded-lg bg-[var(--surface-2,#27272a)]"
-          style={{ maxWidth: 700 }}
-        />
-      </div>
-
-      <div className="mt-3 rounded bg-[var(--surface-2,#27272a)] p-3 text-sm text-[var(--text-muted)]">
-        Move the highlight slider to pick a word. Watch how the Simple RNN&apos;s
-        memory (red) fades rapidly with distance, while the LSTM&apos;s cell-state
-        highway (green) preserves information across long sequences. The LSTM&apos;s
-        forget gate stays near 1.0, allowing gradients to flow without vanishing.
-      </div>
-    </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

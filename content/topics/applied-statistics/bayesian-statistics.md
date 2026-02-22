@@ -2,104 +2,96 @@
 
 ## A Different Way of Thinking
 
-Throughout this course, you've used **frequentist** methods: p-values, confidence intervals, maximum likelihood. These treat probability as a long-run frequency — if you repeat the experiment many times, how often does this outcome occur?
+You've been using frequentist methods: p-values, confidence intervals, maximum likelihood. Probability as long-run frequency.
 
-**Bayesian statistics** takes a fundamentally different view. Probability represents a *degree of belief*. You start with some prior belief about a parameter, observe data, and update that belief. The result is a **posterior distribution** — a complete description of what you know about the parameter after seeing the data.
+**Bayesian statistics** flips the question. Probability represents *belief*. You start with a prior belief, observe data, and update. The result is a **posterior distribution** -- everything you know about the parameter after seeing the data.
 
-Neither approach is "correct" — they answer different questions. Frequentist methods ask "how surprising is this data if the hypothesis is true?" Bayesian methods ask "given the data, what should I believe about the parameter?" Both are useful, and the best practitioners are fluent in both.
+Neither framework is "correct." Frequentist: "how surprising is this data if the hypothesis is true?" Bayesian: "given the data, what should I believe?" Both are useful. The best practitioners speak both languages.
 
-You might think this is a completely new idea. But actually, you've been doing something very close to Bayesian reasoning all along. The likelihood function from [probability density functions](./probability-density-functions)? That's the engine of Bayesian inference too. The nuisance parameter constraints from [advanced fitting](./advanced-fitting-calibration)? Those are priors in disguise. The regularization penalties in [machine learning](./machine-learning-data-analysis)? Bayesian priors again. This section makes the connection explicit.
+And here's the thing -- you've been doing Bayesian reasoning in disguise all along. The likelihood function from [PDFs](./probability-density-functions)? Same engine. The nuisance parameter constraints from [advanced fitting](./advanced-fitting-calibration)? Gaussian priors. Regularization in [ML](./machine-learning-data-analysis)? Bayesian priors again.
 
 ## Bayes' Theorem
-
-The mathematical engine of Bayesian statistics is **Bayes' theorem**. For a hypothesis $H$ and observed data $D$:
 
 $$
 P(H|D) = \frac{P(D|H) \cdot P(H)}{P(D)}
 $$
 
-Each term plays a specific role:
+* $P(H|D)$: the **posterior** -- your updated belief. What you want.
+* $P(D|H)$: the **likelihood** -- probability of data given hypothesis. Same function you've been using since PDFs.
+* $P(H)$: the **prior** -- what you believed before seeing data.
+* $P(D)$: the **evidence** -- a normalization constant. Often the hardest to compute, but you can frequently sidestep it.
 
-* $P(H|D)$ is the **posterior**: your updated belief about $H$ after seeing the data. This is what you want.
-* $P(D|H)$ is the **likelihood**: the probability of the data given the hypothesis. This is the same likelihood function you've been using since [probability density functions](./probability-density-functions) — the connection between Bayesian and frequentist methods runs deep.
-* $P(H)$ is the **prior**: your belief about $H$ before seeing the data. This is where existing knowledge (or honest ignorance) enters.
-* $P(D)$ is the **evidence** (or marginal likelihood): a normalization constant ensuring the posterior integrates to 1. Often the hardest part to compute, but you can frequently sidestep it.
-
-The formula reads as a recipe: **posterior $\propto$ likelihood $\times$ prior**. The data update your belief, with the likelihood acting as the bridge.
+The recipe: **posterior $\propto$ likelihood $\times$ prior**. Data update your belief.
 
 ## Example: Is This Coin Fair?
 
-Suppose someone hands you a coin. You want to know whether it's fair. Let $\theta$ be the probability of heads. Let's walk through this step by step — the way you'd actually think about it.
+Let $\theta$ be the probability of heads. Watch how your belief evolves with each flip.
 
-**Prior**: You have no strong reason to think the coin is biased. So you start with a uniform prior: $P(\theta) = 1$ for $\theta \in [0, 1]$. Every value is equally plausible before you see any data.
+**Prior**: no reason to think the coin is biased. Uniform: $P(\theta) = 1$ for $\theta \in [0, 1]$.
 
-**Flip 1**: You flip the coin once and get heads. Your likelihood is $P(D|\theta) = \theta$. The posterior is $P(\theta|D) \propto \theta \times 1 = \theta$. After one head, values of $\theta$ near 1 look slightly more plausible than values near 0. But the distribution is broad — one flip doesn't tell you much.
+**Flip 1**: heads. Likelihood is $P(D|\theta) = \theta$. Posterior: $P(\theta|D) \propto \theta$. Values near 1 are slightly more plausible. But the distribution is broad -- one flip tells you almost nothing.
 
-**Flips 1-10**: You flip 9 more times and get a total of 7 heads and 3 tails. The likelihood from the binomial distribution is:
+**Flips 1-10**: 7 heads, 3 tails. The likelihood from the binomial:
 
 $$
 P(D|\theta) = \binom{10}{7} \theta^7 (1-\theta)^3
 $$
 
-The posterior becomes:
+Posterior: $P(\theta|D) \propto \theta^7 (1-\theta)^3$. That's a Beta(8, 4) distribution. Its peak is at $\theta = 0.7$ -- same as the MLE. But you get *more*: the full shape tells you how uncertain you are. The 95% credible interval runs roughly from 0.40 to 0.93. Still wide -- 10 flips haven't pinned it down.
 
-$$
-P(\theta|D) \propto \theta^7 (1-\theta)^3
-$$
+**Flips 1-110**: 70 heads out of 110. The posterior tightens dramatically. Now the 95% credible interval is roughly 0.55 to 0.73. More data means more certainty.
 
-This is a Beta(8, 4) distribution. Its peak is at $\theta = 7/10 = 0.7$ — the same as the maximum likelihood estimate. But the Bayesian answer gives you *more*: the full shape of the distribution tells you how uncertain you are. The 95% credible interval runs roughly from 0.40 to 0.93. That's a wide range — 10 flips haven't pinned down $\theta$ very tightly.
+**Flips 1-1000**: say 680 heads. The posterior is now razor-sharp, clustered tightly around 0.68. Whatever prior you started with barely matters anymore. This is the beautiful part: with enough data, reasonable people with different priors converge to the same conclusion. The data overwhelm the prior.
 
-**Flips 1-110**: You flip the coin 100 more times and get 70 heads total (out of 110). The posterior tightens dramatically — more data means more certainty. Now the 95% credible interval might run from 0.55 to 0.73. The prior matters less and less as data accumulate.
-
-This is a reassuring property: with enough data, reasonable people with different priors converge to the same conclusion. The data overwhelm the prior.
-
-> **Challenge.** Grab a coin. Before you flip it, write down your prior belief about $P(\text{heads})$. Now flip it 10 times. After each flip, mentally update your belief: is the coin fair, or is it biased? Notice how your confidence grows (or shifts) with each flip. That's Bayesian updating in real time — your brain does this naturally.
+> **Challenge.** Grab a coin. Write your prior for $P(\text{heads})$ before flipping. Flip 10 times. After each flip, mentally update. Notice your confidence growing or shifting. That's Bayesian updating -- your brain does this naturally.
 
 [[simulation prior-influence]]
 
 ## Choosing Priors
 
-The prior is the most controversial part of Bayesian statistics. Where does it come from? Here's the menu:
+The prior is the controversial bit. Where does it come from?
 
-* **Informative priors** encode genuine prior knowledge. If previous experiments have measured a quantity, use that result as your prior. This is one of the great strengths of Bayesian methods — they provide a principled way to combine old and new evidence.
-* **Weakly informative priors** gently constrain parameters to physically reasonable ranges without strongly favoring specific values. For example, a half-normal prior on a variance parameter ensures it stays positive without committing to a particular magnitude.
-* **Non-informative (flat) priors** attempt to "let the data speak." A uniform prior on $\theta$ says every value is equally plausible. This sounds objective, but it's not quite: a flat prior on $\theta$ is *not* flat on $\theta^2$ or $\ln\theta$. The choice of parameterization matters.
+* **Informative priors**: genuine prior knowledge. Previous experiments measured the quantity? Use that result. This is a great strength -- a principled way to combine old and new evidence.
+* **Weakly informative priors**: gently constrain to physically reasonable ranges without committing to specific values.
+* **Non-informative (flat) priors**: "let the data speak." But a flat prior on $\theta$ isn't flat on $\theta^2$ or $\ln\theta$. The parameterization matters.
 
-In practice, the prior is most important when data are scarce. With abundant data, the likelihood dominates and the prior washes out. If your conclusions depend sensitively on the prior, that's a signal that the data are insufficient to answer the question — which is itself a useful thing to know.
+In practice, the prior matters most when data are scarce. With abundant data, the likelihood dominates. If conclusions depend sensitively on the prior, that's telling you the data are insufficient -- which is itself useful to know.
 
 [[simulation shrinkage-plot]]
 
+## The Disease Test: Bayes in Action
+
+A disease affects 1 in 1000 people. A test has 99% sensitivity (catches 99% of true cases) and 95% specificity (5% false positive rate). You test positive. How worried should you be?
+
+Your gut says "very worried." Bayes says: not so fast. With 1000 people, about 1 has the disease (and tests positive) while 50 of the healthy 999 also test positive (the 5% false positive rate). So roughly 1 out of 51 positive tests is a true case -- about 2%. The prior (1/1000) matters enormously. Rare diseases stay unlikely even after a positive test.
+
 ## Bayesian vs Frequentist Confidence
 
-A 95% **confidence interval** (frequentist) means: if you repeated the experiment many times, 95% of the intervals would contain the true value. It says nothing about *this particular* interval.
+A 95% **confidence interval** (frequentist): if you repeated the experiment many times, 95% of the intervals would contain the true value. Says nothing about *this* interval.
 
-A 95% **credible interval** (Bayesian) means: given the data and the prior, there is a 95% probability that the parameter lies in this interval. This is often what people *think* a confidence interval means.
+A 95% **credible interval** (Bayesian): given data and prior, 95% probability the parameter is in here. This is often what people *think* a confidence interval means.
 
-For large samples with weak priors, the two intervals are numerically similar. The philosophical difference becomes practically important for small samples or when strong prior information is available.
+For large samples with weak priors, the two are numerically similar. The distinction matters with small samples or strong prior information.
 
-When data are scarce, the credible interval is what scientists actually want to report ("we are 95% sure the mass is between..."). The numbers from the two approaches are often similar, but the meaning is different.
-
-> **Challenge.** Explain Bayes' theorem to a friend using only the example of diagnosing a rare disease. A positive test result doesn't mean you have the disease — it depends on how rare the disease is (the prior). One minute.
+> **Challenge.** Explain Bayes' theorem using the rare disease example. A positive test doesn't mean you have it -- the prior (how rare the disease is) matters enormously. One minute.
 
 ## Big Ideas
 
-* The likelihood function you have been using since the beginning is the engine of Bayesian inference too — the prior and posterior are new, but the data's voice is the same function in both frameworks.
-* A 95% credible interval says the parameter is in this range with 95% probability (given the data and prior); a 95% confidence interval says 95% of intervals constructed this way will contain the true value. People want the Bayesian answer but are usually given the frequentist one.
-* If your conclusions depend strongly on the prior, that is not a flaw of Bayesian statistics — it is a signal that the data are insufficient to answer the question, which is itself important to know.
-* With enough data, reasonable priors wash out and Bayesian and frequentist answers converge. The philosophical difference becomes practically important only in the regime where data are scarce.
+* The likelihood you've been using since the beginning is Bayesian inference's engine too -- prior and posterior are new, but the data's voice is the same.
+* Credible intervals say the parameter is in this range with 95% probability; confidence intervals say 95% of such intervals contain the truth. People want the Bayesian answer but usually get the frequentist one.
+* If conclusions depend on the prior, that's a signal the data are insufficient -- useful information, not a flaw.
+* With enough data, reasonable priors wash out. The philosophical difference matters mainly when data are scarce.
 
 ## What Comes Next
 
-Bayesian thinking reframes inference as belief updating: prior knowledge plus data equals posterior belief. This framework becomes especially powerful in complex models where you have many parameters, some of interest and some nuisance.
-
-The next section on advanced fitting shows how Bayesian priors appear in disguise inside frequentist fitting — constraint terms on nuisance parameters are Gaussian priors. The two philosophies converge in practice, and understanding both gives you tools that neither alone provides.
+Bayesian thinking reframes inference as belief updating. The next section shows how Bayesian priors appear in disguise inside frequentist fitting -- constraint terms on nuisance parameters are Gaussian priors, and the two philosophies converge in practice.
 
 ## Check Your Understanding
 
-1. A disease affects 1 in 1000 people. A test for it has 99% sensitivity and 95% specificity. If you test positive, what is the probability you actually have the disease? Walk through Bayes' theorem step by step and explain why the answer is far less than 99%.
-2. You fit a Bayesian model with a strong informative prior and get a posterior that barely moved from the prior. A colleague concludes "the prior was too strong." What is the equally valid alternative interpretation?
-3. A frequentist confidence interval and a Bayesian credible interval for the same parameter are numerically identical in a particular analysis. Does this mean they mean the same thing? Explain the distinction carefully.
+1. Disease: 1 in 1000. Test: 99% sensitivity, 95% specificity. You test positive. Walk through Bayes step by step. Why is the answer far less than 99%?
+2. Strong informative prior, posterior barely moved. "The prior was too strong." What's the equally valid alternative interpretation?
+3. Frequentist CI and Bayesian credible interval are numerically identical. Do they mean the same thing?
 
 ## Challenge
 
-You are estimating the bias $\theta$ of a coin. You start with a uniform prior. After 10 flips yielding 3 heads, compute the posterior distribution analytically (it will be a Beta distribution). Now suppose a colleague had started with a strongly informative prior centered at $\theta = 0.5$ (a Beta(10, 10) prior). Compute or sketch their posterior after seeing the same data. Compare the two posteriors: where do they peak, how wide are they, and how much does the prior choice matter? Now consider: how many flips would it take for the two posteriors to be nearly indistinguishable, regardless of the starting prior?
+Coin bias $\theta$, uniform prior. After 10 flips with 3 heads, compute the posterior (a Beta distribution). A colleague starts with Beta(10, 10) centered at 0.5. Compare the two posteriors: peaks, widths, and how much the prior matters. How many flips until the two posteriors become nearly indistinguishable?

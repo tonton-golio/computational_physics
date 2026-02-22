@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 /**
  * Michaelis-Menten / Monod growth curve:
@@ -12,7 +15,7 @@ import { CanvasChart } from '@/components/ui/canvas-chart';
  * where the growth rate lambda depends on the concentration of the
  * limiting nutrient S via the Monod equation.
  */
-export default function MichaelisMenten() {
+export default function MichaelisMenten({}: SimulationComponentProps) {
   const [lambdaMax, setLambdaMax] = useState(1.25);
   const [Ks, setKs] = useState(0.5);
 
@@ -32,20 +35,19 @@ export default function MichaelisMenten() {
   }, [lambdaMax, Ks]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Michaelis-Menten / Monod Growth Curve</h3>
-
-      <div className="grid grid-cols-2 gap-6 mb-4">
+    <SimulationPanel title="Michaelis-Menten / Monod Growth Curve">
+      <SimulationConfig>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Maximum growth rate (lambda_max): {lambdaMax.toFixed(2)}</label>
+          <SimulationLabel>Maximum growth rate (lambda_max): {lambdaMax.toFixed(2)}</SimulationLabel>
           <Slider value={[lambdaMax]} onValueChange={([v]) => setLambdaMax(v)} min={0.1} max={2.0} step={0.05} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Half-saturation constant (K_S): {Ks.toFixed(2)}</label>
+          <SimulationLabel>Half-saturation constant (K_S): {Ks.toFixed(2)}</SimulationLabel>
           <Slider value={[Ks]} onValueChange={([v]) => setKs(v)} min={0.1} max={10.0} step={0.1} />
         </div>
-      </div>
+      </SimulationConfig>
 
+      <SimulationMain>
       <CanvasChart
         data={[
           {
@@ -106,6 +108,7 @@ export default function MichaelisMenten() {
         }}
         style={{ width: '100%' }}
       />
+      </SimulationMain>
 
       <div className="mt-3 text-sm text-[var(--text-muted)]">
         <p>
@@ -117,6 +120,6 @@ export default function MichaelisMenten() {
           is half its maximum value.
         </p>
       </div>
-    </div>
+    </SimulationPanel>
   );
 }

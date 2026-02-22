@@ -1,13 +1,11 @@
-'use client';
+"use client";
 
 import React from 'react';
-import {
-  ExplainedVarianceDemo,
-  LossFunctionsDemo,
-  PcaCorrelatedDataDemo,
-  TreeSplitImpurityDemo,
-  ValidationSplitDemo,
-} from './applied-machine-learning/AppliedMachineLearningDemos';
+import LossFunctionsDemo from './applied-machine-learning/LossFunctionsDemo';
+import ValidationSplitDemo from './applied-machine-learning/ValidationSplitDemo';
+import TreeSplitImpurityDemo from './applied-machine-learning/TreeSplitImpurityDemo';
+import PcaCorrelatedDataDemo from './applied-machine-learning/PcaCorrelatedDataDemo';
+import ExplainedVarianceDemo from './applied-machine-learning/ExplainedVarianceDemo';
 import LossLandscapeExplorer from './applied-machine-learning/LossLandscapeExplorer';
 import XorEnsembleArena from './applied-machine-learning/XorEnsembleArena';
 import SwissRollExplorer from './applied-machine-learning/SwissRollExplorer';

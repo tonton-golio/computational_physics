@@ -1,9 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 function solveFEM(ne: number, L: number, A: number, E: number, P: number): { nodes: number[], u: number[], deformed: number[] } {
   const n = ne + 1; // number of nodes
@@ -80,7 +82,7 @@ function solveLinearSystem(A: number[][], b: number[]): number[] {
   return x;
 }
 
-export function FEMSim() {
+export default function FEMSim({}: SimulationComponentProps) {
   const [ne, setNe] = useState([10]);
   const [L, setL] = useState([1.0]);
   const [A, setA] = useState([0.01]);
@@ -124,74 +126,64 @@ export function FEMSim() {
   }, [ne, L, A, E, P]);
 
   return (
-    <div className="space-y-8">
-      <Card>
-        <CardHeader>
-          <CardTitle>FEM 1D Bar Simulation</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Mesh (Original and Deformed)</h3>
-              {meshData && (
-                <CanvasChart
-                  data={meshData}
-                  layout={{
-                    width: 500,
-                    height: 300,
-                    xaxis: { title: { text: 'Position x' } },
-                    yaxis: { title: { text: 'Deformation (exaggerated)' } },
-                    margin: { t: 20, b: 40, l: 60, r: 20 },
-                  }}
-                />
-              )}
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Displacement u(x)</h3>
-              {displacementData && (
-                <CanvasChart
-                  data={displacementData}
-                  layout={{
-                    width: 500,
-                    height: 300,
-                    xaxis: { title: { text: 'Position x' } },
-                    yaxis: { title: { text: 'Displacement u' } },
-                    margin: { t: 20, b: 40, l: 60, r: 20 },
-                  }}
-                />
-              )}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+    <SimulationPanel title="FEM 1D Bar Simulation">
+      <SimulationConfig>
+        <div>
+          <SimulationLabel>Number of Elements (ne): {ne[0]}</SimulationLabel>
+          <Slider value={ne} onValueChange={setNe} min={1} max={50} step={1} />
+        </div>
+        <div>
+          <SimulationLabel>Length L: {L[0].toFixed(2)} m</SimulationLabel>
+          <Slider value={L} onValueChange={setL} min={0.1} max={10} step={0.1} />
+        </div>
+        <div>
+          <SimulationLabel>Area A: {A[0].toExponential(2)} m²</SimulationLabel>
+          <Slider value={A} onValueChange={setA} min={1e-6} max={1e-2} step={1e-6} />
+        </div>
+        <div>
+          <SimulationLabel>Young&apos;s Modulus E: {E[0].toExponential(0)} Pa</SimulationLabel>
+          <Slider value={E} onValueChange={setE} min={1e9} max={1e12} step={1e9} />
+        </div>
+        <div>
+          <SimulationLabel>Force P: {P[0].toFixed(0)} N</SimulationLabel>
+          <Slider value={P} onValueChange={setP} min={0} max={10000} step={10} />
+        </div>
+      </SimulationConfig>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Parameters</CardTitle>
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div>
-            <label className="text-sm font-medium">Number of Elements (ne): {ne[0]}</label>
-            <Slider value={ne} onValueChange={setNe} min={1} max={50} step={1} />
-          </div>
-          <div>
-            <label className="text-sm font-medium">Length L: {L[0].toFixed(2)} m</label>
-            <Slider value={L} onValueChange={setL} min={0.1} max={10} step={0.1} />
-          </div>
-          <div>
-            <label className="text-sm font-medium">Area A: {A[0].toExponential(2)} m²</label>
-            <Slider value={A} onValueChange={setA} min={1e-6} max={1e-2} step={1e-6} />
-          </div>
-          <div>
-            <label className="text-sm font-medium">Young&apos;s Modulus E: {E[0].toExponential(0)} Pa</label>
-            <Slider value={E} onValueChange={setE} min={1e9} max={1e12} step={1e9} />
-          </div>
-          <div>
-            <label className="text-sm font-medium">Force P: {P[0].toFixed(0)} N</label>
-            <Slider value={P} onValueChange={setP} min={0} max={10000} step={10} />
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+      <SimulationMain>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div>
+          <h3 className="text-lg font-semibold mb-4">Mesh (Original and Deformed)</h3>
+          {meshData && (
+            <CanvasChart
+              data={meshData}
+              layout={{
+                width: 500,
+                height: 300,
+                xaxis: { title: { text: 'Position x' } },
+                yaxis: { title: { text: 'Deformation (exaggerated)' } },
+                margin: { t: 20, b: 40, l: 60, r: 20 },
+              }}
+            />
+          )}
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold mb-4">Displacement u(x)</h3>
+          {displacementData && (
+            <CanvasChart
+              data={displacementData}
+              layout={{
+                width: 500,
+                height: 300,
+                xaxis: { title: { text: 'Position x' } },
+                yaxis: { title: { text: 'Displacement u' } },
+                margin: { t: 20, b: 40, l: 60, r: 20 },
+              }}
+            />
+          )}
+        </div>
+      </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

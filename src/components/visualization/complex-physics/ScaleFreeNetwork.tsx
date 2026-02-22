@@ -1,9 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { SimulationMain } from '@/components/ui/simulation-main';
 import { Slider } from '@/components/ui/slider';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationAux, SimulationLabel, SimulationButton } from '@/components/ui/simulation-panel';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 import { useTheme } from '@/lib/use-theme';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
@@ -260,7 +262,7 @@ function NetworkScene({ nodes, links, isDark }: { nodes: NetworkNode[]; links: N
   );
 }
 
-export function ScaleFreeNetwork() {
+export default function ScaleFreeNetwork({}: SimulationComponentProps) {
   const theme = useTheme();
   const isDark = theme === 'dark';
   const [numNodes, setNumNodes] = useState(50);
@@ -285,10 +287,15 @@ export function ScaleFreeNetwork() {
   }, [network]);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap gap-6 items-center">
+    <SimulationPanel title="Scale-Free Network">
+      <SimulationSettings>
+        <SimulationButton variant="primary" onClick={() => setSeed(s => s + 1)}>
+          Regenerate
+        </SimulationButton>
+      </SimulationSettings>
+      <SimulationConfig>
         <div>
-          <label className="text-sm text-[var(--text-muted)] block mb-1">Nodes: {numNodes}</label>
+          <SimulationLabel>Nodes: {numNodes}</SimulationLabel>
           <Slider
             min={10}
             max={100}
@@ -298,13 +305,7 @@ export function ScaleFreeNetwork() {
             className="w-48"
           />
         </div>
-        <button
-          onClick={() => setSeed(s => s + 1)}
-          className="px-4 py-2 bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white rounded text-sm mt-4"
-        >
-          Regenerate
-        </button>
-      </div>
+      </SimulationConfig>
 
       {/* 3D Network Graph */}
       <SimulationMain
@@ -324,20 +325,22 @@ export function ScaleFreeNetwork() {
       </SimulationMain>
 
       {/* Degree Distribution Histogram */}
-      <CanvasChart
-        data={[{
-          x: degrees,
-          type: 'histogram' as const,
-          marker: { color: '#3b82f6' },
-        }]}
-        layout={{
-          title: { text: 'Degree Distribution', font: { size: 13 } },
-          xaxis: { title: { text: 'Degree' } },
-          yaxis: { title: { text: 'Frequency' } },
-          margin: { t: 40, r: 20, b: 50, l: 60 },
-        }}
-        style={{ width: '100%', height: 300 }}
-      />
-    </div>
+      <SimulationAux>
+        <CanvasChart
+          data={[{
+            x: degrees,
+            type: 'histogram' as const,
+            marker: { color: '#3b82f6' },
+          }]}
+          layout={{
+            title: { text: 'Degree Distribution', font: { size: 13 } },
+            xaxis: { title: { text: 'Degree' } },
+            yaxis: { title: { text: 'Frequency' } },
+            margin: { t: 40, r: 20, b: 50, l: 60 },
+          }}
+          style={{ width: '100%', height: 300 }}
+        />
+      </SimulationAux>
+    </SimulationPanel>
   );
 }

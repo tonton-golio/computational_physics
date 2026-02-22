@@ -1,9 +1,12 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationSettings, SimulationResults, SimulationToggle } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-export default function MissingnessMechanisms() {
+export default function MissingnessMechanisms({}: SimulationComponentProps) {
   const [mechanism, setMechanism] = useState<'MCAR' | 'MAR' | 'MNAR'>('MCAR');
 
   const { obsX, obsY, missX, missY } = useMemo(() => {
@@ -48,26 +51,19 @@ export default function MissingnessMechanisms() {
   };
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Missingness Mechanisms</h3>
-      <div className="flex gap-2 mb-4">
-        {(['MCAR', 'MAR', 'MNAR'] as const).map((m) => (
-          <button
-            key={m}
-            onClick={() => setMechanism(m)}
-            className={`px-4 py-1.5 rounded text-sm border ${
-              mechanism === m
-                ? 'bg-[var(--accent)] text-white border-[var(--accent)]'
-                : 'bg-[var(--surface-2)] text-[var(--text-strong)] border-[var(--border-strong)]'
-            }`}
-          >
-            {m}
-          </button>
-        ))}
-      </div>
-      <div className="mb-3 text-sm text-[var(--text-muted)]">
-        {descriptions[mechanism]} | Observed: {obsX.length} | Missing: {missX.length}
-      </div>
+    <SimulationPanel title="Missingness Mechanisms">
+      <SimulationSettings>
+        <SimulationToggle
+          options={[
+            { label: 'MCAR', value: 'MCAR' },
+            { label: 'MAR', value: 'MAR' },
+            { label: 'MNAR', value: 'MNAR' },
+          ]}
+          value={mechanism}
+          onChange={(v) => setMechanism(v as 'MCAR' | 'MAR' | 'MNAR')}
+        />
+      </SimulationSettings>
+      <SimulationMain>
       <CanvasChart
         data={[
           {
@@ -86,6 +82,12 @@ export default function MissingnessMechanisms() {
         }}
         style={{ width: '100%' }}
       />
-    </div>
+      </SimulationMain>
+      <SimulationResults>
+        <div className="text-sm text-[var(--text-muted)]">
+          {descriptions[mechanism]} | Observed: {obsX.length} | Missing: {missX.length}
+        </div>
+      </SimulationResults>
+    </SimulationPanel>
   );
 }

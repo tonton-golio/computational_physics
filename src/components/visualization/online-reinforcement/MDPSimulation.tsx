@@ -1,12 +1,14 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Slider } from '@/components/ui/slider';
 import {
   runMDPSimulationWorker,
   type MDPSimulationResult,
 } from '@/features/simulation/simulation-worker.client';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationLabel, SimulationConfig } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 
@@ -83,7 +85,7 @@ function runMDPSimulationFallback(
   return { probFills, avgCosts, minCosts, maxCosts, optIdx };
 }
 
-export default function MDPSimulation({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function MDPSimulation({}: SimulationComponentProps) {
   const [costPerUnfilled, setCostPerUnfilled] = useState(0.1);
   const [setupCost, setSetupCost] = useState(0.5);
   const [maxUnfilled, setMaxUnfilled] = useState(10);
@@ -118,21 +120,12 @@ export default function MDPSimulation({ id }: SimulationComponentProps) { // esl
   }, [costPerUnfilled, setupCost, maxUnfilled, alpha, timeHorizon]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">
-        MDP Example: Order Processing Cost
-      </h3>
-      <p className="text-[var(--text-muted)] text-sm mb-4">
-        Orders arrive with probability &alpha;. We can process all unfilled orders (paying setup cost K)
-        or wait (paying holding cost c per unfilled order per period).
-        The maximum backlog is n. Explore how the fill probability affects total cost.
-      </p>
-
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
+    <SimulationPanel title="MDP Example: Order Processing Cost" caption="Orders arrive with probability &alpha;. We can process all unfilled orders (paying setup cost K) or wait (paying holding cost c per unfilled order per period). The maximum backlog is n. Explore how the fill probability affects total cost.">
+      <SimulationConfig>
         <div>
-          <label className="text-[var(--text-strong)] text-xs">
+          <SimulationLabel className="text-[var(--text-strong)] text-xs">
             Cost/unfilled (c): {costPerUnfilled.toFixed(2)}
-          </label>
+          </SimulationLabel>
           <Slider
             min={0.01}
             max={1.0}
@@ -143,9 +136,9 @@ export default function MDPSimulation({ id }: SimulationComponentProps) { // esl
           />
         </div>
         <div>
-          <label className="text-[var(--text-strong)] text-xs">
+          <SimulationLabel className="text-[var(--text-strong)] text-xs">
             Setup cost (K): {setupCost.toFixed(2)}
-          </label>
+          </SimulationLabel>
           <Slider
             min={0.1}
             max={5.0}
@@ -156,9 +149,9 @@ export default function MDPSimulation({ id }: SimulationComponentProps) { // esl
           />
         </div>
         <div>
-          <label className="text-[var(--text-strong)] text-xs">
+          <SimulationLabel className="text-[var(--text-strong)] text-xs">
             Max unfilled (n): {maxUnfilled}
-          </label>
+          </SimulationLabel>
           <Slider
             min={1}
             max={50}
@@ -169,9 +162,9 @@ export default function MDPSimulation({ id }: SimulationComponentProps) { // esl
           />
         </div>
         <div>
-          <label className="text-[var(--text-strong)] text-xs">
+          <SimulationLabel className="text-[var(--text-strong)] text-xs">
             Order prob (&alpha;): {alpha.toFixed(2)}
-          </label>
+          </SimulationLabel>
           <Slider
             min={0.1}
             max={1.0}
@@ -182,9 +175,9 @@ export default function MDPSimulation({ id }: SimulationComponentProps) { // esl
           />
         </div>
         <div>
-          <label className="text-[var(--text-strong)] text-xs">
+          <SimulationLabel className="text-[var(--text-strong)] text-xs">
             Horizon (T): {timeHorizon}
-          </label>
+          </SimulationLabel>
           <Slider
             min={50}
             max={1000}
@@ -194,8 +187,9 @@ export default function MDPSimulation({ id }: SimulationComponentProps) { // esl
             className="w-full"
           />
         </div>
-      </div>
+      </SimulationConfig>
 
+      <SimulationMain>
       {!plotData ? (
         <div className="flex h-[420px] items-center justify-center rounded border border-[var(--border-strong)] bg-[var(--surface-2)] text-sm text-[var(--text-muted)]">
           Running simulation...
@@ -244,6 +238,7 @@ export default function MDPSimulation({ id }: SimulationComponentProps) { // esl
           style={{ width: '100%' }}
         />
       )}
+      </SimulationMain>
 
       <div className="mt-3 text-xs text-[var(--text-soft)]">
         <p>
@@ -251,6 +246,6 @@ export default function MDPSimulation({ id }: SimulationComponentProps) { // esl
           The optimal policy balances these two competing costs.
         </p>
       </div>
-    </div>
+    </SimulationPanel>
   );
 }

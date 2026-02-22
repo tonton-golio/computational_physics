@@ -1,10 +1,14 @@
-# Information, Entropy, and Uncertainty
+# How Much Did the Data Really Teach You?
+
+Regularization is information control. Too little regularization and you extract everything from the data — including the noise, fooling yourself into thinking you know more than you do. Too much and you ignore the data entirely, leaving the prior unchanged. The right amount extracts exactly what the data knows and leaves the rest behind. This single idea ties the entire course together.
+
+Now let's make it precise.
+
+---
 
 In 1948, Claude Shannon asked a deceptively simple question: **how much does one message reduce my uncertainty?** He was thinking about telegraph wires and telephone cables, but his answer turned out to be universal. It applies to everything from compression algorithms to DNA to — you guessed it — inverse problems.
 
 Here's the connection. You start an inverse problem with uncertainty about the model (the prior). You collect data. After inversion, you have less uncertainty (the posterior). Shannon's framework lets you *measure* exactly how much the data taught you — in bits, in nats, in precise mathematical units.
-
-That's what this lesson is about: quantifying information. And it turns out to be the deepest reason we regularize.
 
 ---
 
@@ -18,15 +22,9 @@ $$
 
 What does this mean? Think of it as the average surprise. If one outcome is nearly certain ($p_1 \approx 1$), there's almost no surprise when it happens — entropy is low. If all outcomes are equally likely, every observation is maximally surprising — entropy is high.
 
-A fair coin: $H = \log 2 \approx 0.693$ nats. A loaded coin (99% heads): $H \approx 0.056$ nats. The loaded coin is boring — you almost always know what's coming. The fair coin keeps you guessing.
+A fair die: $H = \log 6 \approx 1.79$ nats — every face is equally surprising. A loaded die that lands on 4 ninety percent of the time: $H \approx 0.47$ nats — boring, you almost always know what's coming. The loaded die has less entropy because there's less to learn from watching it.
 
 [[simulation entropy-demo]]
-
-Things to look for in the simulation:
-
-* Drag the distribution toward uniform — entropy climbs to its maximum (maximum ignorance)
-* Concentrate probability on a single outcome — entropy drops toward zero (you know the answer)
-* Every inverse problem starts somewhere on this curve, and data moves you toward the minimum
 
 Drag the probability slider and watch entropy change. The maximum is at uniform distribution (maximum ignorance). The minimum is at a spike (you know the answer). Every inverse problem starts somewhere on this curve — and data moves you toward the minimum.
 
@@ -54,12 +52,6 @@ Three things to remember:
 
 [[simulation entropy-kl-calculator]]
 
-Things to look for in the simulation:
-
-* Make the two distributions identical and verify $D_{\mathrm{KL}} = 0$
-* Shift one distribution's mean and watch the divergence grow — the "surprise tax" increases
-* Swap $P$ and $Q$ and notice the asymmetry: $D_{\mathrm{KL}}(P \| Q) \neq D_{\mathrm{KL}}(Q \| P)$
-
 ---
 
 ## Why This Matters for Inverse Problems
@@ -86,14 +78,6 @@ Here's something most textbooks don't tell you. Regularization is about controll
 
 The right regularization extracts the signal and leaves the noise behind. Information theory gives you a principled way to find that balance: maximize the genuine information gain while penalizing overfitting.
 
-### Model comparison and selection
-
-When two different models both fit the data, which is better? Residuals alone can't answer this — a more complex model will always fit better. KL divergence provides a principled comparison: which model's predicted distribution is closest to the observed data distribution? This is the information-theoretic foundation of model selection criteria like AIC and BIC.
-
-### Monte Carlo diagnostics
-
-When running [MCMC](./monte-carlo-methods), the entropy of the sampled posterior tells you whether the chain has explored the full range of plausible models. If the sampled entropy is much lower than expected, your chain might be stuck in one region. If it matches the theoretical posterior entropy, you can be more confident your samples represent the true posterior.
-
 ---
 
 ## The Big Picture
@@ -113,11 +97,7 @@ Entropy is not a footnote. It's the thread that runs through the entire course.
 
 ---
 
-## Big Ideas
-* Entropy measures ignorance — not mystery, not complexity, but precisely how spread-out your probability distribution is. More spread means more ignorance, and the uniform distribution is total ignorance.
-* KL divergence is the surprise tax you pay for using the wrong model. It is always non-negative, it is zero only when your model matches reality, and its asymmetry is not a defect — it reflects the real asymmetry between truth and approximation.
-* Regularization is information control: too little regularization extracts noise as if it were signal; too much leaves the prior unchanged. The right amount extracts exactly what the data knows.
-* The answer to an inverse problem is always a distribution, not a number — and entropy is the one quantity that tells you how wide that distribution really is.
+And that's the whole story. Entropy measures ignorance — not mystery, not complexity, but precisely how spread-out your probability distribution is. KL divergence is the surprise tax you pay for using the wrong model. And regularization, seen through this lens, is information control: extract exactly what the data knows and leave the noise behind. The answer to an inverse problem is always a distribution, and entropy is the one quantity that tells you how wide that distribution really is.
 
 ## What Comes Next
 
@@ -125,7 +105,7 @@ This is the end of the arc. Start from a broken, ill-posed problem — one where
 
 The tools here — regularization, Bayesian inference, iterative optimization, tomography, Monte Carlo sampling, information theory — are not a menu of separate techniques. They are facets of a single idea: science is the process of updating beliefs in proportion to evidence. Everything in this course is a rigorous way to do that.
 
-## Check Your Understanding
+## Let's Make Sure You Really Got It
 1. A fair six-sided die has Shannon entropy $H = \log 6$. A loaded die that always lands on 4 has $H = 0$. What is the entropy of a die that lands on 4 with probability 0.9 and on each other face with probability 0.02? Is this closer to the fair or the loaded die, and does that match your intuition?
 2. Explain in words why $D_{\mathrm{KL}}(P \| Q) \neq D_{\mathrm{KL}}(Q \| P)$. Give a concrete example of two distributions where the asymmetry is large and explain what makes it so.
 3. If the KL divergence from posterior to prior is nearly zero after running an inversion, what does this tell you about the experiment? List two different causes that could produce this result and explain how you would distinguish between them.
@@ -135,4 +115,3 @@ The tools here — regularization, Bayesian inference, iterative optimization, t
 This challenge goes beyond the core material and is aimed at students comfortable with the information-theoretic foundations above.
 
 Design an "experiment value" calculator for a simple linear inverse problem $\mathbf{d} = \mathbf{Gm} + \boldsymbol{\eta}$. Before collecting data, use the prior $p(\mathbf{m})$ and the noise model to compute the expected KL divergence from the posterior to the prior — this is the expected information gain. Implement this for a 1D deconvolution problem as a function of the number of observations $N$ and the noise level $\sigma$. Plot expected information gain vs. $N$ and vs. $\sigma$. At what point does adding more data yield diminishing returns — and how does this threshold shift as you change the regularization strength? Does the optimal regularization (in the sense of maximizing genuine information gain while penalizing overfitting) correspond to the L-curve corner from the very first lesson?
-

@@ -1,9 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
+import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 
@@ -164,7 +166,7 @@ function solveTikhonov(G: number[][], dObs: number[], epsilon: number): number[]
   return m;
 }
 
-export default function LinearTomography({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function LinearTomography({}: SimulationComponentProps) {
   const [N, setN] = useState(12);
   const [top, setTop] = useState(4);
   const [bot, setBot] = useState(8);
@@ -260,40 +262,37 @@ export default function LinearTomography({ id }: SimulationComponentProps) { // 
   }, [N, top, bot, left, right, nEps]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Linear Tomography</h3>
-      <p className="text-[var(--text-muted)] text-sm mb-4">
-        Reconstruct subsurface density anomalies from seismograph arrival times using Tikhonov regularization.
-        Adjust the anomaly position and grid size. The method sweeps over regularization parameter epsilon
-        to find the optimal reconstruction.
-      </p>
-      <div className="grid grid-cols-3 lg:grid-cols-6 gap-3 mb-4">
-        <div>
-          <label className="text-[var(--text-muted)] text-xs">Grid N: {N}</label>
-          <Slider min={6} max={18} step={1} value={[N]} onValueChange={([v]) => setN(v)} />
+    <SimulationPanel title="Linear Tomography" caption="Reconstruct subsurface density anomalies from seismograph arrival times using Tikhonov regularization. Adjust the anomaly position and grid size. The method sweeps over regularization parameter epsilon to find the optimal reconstruction.">
+      <SimulationConfig>
+        <div className="grid grid-cols-3 lg:grid-cols-6 gap-3">
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-xs">Grid N: {N}</SimulationLabel>
+            <Slider min={6} max={18} step={1} value={[N]} onValueChange={([v]) => setN(v)} />
+          </div>
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-xs">Top: {top}</SimulationLabel>
+            <Slider min={0} max={N - 1} step={1} value={[top]} onValueChange={([v]) => setTop(v)} />
+          </div>
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-xs">Bottom: {bot}</SimulationLabel>
+            <Slider min={1} max={N} step={1} value={[bot]} onValueChange={([v]) => setBot(v)} />
+          </div>
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-xs">Left: {left}</SimulationLabel>
+            <Slider min={0} max={N - 1} step={1} value={[left]} onValueChange={([v]) => setLeft(v)} />
+          </div>
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-xs">Right: {right}</SimulationLabel>
+            <Slider min={1} max={N} step={1} value={[right]} onValueChange={([v]) => setRight(v)} />
+          </div>
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-xs">Eps steps: {nEps}</SimulationLabel>
+            <Slider min={5} max={30} step={1} value={[nEps]} onValueChange={([v]) => setNEps(v)} />
+          </div>
         </div>
-        <div>
-          <label className="text-[var(--text-muted)] text-xs">Top: {top}</label>
-          <Slider min={0} max={N - 1} step={1} value={[top]} onValueChange={([v]) => setTop(v)} />
-        </div>
-        <div>
-          <label className="text-[var(--text-muted)] text-xs">Bottom: {bot}</label>
-          <Slider min={1} max={N} step={1} value={[bot]} onValueChange={([v]) => setBot(v)} />
-        </div>
-        <div>
-          <label className="text-[var(--text-muted)] text-xs">Left: {left}</label>
-          <Slider min={0} max={N - 1} step={1} value={[left]} onValueChange={([v]) => setLeft(v)} />
-        </div>
-        <div>
-          <label className="text-[var(--text-muted)] text-xs">Right: {right}</label>
-          <Slider min={1} max={N} step={1} value={[right]} onValueChange={([v]) => setRight(v)} />
-        </div>
-        <div>
-          <label className="text-[var(--text-muted)] text-xs">Eps steps: {nEps}</label>
-          <Slider min={5} max={30} step={1} value={[nEps]} onValueChange={([v]) => setNEps(v)} />
-        </div>
-      </div>
+      </SimulationConfig>
 
+      <SimulationMain>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
         <CanvasHeatmap
           data={[{
@@ -350,14 +349,16 @@ export default function LinearTomography({ id }: SimulationComponentProps) { // 
               y: result.dLeft,
               type: 'bar' as const,
               name: 'Left earthquake',
-              marker: { color: 'rgba(59,130,246,0.7)' },
+              marker: { color: '#3b82f6' },
+              opacity: 0.7,
             },
             {
               x: Array.from({ length: result.dRight.length }, (_, i) => i),
               y: result.dRight,
               type: 'bar' as const,
               name: 'Right earthquake',
-              marker: { color: 'rgba(251,146,60,0.7)' },
+              marker: { color: '#fb923c' },
+              opacity: 0.7,
             },
           ]}
           layout={{
@@ -400,6 +401,7 @@ export default function LinearTomography({ id }: SimulationComponentProps) { // 
         The optimal epsilon minimizes the difference between the residual norm and the noise norm.
         Areas traced by rays from both earthquakes are recovered well; untouched areas remain uncertain.
       </p>
-    </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

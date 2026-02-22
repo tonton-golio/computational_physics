@@ -1,10 +1,9 @@
-'use client';
+"use client";
 
 import { useState } from 'react';
-
-interface UNetArchitectureProps {
-  id?: string;
-}
+import { SimulationPanel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 interface LayerInfo {
   label: string;
@@ -25,7 +24,7 @@ const LAYERS: LayerInfo[] = [
   { label: 'Output', dims: '128x128xC', description: '1x1 convolution to C class probabilities per pixel', type: 'output' },
 ];
 
-export default function UNetArchitecture({ id: _id }: UNetArchitectureProps) {
+export default function UNetArchitecture({}: SimulationComponentProps) {
   const [hoveredLayer, setHoveredLayer] = useState<number | null>(null);
 
   const layerColor = (type: string, isHovered: boolean) => {
@@ -66,11 +65,8 @@ export default function UNetArchitecture({ id: _id }: UNetArchitectureProps) {
   ];
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">
-        U-Net Architecture
-      </h3>
-
+    <SimulationPanel title="U-Net Architecture">
+      <SimulationMain scaleMode="contain">
       <svg viewBox="0 0 780 220" className="w-full h-auto" style={{ maxHeight: 350 }}>
         {/* Skip connections (draw first, behind) */}
         {skips.map((skip, i) => {
@@ -194,6 +190,7 @@ export default function UNetArchitecture({ id: _id }: UNetArchitectureProps) {
         <text x="630" y="195" textAnchor="middle" fill="#10b981" fontSize={11} fontWeight={600}>Decoder</text>
         <text x="390" y="12" textAnchor="middle" fill="#f59e0b" fontSize={10}>Skip Connections (dashed)</text>
       </svg>
+      </SimulationMain>
 
       {/* Info panel */}
       <div className="mt-4 p-3 bg-[var(--surface-2)] rounded text-sm text-[var(--text-muted)]">
@@ -207,6 +204,6 @@ export default function UNetArchitecture({ id: _id }: UNetArchitectureProps) {
           <p>Hover over a layer to see its dimensions and role. The <strong className="text-blue-400">encoder</strong> downsamples to extract features, the <strong className="text-purple-400">bottleneck</strong> captures high-level context, and the <strong className="text-green-400">decoder</strong> upsamples with <strong className="text-yellow-400">skip connections</strong> preserving fine spatial detail.</p>
         )}
       </div>
-    </div>
+    </SimulationPanel>
   );
 }

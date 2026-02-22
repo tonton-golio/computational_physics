@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
 import { useState, useMemo } from 'react';
 import { CanvasChart, type ChartTrace, type ChartLayout } from '@/components/ui/canvas-chart';
 import { Slider } from '@/components/ui/slider';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationLabel, SimulationCheckbox } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 function rng(seed: number) {
   return () => { let t = (seed += 0x6d2b79f5); t = Math.imul(t ^ (t >>> 15), t | 1);
@@ -37,7 +40,7 @@ function simulate(depth: number, skip: boolean, lr: number) {
   return { train, val, grad };
 }
 
-export default function SkipConnectionAblation() {
+export default function SkipConnectionAblation({}: SimulationComponentProps) {
   const [depth, setDepth] = useState(30);
   const [lr, setLr] = useState(0.01);
   const [showSkip, setShowSkip] = useState(true);
@@ -73,37 +76,36 @@ export default function SkipConnectionAblation() {
     xaxis: { title: { text: 'Epoch' } }, yaxis: { title: { text: 'Gradient norm' }, type: 'log' }, margin: { t: 40, b: 50, l: 60, r: 20 } };
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Skip Connection Ablation</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">Network depth: {depth} layers</label>
-          <Slider min={4} max={80} step={2} value={[depth]} onValueChange={([v]) => setDepth(v)} />
+    <SimulationPanel title="Skip Connection Ablation">
+      <SimulationSettings>
+        <div className="flex gap-4">
+          <SimulationCheckbox checked={showSkip} onChange={setShowSkip} label="With skip connections" style={{ color: showSkip ? '#3b82f6' : '#666' }} />
+          <SimulationCheckbox checked={showNoSkip} onChange={setShowNoSkip} label="Without skip connections" style={{ color: showNoSkip ? '#ef4444' : '#666' }} />
         </div>
-        <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">Learning rate: {lr.toFixed(3)}</label>
-          <Slider min={0.001} max={0.1} step={0.001} value={[lr]} onValueChange={([v]) => setLr(v)} />
+      </SimulationSettings>
+      <SimulationConfig>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+          <div>
+            <SimulationLabel className="block text-sm text-[var(--text-muted)] mb-1">Network depth: {depth} layers</SimulationLabel>
+            <Slider min={4} max={80} step={2} value={[depth]} onValueChange={([v]) => setDepth(v)} />
+          </div>
+          <div>
+            <SimulationLabel className="block text-sm text-[var(--text-muted)] mb-1">Learning rate: {lr.toFixed(3)}</SimulationLabel>
+            <Slider min={0.001} max={0.1} step={0.001} value={[lr]} onValueChange={([v]) => setLr(v)} />
+          </div>
         </div>
-      </div>
-      <div className="flex gap-4 mb-4">
-        <label className="flex items-center gap-2 text-sm cursor-pointer" style={{ color: showSkip ? '#3b82f6' : '#666' }}>
-          <input type="checkbox" checked={showSkip} onChange={e => setShowSkip(e.target.checked)} className="accent-blue-500" />
-          With skip connections
-        </label>
-        <label className="flex items-center gap-2 text-sm cursor-pointer" style={{ color: showNoSkip ? '#ef4444' : '#666' }}>
-          <input type="checkbox" checked={showNoSkip} onChange={e => setShowNoSkip(e.target.checked)} className="accent-blue-500" />
-          Without skip connections
-        </label>
-      </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <CanvasChart data={lossTraces} layout={lossLayout} style={{ width: '100%', height: 380 }} />
-        <CanvasChart data={gradTraces} layout={gradLayout} style={{ width: '100%', height: 380 }} />
-      </div>
+      </SimulationConfig>
+      <SimulationMain>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <CanvasChart data={lossTraces} layout={lossLayout} style={{ width: '100%', height: 380 }} />
+          <CanvasChart data={gradTraces} layout={gradLayout} style={{ width: '100%', height: 380 }} />
+        </div>
+      </SimulationMain>
       <div className="mt-4 p-3 bg-[var(--surface-2)] rounded text-sm text-[var(--text-muted)]">
         {depth > 20
           ? `At ${depth} layers, the network without skip connections shows severe gradient vanishing — the gradient norm is orders of magnitude smaller, causing training to stall. With residual connections, gradients flow freely through the identity shortcut.`
           : `At ${depth} layers, both networks train reasonably. Increase depth beyond 20 to see the dramatic effect: without skip connections, the gradient signal decays exponentially through each layer.`}
       </div>
-    </div>
+    </SimulationPanel>
   );
 }

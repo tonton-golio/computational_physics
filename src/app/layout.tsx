@@ -6,6 +6,7 @@ import { Header } from "@/components/layout/Header";
 
 import { WebVitalsReporter } from "@/components/performance/WebVitalsReporter";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { SuggestionBox } from "@/components/layout/SuggestionBox";
 
 const geistSans = Geist({
@@ -19,12 +20,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Computational Physics | Learning Platform",
+  title: "Koala Brain",
   description: "Interactive computational physics education — where precision meets accessibility. Masters-level content on quantum optics, continuum mechanics, and more.",
   keywords: ["computational physics", "quantum optics", "continuum mechanics", "interactive visualizations", "physics education"],
   authors: [{ name: "Anton" }],
   openGraph: {
-    title: "Computational Physics | Learning Platform",
+    title: "Koala Brain",
     description: "Interactive computational physics education — where precision meets accessibility.",
     type: "website",
   },
@@ -50,6 +51,7 @@ export default function RootLayout({
         </div>
         <SuggestionBox />
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

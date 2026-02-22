@@ -91,27 +91,190 @@ Shared param/result types live in `src/shared/types/simulation.ts`.
 - First render timing emits a `simulation-first-render` browser event for observability.
 - Online-reinforcement simulations have a fast-path set (`ONLINE_REINFORCEMENT_IDS`) to avoid scanning all registries.
 
+## Simulation Panel Slot Model
+
+Every simulation component is wrapped in a `<SimulationPanel>` with semantic slot children. Each slot has a `data-sim-slot` attribute that controls its fullscreen behavior via CSS.
+
+```
+import {
+  SimulationPanel,
+  SimulationSettings,
+  SimulationConfig,
+  SimulationResults,
+  SimulationAux,
+  SimulationLabel,
+  SimulationButton,
+  SimulationPlayButton,
+  SimulationToggle,
+  SimulationCheckbox,
+} from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+```
+
+### Slots
+
+| Slot | Component | What goes inside | Normal view | Fullscreen |
+|------|-----------|-----------------|-------------|------------|
+| title | `title` prop on `SimulationPanel` | — | `<h3>` heading | Centered glass pill, top |
+| caption | `caption` prop on `SimulationPanel` | — | Muted `<p>` below title | Glass box, left stack |
+| settings | `<SimulationSettings>` | Buttons, play/pause, toggles, checkboxes, selects | Multi-col row | Glass box, left stack |
+| config | `<SimulationConfig>` | Slider groups (`SimulationLabel` + `Slider`) | Multi-col row | Glass box, left stack, 1 slider/line |
+| main | `<SimulationMain>` | Primary canvas / Three.js / SVG | Full width (or left col with aux) | Fills viewport |
+| aux | `<SimulationAux>` | Secondary CanvasCharts | Right column beside main | Glass overlay, bottom-right |
+| results | `<SimulationResults>` | Stat cards, dynamic readouts | Block below main | Glass box, left stack |
+
+### Layout in normal view
+
+```
+┌─ SimulationPanel ────────────────────────────────┐
+│ ═══ accent gradient bar ═══                      │
+│ Title (h3)                                       │
+│ Caption (p, muted text)                          │
+│                                                  │
+│ [Settings: buttons/selectors] [Config: sliders]  │
+│                                                  │
+│ ┌─ Main ──────────────┐ ┌─ Aux ───────────────┐ │
+│ │ primary charts/     │ │ secondary charts    │ │
+│ │ canvas/Three.js     │ │ (stacked)           │ │
+│ └─────────────────────┘ └─────────────────────┘ │
+│                                                  │
+│ Results (stat cards)                             │
+└──────────────────────────────────────────────────┘
+```
+
+When no Aux exists (majority of sims), Main spans full width. When no Settings or Config exists, that row is absent.
+
+### Full example
+
+```tsx
+<SimulationPanel title="Ising Model" caption="2D Ising model with Metropolis algorithm">
+  <SimulationSettings>
+    <SimulationPlayButton isRunning={running} onToggle={toggle} />
+    <SimulationButton onClick={reset}>Reset</SimulationButton>
+  </SimulationSettings>
+  <SimulationConfig>
+    <div>
+      <SimulationLabel>Temperature: {T.toFixed(2)}</SimulationLabel>
+      <Slider value={[T]} onValueChange={([v]) => setT(v)} min={0.5} max={5} step={0.1} />
+    </div>
+    <div>
+      <SimulationLabel>Grid: {N}</SimulationLabel>
+      <Slider value={[N]} onValueChange={([v]) => setN(v)} min={10} max={100} step={10} />
+    </div>
+  </SimulationConfig>
+  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <SimulationMain className="w-full rounded-lg overflow-hidden" style={{ height: 400 }}>
+      <Canvas><IsingScene /></Canvas>
+    </SimulationMain>
+    <SimulationAux>
+      <CanvasChart ... /> {/* Magnetization */}
+      <CanvasChart ... /> {/* Energy */}
+    </SimulationAux>
+  </div>
+  <SimulationResults>
+    <div className="grid grid-cols-3 gap-3">
+      <div className="bg-[var(--surface-1)] border border-[var(--border-strong)] rounded p-3">
+        <div className="text-[var(--text-soft)]">Magnetization</div>
+        <div className="text-[var(--text-strong)] font-mono">{m.toFixed(4)}</div>
+      </div>
+      {/* more stat cards */}
+    </div>
+  </SimulationResults>
+</SimulationPanel>
+```
+
+### Slot placement rules
+
+**SimulationSettings** — action controls only:
+- `SimulationButton`, `SimulationPlayButton`
+- `SimulationToggle`, `SimulationCheckbox`
+- `<select>` dropdowns, method selectors
+
+**SimulationConfig** — parameter controls only:
+- `SimulationLabel` + `Slider` pairs (each in a wrapper `<div>`)
+- In fullscreen, renders 1 slider per line automatically
+
+**SimulationResults** — computed output only:
+- Stat card grids (bg-surface, font-mono, dynamic values)
+- Convergence info, acceptance rates, error metrics
+- Always placed AFTER `SimulationMain` in JSX
+- Has an optional `alert` prop for dismissible warnings
+
+**SimulationAux** — secondary visualizations:
+- `CanvasChart` components that are NOT the primary visualization
+- Provides `SimulationMainContext` so charts inside suppress their overlay behavior
+- Wrap main + aux in a grid div for side-by-side layout in normal view
+
+### Minimal examples
+
+**Config only (no buttons):**
+
+```tsx
+<SimulationPanel title="Phase Space">
+  <SimulationConfig>
+    <div>
+      <SimulationLabel>Alpha: {alpha}</SimulationLabel>
+      <Slider ... />
+    </div>
+  </SimulationConfig>
+  <SimulationMain>
+    <CanvasChart ... />
+  </SimulationMain>
+</SimulationPanel>
+```
+
+**Settings + Config + Results:**
+
+```tsx
+<SimulationPanel title="Heat Equation" caption="2D diffusion with adjustable parameters">
+  <SimulationSettings>
+    <SimulationPlayButton isRunning={running} onToggle={toggle} />
+    <SimulationButton onClick={reset}>Reset</SimulationButton>
+    <SimulationToggle options={conditions} value={ic} onChange={setIc} />
+  </SimulationSettings>
+  <SimulationConfig>
+    <div>
+      <SimulationLabel>Diffusivity: {alpha.toFixed(2)}</SimulationLabel>
+      <Slider ... />
+    </div>
+  </SimulationConfig>
+  <SimulationMain scaleMode="contain" ...>
+    <CanvasHeatmap ... />
+  </SimulationMain>
+  <SimulationResults>
+    <div className="grid grid-cols-3 gap-2 text-sm">
+      <div>Max Temp: {maxT.toFixed(1)}</div>
+      <div>Steps: {steps}</div>
+      <div>Time: {time.toFixed(2)}s</div>
+    </div>
+  </SimulationResults>
+</SimulationPanel>
+```
+
 ## Fullscreen Layout
 
 Simulations use the browser Fullscreen API. `SimulationHost` wraps content in a `SimulationFullscreenProvider` so child components can detect fullscreen mode via `useSimulationFullscreen()`.
 
-Three component categories participate in fullscreen layout:
+### Fullscreen component roles
 
-| Component | Role | Fullscreen behavior |
-|---|---|---|
-| `<SimulationMain>` | Primary visualization wrapper | Fills the viewport (CSS class `.sim-fs-main`) |
-| `<CanvasChart>` | Auxiliary chart | Overlays bottom-right, stacked vertically |
-| `<SimulationPanel>` / `<Card>` | Controls | Overlays bottom-left with glass background |
+| Component | Fullscreen behavior |
+|---|---|
+| `<SimulationPanel>` | Title renders as centered glass pill at top; caption becomes glass box |
+| `<SimulationSettings>` | Glass box, stacked left (bottom-aligned) |
+| `<SimulationConfig>` | Glass box, stacked left, 1 slider per line |
+| `<SimulationResults>` | Glass box, stacked left |
+| `<SimulationMain>` | Fills viewport (CSS `.sim-fs-main`) |
+| `<SimulationAux>` | Glass overlay, bottom-right, `min(510px, 37.5vw)` wide |
+| `<CanvasChart>` (outside Main/Aux) | Individual overlay bottom-right, stacked (up to 2x2) |
+| `<Card>` | Glass box, bottom-left (legacy `data-fs-role="controls"`) |
 
-### `SimulationMain` — primary visualization wrapper
+All glass boxes (settings, config, results, aux) share the same max-width: `min(510px, 37.5vw)`.
+
+Left stack order (bottom-aligned): caption, settings, config, results.
+
+### `SimulationMain`
 
 **File:** `src/components/ui/simulation-main.tsx`
-
-Wrap the primary visualization in `<SimulationMain>` when the simulation also includes `CanvasChart` components (hybrid simulations). If the simulation has no CanvasCharts, the CSS fallback handles fullscreen automatically.
-
-```tsx
-import { SimulationMain } from '@/components/ui/simulation-main';
-```
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
@@ -125,108 +288,14 @@ import { SimulationMain } from '@/components/ui/simulation-main';
 - `"fill"` — canvas fills the entire viewport area. Use for **Three.js** / React-Three-Fiber scenes that resize to their container automatically.
 - `"contain"` — canvas is constrained to fit without overflow. Use for **square / fixed-aspect-ratio** canvases (p5.js, custom 2D GridCanvas, etc.).
 
-### Auxiliary charts (`CanvasChart`)
-
-`CanvasChart` automatically sets `data-fs-role="chart"` in fullscreen. No wrapper needed. In fullscreen, charts are positioned as individual stacked overlays in the bottom-right corner (up to 2×2 grid for 4 charts).
-
-### Controls (`SimulationPanel` / `Card`)
-
-These automatically set `data-fs-role="controls"` in fullscreen. No additional markup needed. Controls overlay bottom-left with a glass background.
-
-### Examples
-
-**Three.js + CanvasChart:**
-
-```tsx
-<SimulationMain className="w-full rounded-lg overflow-hidden" style={{ height: 400 }}>
-  <Canvas camera={...}>
-    <MyScene />
-    <OrbitControls />
-  </Canvas>
-</SimulationMain>
-
-<CanvasChart data={chartData} layout={chartLayout} style={{ height: 300 }} />
-```
-
-**p5.js canvas + CanvasChart in a grid:**
-
-```tsx
-<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-  <SimulationMain scaleMode="contain" className="rounded-lg overflow-hidden" style={{ background: ... }}>
-    <MyP5Canvas />
-  </SimulationMain>
-  <CanvasChart data={chartData} layout={chartLayout} style={{ height: 360 }} />
-</div>
-```
-
-**Multiple mains (side by side) + aux charts:**
-
-```tsx
-<SimulationMain style={{ height: 400 }}>
-  <Canvas3DScene1 />
-</SimulationMain>
-<SimulationMain style={{ height: 400 }}>
-  <Canvas3DScene2 />
-</SimulationMain>
-<CanvasChart data={chartData} layout={chartLayout} style={{ height: 300 }} />
-```
-
-**p5.js heatmap + 4 aux charts:**
-
-```tsx
-<SimulationMain scaleMode="contain" className="rounded-lg overflow-hidden" style={{ background: ... }}>
-  <HeatmapCanvas />
-</SimulationMain>
-
-<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-  <CanvasChart ... />
-  <CanvasChart ... />
-</div>
-<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-  <CanvasChart ... />
-  <CanvasChart ... />
-</div>
-```
-
-**SVG tree/diagram (no charts):**
-
-```tsx
-<SimulationMain scaleMode="contain" className="overflow-x-auto">
-  <svg viewBox={`0 0 ${width} ${height}`} className="w-full" style={{ maxHeight: 500 }}>
-    {/* SVG elements */}
-  </svg>
-</SimulationMain>
-```
-
-**Canvas heatmap + trail overlay + optional chart:**
-
-```tsx
-<SimulationMain scaleMode="contain" className="relative">
-  <CanvasHeatmap data={heatData} layout={heatLayout} style={{ width: '100%', height: 420 }} />
-  {trail.length > 0 && <TrailOverlay trail={trail} />}
-</SimulationMain>
-{showChart && <CanvasChart data={chartData} layout={chartLayout} style={{ height: 420 }} />}
-```
-
-**2D canvas with ResizeObserver + chart:**
-
-```tsx
-<SimulationMain scaleMode="contain" className="w-full">
-  <div ref={containerRef} style={{ width: '100%' }}>
-    <canvas ref={canvasRef} style={{ display: 'block' }} />
-  </div>
-</SimulationMain>
-<CanvasChart data={chartData} layout={chartLayout} style={{ height: 300 }} />
-```
-
-### How it works
+### How fullscreen works
 
 1. **`SimulationMain`** reads the fullscreen context. In normal mode it renders with the author's `className` and `style`. In fullscreen mode it drops those and applies the `.sim-fs-main` CSS class, which absolutely positions the element to fill the viewport.
-2. **CSS** in `globals.css` handles all layout: `.sim-fs-main` fills the screen, `[data-fs-role="chart"]` overlays bottom-right, `[data-fs-role="controls"]` overlays bottom-left. Grid wrappers containing role elements get `display: contents` to become transparent.
-3. **Minimal JS** in `SimulationHost` (deferred one frame via `requestAnimationFrame`) assigns `data-fs-chart-index` to each chart for CSS stacking, and splits multiple mains side by side.
-4. **Fallback for canvas/video:** If no `SimulationMain` is used, the CSS rule `.sim-fs-content > * > *:has(canvas)` expands canvas-containing children to fill the viewport. Video elements have an equivalent rule.
-5. **Fallback for SVG:** Inline SVGs with a `viewBox` attribute get the same treatment via `.sim-fs-content > * > *:has(> svg[viewBox])`. The SVG is scaled to fill the container.
-6. **Chart-only promotion:** When no `SimulationMain` and no plain canvas/video exists, `SimulationHost` promotes all charts to act as mains — filling the viewport side by side.
+2. **Slot CSS** in `globals.css`: `[data-sim-slot]` elements get glass treatment via `::before` pseudo-elements (avoids containing block issues). Grid wrappers containing slot elements get `display: contents` to dissolve in fullscreen.
+3. **Minimal JS** in `SimulationHost` assigns `data-fs-chart-index` to each chart for CSS stacking.
+4. **Fallback for canvas/video:** If no `SimulationMain` is used, the CSS rule `.sim-fs-content > * > *:has(canvas)` expands canvas-containing children to fill the viewport.
+5. **Fallback for SVG:** Inline SVGs with a `viewBox` attribute get the same treatment via `.sim-fs-content > * > *:has(> svg[viewBox])`.
+6. **Chart-only promotion:** When no `SimulationMain` and no plain canvas/video exists, `SimulationHost` promotes all charts to fill the viewport side by side.
 
 ### Simulation categories and fullscreen behavior
 
@@ -239,25 +308,6 @@ These automatically set `data-fs-role="controls"` in fullscreen. No additional m
 | **Three.js + charts** | R3F `<Canvas>` plus `CanvasChart` auxiliaries | Wrap `<Canvas>` in `<SimulationMain>` with `scaleMode="fill"` |
 
 **When do you need `<SimulationMain>`?** Only for hybrid simulations that combine a primary visualization with auxiliary `CanvasChart` components. Non-hybrid simulations (chart-only, canvas-only, SVG-only) work automatically via CSS fallbacks.
-
-### Currently using `SimulationMain`
-
-| Simulation | scaleMode | Visualization | Aux charts |
-|---|---|---|---|
-| `IsingModel` | `fill` | Three.js 3D spin grid | 2 |
-| `ScaleFreeNetwork` | `fill` | Three.js 3D network | 2 |
-| `SandpileModel` | `fill` | Three.js 3D height field | 2 |
-| `PercolationSim` | `contain` | 2D GridCanvas (square) | 1 |
-| `FractalDimension` | `contain` | p5.js FractalCanvas | 1 |
-| `BetheLatticePercolation` | `contain` | 2D TreeCanvas | 1 |
-| `RandomWalkFirstReturn` | `contain` | p5.js WalkCanvas (1:1) | 1 |
-| `BakSneppen` | `contain` | p5.js EvolutionCanvas heatmap | 4 |
-| `AdversarialAttack` | `contain` | 2D pixel-art canvas | 2 |
-| `FilterEvolution` | `contain` | 2D filter grid canvas | 1 |
-| `ReceptiveFieldGrowth` | `contain` | 2D receptive field grid | 1 |
-| `StokesFlowDemo` | `contain` | 2D streamline canvas | 1 |
-| `LossLandscapeExplorer` | `contain` | CanvasHeatmap + trail overlay | 1 (optional) |
-| `BacterialLineageTree` | `contain` | SVG tree diagram | 0 |
 
 ## 3D Simulations (Three.js / React Three Fiber)
 
@@ -497,9 +547,11 @@ Use `scaleMode="fill"` (default) for Three.js scenes that resize to their contai
 - use lazy imports through manifest groups
 - run integrity checks on every placeholder/registry change
 - add descriptions for PDF export
+- use `SimulationSettings` for buttons/toggles/selects, `SimulationConfig` for sliders
+- place `SimulationResults` AFTER `SimulationMain` in JSX
+- wrap secondary charts in `SimulationAux` (not bare `CanvasChart` siblings)
 - wrap the primary viz in `<SimulationMain>` for hybrid simulations
 - use `scaleMode="contain"` for square or fixed-aspect-ratio canvases
-- let `CanvasChart` and `SimulationPanel`/`Card` self-identify (no manual `data-fs-role`)
 - use `OrbitControls` for 3D view rotation instead of manual azimuth/elevation sliders
 - use `<instancedMesh>` for scenes with many identical objects (100+)
 - use `useTheme()` and adjust lighting/background for dark mode
@@ -508,11 +560,13 @@ Use `scaleMode="fill"` (default) for Three.js scenes that resize to their contai
 
 ### Don't
 
+- put sliders in `SimulationSettings` or buttons in `SimulationConfig`
+- put stat cards or dynamic readouts inside `SimulationMain`
+- use the deprecated `description` prop (use `caption` instead)
 - hardcode simulation component imports in markdown renderer
 - bypass manifest by dynamic lookup hacks
 - ignore fallback behavior when testing unknown ids
-- manually set `data-fs-role="main"` on a div (use `<SimulationMain>` instead)
-- set `data-fs-role="chart"` or `data-fs-role="controls"` manually (components do this)
+- manually set `data-fs-role` attributes (slot components handle this)
 - use React hooks (useFrame, useThree) outside a `<Canvas>` — they only work inside the R3F context
 - add view-angle sliders when OrbitControls provides drag-to-rotate
 - create individual `<mesh>` elements for hundreds of objects — use instancing instead

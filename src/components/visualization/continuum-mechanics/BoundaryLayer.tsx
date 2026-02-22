@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 /**
  * Velocity profile development in a laminar boundary layer over a flat plate.
@@ -53,7 +56,7 @@ function blasiusProfile(): { eta: number[]; fp: number[] } {
 const BLASIUS = blasiusProfile();
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
 
-export default function BoundaryLayer() {
+export default function BoundaryLayer({}: SimulationComponentProps) {
   const [reL, setReL] = useState(1e5); // Reynolds number based on plate length
   const [uInf] = useState(10); // free-stream velocity m/s
 
@@ -96,28 +99,24 @@ export default function BoundaryLayer() {
   }), []);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-2 text-[var(--text-strong)]">
-        Boundary Layer Velocity Profiles (Blasius Solution)
-      </h3>
-      <p className="text-sm text-[var(--text-muted)] mb-4">
-        Velocity profiles at different stations along a flat plate. The boundary
-        layer thickens as &delta; ~ x/&radic;Re<sub>x</sub>. All profiles
-        collapse to the same Blasius curve when plotted in similarity coordinates.
-      </p>
-      <div className="max-w-xs mb-4">
-        <label className="block text-sm text-[var(--text-muted)] mb-1">
-          Re<sub>L</sub>: {reL.toExponential(1)}
-        </label>
-        <Slider min={1e4} max={1e6} step={1e4} value={[reL]}
-          onValueChange={([v]) => setReL(v)} className="w-full" />
-      </div>
-      <CanvasChart data={data} layout={layout} style={{ width: '100%', height: 420 }} />
+    <SimulationPanel title="Boundary Layer Velocity Profiles (Blasius Solution)" caption="Velocity profiles at different stations along a flat plate. The boundary layer thickens as \u03b4 ~ x/\u221aRe_x. All profiles collapse to the same Blasius curve when plotted in similarity coordinates.">
+      <SimulationConfig>
+        <div className="max-w-xs">
+          <SimulationLabel>
+            Re<sub>L</sub>: {reL.toExponential(1)}
+          </SimulationLabel>
+          <Slider min={1e4} max={1e6} step={1e4} value={[reL]}
+            onValueChange={([v]) => setReL(v)} className="w-full" />
+        </div>
+      </SimulationConfig>
+      <SimulationMain>
+        <CanvasChart data={data} layout={layout} style={{ width: '100%', height: 420 }} />
+      </SimulationMain>
       <p className="mt-3 text-xs text-[var(--text-muted)]">
         Each curve shows the velocity profile at a different downstream position.
         Near the leading edge the boundary layer is thin; downstream it grows.
         Higher Re<sub>L</sub> means thinner boundary layers.
       </p>
-    </div>
+    </SimulationPanel>
   );
 }

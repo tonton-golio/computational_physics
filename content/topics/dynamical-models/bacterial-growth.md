@@ -1,141 +1,129 @@
 # Bacterial Growth Physiology
 
+> *The universe is not just stranger than we suppose; when it comes to cells, it is stranger than we can suppose -- until we write the equations.*
+
 ## Where we are headed
 
-This is the final lesson, and it is where everything comes together. We have modeled individual genes, noise, regulation, feedback, signaling, and networks. Now we zoom all the way out and ask the biggest question of all: how does a cell *grow*? How does a bacterium take in nutrients and convert them into more of itself, doubling in size and dividing every twenty minutes? The answer involves a stunning act of resource allocation — the cell must decide, moment by moment, how to divide its limited protein budget between making the machinery for growth (ribosomes) and making everything else. And it turns out that a single small molecule, ppGpp, acts as the cell's internal text message saying "I'm starving — stop making ribosomes!"
+This is the final lesson, and it's where everything comes together. We've modeled individual genes, noise, regulation, feedback, signaling, and networks. Now zoom all the way out and ask: how does a cell *grow*? A bacterium takes in nutrients and converts them into more of itself, doubling every twenty minutes. The answer involves a stunning resource-allocation problem and a single small molecule -- ppGpp -- that acts as the cell's "I'm starving" alarm.
 
 ## The growth curve
 
-Jacques Monod, working in the 1940s, carefully measured how bacterial populations grow over time and identified several distinct phases. We focus on the **exponential growth phase**, where bacteria have settled into a steady rhythm: every cell component doubles once per generation, the nutrient supply is constant, and the population increases exponentially.
+Jacques Monod, in the 1940s, carefully measured how bacteria grow over time. We focus on the **exponential growth phase**: every component doubles once per generation, nutrient supply is constant, and the population increases exponentially.
 
-As Frederick C. Neidhardt later wrote about encountering this simple exponential curve for the first time: it was a transforming experience. There is something profound about the fact that this enormously complex biochemical machine — thousands of genes, thousands of reactions — achieves such simple, predictable behavior.
+There's something profound about it. This enormously complex biochemical machine -- thousands of genes, thousands of reactions -- achieves such simple, predictable behavior.
 
 ## Defining steady-state growth
 
 During balanced exponential growth, three conditions hold:
 
-1. **Intrinsic parameters** of the cell (composition, ratios of components) remain constant.
-2. **Extensive parameters** (total protein, total RNA, cell mass) all increase exponentially with precisely the same doubling time.
-3. **Growth conditions** (temperature, nutrient concentrations) remain constant.
+1. **Intrinsic parameters** (composition, ratios) remain constant.
+2. **Extensive parameters** (total protein, RNA, mass) increase exponentially with the same doubling time.
+3. **Growth conditions** (temperature, nutrients) stay constant.
 
-> *This is a remarkable state: the cell is a machine that is building a copy of itself, and during balanced growth it does so with perfect proportionality — everything doubles together.*
+> *The cell is building a copy of itself, and during balanced growth it does so with perfect proportionality -- everything doubles together.*
 
 ## Monod's growth law
 
-Monod discovered that the growth rate $\lambda$ depends on the concentration of the limiting nutrient $S$ through a saturating function:
-
-> **Key Equation — Growth Rate is Proportional to Ribosome Fraction**
-> $$
-> \lambda = k \cdot \phi_\mathrm{R}
-> $$
-> A bacterium's growth rate equals the translation speed per ribosome times the fraction of its protein that is ribosomes — one of the most robust quantitative laws in microbiology.
+Growth rate $\lambda$ depends on the limiting nutrient $S$ through a saturating function:
 
 $$
 \lambda = \lambda_\mathrm{max} \frac{S}{K_S + S}.
 $$
 
-> *At low nutrient concentration, growth rate increases linearly with $S$. At high concentration, the cell is growing as fast as it can and adding more nutrient makes no difference. The half-saturation constant $K_S$ is the concentration at which the cell grows at half its maximum rate.*
+> *Low nutrient: growth is nearly proportional to $S$. High nutrient: adding more makes no difference. $K_S$ is where the cell grows at half max.*
 
-This is a **Michaelis-Menten** function — the same mathematical form we saw in the Hill function with $n = 1$. It appears here because nutrient uptake enzymes, like all enzymes, saturate when their substrate is abundant.
+This is **Michaelis-Menten** -- the same form as a Hill function with $n = 1$. It appears because nutrient-uptake enzymes saturate when substrate is abundant.
 
 [[simulation michaelis-menten]]
 
-Vary the nutrient concentration $S$ and watch the growth rate $\lambda$ respond. At very low $S$, growth is nearly proportional to nutrients. At very high $S$, adding more makes no difference — the cell is growing as fast as its ribosomes allow. Find $K_S$: the concentration where growth is exactly half-maximal.
+Slide the nutrient concentration and watch growth rate respond. At very low $S$, growth tracks nutrients linearly. At high $S$, it plateaus. Find $K_S$: the half-maximal point.
 
 ## Growth as protein production
 
-Here is a key simplification: 55% of the total dry weight of a bacterium is protein. So to a first approximation, **bacterial growth is protein synthesis**. The equation for total protein mass $M$ is:
+Key simplification: 55% of a bacterium's dry weight is protein. So to a first approximation, **growth = protein synthesis**:
 
 $$
 \frac{\mathrm{d} M}{\mathrm{d} t} = \lambda \cdot M.
 $$
 
-> *This is just exponential growth: the more protein the cell has, the faster it makes more. This is possible because some of that protein is the very machinery (ribosomes) that makes protein.*
-
-If protein synthesis is the rate-limiting step, we can be more specific:
+If protein synthesis is rate-limiting:
 
 $$
 \frac{\mathrm{d} M}{\mathrm{d} t} = k \cdot N_R^A,
 $$
 
-where $k$ is the translation rate per ribosome and $N_R^A$ is the total number of actively translating ribosomes.
-
-> *All the cell's growth ultimately depends on how many ribosomes it has and how fast they work. This is the central equation of bacterial growth physiology.*
+where $k$ is translation rate per ribosome and $N_R^A$ is the number of actively translating ribosomes. All growth ultimately depends on how many ribosomes the cell has and how fast they work.
 
 ## The proteome pie: three slices
 
-We can divide the cell's protein into three functional categories:
+Divide the cell's protein into three categories:
 
-* **Metabolic and transport proteins**: fraction $\phi_\mathrm{P} = M_\mathrm{P}/M$. These bring nutrients in and process them.
-* **Ribosomes** (and associated factors): fraction $\phi_\mathrm{R} = M_\mathrm{R}/M$. These make protein.
-* **Everything else** (housekeeping, DNA replication, etc.): fraction $\phi_\mathrm{Q} = M_\mathrm{Q}/M$.
-
-Since these are the only categories:
+* **Metabolic enzymes** ($\phi_\mathrm{P}$): bring nutrients in and process them.
+* **Ribosomes** ($\phi_\mathrm{R}$): make protein.
+* **Housekeeping** ($\phi_\mathrm{Q}$): DNA replication, maintenance, everything else.
 
 $$
 \phi_\mathrm{P} + \phi_\mathrm{R} + \phi_\mathrm{Q} = 1.
 $$
 
-> *The cell has a fixed budget. Every ribosome it makes is a metabolic enzyme it did not make, and vice versa. Growth physiology is fundamentally a problem of **resource allocation**.*
+> *The cell has a fixed budget. Every ribosome it makes is a metabolic enzyme it didn't make. Growth physiology is fundamentally a problem of resource allocation.*
 
 [[simulation proteome-allocation]]
 
-Adjust the nutrient quality slider to see how the cell redistributes its protein budget. Watch how the growth rate indicator responds as you shift investment between ribosomes ($\phi_R$) and metabolic enzymes ($\phi_P$). The constraint $\phi_R + \phi_P + \phi_Q = 1$ means every extra ribosome comes at the cost of a metabolic enzyme. Find the allocation that maximizes growth rate — and notice that it depends on the nutrient environment.
+Adjust nutrient quality and watch the cell redistribute its protein budget. The constraint $\phi_R + \phi_P + \phi_Q = 1$ means every extra ribosome costs a metabolic enzyme. Find the allocation that maximizes growth rate.
 
 ## The allocation dilemma
 
-Here is the dilemma the cell faces. Metabolic enzymes ($\phi_\mathrm{P}$) bring nutrients into the cell. Ribosomes ($\phi_\mathrm{R}$) convert those nutrients into new protein. For the cell to grow efficiently, **nutrient influx must match nutrient usage**. Too many metabolic enzymes and not enough ribosomes? Nutrients pile up but cannot be used. Too many ribosomes and not enough metabolic enzymes? Ribosomes sit idle with nothing to translate.
+Here's the dilemma. Metabolic enzymes bring nutrients in. Ribosomes convert nutrients into protein. Too many enzymes and not enough ribosomes? Nutrients pile up unused. Too many ribosomes and not enough enzymes? Ribosomes sit idle. The cell must balance the two -- but how does it know when to adjust?
 
-The cell needs to balance the two — but how does it know when to adjust?
+## ppGpp: the cell's "I'm starving" alarm
 
-## ppGpp: the cell's "I'm starving" text message
+When a ribosome encounters an uncharged tRNA (no amino acid attached), the cell is running low on that amino acid. This triggers **RelA** to synthesize **ppGpp**.
 
-The answer is a remarkable small molecule called **ppGpp** (guanosine pentaphosphate), sometimes called the "alarmone." Here is how it works:
+ppGpp shuts down transcription of ribosomal RNA genes. Fewer rRNA transcripts = fewer new ribosomes. The freed resources go to metabolic enzymes instead.
 
-When a ribosome encounters an uncharged tRNA (a tRNA without an amino acid attached), it means the cell is running low on that amino acid — demand exceeds supply. This triggers the enzyme **RelA** to synthesize ppGpp.
+> *In the default state, bacteria make ribosomes like crazy -- rRNA promoters are among the strongest in the cell. ppGpp is the brake. Plentiful nutrients = low ppGpp = full-speed ribosome production. Scarce nutrients = ppGpp surges = ribosome production halts. An elegant negative feedback loop.*
 
-ppGpp then acts as a global signal: it **shuts down transcription of ribosomal RNA genes**. Fewer rRNA transcripts means fewer new ribosomes. The freed-up resources are redirected toward metabolic enzymes and other proteins that can fix the shortage.
+## The beautiful growth law
 
-> *In the default state, bacteria make ribosomes like crazy — ribosomal RNA promoters are among the strongest in the cell. ppGpp is the brake. When nutrients are plentiful, ppGpp levels are low and ribosomes are produced at full speed. When nutrients get scarce, ppGpp surges and ribosome production grinds to a halt. It is an elegant negative feedback loop: too few nutrients → ribosomes stall → ppGpp rises → fewer new ribosomes → resources redirected to metabolism → nutrient supply recovers.*
+Combining our equations:
 
-## Measuring the numbers
-
-Combining our equations, we can connect growth rate to ribosome content. From $\mathrm{d}M/\mathrm{d}t = \lambda M$ and $\mathrm{d}M/\mathrm{d}t = k N_R^A$, we get:
+> **Key Equation -- Growth Rate is Proportional to Ribosome Fraction**
+> $$
+> \lambda = k \cdot \phi_\mathrm{R}
+> $$
+> A bacterium's growth rate equals translation speed per ribosome times the fraction of its protein that is ribosomes.
 
 $$
-\lambda = k \cdot \frac{N_R^A}{M} \approx k \cdot \phi_\mathrm{R},
+\lambda = k \cdot \frac{N_R^A}{M} \approx k \cdot \phi_\mathrm{R}.
 $$
 
-where in the last step we used the fact that the ribosome fraction $\phi_\mathrm{R}$ is proportional to $N_R^A / M$.
-
-> *This is one of the most beautiful quantitative laws in all of biology: the growth rate of a bacterium is directly proportional to the fraction of its protein that is ribosomes. Faster-growing cells are literally "more ribosome." Evolution has tuned the proteome allocation so that every extra ribosome is paid for by faster growth. And indeed, this is exactly what experimentalists observe — it is one of the most robust quantitative relationships in all of microbiology.*
+Wait till you see this: the growth rate of a bacterium is *directly proportional* to the fraction of its protein that is ribosomes. Faster-growing cells are literally "more ribosome." This is one of the most robust quantitative relationships in all of microbiology.
 
 ## Why does nature do it this way?
 
-The ppGpp system is the culmination of every principle in this course: degradation for speed ([lesson 1](./differential-equations)), negative feedback for homeostasis ([feedback loops](./feedback-loops)), and adaptation for responding to changes rather than absolute levels ([signal transduction](./signal-transduction)). A single small molecule coordinates the entire proteome, letting a bacterium rapidly reallocate resources in a feast-or-famine world.
+The ppGpp system is the culmination of every principle in this course: degradation for speed, negative feedback for homeostasis, adaptation for responding to changes. A single small molecule coordinates the entire proteome, letting a bacterium rapidly reallocate resources in a feast-or-famine world.
 
-## Big ideas
-
-* **Bacterial growth is fundamentally a resource allocation problem**: the cell must balance investment in ribosomes (growth machinery) against metabolic enzymes (nutrient acquisition).
-* **ppGpp is the master regulator** that coordinates this balance — it senses nutrient scarcity through ribosome stalling and shuts down ribosome production.
-* **Growth rate is proportional to ribosome fraction** — one of the most robust quantitative laws in microbiology, connecting molecular regulation to whole-cell physiology.
-
-And that, in the end, is how a single cell turns physics into life.
+And that's how a single cell turns physics into life.
 
 ## What Comes Next
 
-This lesson is the final stop in a journey that began with a single differential equation and arrived at a whole cell making decisions in real time. Along the way, you have seen that the same mathematical structures — feedback loops, noise, bistability, oscillations, and network motifs — reappear at every scale, from a single promoter to a signaling cascade to the ribosome allocation problem. The bacterium is not a special case; it is the proof of concept that these tools work.
+This lesson completes a journey from a single differential equation to a whole cell making decisions in real time. The same structures -- feedback loops, noise, bistability, oscillations, network motifs -- reappear at every scale.
 
-The same framework extends far beyond bacteria. Cancer cells face a version of the same resource allocation problem: invest in growth, in evasion, or in repair? Immune cells use bistable switches to commit to a response and not waver. Neurons integrate signals from hundreds of synapses through mechanisms that look remarkably like the weighted summation and thresholding in a genetic circuit. If you found the quantitative biology here compelling, the natural next directions are synthetic biology (designing gene circuits from scratch using exactly these principles), systems biology (applying the same ODE and stochastic tools to larger networks), and, if you are drawn to the physics side, the statistical mechanics of biological systems, where the same feedback logic plays out at the scale of whole tissues and organisms.
+The framework extends far beyond bacteria. Cancer cells face their own resource-allocation problem. Immune cells use bistable switches for commitment. Neurons integrate signals through mechanisms resembling genetic circuits. Natural next steps: synthetic biology (designing circuits from scratch), systems biology (larger networks), or statistical mechanics of biological systems.
 
 ## Check your understanding
 
-* Imagine you are the cell. You just got moved from rich to poor medium. What do you do with your ribosome budget, and why?
-* Why is it important that ppGpp targets ribosomal RNA *promoters* specifically, rather than slowing down all transcription equally?
-* A cell devotes 50% of its protein to ribosomes and 30% to metabolic enzymes. Is it likely growing fast or slow? Why?
+* You just moved from rich to poor medium. What do you do with your ribosome budget?
+* Why does ppGpp target rRNA *promoters* specifically, rather than slowing all transcription?
+* A cell devotes 50% of protein to ribosomes and 30% to metabolic enzymes. Growing fast or slow?
 
 ## Challenge
 
-Suppose the housekeeping fraction is fixed at $\phi_\mathrm{Q} = 0.4$, so $\phi_\mathrm{P} + \phi_\mathrm{R} = 0.6$. Imagine that nutrient influx is proportional to $\phi_\mathrm{P}$ and growth rate is proportional to $\phi_\mathrm{R}$. What allocation maximizes growth? Now add a constraint: the cell needs *at least* $\phi_\mathrm{P} = 0.1$ to survive. How does the optimal $\phi_\mathrm{R}$ change? Plot growth rate versus $\phi_\mathrm{R}$ and see the tradeoff for yourself.
+$\phi_\mathrm{Q} = 0.4$ is fixed, so $\phi_\mathrm{P} + \phi_\mathrm{R} = 0.6$. Nutrient influx $\propto \phi_\mathrm{P}$, growth rate $\propto \phi_\mathrm{R}$. What allocation maximizes growth? Add a constraint: the cell needs $\phi_\mathrm{P} \geq 0.1$ to survive. How does optimal $\phi_\mathrm{R}$ change? Plot growth rate vs $\phi_\mathrm{R}$.
 
-*Hint: growth rate $\lambda \propto \phi_R$ and nutrient uptake $\propto \phi_P$. Maximize $\lambda$ subject to $\phi_R + \phi_P = 0.6$ and $\phi_P \geq 0.1$. Plot growth rate vs $\phi_R$.*
+## Big ideas
+
+* Bacterial growth is a resource-allocation problem: ribosomes (growth machinery) vs. metabolic enzymes (nutrient acquisition), constrained by a fixed protein budget.
+* ppGpp senses nutrient scarcity through ribosome stalling and shuts down ribosome production -- the master regulator of the proteome.
+* Growth rate = $k \cdot \phi_R$ -- one of the most robust quantitative laws in microbiology.

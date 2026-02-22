@@ -1,10 +1,13 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-export default function SpaghettiTrajectory() {
+export default function SpaghettiTrajectory({}: SimulationComponentProps) {
   const [nTrajectories, setNTrajectories] = useState(20);
   const [drift, setDrift] = useState(0.5);
 
@@ -48,18 +51,20 @@ export default function SpaghettiTrajectory() {
   }));
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Spaghetti Plot: Random Trajectories</h3>
-      <div className="grid grid-cols-2 gap-6 mb-4">
-        <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Trajectories: {nTrajectories}</label>
-          <Slider value={[nTrajectories]} onValueChange={([v]) => setNTrajectories(v)} min={5} max={50} step={1} />
+    <SimulationPanel title="Spaghetti Plot: Random Trajectories">
+      <SimulationConfig>
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <SimulationLabel>Trajectories: {nTrajectories}</SimulationLabel>
+            <Slider value={[nTrajectories]} onValueChange={([v]) => setNTrajectories(v)} min={5} max={50} step={1} />
+          </div>
+          <div>
+            <SimulationLabel>Drift: {drift.toFixed(2)}</SimulationLabel>
+            <Slider value={[drift]} onValueChange={([v]) => setDrift(v)} min={-1} max={2} step={0.05} />
+          </div>
         </div>
-        <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Drift: {drift.toFixed(2)}</label>
-          <Slider value={[drift]} onValueChange={([v]) => setDrift(v)} min={-1} max={2} step={0.05} />
-        </div>
-      </div>
+      </SimulationConfig>
+      <SimulationMain>
       <CanvasChart
         data={[
           { x: tVals, y: upperBand, type: 'scatter', mode: 'lines', line: { color: '#ef4444', width: 0 }, showlegend: false },
@@ -74,6 +79,7 @@ export default function SpaghettiTrajectory() {
         }}
         style={{ width: '100%' }}
       />
-    </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

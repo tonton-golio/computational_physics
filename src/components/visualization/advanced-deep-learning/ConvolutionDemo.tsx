@@ -1,13 +1,12 @@
-'use client';
+"use client";
 
 import { useState, useMemo } from 'react';
 import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
 import { Slider } from '@/components/ui/slider';
 import { useTheme } from '@/lib/use-theme';
-
-interface ConvolutionDemoProps {
-  id?: string;
-}
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 type KernelType = 'identity' | 'edge-detect' | 'sharpen' | 'blur' | 'emboss' | 'custom';
 
@@ -126,7 +125,7 @@ function convolve2d(image: number[][], kernel: number[][]): number[][] {
   return result;
 }
 
-export default function ConvolutionDemo({ id: _id }: ConvolutionDemoProps) {
+export default function ConvolutionDemo({}: SimulationComponentProps) {
   const theme = useTheme();
   const isDark = theme === 'dark';
   const [kernelType, setKernelType] = useState<KernelType>('edge-detect');
@@ -254,46 +253,77 @@ export default function ConvolutionDemo({ id: _id }: ConvolutionDemoProps) {
   const kernelDesc = kernelType !== 'custom' ? PRESET_KERNELS[kernelType as Exclude<KernelType, 'custom'>].description : 'Your custom kernel.';
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">
-        2D Convolution Visualization
-      </h3>
+    <SimulationPanel title="2D Convolution Visualization">
+      <SimulationSettings>
+        <div className="flex flex-wrap gap-4">
+          <div>
+            <SimulationLabel className="block text-sm text-[var(--text-muted)] mb-1">Kernel</SimulationLabel>
+            <select
+              value={kernelType}
+              onChange={(e) => setKernelType(e.target.value as KernelType)}
+              className="bg-[var(--surface-2)] text-[var(--text-strong)] border border-[var(--border-strong)] rounded px-3 py-1.5 text-sm"
+            >
+              {Object.entries(PRESET_KERNELS).map(([key, val]) => (
+                <option key={key} value={key}>
+                  {val.name}
+                </option>
+              ))}
+              <option value="custom">Custom</option>
+            </select>
+          </div>
+          <div>
+            <SimulationLabel className="block text-sm text-[var(--text-muted)] mb-1">Input Pattern</SimulationLabel>
+            <select
+              value={pattern}
+              onChange={(e) => setPattern(e.target.value)}
+              className="bg-[var(--surface-2)] text-[var(--text-strong)] border border-[var(--border-strong)] rounded px-3 py-1.5 text-sm"
+            >
+              <option value="cross">Cross</option>
+              <option value="checkerboard">Checkerboard</option>
+              <option value="gradient">Gradient</option>
+              <option value="diagonal">Diagonal</option>
+              <option value="random">Random</option>
+            </select>
+          </div>
+          <div className="flex items-end">
+            <SimulationLabel className="flex items-center gap-2 text-sm text-[var(--text-muted)] cursor-pointer">
+              <input
+                type="checkbox"
+                checked={stepMode}
+                onChange={(e) => setStepMode(e.target.checked)}
+                className="accent-blue-500"
+              />
+              Step-by-step mode
+            </SimulationLabel>
+          </div>
+        </div>
 
-      {/* Controls Row */}
-      <div className="flex flex-wrap gap-4 mb-6">
+        {/* Custom kernel editor */}
+        {kernelType === 'custom' && (
+          <div className="p-3 bg-[var(--surface-2)] rounded">
+            <p className="text-sm text-[var(--text-muted)] mb-2">Edit 3x3 kernel values:</p>
+            <div className="grid grid-cols-3 gap-1 max-w-xs">
+              {customKernel.map((row, i) =>
+                row.map((val, j) => (
+                  <input
+                    key={`${i}-${j}`}
+                    type="number"
+                    step="0.1"
+                    value={val}
+                    onChange={(e) => updateCustomKernel(i, j, e.target.value)}
+                    className="bg-[var(--surface-1)] text-[var(--text-strong)] border border-[var(--border-strong)] rounded px-2 py-1 text-sm text-center w-20"
+                  />
+                ))
+              )}
+            </div>
+          </div>
+        )}
+      </SimulationSettings>
+      <SimulationConfig>
         <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">Kernel</label>
-          <select
-            value={kernelType}
-            onChange={(e) => setKernelType(e.target.value as KernelType)}
-            className="bg-[var(--surface-2)] text-[var(--text-strong)] border border-[var(--border-strong)] rounded px-3 py-1.5 text-sm"
-          >
-            {Object.entries(PRESET_KERNELS).map(([key, val]) => (
-              <option key={key} value={key}>
-                {val.name}
-              </option>
-            ))}
-            <option value="custom">Custom</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">Input Pattern</label>
-          <select
-            value={pattern}
-            onChange={(e) => setPattern(e.target.value)}
-            className="bg-[var(--surface-2)] text-[var(--text-strong)] border border-[var(--border-strong)] rounded px-3 py-1.5 text-sm"
-          >
-            <option value="cross">Cross</option>
-            <option value="checkerboard">Checkerboard</option>
-            <option value="gradient">Gradient</option>
-            <option value="diagonal">Diagonal</option>
-            <option value="random">Random</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">
+          <SimulationLabel className="block text-sm text-[var(--text-muted)] mb-1">
             Grid Size: {imageSize}x{imageSize}
-          </label>
+          </SimulationLabel>
           <Slider
             min={5}
             max={16}
@@ -302,155 +332,128 @@ export default function ConvolutionDemo({ id: _id }: ConvolutionDemoProps) {
             className="w-32"
           />
         </div>
-        <div className="flex items-end">
-          <label className="flex items-center gap-2 text-sm text-[var(--text-muted)] cursor-pointer">
-            <input
-              type="checkbox"
-              checked={stepMode}
-              onChange={(e) => setStepMode(e.target.checked)}
-              className="accent-blue-500"
-            />
-            Step-by-step mode
-          </label>
-        </div>
-      </div>
 
-      {/* Step-by-step controls */}
-      {stepMode && (
-        <div className="flex flex-wrap gap-4 mb-4 p-3 bg-[var(--surface-2)] rounded">
-          <div>
-            <label className="block text-sm text-[var(--text-muted)] mb-1">
-              Output row: {highlightRow}
-            </label>
-            <Slider
-              min={0}
-              max={imageSize - 1}
-              step={1}
-              value={[highlightRow]}
-              onValueChange={([v]) => setHighlightRow(v)}
-              className="w-32"
-            />
-          </div>
-          <div>
-            <label className="block text-sm text-[var(--text-muted)] mb-1">
-              Output col: {highlightCol}
-            </label>
-            <Slider
-              min={0}
-              max={imageSize - 1}
-              step={1}
-              value={[highlightCol]}
-              onValueChange={([v]) => setHighlightCol(v)}
-              className="w-32"
-            />
-          </div>
-          {breakdown && (
-            <div className="flex-1 min-w-[200px] text-xs text-[var(--text-muted)]">
-              <p className="font-semibold text-[var(--text-strong)] mb-1">
-                Output[{highlightRow},{highlightCol}] = {breakdown.sum.toFixed(3)}
-              </p>
-              <div className="flex flex-wrap gap-1">
-                {breakdown.terms.map((t, i) => (
-                  <span key={i} className={t.product !== 0 ? 'text-blue-300' : 'opacity-50'}>
-                    {i > 0 && '+ '}
-                    {t.inputVal.toFixed(1)}*{t.kernelVal.toFixed(1)}
-                  </span>
-                ))}
-              </div>
+        {/* Step-by-step controls */}
+        {stepMode && (
+          <div className="flex flex-wrap gap-4 p-3 bg-[var(--surface-2)] rounded">
+            <div>
+              <SimulationLabel className="block text-sm text-[var(--text-muted)] mb-1">
+                Output row: {highlightRow}
+              </SimulationLabel>
+              <Slider
+                min={0}
+                max={imageSize - 1}
+                step={1}
+                value={[highlightRow]}
+                onValueChange={([v]) => setHighlightRow(v)}
+                className="w-32"
+              />
             </div>
-          )}
-        </div>
-      )}
+            <div>
+              <SimulationLabel className="block text-sm text-[var(--text-muted)] mb-1">
+                Output col: {highlightCol}
+              </SimulationLabel>
+              <Slider
+                min={0}
+                max={imageSize - 1}
+                step={1}
+                value={[highlightCol]}
+                onValueChange={([v]) => setHighlightCol(v)}
+                className="w-32"
+              />
+            </div>
+          </div>
+        )}
+      </SimulationConfig>
 
-      {/* Custom kernel editor */}
-      {kernelType === 'custom' && (
-        <div className="mb-4 p-3 bg-[var(--surface-2)] rounded">
-          <p className="text-sm text-[var(--text-muted)] mb-2">Edit 3x3 kernel values:</p>
-          <div className="grid grid-cols-3 gap-1 max-w-xs">
-            {customKernel.map((row, i) =>
-              row.map((val, j) => (
-                <input
-                  key={`${i}-${j}`}
-                  type="number"
-                  step="0.1"
-                  value={val}
-                  onChange={(e) => updateCustomKernel(i, j, e.target.value)}
-                  className="bg-[var(--surface-1)] text-[var(--text-strong)] border border-[var(--border-strong)] rounded px-2 py-1 text-sm text-center w-20"
-                />
-              ))
-            )}
+      <SimulationMain>
+        {/* Three-panel visualization */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+          <div>
+            <p className="text-center text-sm text-[var(--text-muted)] mb-2 font-semibold">Input Image</p>
+            <CanvasHeatmap
+              data={[inputTrace]}
+              layout={{
+                ...commonLayout,
+                title: { text: '' },
+                shapes: inputShapes,
+              }}
+              style={{ width: '100%', height: '300px' }}
+            />
+          </div>
+
+          <div>
+            <p className="text-center text-sm text-[var(--text-muted)] mb-2 font-semibold">
+              Kernel ({kernelType === 'custom' ? 'Custom' : PRESET_KERNELS[kernelType as Exclude<KernelType, 'custom'>].name})
+            </p>
+            <CanvasHeatmap
+              data={[kernelTrace]}
+              layout={{
+                ...commonLayout,
+                title: { text: '' },
+              }}
+              style={{ width: '100%', height: '300px' }}
+            />
+            <div className="mt-2 text-center">
+              <table className="mx-auto text-xs text-[var(--text-muted)]">
+                <tbody>
+                  {kernel.map((row, i) => (
+                    <tr key={i}>
+                      {row.map((val, j) => (
+                        <td
+                          key={j}
+                          className="px-2 py-1 border border-[var(--border-strong)]"
+                          style={{
+                            backgroundColor:
+                              val > 0
+                                ? `rgba(233, 69, 96, ${Math.min(Math.abs(val) / 8, 0.6)})`
+                                : val < 0
+                                ? `rgba(69, 183, 209, ${Math.min(Math.abs(val) / 8, 0.6)})`
+                                : 'transparent',
+                          }}
+                        >
+                          {val.toFixed(2)}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div>
+            <p className="text-center text-sm text-[var(--text-muted)] mb-2 font-semibold">Output (Convolved)</p>
+            <CanvasHeatmap
+              data={[outputTrace]}
+              layout={{
+                ...commonLayout,
+                title: { text: '' },
+                shapes: outputShapes,
+              }}
+              style={{ width: '100%', height: '300px' }}
+            />
           </div>
         </div>
-      )}
+      </SimulationMain>
 
-      {/* Three-panel visualization */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
-        <div>
-          <p className="text-center text-sm text-[var(--text-muted)] mb-2 font-semibold">Input Image</p>
-          <CanvasHeatmap
-            data={[inputTrace]}
-            layout={{
-              ...commonLayout,
-              title: { text: '' },
-              shapes: inputShapes,
-            }}
-            style={{ width: '100%', height: '300px' }}
-          />
-        </div>
-
-        <div>
-          <p className="text-center text-sm text-[var(--text-muted)] mb-2 font-semibold">
-            Kernel ({kernelType === 'custom' ? 'Custom' : PRESET_KERNELS[kernelType as Exclude<KernelType, 'custom'>].name})
-          </p>
-          <CanvasHeatmap
-            data={[kernelTrace]}
-            layout={{
-              ...commonLayout,
-              title: { text: '' },
-            }}
-            style={{ width: '100%', height: '300px' }}
-          />
-          <div className="mt-2 text-center">
-            <table className="mx-auto text-xs text-[var(--text-muted)]">
-              <tbody>
-                {kernel.map((row, i) => (
-                  <tr key={i}>
-                    {row.map((val, j) => (
-                      <td
-                        key={j}
-                        className="px-2 py-1 border border-[var(--border-strong)]"
-                        style={{
-                          backgroundColor:
-                            val > 0
-                              ? `rgba(233, 69, 96, ${Math.min(Math.abs(val) / 8, 0.6)})`
-                              : val < 0
-                              ? `rgba(69, 183, 209, ${Math.min(Math.abs(val) / 8, 0.6)})`
-                              : 'transparent',
-                        }}
-                      >
-                        {val.toFixed(2)}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      {breakdown && stepMode && (
+        <SimulationResults>
+          <div className="text-xs text-[var(--text-muted)]">
+            <p className="font-semibold text-[var(--text-strong)] mb-1">
+              Output[{highlightRow},{highlightCol}] = {breakdown.sum.toFixed(3)}
+            </p>
+            <div className="flex flex-wrap gap-1">
+              {breakdown.terms.map((t, i) => (
+                <span key={i} className={t.product !== 0 ? 'text-blue-300' : 'opacity-50'}>
+                  {i > 0 && '+ '}
+                  {t.inputVal.toFixed(1)}*{t.kernelVal.toFixed(1)}
+                </span>
+              ))}
+            </div>
           </div>
-        </div>
-
-        <div>
-          <p className="text-center text-sm text-[var(--text-muted)] mb-2 font-semibold">Output (Convolved)</p>
-          <CanvasHeatmap
-            data={[outputTrace]}
-            layout={{
-              ...commonLayout,
-              title: { text: '' },
-              shapes: outputShapes,
-            }}
-            style={{ width: '100%', height: '300px' }}
-          />
-        </div>
-      </div>
+        </SimulationResults>
+      )}
 
       {/* Explanation */}
       <div className="mt-4 p-3 bg-[var(--surface-2)] rounded text-sm text-[var(--text-muted)]">
@@ -462,6 +465,6 @@ export default function ConvolutionDemo({ id: _id }: ConvolutionDemoProps) {
           {stepMode && ' Use the row/col sliders to see exactly which input pixels contribute to each output pixel.'}
         </p>
       </div>
-    </div>
+    </SimulationPanel>
   );
 }

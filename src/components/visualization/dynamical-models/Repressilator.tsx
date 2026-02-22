@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 /**
  * Repressilator: Three-gene oscillatory circuit (Elowitz & Leibler, 2000).
@@ -110,7 +113,7 @@ function simulateRepressilator(
   return { time, p1: p1Arr, p2: p2Arr, p3: p3Arr, period };
 }
 
-export default function Repressilator() {
+export default function Repressilator({}: SimulationComponentProps) {
   const [n, setN] = useState(3.0);
   const [alpha, setAlpha] = useState(10);
   const [betaT, setBetaT] = useState(1.0);
@@ -172,17 +175,12 @@ export default function Repressilator() {
   }, [result]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">
-        Repressilator: Three-Gene Oscillator
-      </h3>
-
-      {/* Sliders */}
-      <div className="grid grid-cols-2 gap-4 mb-4">
+    <SimulationPanel title="Repressilator: Three-Gene Oscillator">
+      <SimulationConfig>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">
+          <SimulationLabel>
             Hill coefficient n: {n.toFixed(1)}
-          </label>
+          </SimulationLabel>
           <Slider
             min={1}
             max={8}
@@ -193,9 +191,9 @@ export default function Repressilator() {
           />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">
+          <SimulationLabel>
             Repression strength &alpha;: {alpha}
-          </label>
+          </SimulationLabel>
           <Slider
             min={1}
             max={50}
@@ -206,9 +204,9 @@ export default function Repressilator() {
           />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">
+          <SimulationLabel>
             Protein-mRNA coupling &beta;<sub>t</sub>: {betaT.toFixed(1)}
-          </label>
+          </SimulationLabel>
           <Slider
             min={0.1}
             max={5}
@@ -219,9 +217,9 @@ export default function Repressilator() {
           />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">
+          <SimulationLabel>
             Basal rate &alpha;<sub>0</sub>: {alpha0.toFixed(2)}
-          </label>
+          </SimulationLabel>
           <Slider
             min={0}
             max={1}
@@ -231,21 +229,24 @@ export default function Repressilator() {
             className="w-full"
           />
         </div>
-      </div>
-
-      {/* Period readout */}
-      <div className="mb-4 text-sm font-medium text-[var(--text-strong)]">
-        {oscillating
-          ? `Period \u2248 ${result.period!.toFixed(1)} time units`
-          : 'No oscillations detected'}
-      </div>
+      </SimulationConfig>
 
       {/* Chart */}
+      <SimulationMain>
       <CanvasChart
         data={chartData}
         layout={chartLayout}
         style={{ width: '100%' }}
       />
+      </SimulationMain>
+
+      <SimulationResults>
+        <div className="text-sm font-medium text-[var(--text-strong)]">
+          {oscillating
+            ? `Period \u2248 ${result.period!.toFixed(1)} time units`
+            : 'No oscillations detected'}
+        </div>
+      </SimulationResults>
 
       {/* What to notice */}
       <div className="mt-4 text-sm text-[var(--text-muted)]">
@@ -256,6 +257,6 @@ export default function Repressilator() {
             : 'Traces converge to a fixed point \u2014 cooperativity is too weak for oscillations.'}
         </p>
       </div>
-    </div>
+    </SimulationPanel>
   );
 }

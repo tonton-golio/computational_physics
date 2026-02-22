@@ -1,291 +1,92 @@
 # Vacuum Fluctuations and Observable Effects
 
-## Vacuum fluctuations and the zero-point energy
-Vacuum energy and fluctuations actually give rise to observable effects such as:
-* Spontaneous emission
-* Lamb shift
-* Casimir effect
-### Lamb shift
-The lamb shift is a discrepancy between experiment and the Dirac relativistic
-theory of the hydrogen atom.
-* The theory predicts that the $2^2S_{1/2}$ and $2^2P_{1/2}$ levels should be degenerate.
-* Optical experiment suggest that these states were not degenerate.
+## From one mode to infinitely many
 
-This discrepancy explained by Bethe. Here we use the Welton's intuitive
-interpretation.
+So far we've quantized a single mode -- one particular way light can wiggle in a box. But a real electromagnetic field is a superposition of infinitely many modes, each labeled by wave vector $\vec{k}$ and polarization $s$. The Hamiltonian is just a pile of independent harmonic oscillators:
 
-First the potential energy of electron of hydrogen atom is
 $$
-    V(r)
-    =
-    -
-    \frac{e^2}{r}
-    +
-    V_\mathrm{vac}
-$$
-We added the small term $V_\mathrm{vac}$ to include vacuum energy.
-Small displacement of potential energy is
-$$
-    \Delta V
-    =
-    \Delta \vec{r}
-    \cdot
-    \vec{\nabla} V
-    +
-    \sum_{i=1}^3
-    \frac{1}{2}
-    \left(
-        \Delta x_i
-    \right)^2
-    \frac
-    {\partial^2 V}
-    {\partial x_I^2}
-$$
-We assume that fluctuation is uniform in all direction in sufficiently long time.
-So we set
-$$
-    \left< \Delta \vec{r} \right> = 0
-$$
-Also, we assume that the displacement is same in all direction.
-$$
-    \left<
-        \left(
-            \Delta x_i
-        \right)^2
-    \right>
-    =
-    \frac{1}{3}
-    \left<
-        \left(
-            \Delta r
-        \right)^2
-    \right>
-$$
-So the time-average potential energy displacement is
-$$
-\begin{aligned}
-    \left<
-        \Delta V
-    \right>
-    &=
-    \sum_{i=1}^3
-    \frac{1}{2}
-    \left<
-        \left(
-            \Delta x_i
-        \right)^2
-    \right>
-    \frac
-    {\partial^2 V}
-    {\partial x_i^2}
-    \\&=
-    \sum_{i=1}^3
-    \frac{1}{2}
-    \frac{1}{3}
-    \left<
-        \left(
-            \Delta r
-        \right)^2
-    \right>
-    \frac
-    {\partial^2 V}
-    {\partial x_i^2}
-    \\&=
-    \frac{1}{6}
-    \left<
-        \left(
-            \Delta r
-        \right)^2
-    \right>
-    \sum_{i=1}^3
-    \frac
-    {\partial^2 V}
-    {\partial x_i^2}
-    \\&=
-    \frac{1}{6}
-    \left<
-        \left(
-            \Delta r
-        \right)^2
-    \right>
-    \nabla^2 V
-    \\&=
-    \frac{1}{6}
-    \left<
-        \left(
-            \Delta r
-        \right)^2
-    \right>
-    4 \pi e^2 \delta(\vec{r})
-\end{aligned}
-$$
-Here, $\delta(\vec{r})$ is Dirac delta function.
-
-We can calculate quantum mechanical energy shift.
-$$
-\begin{aligned}
-    \Delta E
-    &=
-    \Braket{nl|\Delta V|nl}
-    \\&=
-    \frac{4\pi e^2}{6}
-    \left<
-        \left(
-            \Delta r
-        \right)^2
-    \right>
-    \int
-    \psi^*_{nl}(\vec{r})
-    \delta(\vec{r})
-    \psi_{nl}(\vec{r})
-    \mathrm{d}\vec{r}
-    \\&=
-    \frac{2\pi e^2}{3}
-    \left<
-        \left(
-            \Delta r
-        \right)^2
-    \right>
-    \left|
-        \psi_{nl}(\vec{r}=0)
-    \right|^2
-\end{aligned}
+\hat{H} = \sum_{\vec{k},s} \hbar\omega_k\left(\hat{a}^\dag_{\vec{k},s}\hat{a}_{\vec{k},s} + \frac{1}{2}\right)
 $$
 
-We need to calculate
-$
-    \left<
-        \left(
-            \Delta r
-        \right)^2
-    \right>
-$.
-To obtain this, we assume that the important field frequencies exceed the atomic
-resonance frequencies.
-The displacement $\Delta r_\nu$ induced with frequency between $\nu$ and
-$\nu+\mathrm{d}\nu$ is determined by
+Each mode has its own ladder operators and its own photon number. The eigenstate is a product of number states -- one per mode:
+
 $$
-    m
-    \frac
-    {\mathrm{d}^2 \Delta r_\nu}
-    {\mathrm{d}t^2}
-    =
-    e E_\mathrm{vac} e^{2\pi i \nu t}
-$$
-Total vacuum energy is
-$$
-\begin{aligned}
-    \text{Total vacuum energy}
-    &=
-    \underbrace{
-    \frac
-    {8\pi \nu^2}
-    {c^3}
-    }_\text{density of state}
-    \cdot
-    \overbrace{
-    V
-    }^\text{volume}
-    \cdot
-    \overbrace{
-    \frac{1}{2}
-    h \nu
-    }^\text{vacuum energy}
-    \\&=
-    \frac{1}{8\pi}
-    \int
-    \left(
-        E_{\mathrm{vac}, \nu}^2
-        +
-        \overbrace{
-            \cancel{
-                B_{\mathrm{vac}, \nu}^2
-            }
-        }^{E_\nu \gg B_\nu}
-    \right)
-    \mathrm{d}V
-\end{aligned}
-$$
-Thus energy difference become
-$$
-    \Delta E
-    =
-    \chi
-    \left|
-        \psi_{nl}(\vec{r}=0)
-    \right|^2
-    \int_0^\infty
-    \mathrm{d} \nu
-    \frac{1}{\nu}
-    \longrightarrow
-    \infty
+\Ket{\{n_j\}} = \Ket{n_1, n_2, \ldots, n_j, \ldots}
 $$
 
-### Casimir effect
-From the vacuum electric field, we can show that two conducting plane attract
-each other.
-Consider the box of dimension $L\times L \times d$.
-The total vacuum energy is
-$$
-    E_0(d)
-    =
-    \sum_{lmn}
-    2
-    \frac{1}{2}
-    \hbar \omega_{lmn}
-$$
-Due to two independent polarizations, we multiply two.
-Here $\omega$ can be calculated from periodic boundary conditions.
-$$
-    \omega_{lmn}
-    =
-    \pi c
-    \sqrt{
-        \frac{l^2}{L^2}
-        +
-        \frac{m^2}{L^2}
-        +
-        \frac{n^2}{d^2}
-    }
-$$
-We will conduct several approximations listed below:
-* Calculate $E_0(d)$. We are interested in $L \gg d$, so we can replace the sums of $l$ and $m$ by integrals.
-* Calculate $E(\infty)$. We assume that $d$ is arbitrarily large, so we can replace the sum by integral.
-* Calculate $U(d)=E_0(d)-E_0(\infty)$, which is energy required to bring the plates from infinity to a distance $d$.
-* To transform $U(d)$ further, we need to introduce polar coordinates in the $x$-$y$ plane.
-* To estimate the sum and integral, we use Euler-Maclaurin formulae. We keep the terms until third order.
+## Thermal fields and Planck's law
 
-From these intensive calculations, we can show
+In thermal equilibrium at temperature $T$, the mean photon number per mode follows the Bose-Einstein distribution:
+
 $$
-    U(d)
-    =
-    -
-    \frac
-    {\pi^2 \hbar c}
-    {720}
-    \frac
-    {L^2}
-    {d^3}
+\bar{n} = \frac{1}{e^{\hbar\omega/k_BT} - 1}
 $$
-which means there is an attractive force (Casimir force) between two plates.
+
+At optical frequencies and room temperature, $\bar{n} \approx 0$. Temperature is essentially irrelevant for optical quantum optics -- a stark contrast with microwave quantum computing, where thermal photons are a real nuisance.
+
+The number of ways light can wiggle in a box grows as frequency squared -- the density of states is $\rho(\omega) = \omega^2/(\pi^2 c^3)$. Multiply by the energy per mode and you get Planck's radiation law:
+
+$$
+\bar{U}(\omega) = \frac{\hbar\omega}{e^{\hbar\omega/k_BT} - 1}\cdot\frac{\omega^2}{\pi^2 c^3}
+$$
+
+The formula that started quantum mechanics.
+
+## Observable effects of vacuum energy
+
+Here's where it gets exciting. Those vacuum fluctuations aren't just theoretical bookkeeping -- they produce real, measurable effects.
+
+### The Lamb shift
+
+The electron in a hydrogen atom is constantly being jostled by vacuum fluctuations. It's jittering in a sea of invisible springs, and that tiny jitter shifts the energy levels by about one part in a million.
+
+Specifically, Dirac's theory predicts the $2^2S_{1/2}$ and $2^2P_{1/2}$ levels should be degenerate. Experiments showed they're not. Bethe explained the discrepancy by accounting for vacuum fluctuations -- Welton gave the intuitive picture.
+
+The vacuum-induced displacement modifies the Coulomb potential. Averaging over fluctuations:
+
+$$
+\langle\Delta V\rangle = \frac{1}{6}\langle(\Delta r)^2\rangle\,\nabla^2 V = \frac{1}{6}\langle(\Delta r)^2\rangle\,4\pi e^2\,\delta(\vec{r})
+$$
+
+The energy shift is:
+
+$$
+\Delta E = \frac{2\pi e^2}{3}\langle(\Delta r)^2\rangle\,|\psi_{nl}(0)|^2
+$$
+
+Only $s$-states (which have $|\psi(0)|^2 \neq 0$) feel the shift. The integral over vacuum mode frequencies diverges, but physical cutoffs make the measurable shift finite -- about 1 GHz for the $2S$-$2P$ splitting. The electron trembles in the vacuum sea, and that trembling is real.
+
+### The Casimir effect
+
+Two conducting plates attract each other, even in a perfect vacuum. Why? Because fewer vacuum wiggles fit between the plates than outside them.
+
+Consider a box of dimensions $L \times L \times d$. The total vacuum energy inside depends on $d$ because the boundary conditions restrict which modes fit:
+
+$$
+\omega_{lmn} = \pi c\sqrt{\frac{l^2}{L^2} + \frac{m^2}{L^2} + \frac{n^2}{d^2}}
+$$
+
+The energy difference between plates at separation $d$ and plates at infinity works out to:
+
+$$
+U(d) = -\frac{\pi^2\hbar c}{720}\frac{L^2}{d^3}
+$$
+
+The minus sign means attraction. The force scales as $1/d^4$ -- it's tiny, but it's been measured with exquisite precision. The vacuum is literally pushing the plates together.
+
+> **Computational Note.** You can verify the Casimir result numerically: sum the vacuum energies $\frac{1}{2}\hbar\omega_{lmn}$ over modes with a smooth exponential cutoff $e^{-\omega/\omega_c}$, subtract the continuum integral, and watch the $d^{-3}$ scaling emerge. About 20 lines of NumPy.
 
 ## Big Ideas
 
-* The vacuum is not nothing — zero-point fluctuations of the electromagnetic field jiggle electrons inside atoms, shifting energy levels in ways that Dirac's otherwise exact theory cannot predict.
-* The Lamb shift tells us that the $2S_{1/2}$ and $2P_{1/2}$ levels of hydrogen, predicted to be degenerate, are split by roughly 1 GHz because the electron "trembles" in the vacuum field.
-* Two neutral, uncharged conducting plates attract each other simply because the vacuum modes between them are restricted to a discrete set while the modes outside are continuous — energy imbalance produces a force.
-* Observable effects of zero-point energy are always differences: absolute vacuum energies are not measurable, but relative changes (Lamb shift, Casimir force) are strikingly real.
-
-## What Comes Next
-
-Vacuum fluctuations show that the quantum field has irreducible noise even when it contains no photons. The natural next question is: what does the quietest possible field with actual photons in it look like? That brings us to coherent states — the states of the field that most closely mimic a classical electromagnetic wave, saturating the uncertainty relation and carrying Poissonian photon noise.
+- A real field has infinitely many modes, each an independent quantum oscillator. Thermal light at room temperature has essentially zero photons per visible mode.
+- The Lamb shift splits hydrogen's $2S$ and $2P$ levels by about 1 GHz because the electron trembles in the vacuum field.
+- Two neutral conducting plates attract each other (Casimir effect) because the vacuum modes between them are restricted while modes outside are not -- the energy imbalance produces a measurable force.
 
 ## Check Your Understanding
 
-1. The Lamb shift calculation diverges when integrating over all vacuum mode frequencies, yet the physical shift is finite and well measured. What physical cutoff makes the integral converge in practice, and what does this tell you about the range of vacuum modes that actually matter for the electron in hydrogen?
-2. The Casimir force between two parallel plates depends on plate separation as $U(d) \propto -d^{-3}$. What does the sign tell you (attractive or repulsive?), and how does the force scale with separation? Would you expect the effect to be easier or harder to measure as the plates are brought closer together?
-3. Spontaneous emission occurs because the excited atom can interact with vacuum fluctuations, even in the absence of any real photons. If you could somehow block all electromagnetic modes at the atomic transition frequency (for example, by placing the atom in a photonic crystal bandgap), what would happen to the spontaneous emission rate?
+1. The Lamb shift integral diverges over all frequencies, yet the physical shift is finite. What cutoff makes it converge, and what does this say about which vacuum modes actually matter?
+2. The Casimir energy scales as $-d^{-3}$. What does the sign tell you? How does the force scale with separation? Is it easier or harder to measure as the plates get closer?
 
 ## Challenge
 
-The Casimir calculation uses the Euler-Maclaurin formula to regularize the difference between the discrete sum and the continuous integral. Work through this regularization explicitly: write the vacuum energy $E_0(d)$ as a sum over discrete $n$ and the free-space energy as an integral, take their difference, and apply the Euler-Maclaurin formula keeping terms through third order to extract the finite result $U(d) = -\pi^2\hbar c L^2/(720 d^3)$. At what step does the regularization feel like "throwing away infinity," and why is the physical result nonetheless unambiguous?
+Write a Python script that computes the Casimir energy numerically. Sum $\frac{1}{2}\hbar\omega_{lmn}$ over modes $(l, m, n)$ in a box with a smooth UV cutoff, subtract the corresponding continuum integral, and extract the coefficient of $L^2/d^3$. Verify it converges to $-\pi^2\hbar c/720$ as the cutoff is removed. Plot the convergence as a function of cutoff frequency.

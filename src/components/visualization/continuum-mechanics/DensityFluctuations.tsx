@@ -1,6 +1,9 @@
-'use client';
+"use client";
 
 import React, { useRef, useEffect, useCallback, useState } from 'react';
+import { SimulationPanel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 /**
  * Visualises the continuum approximation by showing the same field of
@@ -124,7 +127,7 @@ function DensityPanel({ particles, gridN, label, subtitle }: PanelProps) {
   );
 }
 
-export default function DensityFluctuations() {
+export default function DensityFluctuations({}: SimulationComponentProps) {
   const [seed] = useState(42);
 
   const particles = React.useMemo(() => {
@@ -136,26 +139,19 @@ export default function DensityFluctuations() {
   }, [seed]);
 
   return (
-    <div className="w-full rounded-lg p-6 mb-8">
-      <h3 className="text-lg font-semibold mb-2 text-[var(--text-strong)]">
-        The Continuum Approximation
-      </h3>
-      <p className="text-sm text-[var(--text-muted)] mb-5">
-        The same particle field viewed at three different coarsening scales.
-        At fine resolution density fluctuates from cell to cell; as the
-        averaging window grows the fluctuations vanish and a smooth density
-        field emerges &mdash; the continuum limit.
-      </p>
-      <div className="flex flex-wrap justify-center gap-6">
-        <DensityPanel particles={particles} gridN={20} label="Fine scale" subtitle="Large fluctuations" />
-        <DensityPanel particles={particles} gridN={8} label="Intermediate" subtitle="Fluctuations reduce" />
-        <DensityPanel particles={particles} gridN={3} label="Continuum limit" subtitle="Smooth density" />
-      </div>
+    <SimulationPanel title="The Continuum Approximation" caption="The same particle field viewed at three different coarsening scales. At fine resolution density fluctuates from cell to cell; as the averaging window grows the fluctuations vanish and a smooth density field emerges \u2014 the continuum limit.">
+      <SimulationMain scaleMode="contain">
+        <div className="flex flex-wrap justify-center gap-6">
+          <DensityPanel particles={particles} gridN={20} label="Fine scale" subtitle="Large fluctuations" />
+          <DensityPanel particles={particles} gridN={8} label="Intermediate" subtitle="Fluctuations reduce" />
+          <DensityPanel particles={particles} gridN={3} label="Continuum limit" subtitle="Smooth density" />
+        </div>
+      </SimulationMain>
       <div className="mt-4 flex justify-center gap-4 text-xs text-[var(--text-soft)]">
         <span><span className="inline-block w-2.5 h-2.5 rounded-full mr-1 align-middle" style={{ background: COLORS.densityHigh }} />High density</span>
         <span><span className="inline-block w-2.5 h-2.5 rounded-full mr-1 align-middle" style={{ background: COLORS.densityMid }} />Medium</span>
         <span><span className="inline-block w-2.5 h-2.5 rounded-full mr-1 align-middle" style={{ background: COLORS.densityLow }} />Low density</span>
       </div>
-    </div>
+    </SimulationPanel>
   );
 }

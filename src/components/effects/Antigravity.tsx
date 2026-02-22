@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useRef, useState, useEffect } from "react";
+import { useMemo, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 
@@ -181,9 +181,6 @@ function AntigravityInner({
 }
 
 export default function Antigravity(props: AntigravityProps) {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-  if (!mounted) return null;
   return (
     <Canvas camera={{ position: [0, 0, 50], fov: 35 }} gl={{ alpha: true }} style={{ background: "transparent" }}>
       <AntigravityInner {...props} />

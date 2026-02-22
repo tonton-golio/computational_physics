@@ -23,7 +23,7 @@ interface KatexLike {
   renderToString(math: string, options?: { displayMode?: boolean; throwOnError?: boolean }): string;
 }
 
-function escapeHtml(text: string): string {
+export function escapeHtml(text: string): string {
   return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
@@ -205,12 +205,23 @@ export function markdownToHtml(
     '<code class="bg-[#0a0a15] px-1.5 py-0.5 rounded text-sm font-mono text-blue-300">$1</code>',
   );
 
-  // Convert lists
-  processed = processed.replace(/^- (.+)$/gm, '<li class="ml-4 text-gray-300">$1</li>');
-  processed = processed.replace(/(<li.*<\/li>\n?)+/g, '<ul class="list-disc my-4 space-y-1">$&</ul>');
+  // Convert unordered list items (tagged for later wrapping)
+  processed = processed.replace(/^- (.+)$/gm, '<li data-list="ul" class="ml-4 text-gray-300">$1</li>');
 
-  // Convert numbered lists
-  processed = processed.replace(/^\d+\. (.+)$/gm, '<li class="ml-4 text-gray-300">$1</li>');
+  // Convert numbered list items (tagged for later wrapping)
+  processed = processed.replace(/^\d+\. (.+)$/gm, '<li data-list="ol" class="ml-4 text-gray-300">$1</li>');
+
+  // Wrap consecutive unordered list items in <ul>
+  processed = processed.replace(
+    /(<li data-list="ul"[^>]*>.*?<\/li>\n?)+/g,
+    (match) => `<ul class="list-disc my-4 space-y-1">${match.replace(/ data-list="ul"/g, "")}</ul>`,
+  );
+
+  // Wrap consecutive ordered list items in <ol>
+  processed = processed.replace(
+    /(<li data-list="ol"[^>]*>.*?<\/li>\n?)+/g,
+    (match) => `<ol class="list-decimal my-4 space-y-1">${match.replace(/ data-list="ol"/g, "")}</ol>`,
+  );
 
   // Convert tables
   processed = processed.replace(/^\|(.+)\|$/gm, (_match, content: string) => {

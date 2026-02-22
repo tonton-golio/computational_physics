@@ -1,7 +1,7 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/infra/supabase/server";
 
 export const metadata = {
-  title: "Leaderboard | Computational Physics",
+  title: "Leaderboard | Koala Brain",
 };
 
 type LeaderboardEntry = {

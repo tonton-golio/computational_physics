@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { Slider } from '@/components/ui/slider';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationLabel, SimulationButton } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 const BOX_SIZE = 25;
 const RADIUS = 1;
@@ -86,7 +89,7 @@ function angleToColor(angle: number): string {
   return `hsl(${h}, 70%, 50%)`;
 }
 
-export function VicsekFlocking() {
+export default function VicsekFlocking({}: SimulationComponentProps) {
   const [eta, setEta] = useState(0.5);
   const [N, setN] = useState(200);
   const [v0, setV0] = useState(0.5);
@@ -116,57 +119,58 @@ export function VicsekFlocking() {
   const handleRerun = useCallback(() => setSeed((s) => s + 1), []);
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        <div>
-          <label className="text-sm text-[var(--text-muted)] block mb-1">
-            Noise {'\u03B7'}: {eta.toFixed(2)}
-          </label>
-          <Slider
-            min={0}
-            max={6.28}
-            step={0.1}
-            value={[eta]}
-            onValueChange={([v]) => setEta(v)}
-            className="w-full"
-          />
+    <SimulationPanel title="Vicsek Flocking Model">
+      <SimulationSettings>
+        <SimulationButton variant="primary" onClick={handleRerun}>
+          Re-run
+        </SimulationButton>
+      </SimulationSettings>
+      <SimulationConfig>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div>
+            <SimulationLabel>
+              Noise {'\u03B7'}: {eta.toFixed(2)}
+            </SimulationLabel>
+            <Slider
+              min={0}
+              max={6.28}
+              step={0.1}
+              value={[eta]}
+              onValueChange={([v]) => setEta(v)}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel>
+              Particles N: {N}
+            </SimulationLabel>
+            <Slider
+              min={50}
+              max={500}
+              step={25}
+              value={[N]}
+              onValueChange={([v]) => setN(v)}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel>
+              Speed v{'\u2080'}: {v0.toFixed(2)}
+            </SimulationLabel>
+            <Slider
+              min={0.1}
+              max={2}
+              step={0.1}
+              value={[v0]}
+              onValueChange={([v]) => setV0(v)}
+              className="w-full"
+            />
+          </div>
         </div>
-        <div>
-          <label className="text-sm text-[var(--text-muted)] block mb-1">
-            Particles N: {N}
-          </label>
-          <Slider
-            min={50}
-            max={500}
-            step={25}
-            value={[N]}
-            onValueChange={([v]) => setN(v)}
-            className="w-full"
-          />
-        </div>
-        <div>
-          <label className="text-sm text-[var(--text-muted)] block mb-1">
-            Speed v{'\u2080'}: {v0.toFixed(2)}
-          </label>
-          <Slider
-            min={0.1}
-            max={2}
-            step={0.1}
-            value={[v0]}
-            onValueChange={([v]) => setV0(v)}
-            className="w-full"
-          />
-        </div>
-      </div>
+      </SimulationConfig>
 
-      <button
-        onClick={handleRerun}
-        className="px-4 py-2 bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white rounded text-sm"
-      >
-        Re-run
-      </button>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <SimulationMain>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <CanvasChart
           data={[{
             x: result.x,
@@ -217,7 +221,8 @@ export function VicsekFlocking() {
           }}
           style={{ width: '100%', height: 350 }}
         />
-      </div>
-    </div>
+        </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

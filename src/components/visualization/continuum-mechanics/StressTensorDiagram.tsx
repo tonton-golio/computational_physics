@@ -1,6 +1,8 @@
-'use client';
+"use client";
 
-import React from 'react';
+import { SimulationPanel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 function Arrow({ x1, y1, x2, y2, color }: { x1: number; y1: number; x2: number; y2: number; color: string }) {
   const angle = Math.atan2(y2 - y1, x2 - x1);
@@ -20,7 +22,7 @@ function Arrow({ x1, y1, x2, y2, color }: { x1: number; y1: number; x2: number; 
  * SVG diagram of a stress tensor cube showing all 9 Cauchy stress components.
  * Renders a 3D-looking cube with labeled arrows for normal and shear stresses.
  */
-export default function StressTensorDiagram() {
+export default function StressTensorDiagram({}: SimulationComponentProps) {
   // Cube face vertices in isometric-ish projection
   const cx = 260;
   const cy = 200;
@@ -67,16 +69,9 @@ export default function StressTensorDiagram() {
   const aLen = 50;
 
   return (
-    <div className="w-full rounded-lg p-6 mb-8">
-      <h3 className="text-lg font-semibold mb-2 text-[var(--text-strong)]">
-        Cauchy Stress Tensor
-      </h3>
-      <p className="text-sm text-[var(--text-muted)] mb-4">
-        The nine components of the stress tensor acting on an infinitesimal cube element.
-        Normal stresses (yellow) act perpendicular to each face; shear stresses (green)
-        act tangent to them.
-      </p>
-      <svg viewBox="0 0 520 400" className="w-full max-w-lg mx-auto" style={{ maxHeight: 380 }}>
+    <SimulationPanel title="Cauchy Stress Tensor" caption="The nine components of the stress tensor acting on an infinitesimal cube element. Normal stresses (yellow) act perpendicular to each face; shear stresses (green) act tangent to them.">
+      <SimulationMain scaleMode="contain">
+        <svg viewBox="0 0 520 400" className="w-full max-w-lg mx-auto" style={{ maxHeight: 380 }}>
         {/* Back faces (partially visible) */}
         <polygon
           points={`${btl.x},${btl.y} ${btr.x},${btr.y} ${br.x},${br.y} ${bl.x},${bl.y}`}
@@ -156,12 +151,13 @@ export default function StressTensorDiagram() {
         <text x={frontFaceMid.x - 30} y={frontFaceMid.y - aLen - 4} fill={labelColor} fontSize={13} fontFamily="serif" fontStyle="italic">
           &sigma;<tspan baselineShift="sub" fontSize={10}>zy</tspan>
         </text>
-      </svg>
+        </svg>
+      </SimulationMain>
       <div className="mt-2 text-xs text-[var(--text-soft)] text-center">
         <span className="inline-block w-3 h-0.5 mr-1 align-middle" style={{ background: arrowColor }} /> Normal stresses
         <span className="mx-3">|</span>
         <span className="inline-block w-3 h-0.5 mr-1 align-middle" style={{ background: shearColor }} /> Shear stresses
       </div>
-    </div>
+    </SimulationPanel>
   );
 }

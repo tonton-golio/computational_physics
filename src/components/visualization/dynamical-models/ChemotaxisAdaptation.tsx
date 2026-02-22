@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 /**
  * Chemotaxis: Perfect Adaptation
@@ -66,7 +69,7 @@ function simulate(
   return { time, activity, methylation };
 }
 
-export default function ChemotaxisAdaptation() {
+export default function ChemotaxisAdaptation({}: SimulationComponentProps) {
   const [deltaL, setDeltaL] = useState(3.0);
   const [rateScale, setRateScale] = useState(1.0);
   const [lBase, setLBase] = useState(1.0);
@@ -157,16 +160,12 @@ export default function ChemotaxisAdaptation() {
   }), [yRange]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">
-        Chemotaxis: Perfect Adaptation
-      </h3>
-
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-4">
+    <SimulationPanel title="Chemotaxis: Perfect Adaptation">
+      <SimulationConfig>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">
+          <SimulationLabel>
             Ligand step size (Delta L): {deltaL.toFixed(1)}
-          </label>
+          </SimulationLabel>
           <Slider
             value={[deltaL]}
             onValueChange={([v]) => setDeltaL(v)}
@@ -176,9 +175,9 @@ export default function ChemotaxisAdaptation() {
           />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">
+          <SimulationLabel>
             Adaptation rate scale: {rateScale.toFixed(1)}
-          </label>
+          </SimulationLabel>
           <Slider
             value={[rateScale]}
             onValueChange={([v]) => setRateScale(v)}
@@ -188,9 +187,9 @@ export default function ChemotaxisAdaptation() {
           />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">
+          <SimulationLabel>
             Base ligand (L_base): {lBase.toFixed(1)}
-          </label>
+          </SimulationLabel>
           <Slider
             value={[lBase]}
             onValueChange={([v]) => setLBase(v)}
@@ -199,18 +198,22 @@ export default function ChemotaxisAdaptation() {
             step={0.5}
           />
         </div>
-      </div>
+      </SimulationConfig>
 
+      <SimulationMain>
       <CanvasChart
         data={chartData as any}
         layout={chartLayout}
         style={{ width: '100%' }}
       />
+      </SimulationMain>
 
-      <div className="mt-3 flex items-center gap-2 text-sm font-medium text-[var(--text-strong)]">
+      <SimulationResults>
+      <div className="flex items-center gap-2 text-sm font-medium text-[var(--text-strong)]">
         <span className="inline-block w-3 h-3 rounded-full bg-[#3b82f6]" />
         Steady-state activity A* = kR/kB = {steadyStateA.toFixed(2)} (independent of L)
       </div>
+      </SimulationResults>
 
       <div className="mt-3 text-sm text-[var(--text-muted)]">
         <p>
@@ -230,6 +233,6 @@ export default function ChemotaxisAdaptation() {
           changes to compensate, but the endpoint is always the same.
         </p>
       </div>
-    </div>
+    </SimulationPanel>
   );
 }

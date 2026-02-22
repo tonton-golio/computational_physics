@@ -1,10 +1,9 @@
-'use client';
+"use client";
 
 import { useState, useMemo } from 'react';
-
-interface BackpropFlowProps {
-  id?: string;
-}
+import { SimulationPanel, SimulationSettings, SimulationButton } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 interface Node {
   id: string;
@@ -47,7 +46,7 @@ const EDGES: Edge[] = [
   { from: 'add2', to: 'loss', label: 'logits' },
 ];
 
-export default function BackpropFlow({ id: _id }: BackpropFlowProps) {
+export default function BackpropFlow({}: SimulationComponentProps) {
   const [phase, setPhase] = useState<'forward' | 'backward'>('forward');
   const [step, setStep] = useState(0);
 
@@ -91,47 +90,39 @@ export default function BackpropFlow({ id: _id }: BackpropFlowProps) {
   };
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">
-        Backpropagation Computational Graph
-      </h3>
-
-      <div className="flex flex-wrap gap-3 mb-4">
-        <button
+    <SimulationPanel title="Backpropagation Computational Graph">
+      <SimulationSettings>
+        <SimulationButton
+          variant={phase === 'forward' ? 'primary' : 'secondary'}
           onClick={() => { setPhase('forward'); setStep(0); }}
-          className={`px-4 py-1.5 rounded text-sm font-medium transition-colors ${
-            phase === 'forward' ? 'bg-blue-600/30 text-blue-300 border border-blue-500/40' : 'bg-[var(--surface-2)] text-[var(--text-muted)]'
-          }`}
         >
           Forward Pass
-        </button>
-        <button
+        </SimulationButton>
+        <SimulationButton
+          variant={phase === 'backward' ? 'danger' : 'secondary'}
           onClick={() => { setPhase('backward'); setStep(0); }}
-          className={`px-4 py-1.5 rounded text-sm font-medium transition-colors ${
-            phase === 'backward' ? 'bg-red-600/30 text-red-300 border border-red-500/40' : 'bg-[var(--surface-2)] text-[var(--text-muted)]'
-          }`}
         >
           Backward Pass
-        </button>
-        <button
+        </SimulationButton>
+        <SimulationButton
           onClick={() => setStep(s => Math.max(0, s - 1))}
-          className="px-3 py-1.5 rounded text-sm bg-[var(--surface-2)] text-[var(--text-muted)] hover:text-white"
           disabled={step === 0}
         >
           Prev
-        </button>
-        <button
+        </SimulationButton>
+        <SimulationButton
+          variant="primary"
           onClick={() => setStep(s => Math.min(maxSteps - 1, s + 1))}
-          className="px-3 py-1.5 rounded text-sm bg-[var(--surface-2)] text-[var(--text-muted)] hover:text-white"
           disabled={step >= maxSteps - 1}
         >
           Next
-        </button>
+        </SimulationButton>
         <span className="text-sm text-[var(--text-muted)] flex items-center">
           Step {step + 1}/{maxSteps}
         </span>
-      </div>
+      </SimulationSettings>
 
+      <SimulationMain scaleMode="contain">
       <svg viewBox="0 0 830 260" className="w-full h-auto" style={{ maxHeight: 300 }}>
         <defs>
           <marker id="arrow-fwd" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
@@ -207,6 +198,7 @@ export default function BackpropFlow({ id: _id }: BackpropFlowProps) {
           );
         })}
       </svg>
+      </SimulationMain>
 
       <div className="mt-4 p-3 bg-[var(--surface-2)] rounded text-sm text-[var(--text-muted)]">
         {phase === 'forward' ? (
@@ -215,6 +207,6 @@ export default function BackpropFlow({ id: _id }: BackpropFlowProps) {
           <p><strong className="text-red-300">Backward pass:</strong> Gradients flow right to left using the chain rule. Each node computes the local gradient and multiplies it by the upstream gradient, passing the result to its inputs.</p>
         )}
       </div>
-    </div>
+    </SimulationPanel>
   );
 }

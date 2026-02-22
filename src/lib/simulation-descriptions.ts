@@ -35,7 +35,7 @@ export const SIMULATION_DESCRIPTIONS: Record<string, string> = {
  */
 export function simulationTitle(id: string): string {
   return id
-    .replace(/^(adl|aml)-/, "") // strip topic prefixes
+    .replace(/^(adl|aml|orl)-/, "") // strip topic prefixes
     .split("-")
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(" ");

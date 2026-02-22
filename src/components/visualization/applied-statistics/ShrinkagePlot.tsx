@@ -1,10 +1,13 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-export default function ShrinkagePlot() {
+export default function ShrinkagePlot({}: SimulationComponentProps) {
   const [priorStrength, setPriorStrength] = useState(2.0);
 
   const { rawMeans, shrunkMeans, groupLabels, grandMean } = useMemo(() => {
@@ -35,17 +38,14 @@ export default function ShrinkagePlot() {
   }));
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Bayesian Shrinkage</h3>
-      <div className="grid grid-cols-1 gap-6 mb-4">
+    <SimulationPanel title="Bayesian Shrinkage">
+      <SimulationConfig>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Prior strength (tau): {priorStrength.toFixed(1)}</label>
+          <SimulationLabel>Prior strength (tau): {priorStrength.toFixed(1)}</SimulationLabel>
           <Slider value={[priorStrength]} onValueChange={([v]) => setPriorStrength(v)} min={0.1} max={10} step={0.1} />
         </div>
-      </div>
-      <div className="mb-3 text-sm text-[var(--text-muted)]">
-        Grand mean: {grandMean.toFixed(1)} | Small tau = strong shrinkage toward grand mean | Large tau = minimal shrinkage
-      </div>
+      </SimulationConfig>
+      <SimulationMain>
       <CanvasChart
         data={[
           ...arrowTraces,
@@ -77,6 +77,12 @@ export default function ShrinkagePlot() {
         }}
         style={{ width: '100%' }}
       />
-    </div>
+      </SimulationMain>
+      <SimulationResults>
+        <div className="text-sm text-[var(--text-muted)]">
+          Grand mean: {grandMean.toFixed(1)} | Small tau = strong shrinkage toward grand mean | Large tau = minimal shrinkage
+        </div>
+      </SimulationResults>
+    </SimulationPanel>
   );
 }

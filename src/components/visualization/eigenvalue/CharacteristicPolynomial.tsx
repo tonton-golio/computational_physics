@@ -1,11 +1,13 @@
-'use client';
+"use client";
 
 import { useEffect, useState, useMemo } from 'react';
 import { CanvasChart, type ChartTrace } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationSettings, SimulationButton } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import { COLORS } from '@/lib/chart-colors';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-export function CharacteristicPolynomial({}: SimulationComponentProps) {
+export default function CharacteristicPolynomial({}: SimulationComponentProps) {
   const [size, setSize] = useState(2);
   const [matrix, setMatrix] = useState<number[][]>([[2, 1], [0, 3]]);
 
@@ -88,62 +90,51 @@ export function CharacteristicPolynomial({}: SimulationComponentProps) {
   }, [matrix, size]);
 
   return (
-    <div className="space-y-4">
-      <CanvasChart data={data} layout={layout} style={{ width: '100%', height: 320 }} />
-      <div className="flex gap-4 items-center flex-wrap">
-        <span className="text-sm text-[var(--text-muted)]">Matrix size:</span>
-        <select
-          value={size}
-          onChange={(e) => setSize(parseInt(e.target.value))}
-          className="bg-[var(--surface-1)] text-[var(--text-strong)] rounded px-2 py-1"
-        >
-          <option value={2}>2x2</option>
-          <option value={3}>3x3</option>
-        </select>
-      </div>
-      <div className={`grid gap-2 ${size === 2 ? 'grid-cols-2 max-w-xs' : 'grid-cols-3 max-w-md'}`}>
-        {matrix.map((row, i) =>
-          row.map((val, j) => (
-            <input
-              key={`${i}-${j}`}
-              type="number"
-              step="0.1"
-              value={val}
-              onChange={(e) => {
-                const newMatrix = matrix.map(r => [...r]);
-                newMatrix[i][j] = parseFloat(e.target.value) || 0;
-                setMatrix(newMatrix);
-              }}
-              className="w-16 px-2 py-1 bg-[var(--surface-1)] rounded text-[var(--text-strong)] text-center"
-            />
-          ))
-        )}
-      </div>
-      <div className="flex gap-2">
-        <button
-          onClick={() => {
-            if (size === 2) setMatrix([[1, 0], [0, 1]]);
-            else setMatrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]]);
-          }}
-          className="px-3 py-1 bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white rounded text-sm"
-        >
-          Identity
-        </button>
-        <button
-          onClick={() => {
-            if (size === 2) setMatrix([[0, 0], [0, 0]]);
-            else setMatrix([[0, 0, 0], [0, 0, 0], [0, 0, 0]]);
-          }}
-          className="px-3 py-1 bg-[var(--surface-3)] text-[var(--text-strong)] rounded text-sm hover:bg-[var(--border-strong)]"
-        >
-          Zero
-        </button>
-      </div>
-      <p className="text-xs text-[var(--text-soft)]">
-        The characteristic polynomial p(\u03BB) = det(A - \u03BBI). Roots are the eigenvalues.
-      </p>
-    </div>
+    <SimulationPanel title="Characteristic Polynomial">
+      <SimulationSettings>
+        <div className="flex gap-4 items-center flex-wrap">
+          <span className="text-sm text-[var(--text-soft)]">Matrix size:</span>
+          <select
+            value={size}
+            onChange={(e) => setSize(parseInt(e.target.value))}
+            className="bg-[var(--surface-1)] text-[var(--text-strong)] rounded px-2 py-1"
+          >
+            <option value={2}>2x2</option>
+            <option value={3}>3x3</option>
+          </select>
+        </div>
+        <div className={`grid gap-2 ${size === 2 ? 'grid-cols-2 max-w-xs' : 'grid-cols-3 max-w-md'}`}>
+          {matrix.map((row, i) =>
+            row.map((val, j) => (
+              <input
+                key={`${i}-${j}`}
+                type="number"
+                step="0.1"
+                value={val}
+                onChange={(e) => {
+                  const newMatrix = matrix.map(r => [...r]);
+                  newMatrix[i][j] = parseFloat(e.target.value) || 0;
+                  setMatrix(newMatrix);
+                }}
+                className="w-16 px-2 py-1 bg-[var(--surface-1)] rounded text-[var(--text-strong)] text-center"
+              />
+            ))
+          )}
+        </div>
+        <div className="flex gap-2">
+          <SimulationButton variant="secondary" onClick={() => {
+              if (size === 2) setMatrix([[1, 0], [0, 1]]);
+              else setMatrix([[1, 0, 0], [0, 1, 0], [0, 0, 1]]);
+            }}>Identity</SimulationButton>
+          <SimulationButton variant="secondary" onClick={() => {
+              if (size === 2) setMatrix([[0, 0], [0, 0]]);
+              else setMatrix([[0, 0, 0], [0, 0, 0], [0, 0, 0]]);
+            }}>Zero</SimulationButton>
+        </div>
+      </SimulationSettings>
+      <SimulationMain>
+        <CanvasChart data={data} layout={layout} style={{ width: '100%', height: 320 }} />
+      </SimulationMain>
+    </SimulationPanel>
   );
 }
-
-export default CharacteristicPolynomial;

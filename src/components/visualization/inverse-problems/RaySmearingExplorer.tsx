@@ -1,13 +1,15 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationLabel, SimulationToggle } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 type Geometry = 'cross-borehole' | 'surface-to-surface' | 'combined';
 
-export default function RaySmearingExplorer({ id: _id }: SimulationComponentProps) {
+export default function RaySmearingExplorer({}: SimulationComponentProps) {
   const [gridN, setGridN] = useState(10);
   const [geometry, setGeometry] = useState<Geometry>('cross-borehole');
 
@@ -100,30 +102,26 @@ export default function RaySmearingExplorer({ id: _id }: SimulationComponentProp
   }, [gridN, geometry]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Ray Smearing Explorer</h3>
-      <div className="grid grid-cols-2 gap-6 mb-4">
+    <SimulationPanel title="Ray Smearing Explorer">
+      <SimulationSettings>
+        <SimulationToggle
+          options={(['cross-borehole', 'surface-to-surface', 'combined'] as Geometry[]).map(g => ({
+            label: g.replace(/-/g, ' '),
+            value: g,
+          }))}
+          value={geometry}
+          onChange={(v) => setGeometry(v as Geometry)}
+          className="mt-1"
+        />
+      </SimulationSettings>
+      <SimulationConfig>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Grid size: {gridN}x{gridN}</label>
+          <SimulationLabel className="mb-1 block text-sm text-[var(--text-muted)]">Grid size: {gridN}x{gridN}</SimulationLabel>
           <Slider value={[gridN]} onValueChange={([v]) => setGridN(v)} min={5} max={16} step={1} />
         </div>
-        <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Geometry</label>
-          <div className="flex gap-2 mt-1">
-            {(['cross-borehole', 'surface-to-surface', 'combined'] as Geometry[]).map(g => (
-              <button key={g} onClick={() => setGeometry(g)}
-                className={`px-3 py-1 rounded text-xs transition-colors ${
-                  geometry === g
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-[var(--surface-2)] text-[var(--text-muted)] hover:bg-[var(--surface-2)]/80'
-                }`}>
-                {g.replace(/-/g, ' ')}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
+      </SimulationConfig>
 
+      <SimulationMain>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
         <CanvasChart
           data={[
@@ -178,6 +176,7 @@ export default function RaySmearingExplorer({ id: _id }: SimulationComponentProp
           Combined geometry fills in blind spots that individual geometries miss.
         </p>
       </div>
-    </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

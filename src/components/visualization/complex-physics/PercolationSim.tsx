@@ -1,9 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { SimulationMain } from '@/components/ui/simulation-main';
 import { Slider } from '@/components/ui/slider';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationResults, SimulationAux, SimulationLabel } from '@/components/ui/simulation-panel';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 import { useTheme } from '@/lib/use-theme';
 
 // ---------------------------------------------------------------------------
@@ -223,7 +225,7 @@ function GridCanvas({
 // Main exported component
 // ---------------------------------------------------------------------------
 
-export function PercolationSim() {
+export default function PercolationSim({}: SimulationComponentProps) {
   const theme = useTheme();
   const isDark = theme === 'dark';
   const [p, setP] = useState(0.5);
@@ -250,11 +252,10 @@ export function PercolationSim() {
   }, [grid, lattice]);
 
   return (
-    <div className="space-y-6">
-      {/* Controls */}
-      <div className="flex flex-wrap gap-6 items-center">
+    <SimulationPanel title="Percolation Simulation">
+      <SimulationSettings>
         <div>
-          <label className="text-sm text-[var(--text-muted)] block mb-1">Lattice</label>
+          <SimulationLabel>Lattice</SimulationLabel>
           <select
             value={lattice}
             onChange={(e) => setLattice(e.target.value as LatticeType)}
@@ -265,8 +266,10 @@ export function PercolationSim() {
             ))}
           </select>
         </div>
+      </SimulationSettings>
+      <SimulationConfig>
         <div>
-          <label className="text-sm text-[var(--text-muted)] block mb-1">p = {p.toFixed(2)}</label>
+          <SimulationLabel>p = {p.toFixed(2)}</SimulationLabel>
           <Slider
             min={0.01}
             max={1.0}
@@ -277,7 +280,7 @@ export function PercolationSim() {
           />
         </div>
         <div>
-          <label className="text-sm text-[var(--text-muted)] block mb-1">Size: {size}</label>
+          <SimulationLabel>Size: {size}</SimulationLabel>
           <Slider
             min={10}
             max={60}
@@ -288,7 +291,7 @@ export function PercolationSim() {
           />
         </div>
         <div>
-          <label className="text-sm text-[var(--text-muted)] block mb-1">Seed: {seed}</label>
+          <SimulationLabel>Seed: {seed}</SimulationLabel>
           <Slider
             min={1}
             max={200}
@@ -298,11 +301,12 @@ export function PercolationSim() {
             className="w-48"
           />
         </div>
-      </div>
-
-      <div className="text-sm text-[var(--text-muted)]">
-        N(p={p.toFixed(2)}) = {numClusters} clusters · {info.pcLabel}
-      </div>
+      </SimulationConfig>
+      <SimulationResults>
+        <div className="text-sm text-[var(--text-muted)]">
+          N(p={p.toFixed(2)}) = {numClusters} clusters · {info.pcLabel}
+        </div>
+      </SimulationResults>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* 2D Cluster Grid */}
@@ -311,33 +315,35 @@ export function PercolationSim() {
         </SimulationMain>
 
         {/* N(p) Curve */}
-        <CanvasChart
-          data={[{
-            x: npData.ps,
-            y: npData.ns,
-            type: 'scatter',
-            mode: 'lines+markers',
-            line: { color: '#3b82f6', width: 2 },
-            marker: { size: 5 },
-          }]}
-          layout={{
-            title: { text: 'Number of Clusters N(p)', font: { size: 13 } },
-            xaxis: { title: { text: 'p' } },
-            yaxis: { title: { text: 'N' } },
-            margin: { t: 40, r: 20, b: 50, l: 60 },
-            shapes: [{
-              type: 'line',
-              x0: info.pc,
-              x1: info.pc,
-              y0: 0,
-              y1: 1,
-              yref: 'paper',
-              line: { color: '#ef4444', width: 1.5, dash: 'dash' },
-            }],
-          }}
-          style={{ width: '100%', height: 360 }}
-        />
+        <SimulationAux>
+          <CanvasChart
+            data={[{
+              x: npData.ps,
+              y: npData.ns,
+              type: 'scatter',
+              mode: 'lines+markers',
+              line: { color: '#3b82f6', width: 2 },
+              marker: { size: 5 },
+            }]}
+            layout={{
+              title: { text: 'Number of Clusters N(p)', font: { size: 13 } },
+              xaxis: { title: { text: 'p' } },
+              yaxis: { title: { text: 'N' } },
+              margin: { t: 40, r: 20, b: 50, l: 60 },
+              shapes: [{
+                type: 'line',
+                x0: info.pc,
+                x1: info.pc,
+                y0: 0,
+                y1: 1,
+                yref: 'paper',
+                line: { color: '#ef4444', width: 1.5, dash: 'dash' },
+              }],
+            }}
+            style={{ width: '100%', height: 360 }}
+          />
+        </SimulationAux>
       </div>
-    </div>
+    </SimulationPanel>
   );
 }

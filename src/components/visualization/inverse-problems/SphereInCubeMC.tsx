@@ -1,8 +1,10 @@
-'use client';
+"use client";
 
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 
@@ -35,7 +37,7 @@ function theoreticalVolumeFraction(dim: number): number {
   return volBall / volCube;
 }
 
-export default function SphereInCubeMC({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function SphereInCubeMC({}: SimulationComponentProps) {
   const [nDims, setNDims] = useState(4);
   const [nPointsExp, setNPointsExp] = useState(12);
   const [seed, setSeed] = useState(17);
@@ -109,28 +111,25 @@ export default function SphereInCubeMC({ id }: SimulationComponentProps) { // es
   }, [nDims, nPoints, seed]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Sphere in Cube (Monte Carlo Accept/Reject)</h3>
-      <p className="text-[var(--text-muted)] text-sm mb-4">
-        Reproduce the classic accept/reject demo: sample points uniformly in [-1,1]^N and keep only points
-        inside the unit sphere. This visualizes why high-dimensional volume estimation is difficult.
-      </p>
+    <SimulationPanel title="Sphere in Cube (Monte Carlo Accept/Reject)" caption="Reproduce the classic accept/reject demo: sample points uniformly in [-1,1]^N and keep only points inside the unit sphere. This visualizes why high-dimensional volume estimation is difficult.">
+      <SimulationConfig>
+        <div className="grid grid-cols-3 gap-4">
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-xs">Dimensions: {nDims}</SimulationLabel>
+            <Slider min={2} max={12} step={1} value={[nDims]} onValueChange={([v]) => setNDims(v)} />
+          </div>
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-xs">Points: 2^{nPointsExp} = {nPoints}</SimulationLabel>
+            <Slider min={6} max={16} step={1} value={[nPointsExp]} onValueChange={([v]) => setNPointsExp(v)} />
+          </div>
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-xs">Seed: {seed}</SimulationLabel>
+            <Slider min={1} max={300} step={1} value={[seed]} onValueChange={([v]) => setSeed(v)} />
+          </div>
+        </div>
+      </SimulationConfig>
 
-      <div className="grid grid-cols-3 gap-4 mb-4">
-        <div>
-          <label className="text-[var(--text-muted)] text-xs">Dimensions: {nDims}</label>
-          <Slider min={2} max={12} step={1} value={[nDims]} onValueChange={([v]) => setNDims(v)} />
-        </div>
-        <div>
-          <label className="text-[var(--text-muted)] text-xs">Points: 2^{nPointsExp} = {nPoints}</label>
-          <Slider min={6} max={16} step={1} value={[nPointsExp]} onValueChange={([v]) => setNPointsExp(v)} />
-        </div>
-        <div>
-          <label className="text-[var(--text-muted)] text-xs">Seed: {seed}</label>
-          <Slider min={1} max={300} step={1} value={[seed]} onValueChange={([v]) => setSeed(v)} />
-        </div>
-      </div>
-
+      <SimulationMain>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
         <CanvasChart
           data={[
@@ -191,6 +190,8 @@ export default function SphereInCubeMC({ id }: SimulationComponentProps) { // es
         />
       </div>
 
+      </SimulationMain>
+      <SimulationResults>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
         <div className="bg-[var(--surface-1)] rounded p-3 border border-[var(--border-strong)]">
           <div className="text-[var(--text-soft)]">Accepted / total</div>
@@ -211,6 +212,7 @@ export default function SphereInCubeMC({ id }: SimulationComponentProps) { // es
           </div>
         )}
       </div>
-    </div>
+      </SimulationResults>
+    </SimulationPanel>
   );
 }

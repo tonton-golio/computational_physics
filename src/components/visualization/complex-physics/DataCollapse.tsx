@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { Slider } from '@/components/ui/slider';
+import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 // Pre-computed susceptibility data for 2D Ising model near Tc
 // Using known scaling: chi ~ L^{gamma/nu} * f(t * L^{1/nu})
@@ -35,7 +38,7 @@ function generateSusceptibilityData(L: number) {
 const SIZES = [16, 32, 64, 128];
 const COLORS = ['#8b5cf6', '#3b82f6', '#10b981', '#f59e0b'];
 
-export function DataCollapse() {
+export default function DataCollapse({}: SimulationComponentProps) {
   const [gammaOverNu, setGammaOverNu] = useState(1.75);
   const [invNu, setInvNu] = useState(1.0);
 
@@ -60,38 +63,41 @@ export function DataCollapse() {
   }, [rawData, gammaOverNu, invNu]);
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="text-sm text-[var(--text-muted)] block mb-1">
-            {'\u03B3'}/{'\u03BD'}: {gammaOverNu.toFixed(2)} (exact: 1.75)
-          </label>
-          <Slider
-            min={0.5}
-            max={4}
-            step={0.05}
-            value={[gammaOverNu]}
-            onValueChange={([v]) => setGammaOverNu(v)}
-            className="w-full"
-          />
+    <SimulationPanel title="Data Collapse" caption="Adjust the exponents until all four curves collapse onto a single master curve. The collapse is perfect at the exact 2D Ising values.">
+      <SimulationConfig>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <SimulationLabel>
+              {'\u03B3'}/{'\u03BD'}: {gammaOverNu.toFixed(2)} (exact: 1.75)
+            </SimulationLabel>
+            <Slider
+              min={0.5}
+              max={4}
+              step={0.05}
+              value={[gammaOverNu]}
+              onValueChange={([v]) => setGammaOverNu(v)}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel>
+              1/{'\u03BD'}: {invNu.toFixed(2)} (exact: 1.00)
+            </SimulationLabel>
+            <Slider
+              min={0.5}
+              max={2}
+              step={0.05}
+              value={[invNu]}
+              onValueChange={([v]) => setInvNu(v)}
+              className="w-full"
+            />
+          </div>
         </div>
-        <div>
-          <label className="text-sm text-[var(--text-muted)] block mb-1">
-            1/{'\u03BD'}: {invNu.toFixed(2)} (exact: 1.00)
-          </label>
-          <Slider
-            min={0.5}
-            max={2}
-            step={0.05}
-            value={[invNu]}
-            onValueChange={([v]) => setInvNu(v)}
-            className="w-full"
-          />
-        </div>
-      </div>
+      </SimulationConfig>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <CanvasChart
+      <SimulationMain>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <CanvasChart
           data={rawData.map((d, idx) => ({
             x: d.T,
             y: d.chi,
@@ -127,12 +133,8 @@ export function DataCollapse() {
           }}
           style={{ width: '100%', height: 350 }}
         />
-      </div>
-
-      <p className="text-sm text-[var(--text-muted)]">
-        Adjust the exponents until all four curves collapse onto a single master curve.
-        The collapse is perfect at the exact 2D Ising values {'\u03B3'}/{'\u03BD'} = 1.75 and 1/{'\u03BD'} = 1.0.
-      </p>
-    </div>
+        </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

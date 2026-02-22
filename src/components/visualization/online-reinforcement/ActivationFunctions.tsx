@@ -1,11 +1,13 @@
-'use client';
+"use client";
 
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 
-export default function ActivationFunctions({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function ActivationFunctions({}: SimulationComponentProps) {
   const xs = useMemo(() => Array.from({ length: 241 }, (_, i) => -6 + i * 0.05), []);
 
   const relu = useMemo(() => xs.map((x) => Math.max(0, x)), [xs]);
@@ -18,11 +20,8 @@ export default function ActivationFunctions({ id }: SimulationComponentProps) { 
   }, [xs]);
 
   return (
-    <div className="w-full rounded-lg bg-[var(--surface-1)] p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-3 text-[var(--text-strong)]">Activation Functions</h3>
-      <p className="text-sm text-[var(--text-muted)] mb-4">
-        Comparison of ReLU, Sigmoid, Tanh, and Softmax over a one-dimensional input grid.
-      </p>
+    <SimulationPanel title="Activation Functions" caption="Comparison of ReLU, Sigmoid, Tanh, and Softmax over a one-dimensional input grid.">
+      <SimulationMain>
       <CanvasChart
         data={[
           { x: xs, y: relu, type: 'scatter', mode: 'lines', name: 'ReLU', line: { color: '#60a5fa', width: 2 } },
@@ -39,6 +38,7 @@ export default function ActivationFunctions({ id }: SimulationComponentProps) { 
         }}
         style={{ width: '100%' }}
       />
-    </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

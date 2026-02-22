@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React from 'react';
 import EntropyDemo from './inverse-problems/EntropyDemo';

@@ -1,7 +1,10 @@
-'use client';
+"use client";
 
 import React, { useMemo, useState } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationSettings, SimulationButton } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 import { linspace } from './ml-utils';
 
 interface ActivationDef {
@@ -50,7 +53,7 @@ const ACTIVATIONS: ActivationDef[] = [
   },
 ];
 
-export default function ActivationGallery(): React.ReactElement {
+export default function ActivationGallery({}: SimulationComponentProps): React.ReactElement {
   const [selected, setSelected] = useState<Set<string>>(
     new Set(ACTIVATIONS.map((a) => a.name)),
   );
@@ -96,64 +99,59 @@ export default function ActivationGallery(): React.ReactElement {
   };
 
   return (
-    <div className="w-full rounded-lg bg-[var(--surface-1)] p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">
-        Activation Function Gallery
-      </h3>
-
-      <div className="mb-4 flex flex-wrap gap-2">
-        {ACTIVATIONS.map((a) => (
-          <button
-            key={a.name}
-            onClick={() => toggleAct(a.name)}
-            className="rounded px-3 py-1.5 text-xs font-medium transition-opacity"
-            style={{
-              backgroundColor: a.color,
-              opacity: selected.has(a.name) ? 1 : 0.3,
-              color: 'white',
-            }}
-          >
-            {a.name}
-          </button>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <div>
-          <p className="mb-1 text-center text-sm text-[var(--text-muted)]">
-            Activation functions
-          </p>
-          <CanvasChart
-            data={fnTraces}
-            layout={{
-              xaxis: { title: { text: 'x' } },
-              yaxis: { title: { text: 'f(x)' } },
-              margin: { t: 20, r: 20, b: 45, l: 55 },
-            }}
-            style={{ width: '100%', height: 360 }}
-          />
+    <SimulationPanel title="Activation Function Gallery">
+      <SimulationSettings>
+        <div className="flex flex-wrap gap-2">
+          {ACTIVATIONS.map((a) => (
+            <SimulationButton
+              key={a.name}
+              variant={selected.has(a.name) ? 'primary' : 'secondary'}
+              onClick={() => toggleAct(a.name)}
+            >
+              {a.name}
+            </SimulationButton>
+          ))}
         </div>
-        <div>
-          <p className="mb-1 text-center text-sm text-[var(--text-muted)]">
-            Derivatives
-          </p>
-          <CanvasChart
-            data={derivTraces}
-            layout={{
-              xaxis: { title: { text: 'x' } },
-              yaxis: { title: { text: "f'(x)" } },
-              margin: { t: 20, r: 20, b: 45, l: 55 },
-            }}
-            style={{ width: '100%', height: 360 }}
-          />
-        </div>
-      </div>
+      </SimulationSettings>
 
-      <div className="mt-3 text-xs text-[var(--text-muted)]">
-        ReLU has constant gradient of 1 for positive inputs but kills negative ones (dead neurons).
-        Sigmoid/Tanh have vanishing gradients for large |x|.
-        Leaky ReLU and Swish maintain gradient flow throughout.
-      </div>
-    </div>
+      <SimulationMain>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div>
+            <p className="mb-1 text-center text-sm text-[var(--text-muted)]">
+              Activation functions
+            </p>
+            <CanvasChart
+              data={fnTraces}
+              layout={{
+                xaxis: { title: { text: 'x' } },
+                yaxis: { title: { text: 'f(x)' } },
+                margin: { t: 20, r: 20, b: 45, l: 55 },
+              }}
+              style={{ width: '100%', height: 360 }}
+            />
+          </div>
+          <div>
+            <p className="mb-1 text-center text-sm text-[var(--text-muted)]">
+              Derivatives
+            </p>
+            <CanvasChart
+              data={derivTraces}
+              layout={{
+                xaxis: { title: { text: 'x' } },
+                yaxis: { title: { text: "f'(x)" } },
+                margin: { t: 20, r: 20, b: 45, l: 55 },
+              }}
+              style={{ width: '100%', height: 360 }}
+            />
+          </div>
+        </div>
+
+        <div className="mt-3 text-xs text-[var(--text-muted)]">
+          ReLU has constant gradient of 1 for positive inputs but kills negative ones (dead neurons).
+          Sigmoid/Tanh have vanishing gradients for large |x|.
+          Leaky ReLU and Swish maintain gradient flow throughout.
+        </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

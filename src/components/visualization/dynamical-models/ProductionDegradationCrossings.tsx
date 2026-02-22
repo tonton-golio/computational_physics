@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 /**
  * ProductionDegradationCrossings: Plot production rate f(X) and degradation rate gamma*X
@@ -67,7 +70,7 @@ function findCrossings(
   return crossings;
 }
 
-export default function ProductionDegradationCrossings() {
+export default function ProductionDegradationCrossings({}: SimulationComponentProps) {
   const [beta, setBeta] = useState(5.0);
   const [n, setN] = useState(4);
   const [beta0, setBeta0] = useState(0.1);
@@ -145,48 +148,35 @@ export default function ProductionDegradationCrossings() {
   }
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">
-        Production vs. Degradation: Finding Steady States
-      </h3>
-
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+    <SimulationPanel title="Production vs. Degradation: Finding Steady States">
+      <SimulationConfig>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">
+          <SimulationLabel>
             Max production &beta;: {beta.toFixed(1)}
-          </label>
+          </SimulationLabel>
           <Slider value={[beta]} onValueChange={([v]) => setBeta(v)} min={0.5} max={10} step={0.1} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">
+          <SimulationLabel>
             Hill coefficient n: {n}
-          </label>
+          </SimulationLabel>
           <Slider value={[n]} onValueChange={([v]) => setN(v)} min={1} max={8} step={1} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">
+          <SimulationLabel>
             Basal rate &beta;&#8320;: {beta0.toFixed(2)}
-          </label>
+          </SimulationLabel>
           <Slider value={[beta0]} onValueChange={([v]) => setBeta0(v)} min={0} max={1} step={0.01} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">
+          <SimulationLabel>
             Degradation rate &gamma;: {gamma.toFixed(2)}
-          </label>
+          </SimulationLabel>
           <Slider value={[gamma]} onValueChange={([v]) => setGamma(v)} min={0.1} max={3.0} step={0.05} />
         </div>
-      </div>
+      </SimulationConfig>
 
-      {/* Status indicator */}
-      <div className="mb-4 text-sm font-medium">
-        <span className={isBistable ? 'text-[#f97316]' : 'text-[#22c55e]'}>
-          {numCrossings} crossing{numCrossings !== 1 ? 's' : ''} &mdash;{' '}
-          {isBistable ? 'Bistable (two stable + one unstable)' :
-           numCrossings === 1 ? 'Monostable (one stable steady state)' :
-           `${numCrossings} steady states`}
-        </span>
-      </div>
-
+      <SimulationMain>
       <CanvasChart
         data={chartData}
         layout={{
@@ -204,6 +194,18 @@ export default function ProductionDegradationCrossings() {
         }}
         style={{ width: '100%' }}
       />
+      </SimulationMain>
+
+      <SimulationResults>
+        <div className="text-sm font-medium">
+          <span className={isBistable ? 'text-[#f97316]' : 'text-[#22c55e]'}>
+            {numCrossings} crossing{numCrossings !== 1 ? 's' : ''} &mdash;{' '}
+            {isBistable ? 'Bistable (two stable + one unstable)' :
+             numCrossings === 1 ? 'Monostable (one stable steady state)' :
+             `${numCrossings} steady states`}
+          </span>
+        </div>
+      </SimulationResults>
 
       <div className="mt-4 border-l-4 border-blue-500 pl-4 text-sm text-[var(--text-muted)]">
         <p className="font-medium text-[var(--text-strong)] mb-1">What to notice</p>
@@ -219,6 +221,6 @@ export default function ProductionDegradationCrossings() {
           That is bistability.
         </p>
       </div>
-    </div>
+    </SimulationPanel>
   );
 }

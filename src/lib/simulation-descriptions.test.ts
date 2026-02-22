@@ -19,8 +19,8 @@ describe("simulation-descriptions", () => {
       expect(simulationTitle("aml-gradient-descent")).toBe("Gradient Descent");
     });
 
-    it("does not strip other prefixes", () => {
-      expect(simulationTitle("orl-something")).toBe("Orl Something");
+    it("strips orl- prefix", () => {
+      expect(simulationTitle("orl-something")).toBe("Something");
     });
 
     it("handles multiple hyphens", () => {

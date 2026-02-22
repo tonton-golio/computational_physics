@@ -1,97 +1,72 @@
 # Jaynes-Cummings Model
 
-## The Model
+## The exactly solvable atom-photon marriage
 
-The **Jaynes-Cummings model** describes the simplest quantum interaction between a single two-level atom and a single mode of the electromagnetic field. The Hamiltonian is
-
-$$
-\hat{H} = \hbar\omega_c \hat{a}^\dagger \hat{a} + \frac{\hbar\omega_a}{2}\hat{\sigma}_z + \hbar g(\hat{a}^\dagger \hat{\sigma}_- + \hat{a}\hat{\sigma}_+),
-$$
-
-where $\omega_c$ is the cavity frequency, $\omega_a$ is the atomic transition frequency, $g$ is the coupling strength, and $\hat{\sigma}_\pm$ are the atomic raising/lowering operators.
-
-The interaction term $\hat{a}^\dagger \hat{\sigma}_-$ describes the atom emitting a photon (going from excited to ground) while creating a cavity photon, and $\hat{a}\hat{\sigma}_+$ describes absorption. This is the **rotating wave approximation** (RWA), valid when $g \ll \omega_c, \omega_a$.
-
-## Energy Levels and Dressed States
-
-The total excitation number $\hat{N} = \hat{a}^\dagger\hat{a} + \hat{\sigma}_+\hat{\sigma}_-$ is conserved, so the Hilbert space splits into independent two-dimensional subspaces spanned by $\{|n, e\rangle, |n+1, g\rangle\}$ for each $n$.
-
-Within each subspace, diagonalizing gives the **dressed states**:
+The **Jaynes-Cummings model** is the hydrogen atom of quantum optics -- the simplest nontrivial interaction between a single two-level atom and a single mode of light, and it's exactly solvable.
 
 $$
-|+, n\rangle = \cos\theta_n |n, e\rangle + \sin\theta_n |n+1, g\rangle,
-$$
-$$
-|-, n\rangle = -\sin\theta_n |n, e\rangle + \cos\theta_n |n+1, g\rangle,
+\hat{H} = \hbar\omega_c\hat{a}^\dag\hat{a} + \frac{\hbar\omega_a}{2}\hat{\sigma}_z + \hbar g(\hat{a}^\dag\hat{\sigma}_- + \hat{a}\hat{\sigma}_+)
 $$
 
-where $\tan(2\theta_n) = 2g\sqrt{n+1}/\Delta$ and $\Delta = \omega_a - \omega_c$ is the detuning. The dressed-state energies are
+Three ingredients: cavity energy, atomic energy, and the interaction. The interaction term $\hat{a}^\dag\hat{\sigma}_-$ means "atom drops down, cavity gains a photon." The term $\hat{a}\hat{\sigma}_+$ means "atom jumps up, cavity loses a photon." Energy sloshes back and forth, quantum mechanically.
+
+## Why it's exactly solvable
+
+The total excitation number $\hat{N} = \hat{a}^\dag\hat{a} + \hat{\sigma}_+\hat{\sigma}_-$ is conserved. This breaks the infinite-dimensional Hilbert space into independent $2\times 2$ blocks: $\{\Ket{n, e}, \Ket{n+1, g}\}$ for each $n$. Each block is just a $2\times 2$ matrix to diagonalize.
+
+The **dressed states** are:
 
 $$
-E_{\pm, n} = \hbar\omega_c(n + \tfrac{1}{2}) \pm \frac{\hbar}{2}\sqrt{\Delta^2 + 4g^2(n+1)}.
+\Ket{+, n} = \cos\theta_n\Ket{n, e} + \sin\theta_n\Ket{n+1, g}
+$$
+$$
+\Ket{-, n} = -\sin\theta_n\Ket{n, e} + \cos\theta_n\Ket{n+1, g}
 $$
 
-The splitting $\hbar\Omega_n = \hbar\sqrt{\Delta^2 + 4g^2(n+1)}$ between the dressed states is the **vacuum Rabi splitting** when $n = 0$.
+with $\tan(2\theta_n) = 2g\sqrt{n+1}/\Delta$ (detuning $\Delta = \omega_a - \omega_c$). These are entangled atom-field states -- neither pure atom nor pure field. The splitting between them is the **vacuum Rabi splitting**: $\hbar\Omega_n = \hbar\sqrt{\Delta^2 + 4g^2(n+1)}$.
 
-## Rabi Oscillations
+## Rabi oscillations with a quantum twist
 
-If the atom starts in the excited state with $n$ photons, $|\psi(0)\rangle = |n, e\rangle$, the state evolves as
-
-$$
-|\psi(t)\rangle = \cos(\Omega_n t/2)|n, e\rangle - i\sin(\Omega_n t/2)|n+1, g\rangle,
-$$
-
-at resonance ($\Delta = 0$), where $\Omega_n = 2g\sqrt{n+1}$ is the **$n$-photon Rabi frequency**. The atomic inversion oscillates:
+Start with an excited atom and $n$ photons: $\Ket{\psi(0)} = \Ket{n, e}$. At resonance ($\Delta = 0$), the atom oscillates between excited and ground:
 
 $$
-\langle \hat{\sigma}_z(t) \rangle = \cos(\Omega_n t).
+\langle\hat{\sigma}_z(t)\rangle = \cos(\Omega_n t), \qquad \Omega_n = 2g\sqrt{n+1}
 $$
 
-The $\sqrt{n+1}$ dependence is a purely quantum effect. For a coherent state input $|\alpha\rangle$ with $\bar{n} = |\alpha|^2$ photons, different Fock components oscillate at different frequencies $\Omega_n$, leading to **collapse and revival** of the Rabi oscillations. The initial oscillations collapse on a timescale $t_c \sim 1/(g\sqrt{\bar{n}})$ due to dephasing, then revive at $t_r \sim 2\pi\sqrt{\bar{n}}/g$ when the phases realign.
+The $\sqrt{n+1}$ is the quantum signature. A classical field drives oscillations at a rate proportional to amplitude. A quantum field drives them at a rate proportional to $\sqrt{\text{photon number} + 1}$. The "+1" is the vacuum contribution -- even with zero photons, the atom oscillates at frequency $2g$ (vacuum Rabi oscillations).
+
+## Collapse and revival
+
+Now feed the atom a coherent state $\Ket{\alpha}$ instead of a definite photon number. Different Fock components oscillate at different frequencies $\Omega_n = 2g\sqrt{n+1}$. They dephase, and the oscillations **collapse** on a timescale $t_c \sim 1/(g\sqrt{\bar{n}})$.
+
+But wait. The frequencies aren't random -- they're spaced by the discrete $\sqrt{n+1}$ values. Eventually the phases realign, and the oscillations **revive** at $t_r \sim 2\pi\sqrt{\bar{n}}/g$. This periodic revival is impossible with a classical field. It's a direct signature of the discrete photon-number structure.
 
 [[simulation jaynes-cummings-revival]]
 
-## Dispersive Regime
+> **Computational Note.** The collapse and revival are beautiful to simulate. Construct the JC Hamiltonian as a matrix in the truncated $\{\Ket{n, e}, \Ket{n+1, g}\}$ basis, exponentiate with `scipy.linalg.expm`, and plot $\langle\hat{\sigma}_z(t)\rangle$ for a coherent state with $\bar{n} = 25$. You'll see the collapse around $t \approx 1/(g\sqrt{25})$ and the first revival at $t \approx 2\pi\cdot 5/g$. About 30 lines of Python.
 
-When the detuning is large ($|\Delta| \gg g\sqrt{n+1}$), the atom and field exchange only virtual excitations. Perturbation theory gives an effective Hamiltonian
+## The dispersive regime
 
-$$
-\hat{H}_{\text{disp}} \approx \hbar(\omega_c + \chi\hat{\sigma}_z)\hat{a}^\dagger\hat{a} + \frac{\hbar(\omega_a + \chi)}{2}\hat{\sigma}_z,
-$$
-
-where $\chi = g^2/\Delta$ is the **dispersive shift**. The cavity frequency shifts by $\pm\chi$ depending on the atomic state, and the atomic frequency shifts by $\chi$ per photon (**AC Stark shift** or **light shift**).
-
-This regime enables **quantum non-demolition** (QND) measurement of photon number: measuring the atomic phase shift reveals $n$ without absorbing photons. It is the foundation of circuit QED readout in superconducting qubits.
-
-## Spontaneous Emission
-
-In free space, a two-level atom coupled to a continuum of modes decays irreversibly at the **Wightman-Weisskopf** rate
+When the detuning is large ($|\Delta| \gg g\sqrt{n+1}$), atom and field don't exchange real excitations -- only virtual ones. The effective Hamiltonian becomes:
 
 $$
-\Gamma = \frac{\omega_a^3 d^2}{3\pi\epsilon_0\hbar c^3},
+\hat{H}_\text{disp} \approx \hbar(\omega_c + \chi\hat{\sigma}_z)\hat{a}^\dag\hat{a} + \frac{\hbar(\omega_a + \chi)}{2}\hat{\sigma}_z
 $$
 
-where $d$ is the transition dipole moment. The excited-state population decays exponentially: $P_e(t) = e^{-\Gamma t}$.
-
-In a cavity, spontaneous emission is modified by the density of states. When the cavity is resonant, the enhanced rate is $\Gamma_{\text{cav}} = 4g^2/\kappa$ (where $\kappa$ is the cavity decay rate), leading to the **Purcell effect** discussed in the Cavity QED topic.
+where $\chi = g^2/\Delta$. The cavity frequency shifts by $\pm\chi$ depending on the atomic state. By measuring this frequency shift, you can determine the atom's state without absorbing any photons -- a **quantum non-demolition** measurement. This is exactly how superconducting qubits are read out in circuit QED.
 
 ## Big Ideas
 
-* The Jaynes-Cummings model is exactly solvable because the total excitation number $\hat{N} = \hat{a}^\dagger\hat{a} + \hat{\sigma}_+\hat{\sigma}_-$ is conserved, breaking the full Hilbert space into independent two-dimensional subspaces.
-* The $\sqrt{n+1}$ scaling of the Rabi frequency with photon number is a purely quantum effect: a classical field would drive oscillations at a fixed frequency independent of field strength at fixed amplitude, not this square-root dependence.
-* Collapse and revival of Rabi oscillations with a coherent field input is the clearest signature of field quantization: different photon-number components oscillate at incommensurable frequencies, dephase, then rephase with quantum periodicity.
-* The dispersive regime ($|\Delta| \gg g$) turns the atom into a phase meter for the cavity photon number, enabling quantum non-demolition measurements without ever absorbing the photons.
-
-## What Comes Next
-
-The Jaynes-Cummings model describes a perfect, isolated atom-cavity system. Real experiments face photon loss from the cavity and atomic decay into unwanted modes. The next lesson examines cavity QED — the regime where coherent coupling competes with dissipation — and shows how this competition determines whether you observe reversible Rabi oscillations or irreversible Purcell-enhanced decay.
+- The JC model is exactly solvable because total excitation number is conserved, splitting the Hilbert space into $2\times 2$ blocks.
+- The $\sqrt{n+1}$ Rabi frequency is a purely quantum effect -- a classical field can't produce it.
+- Collapse and revival with a coherent field is the clearest fingerprint of field quantization: discrete photon numbers cause dephasing and rephasing that no classical model can explain.
+- In the dispersive regime, the atom becomes a phase meter for cavity photons without absorbing them.
 
 ## Check Your Understanding
 
-1. The dressed states $|\pm, n\rangle$ are superpositions of $|n, e\rangle$ and $|n+1, g\rangle$ — entangled atom-field states. On resonance ($\Delta = 0$), what are the dressed states explicitly, and what does the splitting $2g\sqrt{n+1}$ between them tell you experimentally if you sweep a probe laser through the resonance?
-2. For a coherent state input with mean photon number $\bar{n}$, the Rabi oscillations collapse on a timescale $t_c \sim 1/(g\sqrt{\bar{n}})$ and revive at $t_r \sim 2\pi\sqrt{\bar{n}}/g$. Show that $t_r/t_c \sim 2\pi\sqrt{\bar{n}}$, which grows with photon number. What does this imply about the possibility of observing revivals for very bright (large $\bar{n}$) coherent states?
-3. In the dispersive regime, the atom shifts the cavity frequency by $\pm\chi = \pm g^2/\Delta$ depending on whether the atom is in $|e\rangle$ or $|g\rangle$. Explain how you would use this frequency shift to measure the atomic state without ever absorbing a photon from the cavity, and what makes this a quantum non-demolition measurement.
+1. On resonance, what are the dressed states explicitly? What does the splitting $2g\sqrt{n+1}$ tell you if you sweep a probe laser through the resonance?
+2. The ratio $t_r/t_c \sim 2\pi\sqrt{\bar{n}}$ grows with photon number. What does this mean for observing revivals with very bright coherent states?
 
 ## Challenge
 
-Starting from the Jaynes-Cummings Hamiltonian and the conserved total excitation number, derive the time evolution operator within each two-dimensional subspace $\{|n,e\rangle, |n+1,g\rangle\}$ at resonance. Use this to compute $\langle\hat{\sigma}_z(t)\rangle$ when the initial state is $|\psi(0)\rangle = |\alpha\rangle \otimes |e\rangle$ (coherent field, excited atom). Show that the result involves an incoherent sum over photon-number components, leading to the collapse and revival formula. Estimate the revival time $t_r$ for $g/2\pi = 50$ kHz and $\bar{n} = 25$ photons.
+Write a Python script that solves the Jaynes-Cummings model numerically. Construct the Hamiltonian matrix in the truncated Fock-space basis, compute $\langle\hat{\sigma}_z(t)\rangle$ for an initial coherent state $\Ket{\alpha}$ with $\bar{n} = 25$, and plot the collapse-and-revival dynamics. Add cavity decay (Lindblad term $\kappa\mathcal{D}[\hat{a}]$) using QuTiP's `mesolve` and show how the revivals die as $\kappa$ increases. Estimate the revival time for $g/2\pi = 50$ kHz and $\bar{n} = 25$.

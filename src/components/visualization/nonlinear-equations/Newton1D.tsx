@@ -1,6 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationResults, SimulationLabel, SimulationButton } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 interface Func {
   name: string;
@@ -31,7 +34,7 @@ const functions: Func[] = [
   },
 ];
 
-const Newton1D: React.FC = () => {
+const Newton1D: React.FC<SimulationComponentProps> = () => {
   const [selectedFunc, setSelectedFunc] = useState(0);
   const [x0, setX0] = useState(1.0);
   const [maxSteps, setMaxSteps] = useState(10);
@@ -155,10 +158,10 @@ const Newton1D: React.FC = () => {
   }, [x0, selectedFunc, maxSteps]);
 
   return (
-    <div className="p-4">
-      <div className="grid grid-cols-4 gap-4 mb-4">
+    <SimulationPanel title="Newton's Method (1D)">
+      <SimulationSettings>
         <div>
-          <label>Function:</label>
+          <SimulationLabel>Function:</SimulationLabel>
           <select value={selectedFunc} onChange={(e) => setSelectedFunc(Number(e.target.value))} className="ml-2">
             {functions.map((func, idx) => (
               <option key={idx} value={idx}>{func.name}</option>
@@ -166,7 +169,13 @@ const Newton1D: React.FC = () => {
           </select>
         </div>
         <div>
-          <label>x₀: {x0.toFixed(2)}</label>
+          <SimulationButton variant="primary" onClick={handleStep}>Step</SimulationButton>
+          <SimulationButton onClick={handleReset}>Reset</SimulationButton>
+        </div>
+      </SimulationSettings>
+      <SimulationConfig>
+        <div>
+          <SimulationLabel>x₀: {x0.toFixed(2)}</SimulationLabel>
           <Slider
             min={-5}
             max={5}
@@ -177,7 +186,7 @@ const Newton1D: React.FC = () => {
           />
         </div>
         <div>
-          <label>Max Steps: {maxSteps}</label>
+          <SimulationLabel>Max Steps: {maxSteps}</SimulationLabel>
           <Slider
             min={5}
             max={20}
@@ -186,14 +195,14 @@ const Newton1D: React.FC = () => {
             className="ml-2"
           />
         </div>
-        <div>
-          <button onClick={handleStep} className="bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white px-4 py-1 mr-2 rounded">Step</button>
-          <button onClick={handleReset} className="bg-[var(--surface-3)] hover:bg-[var(--border-strong)] text-[var(--text-strong)] px-4 py-1 mr-2 rounded">Reset</button>
-        </div>
-      </div>
-      <div>Path length: {path.length}, Current step: {currentStep}, Final x: {path[path.length-1]?.toFixed(6)}</div>
-      <CanvasChart data={data} layout={layout} style={{ width: '100%', height: 600 }} />
-    </div>
+      </SimulationConfig>
+      <SimulationMain>
+        <CanvasChart data={data} layout={layout} style={{ width: '100%', height: 600 }} />
+      </SimulationMain>
+      <SimulationResults>
+        <div>Path length: {path.length}, Current step: {currentStep}, Final x: {path[path.length-1]?.toFixed(6)}</div>
+      </SimulationResults>
+    </SimulationPanel>
   );
 };
 

@@ -1,12 +1,14 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationResults, SimulationLabel, SimulationPlayButton, SimulationButton } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 
-export default function ElasticWave({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function ElasticWave({}: SimulationComponentProps) {
   const [youngsMod, setYoungsMod] = useState(200); // GPa
   const [density, setDensity] = useState(7800); // kg/m^3 (steel-like)
   const [amplitude, setAmplitude] = useState(1.0);
@@ -157,119 +159,20 @@ export default function ElasticWave({ id }: SimulationComponentProps) { // eslin
   }, [amplitude, frequency, damping, time, cNorm]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">
-        1D Elastic Wave Propagation
-      </h3>
-      <p className="text-[var(--text-muted)] text-sm mb-4">
-        Visualize longitudinal elastic wave propagation in a 1D bar with
-        fixed boundaries. The incident wave reflects at the far end with
-        phase inversion (fixed boundary condition), creating standing-wave
-        patterns.
-      </p>
-
-      {/* Wave speed display */}
-      <div className="bg-[var(--surface-2)] rounded-lg p-3 mb-4 inline-block">
-        <span className="text-[var(--text-muted)] text-sm">
-          Wave speed c = &radic;(E / &rho;) ={' '}
-          <span className="text-blue-400 font-mono">
-            {waveSpeed.toFixed(0)} m/s
-          </span>
-        </span>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-        <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">
-            Young&apos;s Modulus E: {youngsMod} GPa
-          </label>
-          <Slider
-            min={10}
-            max={400}
-            step={10}
-            value={[youngsMod]}
-            onValueChange={([v]) => setYoungsMod(v)}
-            className="w-full"
-          />
-        </div>
-        <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">
-            Density &rho;: {density} kg/m&sup3;
-          </label>
-          <Slider
-            min={1000}
-            max={20000}
-            step={100}
-            value={[density]}
-            onValueChange={([v]) => setDensity(v)}
-            className="w-full"
-          />
-        </div>
-        <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">
-            Amplitude A: {amplitude.toFixed(1)}
-          </label>
-          <Slider
-            min={0.1}
-            max={2.0}
-            step={0.1}
-            value={[amplitude]}
-            onValueChange={([v]) => setAmplitude(v)}
-            className="w-full"
-          />
-        </div>
-        <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">
-            Frequency f: {frequency.toFixed(1)} (normalized)
-          </label>
-          <Slider
-            min={0.5}
-            max={8.0}
-            step={0.5}
-            value={[frequency]}
-            onValueChange={([v]) => setFrequency(v)}
-            className="w-full"
-          />
-        </div>
-        <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">
-            Damping &alpha;: {damping.toFixed(1)}
-          </label>
-          <Slider
-            min={0}
-            max={5}
-            step={0.1}
-            value={[damping]}
-            onValueChange={([v]) => setDamping(v)}
-            className="w-full"
-          />
-        </div>
-      </div>
-
-      {/* Play / Pause / Reset controls */}
-      <div className="flex gap-3 mb-4">
-        <button
-          onClick={() => setIsPlaying(!isPlaying)}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-            isPlaying
-              ? 'bg-red-600 hover:bg-red-700 text-white'
-              : 'bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white'
-          }`}
-        >
-          {isPlaying ? 'Pause' : 'Play'}
-        </button>
-        <button
+    <SimulationPanel title="1D Elastic Wave Propagation" caption="Visualize longitudinal elastic wave propagation in a 1D bar with fixed boundaries. The incident wave reflects at the far end with phase inversion (fixed boundary condition), creating standing-wave patterns.">
+      <SimulationSettings>
+        <SimulationPlayButton isRunning={isPlaying} onToggle={() => setIsPlaying(!isPlaying)} />
+        <SimulationButton
           onClick={() => {
             setIsPlaying(false);
             setTime(0);
           }}
-          className="px-4 py-2 rounded-lg text-sm font-medium bg-[var(--surface-3)] hover:bg-[var(--border-strong)] text-[var(--text-strong)] transition-colors"
         >
           Reset
-        </button>
+        </SimulationButton>
         {!isPlaying && (
           <div className="flex items-center gap-2">
-            <label className="text-sm text-[var(--text-muted)]">Time:</label>
+            <SimulationLabel>Time:</SimulationLabel>
             <Slider
               min={0}
               max={10}
@@ -283,13 +186,94 @@ export default function ElasticWave({ id }: SimulationComponentProps) { // eslin
             </span>
           </div>
         )}
-      </div>
+      </SimulationSettings>
+      <SimulationConfig>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div>
+            <SimulationLabel>
+              Young&apos;s Modulus E: {youngsMod} GPa
+            </SimulationLabel>
+            <Slider
+              min={10}
+              max={400}
+              step={10}
+              value={[youngsMod]}
+              onValueChange={([v]) => setYoungsMod(v)}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel>
+              Density &rho;: {density} kg/m&sup3;
+            </SimulationLabel>
+            <Slider
+              min={1000}
+              max={20000}
+              step={100}
+              value={[density]}
+              onValueChange={([v]) => setDensity(v)}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel>
+              Amplitude A: {amplitude.toFixed(1)}
+            </SimulationLabel>
+            <Slider
+              min={0.1}
+              max={2.0}
+              step={0.1}
+              value={[amplitude]}
+              onValueChange={([v]) => setAmplitude(v)}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel>
+              Frequency f: {frequency.toFixed(1)} (normalized)
+            </SimulationLabel>
+            <Slider
+              min={0.5}
+              max={8.0}
+              step={0.5}
+              value={[frequency]}
+              onValueChange={([v]) => setFrequency(v)}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel>
+              Damping &alpha;: {damping.toFixed(1)}
+            </SimulationLabel>
+            <Slider
+              min={0}
+              max={5}
+              step={0.1}
+              value={[damping]}
+              onValueChange={([v]) => setDamping(v)}
+              className="w-full"
+            />
+          </div>
+        </div>
+      </SimulationConfig>
 
-      <CanvasChart
-        data={plotData.data}
-        layout={plotData.layout}
-        style={{ width: '100%', height: 450 }}
-      />
+      <SimulationMain>
+        <CanvasChart
+          data={plotData.data}
+          layout={plotData.layout}
+          style={{ width: '100%', height: 450 }}
+        />
+      </SimulationMain>
+      <SimulationResults>
+        <div className="bg-[var(--surface-2)] rounded-lg p-3 inline-block">
+          <span className="text-[var(--text-muted)] text-sm">
+            Wave speed c = &radic;(E / &rho;) ={' '}
+            <span className="text-blue-400 font-mono">
+              {waveSpeed.toFixed(0)} m/s
+            </span>
+          </span>
+        </div>
+      </SimulationResults>
 
       <div className="mt-4 text-sm text-[var(--text-muted)] space-y-1">
         <p>
@@ -307,6 +291,6 @@ export default function ElasticWave({ id }: SimulationComponentProps) { // eslin
           exponentially with distance.
         </p>
       </div>
-    </div>
+    </SimulationPanel>
   );
 }

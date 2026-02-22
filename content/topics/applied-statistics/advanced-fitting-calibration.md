@@ -2,132 +2,110 @@
 
 ## Beyond Simple Fitting
 
-Systematic errors are like ghosts in the machine. You can't see them directly, but they haunt your results. Your detector isn't perfectly calibrated. Your energy scale drifts. Your efficiency varies across the measurement range. And lurking behind your signal of interest is a background that must be modeled before you can claim to have seen anything.
+Systematic errors are ghosts in the machine. Your detector drifts, your energy scale shifts, your efficiency varies. And behind your signal lurks a background you must model before claiming to have seen anything.
 
-In [the chi-square method](./chi-square-method), you fit models with a handful of parameters and Gaussian errors. Real experimental data is messier: multiple overlapping signals, correlated parameters, systematic uncertainties from the instrument itself, and competing models that all look plausible. This section builds on that foundation to handle the complications that arise in serious data analysis.
+In [chi-square fitting](./chi-square-method), you fit models with a few parameters and Gaussian errors. Real data is messier: overlapping signals, correlated parameters, systematic uncertainties, competing models. This section handles those complications.
 
 ## Multi-Component Models
 
-Many physical measurements involve a **signal plus background** decomposition. You're looking for a small peak sitting on top of a large, slowly-varying background:
+Many measurements involve **signal plus background**:
 
 $$
-f(x; \boldsymbol{\theta}) = S(x; \boldsymbol{\theta}_S) + B(x; \boldsymbol{\theta}_B),
+f(x; \boldsymbol{\theta}) = S(x; \boldsymbol{\theta}_S) + B(x; \boldsymbol{\theta}_B)
 $$
 
-where $S$ describes the signal of interest and $B$ accounts for background contributions. The total parameter vector $\boldsymbol{\theta} = (\boldsymbol{\theta}_S, \boldsymbol{\theta}_B)$ is estimated simultaneously.
+Think of hearing a conversation in a noisy room. Model both the conversation and the noise simultaneously. Model the noise poorly, and it leaks into your signal estimate.
 
-Think of it as trying to hear a conversation in a noisy room. You need to model both the conversation (signal) and the room noise (background) at the same time. If you model the background poorly, it leaks into your signal estimate and distorts your conclusions.
-
-When the background shape is known from control measurements or simulation, its parameters may be **constrained** by adding penalty terms to the objective function. This is equivalent to Bayesian fitting with informative priors on the background parameters (the connection to [Bayesian statistics](./bayesian-statistics) is direct and deliberate).
+When background shape is known from control measurements, its parameters can be **constrained** by adding penalty terms. This is Bayesian fitting with informative priors on background parameters -- the connection to [Bayesian statistics](./bayesian-statistics) is deliberate.
 
 ## Profile Likelihood
 
-In a model with many parameters, some are interesting (the signal strength, a physical constant) and others are nuisance parameters — things you must account for but don't actually care about. The nuisance parameters are ghosts you need to catch so they don't contaminate what you're measuring. You want confidence intervals on the interesting parameters that correctly account for uncertainty in the nuisance ones.
+Some parameters are interesting (signal strength, a physical constant). Others are nuisance -- things you must account for but don't care about. You want confidence intervals on the interesting ones that honestly reflect uncertainty in the nuisance ones.
 
-The **profile likelihood** does this by optimizing over the nuisance parameters at every point:
+The **profile likelihood** handles this. For each value of the interesting parameter, ask: "what's the *best* the model can do if I freely adjust everything else?" Trace out a curve of best-case likelihoods. That curve gives you confidence intervals:
 
 $$
-L_p(\boldsymbol{\psi}) = \max_{\boldsymbol{\lambda}} L(\boldsymbol{\psi}, \boldsymbol{\lambda}).
+L_p(\boldsymbol{\psi}) = \max_{\boldsymbol{\lambda}} L(\boldsymbol{\psi}, \boldsymbol{\lambda})
 $$
 
 [[simulation profile-likelihood]]
 
-Think of it as asking: "For this particular value of the interesting parameter, what is the *best* the model can do if I freely adjust everything else?" You trace out a curve of best-case likelihoods, and that curve gives you confidence intervals.
-
-A confidence region at level $\alpha$ is:
+A confidence region at level $\alpha$:
 
 $$
--2 \ln \frac{L_p(\boldsymbol{\psi})}{L_p(\hat{\boldsymbol{\psi}})} \leq \chi^2_{k, \alpha},
+-2 \ln \frac{L_p(\boldsymbol{\psi})}{L_p(\hat{\boldsymbol{\psi}})} \leq \chi^2_{k, \alpha}
 $$
 
-where $k = \dim(\boldsymbol{\psi})$. This correctly propagates parameter correlations into the uncertainty — something that simply reading off the diagonal of the covariance matrix would miss if parameters are correlated.
+This correctly propagates parameter correlations into the uncertainty -- reading off the diagonal of a covariance matrix would miss correlated parameters entirely.
 
 ## Goodness of Fit
 
-After fitting, you must assess whether the model actually describes the data. A beautiful fit to a wrong model is worse than no fit at all.
-
-The **chi-squared statistic** $\chi^2 = \sum_i (y_i - f(x_i; \hat{\boldsymbol{\theta}}))^2 / \sigma_i^2$ should follow a $\chi^2$ distribution with $n - p$ degrees of freedom if the model is correct. The **reduced chi-squared** $\chi^2_\nu = \chi^2 / (n - p)$ should be approximately 1. This is the same diagnostic from [the chi-square method](./chi-square-method), now applied to more complex models.
-
-What do the numbers mean?
-
-* $\chi^2_\nu \gg 1$: the model doesn't describe the data, or the uncertainties are underestimated. Something is wrong.
-* $\chi^2_\nu \approx 1$: the model describes the data within the quoted uncertainties. Good.
-* $\chi^2_\nu \ll 1$: the fit is *too* good — the uncertainties are probably overestimated. Suspicious in a different way.
-
-The **p-value** gives the probability of obtaining a $\chi^2$ at least as large as observed, assuming the model is correct. Small p-values (typically $< 0.05$) suggest the model is inadequate.
+After fitting, ask: does the model actually describe the data? The reduced chi-squared $\chi^2_\nu = \chi^2/(n-p)$ should be around 1. Much larger means wrong model or underestimated errors. Much smaller means overestimated errors.
 
 ## Model Comparison
 
-When multiple models could describe the data, you need principled criteria for deciding which one to use. The temptation is to pick the model with the lowest $\chi^2$, but a model with more parameters will *always* fit at least as well. You need to penalize complexity.
+Multiple models could fit. More parameters *always* fit better, so you penalize complexity:
 
-The **likelihood ratio test** (from [hypothesis testing](./hypothesis-testing)) compares nested models. The test statistic $\Lambda = -2\ln(L_0 / L_1)$ follows a $\chi^2$ distribution with degrees of freedom equal to the difference in number of parameters. It asks: does the extra parameter buy enough improvement to justify its inclusion?
+The **likelihood ratio test** compares nested models: $\Lambda = -2\ln(L_0/L_1)$ follows $\chi^2$ with degrees of freedom = difference in parameters.
 
-For non-nested models, **information criteria** balance fit quality against complexity:
+For non-nested models, **information criteria**:
 
 $$
-\text{AIC} = -2\ln L + 2p, \qquad \text{BIC} = -2\ln L + p\ln n,
+\text{AIC} = -2\ln L + 2p, \qquad \text{BIC} = -2\ln L + p\ln n
 $$
 
-where $p$ is the number of parameters and $n$ the number of data points. Lower values are better. BIC penalizes complexity more heavily than AIC and tends to favor simpler models, especially for large datasets.
+Lower is better. BIC penalizes complexity harder and favors simpler models for large datasets.
 
 ## Calibration
 
-All the fitting methods above assume you know the relationship between what your instrument reads and the physical quantity you care about. **Calibration** establishes that relationship.
+All fitting assumes you know the relationship between instrument reading and physical quantity. **Calibration** establishes it:
 
-A typical calibration procedure:
-
-1. **Reference measurements**: Measure known standards spanning the range of interest. These are your anchor points.
-2. **Fit the calibration curve**: Determine $R = g(S; \boldsymbol{\theta})$ mapping the true physical signal $S$ to the instrument response $R$.
-3. **Invert for unknowns**: Given a new measurement $R_{\text{obs}}$, solve $R_{\text{obs}} = g(S; \hat{\boldsymbol{\theta}})$ for the physical quantity.
-4. **Propagate uncertainties**: Include both the statistical uncertainty from the measurement and the systematic uncertainty from the calibration curve itself (using [error propagation](./error-propagation)).
+1. Measure known standards spanning the range.
+2. Fit the calibration curve: $R = g(S; \boldsymbol{\theta})$.
+3. Invert for unknowns.
+4. Propagate uncertainties from both measurement and calibration.
 
 ## Control Channels
 
-How do you pin down the background model without contaminating the signal region? **Control channels** (or sidebands) are data regions where the signal is absent but the background is present.
-
-In a simultaneous fit, the likelihood combines signal and control regions:
+How do you pin down the background without contaminating the signal? Use data regions where signal is absent but background is present:
 
 $$
-L_{\text{total}} = L_{\text{signal}}(\boldsymbol{\theta}_S, \boldsymbol{\theta}_B) \times L_{\text{control}}(\boldsymbol{\theta}_B).
+L_{\text{total}} = L_{\text{signal}}(\boldsymbol{\theta}_S, \boldsymbol{\theta}_B) \times L_{\text{control}}(\boldsymbol{\theta}_B)
 $$
 
-The control channel pins down $\boldsymbol{\theta}_B$, reducing the number of free parameters in the signal region. It's like learning the room noise by recording in an empty room, then using that knowledge when you try to hear the conversation. This technique is standard in particle physics (sidebands), astrophysics (off-source regions), and medical imaging (baseline measurements).
+It's like recording room noise in an empty room, then using that when you try to hear the conversation. Standard in particle physics, astrophysics, medical imaging.
 
 ## Systematic Uncertainties
 
-Systematic uncertainties arise from imperfect knowledge of the experimental setup: detector response, energy scale, efficiency corrections, theoretical modeling. Unlike statistical uncertainties, they don't shrink with more data — they reflect fundamental limitations of the measurement.
-
-The modern approach handles them by introducing **nuisance parameters** $\boldsymbol{\lambda}$ with constraint terms:
+Systematics don't shrink with more data -- they reflect fundamental limitations. The modern approach introduces **nuisance parameters** with constraint terms:
 
 $$
--2\ln L_{\text{constrained}} = -2\ln L(\boldsymbol{\theta}, \boldsymbol{\lambda}) + \sum_k \frac{(\lambda_k - \hat{\lambda}_k)^2}{\sigma_{\lambda_k}^2}.
+-2\ln L_{\text{constrained}} = -2\ln L(\boldsymbol{\theta}, \boldsymbol{\lambda}) + \sum_k \frac{(\lambda_k - \hat{\lambda}_k)^2}{\sigma_{\lambda_k}^2}
 $$
 
-Each nuisance parameter is profiled out during the fit. The resulting uncertainty on parameters of interest automatically includes systematic contributions — they propagate naturally through the fit rather than being added in quadrature after the fact.
+Each nuisance parameter is profiled out. The resulting uncertainty automatically includes systematic contributions.
 
-Notice something: those constraint terms $(\lambda_k - \hat{\lambda}_k)^2 / \sigma_{\lambda_k}^2$ are Gaussian priors on the nuisance parameters. This is [Bayesian reasoning](./bayesian-statistics) applied within a frequentist fitting framework. The two approaches converge when it matters most.
+And here's the punchline: those constraint terms $(\lambda_k - \hat{\lambda}_k)^2/\sigma_{\lambda_k}^2$ are Gaussian priors on the nuisance parameters. This is [Bayesian reasoning](./bayesian-statistics) inside a frequentist framework. The two philosophies converge where it matters most. Nuisance parameters *are* priors in disguise -- and understanding this makes the bridge between frequentist and Bayesian fitting feel less like two separate worlds and more like old friends who speak different dialects.
 
-> **Challenge.** Explain the difference between statistical and systematic uncertainty to a friend. Statistical uncertainty is like the wobble in your measurements — take more measurements, and it shrinks. Systematic uncertainty is like a ruler that's slightly wrong — no matter how many times you measure, the bias stays. One minute.
+> **Challenge.** Explain statistical vs. systematic uncertainty. Statistical: the wobble in your measurements -- take more, it shrinks. Systematic: a ruler that's slightly wrong -- no matter how many times you measure, the bias stays. One minute.
 
 ## Big Ideas
 
-* The profile likelihood is how you honestly report uncertainty on the quantity you care about, after letting everything else float freely — reading off the diagonal of a covariance matrix misses parameter correlations entirely.
-* AIC and BIC are both doing the same thing: penalizing model complexity to prevent the trivial truth that adding parameters always improves the fit. BIC penalizes harder and favors simpler models when datasets are large.
-* Constraint terms on nuisance parameters are Gaussian priors in disguise — the frequentist and Bayesian frameworks converge here, and which language you use is a matter of taste, not truth.
-* A control channel pins down the background using data where the signal is absent, separating what you know about the background from what you are trying to measure. This is not optional in serious analysis — it is the only way to keep signal and background from absorbing each other.
+* The profile likelihood honestly reports uncertainty after letting everything else float -- the covariance diagonal misses parameter correlations.
+* AIC and BIC penalize complexity to prevent the trivial truth that more parameters always fit better.
+* Constraint terms on nuisance parameters are Gaussian priors in disguise -- frequentist and Bayesian converge here.
+* Control channels pin down the background using signal-free data. Not optional in serious analysis.
 
 ## What Comes Next
 
-Advanced fitting synthesizes the entire toolkit developed in this topic: distributions, likelihood, chi-square, hypothesis testing, and Bayesian priors. The final lesson shows how these ideas reappear inside machine learning algorithms, often unrecognized.
-
-Regularization in regression is Bayesian inference. Cross-validation is model comparison. The Fisher discriminant is ANOVA in disguise. Machine learning is statistics with better marketing — and having learned the statistics, you are now positioned to understand what is actually happening inside the algorithms.
+Advanced fitting synthesizes the entire toolkit: distributions, likelihood, chi-square, testing, and Bayesian priors. The final lesson shows how these ideas reappear inside machine learning -- often unrecognized. Regularization is Bayesian inference. Cross-validation is model comparison. Fisher's discriminant is ANOVA in disguise. Having learned the statistics, you're positioned to see what's really happening inside the algorithms.
 
 ## Check Your Understanding
 
-1. You fit a model with 5 parameters, two of which are nuisance parameters you don't care about. Explain why reporting the uncertainty on your parameter of interest from the diagonal of the covariance matrix can give the wrong answer, and what the profile likelihood does differently.
-2. You compare two models: Model A has 3 parameters and $\ln L = -120$. Model B has 5 parameters and $\ln L = -118$. Compute AIC for both. Which model does AIC favor, and does the answer change if you use BIC with $n = 200$ data points?
-3. A fit gives $\chi^2_\nu = 0.6$. Is this a good result? What might cause the reduced chi-squared to be significantly less than 1, and how would you investigate?
+1. Model with 5 parameters, 2 nuisance. Why does the covariance diagonal give wrong uncertainty on your parameter of interest? What does the profile likelihood do differently?
+2. Model A: 3 parameters, $\ln L = -120$. Model B: 5 parameters, $\ln L = -118$. Compute AIC for both. Which wins? Does BIC with $n = 200$ agree?
+3. $\chi^2_\nu = 0.6$. Good? What might cause reduced chi-squared significantly below 1?
 
 ## Challenge
 
-You are searching for a narrow signal peak in a spectrum that also contains a smooth polynomial background. The signal is a Gaussian with known width but unknown amplitude and position; the background is a second-degree polynomial. Describe the complete fitting strategy: (a) how you would set up the likelihood and handle the signal-background decomposition, (b) how you would use a control region (sideband) to constrain the background, (c) how you would use the profile likelihood to report the signal amplitude and its uncertainty, and (d) how you would quantify the significance of any observed excess using the likelihood ratio test. What would a reduced chi-squared significantly greater than 1 tell you about the polynomial background model?
+You're searching for a narrow signal peak in a spectrum with a polynomial background. Signal: Gaussian with known width, unknown amplitude and position. Background: second-degree polynomial. Describe: (a) likelihood setup and signal-background decomposition, (b) sideband constraints on the background, (c) profile likelihood for signal amplitude and uncertainty, (d) significance via likelihood ratio test. What would $\chi^2_\nu \gg 1$ say about the polynomial background?

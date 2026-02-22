@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { Slider } from '@/components/ui/slider';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationLabel, SimulationButton } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 function mulberry32(seed: number) {
   let s = seed >>> 0;
@@ -48,7 +51,7 @@ function runMonteCarlo1D(size: number, beta: number, nsteps: number, runSeed: nu
   return magnetization;
 }
 
-export function PhaseTransitionIsing1D() {
+export default function PhaseTransitionIsing1D({}: SimulationComponentProps) {
   const [size, setSize] = useState(60);
   const [beta, setBeta] = useState(1.2);
   const [nsteps, setNsteps] = useState(3000);
@@ -67,26 +70,29 @@ export function PhaseTransitionIsing1D() {
   }, []);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap gap-6 items-center">
+    <SimulationPanel title="1D Ising Phase Transition">
+      <SimulationSettings>
+        <SimulationButton variant="primary" onClick={() => setRerun(v => v + 1)}>
+          Re-run
+        </SimulationButton>
+      </SimulationSettings>
+      <SimulationConfig>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Size: {size}</label>
+          <SimulationLabel>Size: {size}</SimulationLabel>
           <Slider value={[size]} onValueChange={([v]) => setSize(v)} min={20} max={200} step={10} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Beta (1/T): {beta.toFixed(2)}</label>
+          <SimulationLabel>Beta (1/T): {beta.toFixed(2)}</SimulationLabel>
           <Slider value={[beta]} onValueChange={([v]) => setBeta(v)} min={0.1} max={3} step={0.05} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Steps: {nsteps}</label>
+          <SimulationLabel>Steps: {nsteps}</SimulationLabel>
           <Slider value={[nsteps]} onValueChange={([v]) => setNsteps(v)} min={500} max={12000} step={500} />
         </div>
-        <button onClick={() => setRerun(v => v + 1)} className="px-4 py-2 bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white rounded text-sm mt-4">
-          Re-run
-        </button>
-      </div>
+      </SimulationConfig>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <SimulationMain>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <CanvasChart
           data={[
             { y: mcSeries, type: 'scatter', mode: 'lines', line: { color: '#f59e0b', width: 1.5 }, name: '|m| Monte Carlo' },
@@ -113,7 +119,8 @@ export function PhaseTransitionIsing1D() {
           }}
           style={{ width: '100%', height: 320 }}
         />
-      </div>
-    </div>
+        </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

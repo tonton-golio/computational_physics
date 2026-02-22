@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
 import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
-import { SimulationPanel, SimulationLabel, SimulationToggle } from '@/components/ui/simulation-panel';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationLabel, SimulationToggle } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
@@ -63,124 +64,125 @@ export default function WignerSqueezed({}: SimulationComponentProps) {
   }, [realAlpha, imagAlpha, squeezeR, squeezeTheta]);
 
   return (
-    <SimulationPanel>
-      <h3 className="text-lg font-semibold text-[var(--text-strong)]">Squeezed State Wigner Function</h3>
-      <p className="text-sm text-[var(--text-soft)]">
-        {"|psi⟩ = |α, ξ⟩ = D(α) S(ξ)|0⟩, where S(ξ) = exp[½(ξ* â² − ξ (â†)²)] and ξ = r·exp(iθ). Squeezing reduces fluctuations in one quadrature at the expense of the other."}
-      </p>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <SimulationLabel>
-            Re(alpha): {realAlpha.toFixed(2)}
-          </SimulationLabel>
-          <Slider
-            value={[realAlpha]}
-            onValueChange={(val) => setRealAlpha(val[0])}
-            min={-3}
-            max={3}
-            step={0.1}
-            className="w-full"
-          />
-        </div>
-        <div>
-          <SimulationLabel>
-            Im(alpha): {imagAlpha.toFixed(2)}
-          </SimulationLabel>
-          <Slider
-            value={[imagAlpha]}
-            onValueChange={(val) => setImagAlpha(val[0])}
-            min={-3}
-            max={3}
-            step={0.1}
-            className="w-full"
-          />
-        </div>
-        <div>
-          <SimulationLabel>
-            Squeeze parameter r: {squeezeR.toFixed(2)}
-          </SimulationLabel>
-          <Slider
-            value={[squeezeR]}
-            onValueChange={(val) => setSqueezeR(val[0])}
-            min={0}
-            max={2.0}
-            step={0.05}
-            className="w-full"
-          />
-        </div>
-        <div>
-          <SimulationLabel>
-            Squeeze angle theta: {(squeezeTheta * 180 / Math.PI).toFixed(0)} deg
-          </SimulationLabel>
-          <Slider
-            value={[squeezeTheta]}
-            onValueChange={(val) => setSqueezeTheta(val[0])}
-            min={0}
-            max={2 * Math.PI}
-            step={0.05}
-            className="w-full"
-          />
-        </div>
-      </div>
-
-      <SimulationToggle
-        options={[
-          { label: '2D Contour', value: '2d' },
-          { label: '3D Surface', value: '3d' },
-        ]}
-        value={show3D ? '3d' : '2d'}
-        onChange={(v) => setShow3D(v === '3d')}
-      />
-
-      {!show3D ? (
-        <CanvasHeatmap
-          data={[
-            {
-              z: W,
-              x: xvec,
-              y: pvec,
-              type: 'heatmap',
-              colorscale: 'RdBu',
-              colorbar: { title: { text: 'W(q, p)' } },
-            },
+    <SimulationPanel title="Squeezed State Wigner Function" caption="|psi⟩ = |α, ξ⟩ = D(α) S(ξ)|0⟩, where S(ξ) = exp[½(ξ* â² − ξ (â†)²)] and ξ = r·exp(iθ). Squeezing reduces fluctuations in one quadrature at the expense of the other.">
+      <SimulationSettings>
+        <SimulationToggle
+          options={[
+            { label: '2D Contour', value: '2d' },
+            { label: '3D Surface', value: '3d' },
           ]}
-          layout={{
-            title: { text: `Squeezed State W(q, p) [r=${squeezeR.toFixed(2)}]` },
-            xaxis: {
-              title: { text: 'q' },
-            },
-            yaxis: {
-              title: { text: 'p' },
-              scaleanchor: 'x',
-            },
-            height: 500,
-            margin: { t: 40, r: 20, b: 50, l: 50 },
-          }}
-          style={{ width: '100%', height: '500px' }}
+          value={show3D ? '3d' : '2d'}
+          onChange={(v) => setShow3D(v === '3d')}
         />
-      ) : (
-        <CanvasHeatmap
-          data={[
-            {
-              z: W,
-              x: xvec,
-              y: pvec,
-              type: 'heatmap',
-              colorscale: 'RdBu',
-              colorbar: { title: { text: 'W(q,p)' } },
-            },
-          ]}
-          layout={{
-            title: { text: `Squeezed State W(q, p) - 3D [r=${squeezeR.toFixed(2)}]` },
-            xaxis: { title: { text: 'q' } },
-            yaxis: { title: { text: 'p' } },
-            height: 500,
-            margin: { t: 40, r: 20, b: 50, l: 50 },
-          }}
-          style={{ width: '100%', height: '500px' }}
-        />
-      )}
+      </SimulationSettings>
+
+      <SimulationConfig>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <SimulationLabel>
+              Re(alpha): {realAlpha.toFixed(2)}
+            </SimulationLabel>
+            <Slider
+              value={[realAlpha]}
+              onValueChange={(val) => setRealAlpha(val[0])}
+              min={-3}
+              max={3}
+              step={0.1}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel>
+              Im(alpha): {imagAlpha.toFixed(2)}
+            </SimulationLabel>
+            <Slider
+              value={[imagAlpha]}
+              onValueChange={(val) => setImagAlpha(val[0])}
+              min={-3}
+              max={3}
+              step={0.1}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel>
+              Squeeze parameter r: {squeezeR.toFixed(2)}
+            </SimulationLabel>
+            <Slider
+              value={[squeezeR]}
+              onValueChange={(val) => setSqueezeR(val[0])}
+              min={0}
+              max={2.0}
+              step={0.05}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel>
+              Squeeze angle theta: {(squeezeTheta * 180 / Math.PI).toFixed(0)} deg
+            </SimulationLabel>
+            <Slider
+              value={[squeezeTheta]}
+              onValueChange={(val) => setSqueezeTheta(val[0])}
+              min={0}
+              max={2 * Math.PI}
+              step={0.05}
+              className="w-full"
+            />
+          </div>
+        </div>
+      </SimulationConfig>
+
+      <SimulationMain>
+        {!show3D ? (
+          <CanvasHeatmap
+            data={[
+              {
+                z: W,
+                x: xvec,
+                y: pvec,
+                type: 'heatmap',
+                colorscale: 'RdBu',
+                colorbar: { title: { text: 'W(q, p)' } },
+              },
+            ]}
+            layout={{
+              title: { text: `Squeezed State W(q, p) [r=${squeezeR.toFixed(2)}]` },
+              xaxis: {
+                title: { text: 'q' },
+              },
+              yaxis: {
+                title: { text: 'p' },
+                scaleanchor: 'x',
+              },
+              height: 500,
+              margin: { t: 40, r: 20, b: 50, l: 50 },
+            }}
+            style={{ width: '100%', height: '500px' }}
+          />
+        ) : (
+          <CanvasHeatmap
+            data={[
+              {
+                z: W,
+                x: xvec,
+                y: pvec,
+                type: 'heatmap',
+                colorscale: 'RdBu',
+                colorbar: { title: { text: 'W(q,p)' } },
+              },
+            ]}
+            layout={{
+              title: { text: `Squeezed State W(q, p) - 3D [r=${squeezeR.toFixed(2)}]` },
+              xaxis: { title: { text: 'q' } },
+              yaxis: { title: { text: 'p' } },
+              height: 500,
+              margin: { t: 40, r: 20, b: 50, l: 50 },
+            }}
+            style={{ width: '100%', height: '500px' }}
+          />
+        )}
+      </SimulationMain>
     </SimulationPanel>
   );
 }

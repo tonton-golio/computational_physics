@@ -94,12 +94,14 @@ describe("markdownToHtml", () => {
       expect(html).toContain("<ul");
     });
 
-    it("converts numbered list items", () => {
+    it("converts numbered list items into an ordered list", () => {
       const md = "1. First\n2. Second";
       const { html } = markdownToHtml(md, noKatex);
+      expect(html).toContain("<ol");
       expect(html).toContain("<li");
       expect(html).toContain("First");
       expect(html).toContain("Second");
+      expect(html).not.toContain("<ul");
     });
   });
 

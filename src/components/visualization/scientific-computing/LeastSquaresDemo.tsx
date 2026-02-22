@@ -1,8 +1,10 @@
-'use client';
+"use client";
 
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { Slider } from '@/components/ui/slider';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationResults, SimulationLabel, SimulationButton } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 
@@ -14,7 +16,7 @@ function seededRandom(seed: number) {
   };
 }
 
-export function LeastSquaresDemo({}: SimulationComponentProps) {
+export default function LeastSquaresDemo({}: SimulationComponentProps) {
   const [nPoints, setNPoints] = useState(40);
   const [noiseLevel, setNoiseLevel] = useState(0.8);
   const [fitDegree, setFitDegree] = useState(1);
@@ -258,51 +260,9 @@ export function LeastSquaresDemo({}: SimulationComponentProps) {
   }, [fitResult.coeffs, fitDegree]);
 
   return (
-    <div className="space-y-4">
-      <CanvasChart
-        data={plotData as any}
-        layout={{
-          margin: { t: 40, r: 20, b: 50, l: 50 },
-          xaxis: {
-            title: { text: 'x' },
-          },
-          yaxis: {
-            title: { text: 'y' },
-          },
-          title: { text: 'Least Squares Fitting', font: { size: 16 } },
-          legend: { x: 0, y: 1, bgcolor: 'rgba(0,0,0,0)' },
-          showlegend: true,
-        }}
-        style={{ width: '100%', height: '400px' }}
-      />
-
-      <div className="flex flex-wrap gap-4 items-center">
-        <label className="text-sm text-[var(--text-muted)]">
-          Points:
-          <Slider
-            min={10}
-            max={100}
-            value={[nPoints]}
-            onValueChange={([v]) => setNPoints(v)}
-            className="ml-2 w-24"
-          />
-          <span className="ml-1 text-[var(--text-strong)]">{nPoints}</span>
-        </label>
-
-        <label className="text-sm text-[var(--text-muted)]">
-          Noise:
-          <Slider
-            min={0}
-            max={3}
-            step={0.1}
-            value={[noiseLevel]}
-            onValueChange={([v]) => setNoiseLevel(v)}
-            className="ml-2 w-24"
-          />
-          <span className="ml-1 text-[var(--text-strong)]">{noiseLevel.toFixed(1)}</span>
-        </label>
-
-        <label className="text-sm text-[var(--text-muted)]">
+    <SimulationPanel title="Least Squares Fitting" caption="The fit is computed via the normal equations: solve A^T A c = A^T y where A is the Vandermonde matrix. Press Animate GD to watch gradient descent converge to the linear fit from a random initial guess.">
+      <SimulationSettings>
+        <SimulationLabel>
           Degree:
           <select
             value={fitDegree}
@@ -314,49 +274,92 @@ export function LeastSquaresDemo({}: SimulationComponentProps) {
             <option value={3}>3 (Cubic)</option>
             <option value={4}>4 (Quartic)</option>
           </select>
-        </label>
-      </div>
-
-      <div className="flex flex-wrap gap-3">
-        <button
-          onClick={handleNewData}
-          className="px-4 py-2 bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white rounded text-sm"
-        >
-          New Data
-        </button>
-        <button
-          onClick={handleAnimate}
-          className="px-4 py-2 bg-green-600 rounded text-sm hover:bg-green-700 text-white"
-        >
-          Animate GD
-        </button>
-        <button
-          onClick={() => setShowResiduals(!showResiduals)}
-          className={`px-4 py-2 rounded text-sm ${showResiduals ? 'bg-amber-600 hover:bg-amber-700 text-white' : 'bg-[var(--surface-3)] hover:bg-[var(--border-strong)] text-[var(--text-strong)]'}`}
-        >
-          {showResiduals ? 'Hide' : 'Show'} Residuals
-        </button>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-        <div className="bg-[var(--surface-1)] rounded-lg p-3">
-          <div className="text-[var(--text-muted)]">Fit equation</div>
-          <div className="text-[var(--text-strong)] font-mono text-xs mt-1">{coeffString}</div>
+        </SimulationLabel>
+        <div className="flex flex-wrap gap-3">
+          <SimulationButton
+            variant="primary"
+            onClick={handleNewData}
+          >
+            New Data
+          </SimulationButton>
+          <SimulationButton
+            variant="primary"
+            onClick={handleAnimate}
+          >
+            Animate GD
+          </SimulationButton>
+          <SimulationButton
+            variant="secondary"
+            onClick={() => setShowResiduals(!showResiduals)}
+          >
+            {showResiduals ? 'Hide' : 'Show'} Residuals
+          </SimulationButton>
         </div>
-        <div className="bg-[var(--surface-1)] rounded-lg p-3">
-          <div className="text-[var(--text-muted)]">R-squared</div>
-          <div className="text-green-400 font-mono mt-1">{fitResult.rSquared.toFixed(6)}</div>
-        </div>
-        <div className="bg-[var(--surface-1)] rounded-lg p-3">
-          <div className="text-[var(--text-muted)]">Sum of Squared Residuals</div>
-          <div className="text-yellow-400 font-mono mt-1">{fitResult.ssRes.toFixed(4)}</div>
-        </div>
-      </div>
+      </SimulationSettings>
+      <SimulationConfig>
+        <div className="flex flex-wrap gap-4 items-center">
+          <SimulationLabel>
+            Points:
+            <Slider
+              min={10}
+              max={100}
+              value={[nPoints]}
+              onValueChange={([v]) => setNPoints(v)}
+              className="ml-2 w-24"
+            />
+            <span className="ml-1 text-[var(--text-strong)]">{nPoints}</span>
+          </SimulationLabel>
 
-      <p className="text-xs text-[var(--text-soft)]">
-        The fit is computed via the normal equations: solve A^T A c = A^T y where A is the Vandermonde matrix.
-        Press &quot;Animate GD&quot; to watch gradient descent converge to the linear fit from a random initial guess.
-      </p>
-    </div>
+          <SimulationLabel>
+            Noise:
+            <Slider
+              min={0}
+              max={3}
+              step={0.1}
+              value={[noiseLevel]}
+              onValueChange={([v]) => setNoiseLevel(v)}
+              className="ml-2 w-24"
+            />
+            <span className="ml-1 text-[var(--text-strong)]">{noiseLevel.toFixed(1)}</span>
+          </SimulationLabel>
+        </div>
+      </SimulationConfig>
+
+      <SimulationMain>
+        <CanvasChart
+          data={plotData as any}
+          layout={{
+            margin: { t: 40, r: 20, b: 50, l: 50 },
+            xaxis: {
+              title: { text: 'x' },
+            },
+            yaxis: {
+              title: { text: 'y' },
+            },
+            title: { text: 'Least Squares Fitting', font: { size: 16 } },
+            legend: { x: 0, y: 1, bgcolor: 'rgba(0,0,0,0)' },
+            showlegend: true,
+          }}
+          style={{ width: '100%', height: '400px' }}
+        />
+      </SimulationMain>
+
+      <SimulationResults>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+          <div className="bg-[var(--surface-1)] rounded-lg p-3">
+            <div className="text-[var(--text-muted)]">Fit equation</div>
+            <div className="text-[var(--text-strong)] font-mono text-xs mt-1">{coeffString}</div>
+          </div>
+          <div className="bg-[var(--surface-1)] rounded-lg p-3">
+            <div className="text-[var(--text-muted)]">R-squared</div>
+            <div className="text-green-400 font-mono mt-1">{fitResult.rSquared.toFixed(6)}</div>
+          </div>
+          <div className="bg-[var(--surface-1)] rounded-lg p-3">
+            <div className="text-[var(--text-muted)]">Sum of Squared Residuals</div>
+            <div className="text-yellow-400 font-mono mt-1">{fitResult.ssRes.toFixed(4)}</div>
+          </div>
+        </div>
+      </SimulationResults>
+    </SimulationPanel>
   );
 }

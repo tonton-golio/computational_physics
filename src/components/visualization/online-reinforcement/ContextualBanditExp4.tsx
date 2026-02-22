@@ -1,12 +1,14 @@
-'use client';
+"use client";
 
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationLabel, SimulationConfig } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 
-export default function ContextualBanditExp4({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function ContextualBanditExp4({}: SimulationComponentProps) {
   const [rounds, setRounds] = useState(400);
   const contexts = useMemo(() => Array.from({ length: rounds }, (_, t) => (Math.sin(t / 18) > 0 ? 1 : 0)), [rounds]);
   const oracle = useMemo(() => contexts.map((c) => (c === 1 ? 1 : 0)), [contexts]);
@@ -28,10 +30,14 @@ export default function ContextualBanditExp4({ id }: SimulationComponentProps) {
   const x = Array.from({ length: rounds }, (_, i) => i + 1);
 
   return (
-    <div className="w-full rounded-lg bg-[var(--surface-1)] p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-3 text-[var(--text-strong)]">Contextual Bandit (EXP4-style)</h3>
-      <label className="mb-1 block text-sm text-[var(--text-muted)]">Rounds: {rounds}</label>
-      <Slider value={[rounds]} onValueChange={([v]) => setRounds(v)} min={100} max={1000} step={25} className="mb-4" />
+    <SimulationPanel title="Contextual Bandit (EXP4-style)">
+      <SimulationConfig>
+        <div>
+          <SimulationLabel>Rounds: {rounds}</SimulationLabel>
+          <Slider value={[rounds]} onValueChange={([v]) => setRounds(v)} min={100} max={1000} step={25} />
+        </div>
+      </SimulationConfig>
+      <SimulationMain>
       <CanvasChart
         data={[
           { x, y: cumExp4, type: 'scatter', mode: 'lines', name: 'Learner cumulative reward', line: { color: '#60a5fa', width: 2 } },
@@ -46,6 +52,7 @@ export default function ContextualBanditExp4({ id }: SimulationComponentProps) {
         }}
         style={{ width: '100%' }}
       />
-    </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

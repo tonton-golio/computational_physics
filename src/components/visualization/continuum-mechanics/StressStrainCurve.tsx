@@ -1,12 +1,14 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 
-export default function StressStrainCurve({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function StressStrainCurve({}: SimulationComponentProps) {
   const [youngsMod, setYoungsMod] = useState(200); // GPa
   const [yieldStress, setYieldStress] = useState(0.25); // GPa
   const [hardeningExp, setHardeningExp] = useState(5);
@@ -117,21 +119,12 @@ export default function StressStrainCurve({ id }: SimulationComponentProps) { //
   }, [youngsMod, yieldStress, hardeningExp, maxStrain]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">
-        Interactive Stress-Strain Curve
-      </h3>
-      <p className="text-[var(--text-muted)] text-sm mb-4">
-        Compare linear elastic response (Hooke&apos;s law) with nonlinear
-        Ramberg-Osgood hardening. Adjust material parameters to see how
-        the stress-strain relationship changes.
-      </p>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <SimulationPanel title="Interactive Stress-Strain Curve" caption="Compare linear elastic response (Hooke's law) with nonlinear Ramberg-Osgood hardening. Adjust material parameters to see how the stress-strain relationship changes.">
+      <SimulationConfig>
         <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">
+          <SimulationLabel>
             Young&apos;s Modulus E: {youngsMod} GPa
-          </label>
+          </SimulationLabel>
           <Slider
             min={50}
             max={400}
@@ -142,9 +135,9 @@ export default function StressStrainCurve({ id }: SimulationComponentProps) { //
           />
         </div>
         <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">
+          <SimulationLabel>
             Yield Stress &sigma;<sub>Y</sub>: {yieldStress.toFixed(2)} GPa
-          </label>
+          </SimulationLabel>
           <Slider
             min={0.05}
             max={1.0}
@@ -155,9 +148,9 @@ export default function StressStrainCurve({ id }: SimulationComponentProps) { //
           />
         </div>
         <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">
+          <SimulationLabel>
             Hardening Exponent n: {hardeningExp}
-          </label>
+          </SimulationLabel>
           <Slider
             min={2}
             max={20}
@@ -168,9 +161,9 @@ export default function StressStrainCurve({ id }: SimulationComponentProps) { //
           />
         </div>
         <div>
-          <label className="block text-sm text-[var(--text-muted)] mb-1">
+          <SimulationLabel>
             Max Strain: {(maxStrain * 100).toFixed(1)}%
-          </label>
+          </SimulationLabel>
           <Slider
             min={0.01}
             max={0.15}
@@ -180,19 +173,21 @@ export default function StressStrainCurve({ id }: SimulationComponentProps) { //
             className="w-full"
           />
         </div>
-      </div>
+      </SimulationConfig>
 
-      <CanvasChart
-        data={plotData.data}
-        layout={plotData.layout}
-        style={{ width: '100%', height: 500 }}
-      />
+      <SimulationMain>
+        <CanvasChart
+          data={plotData.data}
+          layout={plotData.layout}
+          style={{ width: '100%', height: 500 }}
+        />
+      </SimulationMain>
 
       <div className="mt-4 text-sm text-[var(--text-muted)] space-y-1">
         <p><strong className="text-[var(--text-muted)]">Blue line:</strong> Linear elastic response &sigma; = E&epsilon; (Hooke&apos;s law).</p>
         <p><strong className="text-[var(--text-muted)]">Red curve:</strong> Ramberg-Osgood model &epsilon; = &sigma;/E + 0.002(&sigma;/&sigma;<sub>Y</sub>)<sup>n</sup>. At low stress the two curves coincide; beyond yield the material hardens nonlinearly.</p>
         <p><strong className="text-[var(--text-muted)]">Diamond:</strong> Conventional yield point defined by the 0.2% offset method.</p>
       </div>
-    </div>
+    </SimulationPanel>
   );
 }
