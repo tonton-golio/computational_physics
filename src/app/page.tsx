@@ -78,9 +78,9 @@ export default function HomePage() {
           <section className="lg:col-span-5 flex min-h-0 flex-col gap-3 rounded-lg border border-[var(--border-strong)] bg-[var(--surface-1)]/30 p-4 font-mono text-sm backdrop-blur-lg">
             <div className="rounded-md border border-[var(--border-strong)] bg-[var(--surface-2)]/40 dark:bg-black/30 p-3">
               <p className="text-[var(--text-soft)]">$ status</p>
-              <p className="mt-1 text-[var(--text-strong)]">{topicCount} topics, {subtopicCount} subtopics — all systems nominal.</p>
+              <p className="mt-1 text-[var(--text-strong)]">{topicCount} topics, {subtopicCount} subtopics.</p>
               <p className="mt-1 text-[var(--text-soft)]">$ mission</p>
-              <p className="mt-1 text-[var(--text-strong)]">An open, self-evolving physics lab — powered by agents, shaped by contributors.</p>
+              <p className="mt-1 text-[var(--text-strong)]">An open, self-evolving learning platform — powered by agents, shaped by contributors.</p>
             </div>
           </section>
         </div>
