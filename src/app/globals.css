@@ -159,6 +159,9 @@ body {
 :-webkit-full-screen {
   background-color: var(--surface-1);
 }
+.sim-fake-fullscreen {
+  background-color: var(--surface-1);
+}
 
 /* ── Fullscreen simulation layout ─────────────────────────────────── */
 
