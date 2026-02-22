@@ -27,6 +27,7 @@ export const POST = withApiHandler("/api/suggestions", "POST", async (request, c
       suggestion: suggestion.slice(0, 2000),
       page: page || "/",
       user_id: user.id,
+      status: "pending_injection_assessment",
       ...(context && { context: String(context).slice(0, 100) }),
     });
 
