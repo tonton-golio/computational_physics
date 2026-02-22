@@ -88,7 +88,7 @@ Bayesian thinking reframes inference as belief updating. The next section shows 
 
 ## Check Your Understanding
 
-1. Disease: 1 in 1000. Test: 99% sensitivity, 95% specificity. You test positive. Walk through Bayes step by step. Why is the answer far less than 99%?
+1. A disease affects 1 in 1000 people. A test has 99% sensitivity and 95% specificity. If you test positive, what is the probability you actually have the disease? Walk through Bayes' theorem step by step.
 2. Strong informative prior, posterior barely moved. "The prior was too strong." What's the equally valid alternative interpretation?
 3. Frequentist CI and Bayesian credible interval are numerically identical. Do they mean the same thing?
 
