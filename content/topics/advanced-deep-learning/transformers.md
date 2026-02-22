@@ -20,16 +20,6 @@ The scaling factor $\sqrt{d_k}$ prevents dot products from growing too large, wh
 
 The attention weights form a matrix where each row sums to one. You can picture it as every word voting on which other words matter most to it. The word "it" might vote heavily for "the cat" when trying to determine what "it" refers to.
 
-```python
-def scaled_dot_product_attention(Q, K, V, mask=None):
-    d_k = Q.size(-1)
-    scores = torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(d_k)
-    if mask is not None:
-        scores = scores.masked_fill(mask == 0, float('-inf'))
-    weights = F.softmax(scores, dim=-1)
-    return torch.matmul(weights, V)
-```
-<!--code-toggle-->
 ```pseudocode
 FUNCTION scaled_dot_product_attention(Q, K, V, mask=None):
     d_k = DIMENSION(Q, -1)
