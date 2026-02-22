@@ -2,85 +2,74 @@
 
 import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
-import { CanvasChart } from '@/components/ui/canvas-chart';
 import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
 import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
 import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-
 /**
- * Build the G matrix for linear tomography.
- * Rays travel diagonally across an N x N grid.
- * Left earthquake: rays go from upper-left to seismograph on surface.
- * Right earthquake: rays go from upper-right to seismograph on surface.
+ * Build rays for tomography - each ray is a path through the grid.
+ * Left source: rays travel diagonally down-right
+ * Right source: rays travel diagonally down-left
  */
-function makeG(N: number): number[][] {
-  const N2 = N * N;
-  const rows: number[][] = [];
+function buildRays(N: number): { path: [number, number][] }[] {
+  const rays: { path: [number, number][] }[] = [];
 
-  // G_left: flipped identity diagonals
-  const gLeft: number[][] = [];
-  for (let i = 0; i < N - 2; i++) {
-    const mat: number[] = new Array(N2).fill(0);
-    // np.flip(np.eye(N, k=-(1+i)), axis=0).flatten()
-    for (let r = 0; r < N; r++) {
-      const c = (N - 1 - r) - (1 + i);
-      if (c >= 0 && c < N) {
-        mat[r * N + c] = 1;
-      }
+  // Left source rays (top-left corner, radiating to bottom and right edges)
+  for (let startRow = 0; startRow < N; startRow++) {
+    const path: [number, number][] = [];
+    let r = startRow;
+    let c = 0;
+    while (r < N && c < N) {
+      path.push([r, c]);
+      r++;
+      c++;
     }
-    gLeft.push(mat);
+    if (path.length > 1) rays.push({ path });
   }
 
-  // G_right: identity diagonals
-  const gRight: number[][] = [];
-  for (let i = 0; i < N - 2; i++) {
-    const mat: number[] = new Array(N2).fill(0);
-    // np.eye(N, k=1+i).flatten()
-    for (let r = 0; r < N; r++) {
-      const c = r + (1 + i);
-      if (c >= 0 && c < N) {
-        mat[r * N + c] = 1;
-      }
+  // Right source rays (top-right corner, radiating to bottom and left edges)
+  for (let startRow = 0; startRow < N; startRow++) {
+    const path: [number, number][] = [];
+    let r = startRow;
+    let c = N - 1;
+    while (r < N && c >= 0) {
+      path.push([r, c]);
+      r++;
+      c--;
     }
-    gRight.push(mat);
+    if (path.length > 1) rays.push({ path });
   }
 
-  const z = new Array(N2).fill(0);
-
-  // Build G = [z, G_left[::-1], z, z, G_right, z]
-  rows.push([...z]);
-  for (let i = gLeft.length - 1; i >= 0; i--) {
-    rows.push([...gLeft[i]]);
-  }
-  rows.push([...z]);
-  rows.push([...z]);
-  for (let i = 0; i < gRight.length; i++) {
-    rows.push([...gRight[i]]);
-  }
-  rows.push([...z]);
-
-  // Scale by sqrt(2) * 1000
-  const scale = Math.SQRT2 * 1000;
-  for (const row of rows) {
-    for (let j = 0; j < row.length; j++) {
-      row[j] *= scale;
-    }
-  }
-
-  return rows;
+  return rays;
 }
 
-function makeM(N: number, top: number, bot: number, left: number, right: number): number[] {
+function makeTrueModel(N: number, anomalyRow: number, anomalyCol: number): number[] {
   const m = new Array(N * N).fill(0);
-  const anomaly = (1 / 5000) - (1 / 5200);
-  for (let r = top; r < bot; r++) {
-    for (let c = left; c < right; c++) {
-      m[r * N + c] = anomaly;
+  const anomalyVal = 0.5;
+
+  // Create a centered anomaly
+  for (let dr = -1; dr <= 1; dr++) {
+    for (let dc = -1; dc <= 1; dc++) {
+      const r = anomalyRow + dr;
+      const c = anomalyCol + dc;
+      if (r >= 0 && r < N && c >= 0 && c < N) {
+        m[r * N + c] = anomalyVal;
+      }
     }
   }
   return m;
+}
+
+function buildG(rays: { path: [number, number][] }[], N: number): number[][] {
+  const N2 = N * N;
+  return rays.map(ray => {
+    const row = new Array(N2).fill(0);
+    for (const [r, c] of ray.path) {
+      row[r * N + c] = 1;
+    }
+    return row;
+  });
 }
 
 function matVecMul(G: number[][], v: number[]): number[] {
@@ -91,316 +80,229 @@ function vecNorm(v: number[]): number {
   return Math.sqrt(v.reduce((s, x) => s + x * x, 0));
 }
 
-/**
- * Solve Tikhonov regularized inverse: m = (G^T G + eps^2 I)^{-1} G^T d
- * Using a simplified approach via solving the normal equations with Gauss elimination.
- */
-function solveTikhonov(G: number[][], dObs: number[], epsilon: number): number[] {
-  const nParams = G[0].length;
-  const nData = G.length;
+function solveTikhonov(G: number[][], d: number[], epsilon: number): number[] {
+  const n = G[0].length;
+  const m = G.length;
 
-  // Build G^T G
-  const GtG: number[][] = [];
-  for (let i = 0; i < nParams; i++) {
-    GtG.push(new Array(nParams).fill(0));
+  // G^T G + eps^2 I
+  const AtA: number[][] = [];
+  for (let i = 0; i < n; i++) {
+    AtA.push(new Array(n).fill(0));
   }
-  for (let i = 0; i < nParams; i++) {
+  for (let i = 0; i < n; i++) {
     for (let j = 0; j <= i; j++) {
       let s = 0;
-      for (let k = 0; k < nData; k++) {
-        s += G[k][i] * G[k][j];
-      }
-      GtG[i][j] = s;
-      GtG[j][i] = s;
+      for (let k = 0; k < m; k++) s += G[k][i] * G[k][j];
+      AtA[i][j] = s;
+      AtA[j][i] = s;
     }
-    GtG[i][i] += epsilon * epsilon;
+    AtA[i][i] += epsilon * epsilon;
   }
 
-  // Build G^T d
-  const Gtd: number[] = new Array(nParams).fill(0);
-  for (let i = 0; i < nParams; i++) {
-    for (let k = 0; k < nData; k++) {
-      Gtd[i] += G[k][i] * dObs[k];
-    }
+  // G^T d
+  const Atd: number[] = new Array(n).fill(0);
+  for (let i = 0; i < n; i++) {
+    for (let k = 0; k < m; k++) Atd[i] += G[k][i] * d[k];
   }
 
-  // Solve (GtG) m = Gtd via Gaussian elimination with partial pivoting
-  const A = GtG.map(row => [...row]);
-  const b = [...Gtd];
-  const n = nParams;
-
+  // Gaussian elimination
+  const A = AtA.map(row => [...row]);
+  const b = [...Atd];
   for (let col = 0; col < n; col++) {
-    // Pivot
-    let maxVal = Math.abs(A[col][col]);
     let maxRow = col;
     for (let r = col + 1; r < n; r++) {
-      if (Math.abs(A[r][col]) > maxVal) {
-        maxVal = Math.abs(A[r][col]);
-        maxRow = r;
-      }
+      if (Math.abs(A[r][col]) > Math.abs(A[maxRow][col])) maxRow = r;
     }
     [A[col], A[maxRow]] = [A[maxRow], A[col]];
     [b[col], b[maxRow]] = [b[maxRow], b[col]];
-
     if (Math.abs(A[col][col]) < 1e-20) continue;
-
     for (let r = col + 1; r < n; r++) {
-      const factor = A[r][col] / A[col][col];
-      for (let j = col; j < n; j++) {
-        A[r][j] -= factor * A[col][j];
-      }
-      b[r] -= factor * b[col];
+      const f = A[r][col] / A[col][col];
+      for (let j = col; j < n; j++) A[r][j] -= f * A[col][j];
+      b[r] -= f * b[col];
     }
   }
 
-  // Back substitution
-  const m = new Array(n).fill(0);
+  const x = new Array(n).fill(0);
   for (let i = n - 1; i >= 0; i--) {
     let s = b[i];
-    for (let j = i + 1; j < n; j++) {
-      s -= A[i][j] * m[j];
-    }
-    m[i] = Math.abs(A[i][i]) > 1e-20 ? s / A[i][i] : 0;
+    for (let j = i + 1; j < n; j++) s -= A[i][j] * x[j];
+    x[i] = Math.abs(A[i][i]) > 1e-20 ? s / A[i][i] : 0;
   }
+  return x;
+}
 
-  return m;
+// SVG component for ray visualization
+function RayGrid({ N, rays, anomalyRow, anomalyCol }: { N: number; rays: { path: [number, number][] }[]; anomalyRow: number; anomalyCol: number }) {
+  const cellSize = 20;
+  const width = N * cellSize;
+  const height = N * cellSize;
+
+  return (
+    <svg width={width} height={height} className="border border-[var(--border)] rounded">
+      {/* Grid cells */}
+      {Array.from({ length: N * N }).map((_, i) => {
+        const r = Math.floor(i / N);
+        const c = i % N;
+        const isAnomaly = Math.abs(r - anomalyRow) <= 1 && Math.abs(c - anomalyCol) <= 1;
+        return (
+          <rect
+            key={i}
+            x={c * cellSize}
+            y={r * cellSize}
+            width={cellSize}
+            height={cellSize}
+            fill={isAnomaly ? 'rgba(239, 68, 68, 0.4)' : 'transparent'}
+            stroke="var(--border)"
+            strokeWidth={0.5}
+          />
+        );
+      })}
+      {/* Rays */}
+      {rays.map((ray, idx) => {
+        const isLeft = idx < rays.length / 2;
+        const points = ray.path.map(([r, c]) =>
+          `${c * cellSize + cellSize / 2},${r * cellSize + cellSize / 2}`
+        ).join(' ');
+        return (
+          <polyline
+            key={idx}
+            points={points}
+            fill="none"
+            stroke={isLeft ? '#3b82f6' : '#fb923c'}
+            strokeWidth={1.5}
+            opacity={0.6}
+          />
+        );
+      })}
+      {/* Source markers */}
+      <circle cx={cellSize / 2} cy={cellSize / 2} r={4} fill="#3b82f6" />
+      <circle cx={width - cellSize / 2} cy={cellSize / 2} r={4} fill="#fb923c" />
+      {/* Anomaly marker */}
+      <circle
+        cx={anomalyCol * cellSize + cellSize / 2}
+        cy={anomalyRow * cellSize + cellSize / 2}
+        r={6}
+        fill="none"
+        stroke="#ef4444"
+        strokeWidth={2}
+      />
+    </svg>
+  );
 }
 
 export default function LinearTomography({}: SimulationComponentProps) {
-  const [N, setN] = useState(12);
-  const [top, setTop] = useState(4);
-  const [bot, setBot] = useState(8);
-  const [left, setLeft] = useState(3);
-  const [right, setRight] = useState(7);
-  const [nEps, setNEps] = useState(10);
+  const [N, setN] = useState(10);
+  const [anomalyRow, setAnomalyRow] = useState(5);
+  const [anomalyCol, setAnomalyCol] = useState(5);
+  const [epsilon, setEpsilon] = useState(0.1);
 
   const result = useMemo(() => {
-    const clampedTop = Math.min(top, bot);
-    const clampedBot = Math.max(top, bot);
-    const clampedLeft = Math.min(left, right);
-    const clampedRight = Math.max(left, right);
+    const rays = buildRays(N);
+    const mTrue = makeTrueModel(N, anomalyRow, anomalyCol);
+    const G = buildG(rays, N);
 
-    const G = makeG(N);
-    const mTrue = makeM(N, clampedTop, clampedBot, clampedLeft, clampedRight);
+    // Forward model with noise
+    const dClean = matVecMul(G, mTrue);
+    const noise = dClean.map((_, i) => Math.sin(i * 2.3) * 0.02);
+    const dObs = dClean.map((d, i) => d + noise[i]);
 
-    // Forward: d_pure = G @ m
-    const dPure = matVecMul(G, mTrue);
+    // Inversion
+    const mPred = solveTikhonov(G, dObs, epsilon);
 
-    // Add noise
-    const noiseScale = 1 / 18;
-    const dPureNorm = vecNorm(dPure);
-    // Deterministic pseudo-noise
-    const noise: number[] = dPure.map((_, i) => Math.sin(i * 2.1 + 3.7) * 0.5);
-    const noiseNorm = vecNorm(noise);
-    const scaledNoise = noise.map(n => n * (noiseScale * dPureNorm / (noiseNorm || 1)));
-    const dObs = dPure.map((d, i) => d + scaledNoise[i]);
-    const nNorm = vecNorm(scaledNoise);
-
-    // Solve with Tikhonov over epsilon range
-    const epsValues: number[] = [];
-    for (let i = 0; i < nEps; i++) {
-      const logEps = -3 + (7 * i) / (nEps - 1);
-      epsValues.push(Math.pow(10, logEps));
-    }
-
-    const residuals: number[] = [];
-    const solutions: number[][] = [];
-
-    for (const eps of epsValues) {
-      const mSol = solveTikhonov(G, dObs, eps);
-      solutions.push(mSol);
-      const dPred = matVecMul(G, mSol);
-      const resid = dObs.map((d, i) => d - dPred[i]);
-      const residNorm = vecNorm(resid);
-      residuals.push(Math.abs(residNorm - nNorm));
-    }
-
-    // Find optimal epsilon
-    let minIdx = 0;
-    for (let i = 1; i < residuals.length; i++) {
-      if (residuals[i] < residuals[minIdx]) minIdx = i;
-    }
-    const mOpt = solutions[minIdx];
-    const epsOpt = epsValues[minIdx];
-
-    // Reshape m arrays to 2D for heatmap
+    // Reshape for heatmaps
     const mTrueGrid: number[][] = [];
-    const mOptGrid: number[][] = [];
+    const mPredGrid: number[][] = [];
     for (let r = 0; r < N; r++) {
       mTrueGrid.push(mTrue.slice(r * N, (r + 1) * N));
-      mOptGrid.push(mOpt.slice(r * N, (r + 1) * N));
+      mPredGrid.push(mPred.slice(r * N, (r + 1) * N));
     }
 
-    // Compute ray coverage for G visualization
-    const gSum = new Array(N * N).fill(0);
-    for (const row of G) {
-      for (let j = 0; j < row.length; j++) {
-        gSum[j] += Math.abs(row[j]);
-      }
-    }
-    const gSumGrid: number[][] = [];
-    for (let r = 0; r < N; r++) {
-      gSumGrid.push(gSum.slice(r * N, (r + 1) * N));
-    }
-
-    // Seismograph data (split into left and right earthquakes)
-    const halfLen = Math.floor(dObs.length / 2);
-    const dLeft = dObs.slice(0, halfLen);
-    const dRight = dObs.slice(halfLen);
-
-    return {
-      mTrueGrid,
-      mOptGrid,
-      gSumGrid,
-      dLeft,
-      dRight,
-      epsValues,
-      residuals,
-      epsOpt,
-      N,
-    };
-  }, [N, top, bot, left, right, nEps]);
+    return { rays, mTrueGrid, mPredGrid, G, dObs };
+  }, [N, anomalyRow, anomalyCol, epsilon]);
 
   return (
-    <SimulationPanel title="Linear Tomography" caption="Reconstruct subsurface density anomalies from seismograph arrival times using Tikhonov regularization. Adjust the anomaly position and grid size. The method sweeps over regularization parameter epsilon to find the optimal reconstruction.">
+    <SimulationPanel
+      title="Tomography: Seeing Inside"
+      caption="Rays from two sources (blue/orange) cross the grid. Can you reconstruct the hidden anomaly (red) from ray travel times? Move the anomaly to see how ray coverage affects resolution."
+    >
       <SimulationConfig>
-        <div className="grid grid-cols-3 lg:grid-cols-6 gap-3">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
-            <SimulationLabel className="text-[var(--text-muted)] text-xs">Grid N: {N}</SimulationLabel>
-            <Slider min={6} max={18} step={1} value={[N]} onValueChange={([v]) => setN(v)} />
+            <SimulationLabel className="text-[var(--text-muted)] text-xs">Grid Size: {N}</SimulationLabel>
+            <Slider min={6} max={14} step={1} value={[N]} onValueChange={([v]) => setN(v)} />
           </div>
           <div>
-            <SimulationLabel className="text-[var(--text-muted)] text-xs">Top: {top}</SimulationLabel>
-            <Slider min={0} max={N - 1} step={1} value={[top]} onValueChange={([v]) => setTop(v)} />
+            <SimulationLabel className="text-[var(--text-muted)] text-xs">Anomaly Row: {anomalyRow}</SimulationLabel>
+            <Slider min={2} max={N - 3} step={1} value={[anomalyRow]} onValueChange={([v]) => setAnomalyRow(v)} />
           </div>
           <div>
-            <SimulationLabel className="text-[var(--text-muted)] text-xs">Bottom: {bot}</SimulationLabel>
-            <Slider min={1} max={N} step={1} value={[bot]} onValueChange={([v]) => setBot(v)} />
+            <SimulationLabel className="text-[var(--text-muted)] text-xs">Anomaly Col: {anomalyCol}</SimulationLabel>
+            <Slider min={2} max={N - 3} step={1} value={[anomalyCol]} onValueChange={([v]) => setAnomalyCol(v)} />
           </div>
           <div>
-            <SimulationLabel className="text-[var(--text-muted)] text-xs">Left: {left}</SimulationLabel>
-            <Slider min={0} max={N - 1} step={1} value={[left]} onValueChange={([v]) => setLeft(v)} />
-          </div>
-          <div>
-            <SimulationLabel className="text-[var(--text-muted)] text-xs">Right: {right}</SimulationLabel>
-            <Slider min={1} max={N} step={1} value={[right]} onValueChange={([v]) => setRight(v)} />
-          </div>
-          <div>
-            <SimulationLabel className="text-[var(--text-muted)] text-xs">Eps steps: {nEps}</SimulationLabel>
-            <Slider min={5} max={30} step={1} value={[nEps]} onValueChange={([v]) => setNEps(v)} />
+            <SimulationLabel className="text-[var(--text-muted)] text-xs">Smoothing: {epsilon.toFixed(2)}</SimulationLabel>
+            <Slider min={0.01} max={1} step={0.01} value={[epsilon]} onValueChange={([v]) => setEpsilon(v)} />
           </div>
         </div>
       </SimulationConfig>
 
       <SimulationMain>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
-        <CanvasHeatmap
-          data={[{
-            z: result.mTrueGrid,
-            type: 'heatmap',
-            colorscale: 'Viridis',
-          }]}
-          layout={{
-            title: { text: 'True Model m' },
-            xaxis: { title: { text: 'x' } },
-            yaxis: { title: { text: 'depth' }, autorange: 'reversed' as const },
-            height: 300,
-            margin: { t: 40, b: 50, l: 50, r: 20 },
-          }}
-          style={{ width: '100%' }}
-        />
-        <CanvasHeatmap
-          data={[{
-            z: result.gSumGrid,
-            type: 'heatmap',
-            colorscale: 'Greys',
-          }]}
-          layout={{
-            title: { text: 'Ray Coverage (sum of |G|)' },
-            xaxis: { title: { text: 'x' } },
-            yaxis: { title: { text: 'depth' }, autorange: 'reversed' as const },
-            height: 300,
-            margin: { t: 40, b: 50, l: 50, r: 20 },
-          }}
-          style={{ width: '100%' }}
-        />
-        <CanvasHeatmap
-          data={[{
-            z: result.mOptGrid,
-            type: 'heatmap',
-            colorscale: 'Viridis',
-          }]}
-          layout={{
-            title: { text: `Predicted m (eps=${result.epsOpt.toExponential(2)})` },
-            xaxis: { title: { text: 'x' } },
-            yaxis: { title: { text: 'depth' }, autorange: 'reversed' as const },
-            height: 300,
-            margin: { t: 40, b: 50, l: 50, r: 20 },
-          }}
-          style={{ width: '100%' }}
-        />
-      </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Ray visualization */}
+          <div className="flex flex-col items-center">
+            <h4 className="text-sm font-medium mb-2 text-[var(--text)]">Ray Geometry</h4>
+            <RayGrid N={N} rays={result.rays} anomalyRow={anomalyRow} anomalyCol={anomalyCol} />
+            <p className="text-xs text-[var(--text-soft)] mt-2 text-center">
+              Blue rays from top-left, orange from top-right
+            </p>
+          </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <CanvasChart
-          data={[
-            {
-              x: Array.from({ length: result.dLeft.length }, (_, i) => i),
-              y: result.dLeft,
-              type: 'bar' as const,
-              name: 'Left earthquake',
-              marker: { color: '#3b82f6' },
-              opacity: 0.7,
-            },
-            {
-              x: Array.from({ length: result.dRight.length }, (_, i) => i),
-              y: result.dRight,
-              type: 'bar' as const,
-              name: 'Right earthquake',
-              marker: { color: '#fb923c' },
-              opacity: 0.7,
-            },
-          ]}
-          layout={{
-            title: { text: 'Observed Seismograph Data' },
-            xaxis: { title: { text: 'Detector index' } },
-            yaxis: { title: { text: 'Time anomaly' } },
-            barmode: 'group',
-            height: 300,
-            margin: { t: 40, b: 50, l: 50, r: 20 },
-          }}
-          style={{ width: '100%' }}
-        />
-        <CanvasChart
-          data={[{
-            x: result.epsValues,
-            y: result.residuals,
-            type: 'scatter' as const,
-            mode: 'lines+markers' as const,
-            line: { color: '#f472b6' },
-            marker: { color: '#f472b6', size: 5 },
-            name: 'Residual',
-          }]}
-          layout={{
-            title: { text: 'Residual vs Epsilon' },
-            xaxis: { title: { text: 'epsilon' }, type: 'log' },
-            yaxis: { title: { text: '|d_obs - G*m| - |noise|' }, type: 'log' },
-            height: 300,
-            margin: { t: 40, b: 50, l: 50, r: 20 },
-            shapes: [{
-              type: 'line',
-              x0: result.epsOpt, x1: result.epsOpt,
-              y0: 0, y1: 1, yref: 'paper',
-              line: { color: '#22d3ee', dash: 'dash', width: 2 },
-            }],
-          }}
-          style={{ width: '100%' }}
-        />
-      </div>
-      <p className="text-[var(--text-soft)] text-xs mt-3">
-        The optimal epsilon minimizes the difference between the residual norm and the noise norm.
-        Areas traced by rays from both earthquakes are recovered well; untouched areas remain uncertain.
-      </p>
+          {/* True model */}
+          <div className="flex flex-col items-center">
+            <h4 className="text-sm font-medium mb-2 text-[var(--text)]">True Model</h4>
+            <CanvasHeatmap
+              data={[{
+                z: result.mTrueGrid,
+                type: 'heatmap',
+                colorscale: [[0, '#1e293b'], [1, '#ef4444']],
+                showscale: false,
+              }]}
+              layout={{
+                xaxis: { visible: false },
+                yaxis: { visible: false, autorange: 'reversed' as const },
+                margin: { t: 0, b: 0, l: 0, r: 0 },
+              }}
+              style={{ width: 200, height: 200 }}
+            />
+          </div>
+
+          {/* Predicted model */}
+          <div className="flex flex-col items-center">
+            <h4 className="text-sm font-medium mb-2 text-[var(--text)]">Reconstructed</h4>
+            <CanvasHeatmap
+              data={[{
+                z: result.mPredGrid,
+                type: 'heatmap',
+                colorscale: [[0, '#1e293b'], [1, '#22c55e']],
+                showscale: false,
+              }]}
+              layout={{
+                xaxis: { visible: false },
+                yaxis: { visible: false, autorange: 'reversed' as const },
+                margin: { t: 0, b: 0, l: 0, r: 0 },
+              }}
+              style={{ width: 200, height: 200 }}
+            />
+          </div>
+        </div>
+
+        <div className="mt-4 p-3 bg-[var(--surface-alt)] rounded-lg">
+          <p className="text-xs text-[var(--text-soft)]">
+            <strong className="text-[var(--text)]">Key insight:</strong> Areas crossed by many rays (center) are well-resolved.
+            Edges with few rays remain uncertain. Move the anomaly to the corners to see resolution degrade.
+          </p>
+        </div>
       </SimulationMain>
     </SimulationPanel>
   );
