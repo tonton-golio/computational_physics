@@ -77,11 +77,11 @@ function HeaderContent() {
                   className="flex items-center gap-1.5 rounded-md border border-[var(--border-strong)] bg-[var(--surface-1)] px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
                 >
                   <ArrowLeftIcon size={14} />
-                  back
+                  <span className="hidden sm:inline">back</span>
                 </Link>
                 <Link
                   href={`/topics/${pathname.split("/")[2]}`}
-                  className="text-sm font-semibold text-[var(--text-strong)] transition hover:text-[var(--accent)]"
+                  className="hidden md:block text-sm font-semibold text-[var(--text-strong)] transition hover:text-[var(--accent)]"
                 >
                   {topicTitle}
                 </Link>

@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
-import type { MouseEvent as ReactMouseEvent, WheelEvent as ReactWheelEvent } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import type { WheelEvent as ReactWheelEvent } from "react";
 import { topicHref } from "@/lib/topic-navigation";
 import { useTheme } from "@/lib/use-theme";
 import { ExportPdfButton } from "@/components/content/ExportPdfButton";
@@ -89,6 +89,10 @@ function shortLabel(value: string, max = 24): string {
   return value.length > max ? `${value.slice(0, max - 1)}...` : value;
 }
 
+function pointerDistance(a: { x: number; y: number }, b: { x: number; y: number }): number {
+  return Math.hypot(a.x - b.x, a.y - b.y);
+}
+
 export function TopicsSearchGrid({ entries }: TopicsSearchGridProps) {
   const searchParams = useSearchParams();
   const theme = useTheme();
@@ -102,6 +106,9 @@ export function TopicsSearchGrid({ entries }: TopicsSearchGridProps) {
   const [dragStart, setDragStart] = useState<{ x: number; y: number; panX: number; panY: number } | null>(null);
   const [hoveredPoint, setHoveredPoint] = useState<{ point: PointCloudPoint; x: number; y: number } | null>(null);
   const cloudRef = useRef<HTMLDivElement | null>(null);
+  const pointersRef = useRef<Map<number, { x: number; y: number }>>(new Map());
+  const pinchStartDistRef = useRef<number | null>(null);
+  const pinchStartZoomRef = useRef<number>(1);
 
   const normalizedQuery = (searchParams.get("q") ?? "").trim().toLowerCase();
   const view = searchParams.get("view") === "points" ? "points" : "boxes";
@@ -242,36 +249,113 @@ export function TopicsSearchGrid({ entries }: TopicsSearchGridProps) {
     setPan({ x: clamp(nextPanX, -1.5, 1.5), y: clamp(nextPanY, -1.5, 1.5) });
   }
 
-  function handleMouseMove(event: ReactMouseEvent<HTMLDivElement>) {
+  const handlePointerDown = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    pointersRef.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    (event.currentTarget as HTMLDivElement).setPointerCapture(event.pointerId);
+
+    if (pointersRef.current.size === 1) {
+      setDragStart({ x: event.clientX, y: event.clientY, panX: pan.x, panY: pan.y });
+    } else if (pointersRef.current.size === 2) {
+      // Start pinch
+      setDragStart(null);
+      const pts = Array.from(pointersRef.current.values());
+      pinchStartDistRef.current = pointerDistance(pts[0], pts[1]);
+      pinchStartZoomRef.current = zoom;
+    }
+  }, [pan.x, pan.y, zoom]);
+
+  const handlePointerMove = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    pointersRef.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
     const container = cloudRef.current;
     if (!container) return;
     const rect = container.getBoundingClientRect();
 
-    if (dragStart) {
+    if (pointersRef.current.size === 2 && pinchStartDistRef.current !== null) {
+      // Pinch zoom
+      const pts = Array.from(pointersRef.current.values());
+      const dist = pointerDistance(pts[0], pts[1]);
+      const scale = dist / pinchStartDistRef.current;
+      const nextZoom = clamp(pinchStartZoomRef.current * scale, 0.8, 4);
+
+      const midX = (pts[0].x + pts[1].x) / 2;
+      const midY = (pts[0].y + pts[1].y) / 2;
+      const cx = clamp((midX - rect.left) / rect.width, 0, 1);
+      const cy = clamp((midY - rect.top) / rect.height, 0, 1);
+
+      const worldX = (cx - 0.5 - pan.x) / zoom + 0.5;
+      const worldY = (cy - 0.5 - pan.y) / zoom + 0.5;
+      const nextPanX = cx - 0.5 - (worldX - 0.5) * nextZoom;
+      const nextPanY = cy - 0.5 - (worldY - 0.5) * nextZoom;
+
+      setZoom(nextZoom);
+      setPan({ x: clamp(nextPanX, -1.5, 1.5), y: clamp(nextPanY, -1.5, 1.5) });
+      return;
+    }
+
+    if (dragStart && pointersRef.current.size === 1) {
       const dx = (event.clientX - dragStart.x) / rect.width;
       const dy = (event.clientY - dragStart.y) / rect.height;
       setPan({ x: clamp(dragStart.panX + dx, -1.5, 1.5), y: clamp(dragStart.panY + dy, -1.5, 1.5) });
     }
 
-    const mx = (event.clientX - rect.left) / rect.width;
-    const my = (event.clientY - rect.top) / rect.height;
-    let minDist = Infinity;
-    let nearest: string | null = null;
-    for (const p of transformedPoints) {
-      const dist = Math.hypot(p.tx - mx, p.ty - my);
-      if (dist < minDist) {
-        minDist = dist;
-        nearest = p.topicId;
+    // Nearest topic tracking (for hover highlighting)
+    if (pointersRef.current.size <= 1) {
+      const mx = (event.clientX - rect.left) / rect.width;
+      const my = (event.clientY - rect.top) / rect.height;
+      let minDist = Infinity;
+      let nearest: string | null = null;
+      for (const p of transformedPoints) {
+        const dist = Math.hypot(p.tx - mx, p.ty - my);
+        if (dist < minDist) {
+          minDist = dist;
+          nearest = p.topicId;
+        }
+      }
+      const next = minDist < 0.1 ? nearest : null;
+      if (next !== nearestTopicRef.current) {
+        nearestTopicRef.current = next;
+        setNearestTopicId(next);
       }
     }
-    const next = minDist < 0.1 ? nearest : null;
-    if (next !== nearestTopicRef.current) {
-      nearestTopicRef.current = next;
-      setNearestTopicId(next);
-    }
-  }
+  }, [dragStart, pan.x, pan.y, zoom, transformedPoints]);
 
-  function showTooltip(event: ReactMouseEvent<HTMLAnchorElement>, point: PointCloudPoint) {
+  const handlePointerUp = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    pointersRef.current.delete(event.pointerId);
+    if (pointersRef.current.size < 2) {
+      pinchStartDistRef.current = null;
+    }
+    if (pointersRef.current.size === 0) {
+      setDragStart(null);
+    }
+  }, []);
+
+  const handlePointerCancel = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    pointersRef.current.delete(event.pointerId);
+    if (pointersRef.current.size < 2) {
+      pinchStartDistRef.current = null;
+    }
+    if (pointersRef.current.size === 0) {
+      setDragStart(null);
+      setHoveredPoint(null);
+      nearestTopicRef.current = null;
+      setNearestTopicId(null);
+    }
+  }, []);
+
+  const handlePointerLeave = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+    pointersRef.current.delete(event.pointerId);
+    if (pointersRef.current.size < 2) {
+      pinchStartDistRef.current = null;
+    }
+    if (pointersRef.current.size === 0) {
+      setDragStart(null);
+      setHoveredPoint(null);
+      nearestTopicRef.current = null;
+      setNearestTopicId(null);
+    }
+  }, []);
+
+  function showTooltip(event: React.MouseEvent<HTMLAnchorElement>, point: PointCloudPoint) {
     const container = cloudRef.current;
     if (!container) return;
     const rect = container.getBoundingClientRect();
@@ -292,29 +376,26 @@ export function TopicsSearchGrid({ entries }: TopicsSearchGridProps) {
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <div className="px-6 pt-2">
+      <div className="px-3 sm:px-6 pt-2">
         <p className="text-xs text-[var(--text-muted)]">
           {normalizedQuery ? `${view === "points" ? filteredPoints.length : lessonMatchCount} matching subtopics` : ""}
         </p>
       </div>
 
       {view === "points" ? (
-        <div className="relative mx-3 mt-3 min-h-0 flex-1 overflow-hidden">
+        <div className="relative mx-3 sm:mx-6 mt-3 min-h-0 flex-1 overflow-hidden">
           <div
             ref={cloudRef}
             onWheel={handleWheel}
-            onMouseDown={(event) => setDragStart({ x: event.clientX, y: event.clientY, panX: pan.x, panY: pan.y })}
-            onMouseMove={handleMouseMove}
-            onMouseUp={() => setDragStart(null)}
-            onMouseLeave={() => {
-              setDragStart(null);
-              setHoveredPoint(null);
-              nearestTopicRef.current = null;
-              setNearestTopicId(null);
-            }}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerCancel}
+            onPointerLeave={handlePointerLeave}
             className={`relative h-full w-full overflow-hidden ${
               dragStart ? "cursor-grabbing" : "cursor-grab"
             }`}
+            style={{ touchAction: "none" }}
           >
             {/* radial gradient is now applied globally on body in dark mode */}
             {pointCloudError ? (
@@ -419,11 +500,11 @@ export function TopicsSearchGrid({ entries }: TopicsSearchGridProps) {
           </div>
         </div>
       ) : filteredEntries.length === 0 ? (
-        <div className="mx-6 mt-4 rounded-xl border border-[var(--border-strong)] bg-[var(--surface-1)] p-6 text-center text-sm text-[var(--text-muted)]">
+        <div className="mx-3 sm:mx-6 mt-4 rounded-xl border border-[var(--border-strong)] bg-[var(--surface-1)] p-6 text-center text-sm text-[var(--text-muted)]">
           No matching subtopics found.
         </div>
       ) : (
-        <div className="mx-6 mt-4 min-h-0 flex-1 overflow-auto pr-1">
+        <div className="mx-3 sm:mx-6 mt-4 min-h-0 flex-1 overflow-auto pr-1">
           <div className="grid gap-4 lg:grid-cols-2">
             {filteredEntries.map((entry) => (
               <div key={entry.routeSlug} className="rounded-xl border border-[var(--border-strong)] bg-[var(--surface-1)] p-5">

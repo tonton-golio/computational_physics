@@ -35,7 +35,7 @@ export default function HomePage() {
 
       <div className="pointer-events-none absolute inset-0 bg-[var(--background)]/30" />
 
-      <div className="relative z-10 h-full px-[50px] py-8">
+      <div className="relative z-10 h-full px-4 sm:px-8 lg:px-[50px] py-8">
         <div className="mx-auto grid h-full max-w-[1200px] content-center grid-cols-1 gap-4 lg:grid-cols-12">
           <section className="lg:col-span-7 flex flex-col justify-center rounded-lg border border-[var(--border-strong)] bg-[var(--surface-1)]/30 p-5 backdrop-blur-lg">
             <p className="font-mono text-xs uppercase tracking-[0.28em] text-[var(--accent)]">koala brain :: V02.01.002</p>

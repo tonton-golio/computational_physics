@@ -9,9 +9,41 @@ interface CollapsibleTopicLayoutProps {
 
 export function CollapsibleTopicLayout({ sidebar, children }: CollapsibleTopicLayoutProps) {
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
     <>
+      {/* Mobile lesson accordion */}
+      <div className="lg:hidden px-4 pt-2">
+        <button
+          type="button"
+          onClick={() => setMobileOpen((prev) => !prev)}
+          className="flex w-full items-center justify-between rounded-md border border-[var(--border-strong)] bg-[var(--surface-1)] px-3 py-2 text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+          aria-expanded={mobileOpen}
+        >
+          Lessons
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={`transition-transform duration-200 ${mobileOpen ? "rotate-180" : ""}`}
+          >
+            <path d="m6 9 6 6 6-6" />
+          </svg>
+        </button>
+        {mobileOpen && (
+          <div className="mt-1 max-h-[50vh] overflow-y-auto rounded-md border border-[var(--border-strong)] bg-[var(--surface-1)]">
+            {sidebar}
+          </div>
+        )}
+      </div>
+
+      {/* Desktop expand sidebar button */}
       <button
         type="button"
         onClick={() => setCollapsed(false)}

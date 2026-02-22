@@ -155,25 +155,71 @@ export default function MandelbrotFractal({}: SimulationComponentProps) {
   const zoomRef = useRef<number>(DEFAULT_ZOOM);
 
   const isDragging = useRef(false);
-  const lastMouse = useRef<[number, number]>([0, 0]);
+  const lastPointer = useRef<[number, number]>([0, 0]);
   const containerRef = useRef<HTMLDivElement>(null);
+  const pointersRef = useRef<Map<number, { x: number; y: number }>>(new Map());
+  const pinchStartDistRef = useRef<number | null>(null);
+  const pinchStartZoomRef = useRef<number>(DEFAULT_ZOOM);
 
   const syncDisplay = useCallback(() => {
     setDisplayCenter([centerRef.current[0], centerRef.current[1]]);
     setDisplayZoom(zoomRef.current);
   }, []);
 
-  const handleMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    isDragging.current = true;
-    lastMouse.current = [e.clientX, e.clientY];
+  const handlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    pointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    (e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId);
+
+    if (pointersRef.current.size === 1) {
+      isDragging.current = true;
+      lastPointer.current = [e.clientX, e.clientY];
+    } else if (pointersRef.current.size === 2) {
+      // Start pinch
+      isDragging.current = false;
+      const pts = Array.from(pointersRef.current.values());
+      pinchStartDistRef.current = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+      pinchStartZoomRef.current = zoomRef.current;
+    }
   }, []);
 
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (!isDragging.current || !containerRef.current) return;
+  const handlePointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    pointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+    if (pointersRef.current.size === 2 && pinchStartDistRef.current !== null && containerRef.current) {
+      // Pinch zoom
+      const rect = containerRef.current.getBoundingClientRect();
+      const aspect = rect.width / rect.height;
+      const pts = Array.from(pointersRef.current.values());
+      const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+      const scale = dist / pinchStartDistRef.current;
+      const newZoom = pinchStartZoomRef.current * scale;
+
+      // Center of pinch in normalized coords
+      const midX = ((pts[0].x + pts[1].x) / 2 - rect.left) / rect.width * 2.0 - 1.0;
+      const midY = -(((pts[0].y + pts[1].y) / 2 - rect.top) / rect.height * 2.0 - 1.0);
+
+      const beforeX = centerRef.current[0] + (midX * aspect) / zoomRef.current;
+      const beforeY = centerRef.current[1] + midY / zoomRef.current;
+
+      zoomRef.current = newZoom;
+
+      const afterX = centerRef.current[0] + (midX * aspect) / zoomRef.current;
+      const afterY = centerRef.current[1] + midY / zoomRef.current;
+
+      centerRef.current = [
+        centerRef.current[0] + (beforeX - afterX),
+        centerRef.current[1] + (beforeY - afterY),
+      ];
+
+      syncDisplay();
+      return;
+    }
+
+    if (!isDragging.current || !containerRef.current || pointersRef.current.size !== 1) return;
     const rect = containerRef.current.getBoundingClientRect();
-    const dx = e.clientX - lastMouse.current[0];
-    const dy = e.clientY - lastMouse.current[1];
-    lastMouse.current = [e.clientX, e.clientY];
+    const dx = e.clientX - lastPointer.current[0];
+    const dy = e.clientY - lastPointer.current[1];
+    lastPointer.current = [e.clientX, e.clientY];
 
     const aspect = rect.width / rect.height;
     const scale = 2.0 / zoomRef.current;
@@ -184,12 +230,24 @@ export default function MandelbrotFractal({}: SimulationComponentProps) {
     syncDisplay();
   }, [syncDisplay]);
 
-  const handleMouseUp = useCallback(() => {
-    isDragging.current = false;
+  const handlePointerUp = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    pointersRef.current.delete(e.pointerId);
+    if (pointersRef.current.size < 2) {
+      pinchStartDistRef.current = null;
+    }
+    if (pointersRef.current.size === 0) {
+      isDragging.current = false;
+    }
   }, []);
 
-  const handleMouseLeave = useCallback(() => {
-    isDragging.current = false;
+  const handlePointerLeave = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    pointersRef.current.delete(e.pointerId);
+    if (pointersRef.current.size < 2) {
+      pinchStartDistRef.current = null;
+    }
+    if (pointersRef.current.size === 0) {
+      isDragging.current = false;
+    }
   }, []);
 
   const handleWheel = useCallback((e: React.WheelEvent<HTMLDivElement>) => {
@@ -241,10 +299,12 @@ export default function MandelbrotFractal({}: SimulationComponentProps) {
         <div
           ref={containerRef}
           className="w-full h-full"
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseLeave}
+          style={{ touchAction: "none" }}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerLeave={handlePointerLeave}
+          onPointerCancel={handlePointerUp}
           onWheel={handleWheel}
         >
           <Canvas
@@ -292,7 +352,7 @@ export default function MandelbrotFractal({}: SimulationComponentProps) {
           </div>
 
           <p className="text-xs text-[var(--text-soft)]">
-            Scroll to zoom. Click and drag to pan. Increase iterations for more detail at deep zoom levels.
+            Scroll or pinch to zoom. Click/touch and drag to pan. Increase iterations for more detail at deep zoom levels.
           </p>
       </SimulationResults>
     </SimulationPanel>

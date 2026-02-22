@@ -193,6 +193,17 @@ function GameOfLifeCanvas({ gridRef, isDark, onCellToggle }: CanvasProps) {
             }
           }
         };
+
+        p.touchStarted = () => {
+          if (p.mouseX >= 0 && p.mouseX < canvasWidth && p.mouseY >= 0 && p.mouseY < canvasWidth) {
+            const j = Math.floor(p.mouseX / cellSize);
+            const i = Math.floor(p.mouseY / cellSize);
+            if (i >= 0 && i < SIZE && j >= 0 && j < SIZE) {
+              onCellToggle(i, j);
+            }
+            return false;
+          }
+        };
       }, containerRef.current);
 
       p5Ref.current = instance;
