@@ -21,21 +21,6 @@ A basic GAN for image generation uses:
 
 **DCGAN** established the key guidelines: replace pooling with strided convolutions, use batch normalization, remove fully connected hidden layers, ReLU in the generator, LeakyReLU in the discriminator.
 
-```python
-class Generator(nn.Module):
-    def __init__(self, latent_dim=100):
-        super().__init__()
-        self.net = nn.Sequential(
-            nn.Linear(latent_dim, 256),
-            nn.BatchNorm1d(256), nn.ReLU(),
-            nn.Linear(256, 512),
-            nn.BatchNorm1d(512), nn.ReLU(),
-            nn.Linear(512, 784), nn.Tanh()
-        )
-    def forward(self, z):
-        return self.net(z).view(-1, 1, 28, 28)
-```
-<!--code-toggle-->
 ```pseudocode
 CLASS Generator:
     INIT(latent_dim=100):
