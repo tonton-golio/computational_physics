@@ -17,16 +17,16 @@ Explain how simulation placeholders map to actual React components and how to ad
 
 | Registry File | Topic | Components |
 |---|---|---|
-| `AppliedStatsSimulations.tsx` | `applied-statistics` | 6 |
-| `ComplexPhysicsSimulations.tsx` | `complex-physics` | 15 |
-| `ContinuumMechanicsSimulations.tsx` | `continuum-mechanics` | 6 |
-| `InverseProblemsSimulations.tsx` | `inverse-problems` | 9 |
-| `QuantumOpticsSimulations.tsx` | `quantum-optics` | 5 |
-| `DynamicalModelsSimulations.tsx` | `dynamical-models` | 9 |
-| `AdvancedDeepLearningSimulations.tsx` | `advanced-deep-learning` | 11 |
-| `AppliedMachineLearningSimulations.tsx` | `applied-machine-learning` | 8 |
-| `ScientificComputingSimulations.tsx` | `scientific-computing` | 5 (includes nonlinear-equations) |
-| `OnlineReinforcementSimulations.tsx` | `online-reinforcement-learning` | 18 |
+| `AppliedStatsSimulations.tsx` | `applied-statistics` | 23 |
+| `ComplexPhysicsSimulations.tsx` | `complex-physics` | 20 |
+| `ContinuumMechanicsSimulations.tsx` | `continuum-mechanics` | 18 |
+| `InverseProblemsSimulations.tsx` | `inverse-problems` | 16 |
+| `QuantumOpticsSimulations.tsx` | `quantum-optics` | 10 |
+| `DynamicalModelsSimulations.tsx` | `dynamical-models` | 21 |
+| `AdvancedDeepLearningSimulations.tsx` | `advanced-deep-learning` | 16 |
+| `AppliedMachineLearningSimulations.tsx` | `applied-machine-learning` | 23 |
+| `ScientificComputingSimulations.tsx` | `scientific-computing` | 12 (includes nonlinear-equations) |
+| `OnlineReinforcementSimulations.tsx` | `online-reinforcement-learning` | 21 |
 | `EigenvalueSimulations.tsx` | `scientific-computing` | 10 (uses `next/dynamic` for SSR-unsafe Three.js) |
 
 Each registry exports:
@@ -89,7 +89,6 @@ Shared param/result types live in `src/shared/types/simulation.ts`.
   - 200px margin: triggers load (renders component)
 - User intent (mouseenter, focus, click, touchstart) also forces load.
 - First render timing emits a `simulation-first-render` browser event for observability.
-- Online-reinforcement simulations have a fast-path set (`ONLINE_REINFORCEMENT_IDS`) to avoid scanning all registries.
 
 ## Simulation Panel Slot Model
 

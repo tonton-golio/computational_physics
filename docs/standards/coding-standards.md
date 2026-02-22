@@ -14,10 +14,10 @@
 - Use path alias imports via `@/*` for `src/*`.
 - Keep concerns separated:
   - `src/domain`: pure logic, deterministic transforms, no framework side effects
-  - `src/infra`: adapters for fs/logging/observability
+  - `src/infra`: adapters for fs/logging/observability/supabase
   - `src/features`: orchestration and caching boundaries
   - `src/shared`: cross-cutting types and error contracts
-  - `src/lib`: routing helpers, theme, utilities, supabase clients
+  - `src/lib`: routing helpers, theme, utilities
   - `src/app`: route composition and HTTP boundary
 
 ## API And Error Conventions

@@ -6,13 +6,22 @@ Computational physics you can touch. Every equation runs, every model bends, eve
 
 ## Architecture
 
-- `src/features`: product features (`content`, `simulation`)
-- `src/domain`: pure business/domain logic
-- `src/infra`: adapters and observability
-- `src/shared`: shared contracts and error models
-- `src/workers`: client workers for heavy computations
+Next.js 16 (React 19, TypeScript strict, Tailwind 4) educational platform with 10 topics, ~114 lessons, and 190+ interactive simulations. Deployed on Vercel (standalone output).
 
-The simulation runtime uses a typed manifest and `SimulationHost` to isolate dynamic import failures per registry.
+```
+src/
+  app/            # Next.js App Router — pages, API routes, middleware
+  features/       # Feature modules (content gateway, topic-lessons, simulation system)
+  domain/         # Pure business/domain logic
+  infra/          # Adapters (file-content-repository, supabase clients, observability)
+  shared/         # Shared contracts and error models
+  lib/            # Config, utilities, markdown rendering, topic navigation
+  components/     # React components (layout, content, visualization, ui)
+  workers/        # Web Workers for heavy computation
+content/topics/   # Markdown lesson files organized by topic ID
+```
+
+The simulation runtime uses a typed manifest and `SimulationHost` to isolate dynamic import failures per registry. Simulations use Canvas/p5.js, Three.js (@react-three/fiber), or SVG with a slot-based UI model (`SimulationPanel`, `SimulationMain`, `SimulationSettings`, `SimulationConfig`, `SimulationResults`, `SimulationAux`).
 
 ## Reliability And Quality Commands
 
@@ -25,7 +34,12 @@ npm test
 
 # Run end-to-end smoke test
 npm run test:e2e
+
+# ESLint
+npm run lint
 ```
+
+CI pipeline (Node 22): lint → check:simulations → test → build → perf:budget
 
 ## Observability And Health
 
@@ -33,11 +47,8 @@ npm run test:e2e
 - Readiness endpoint: `/api/ready`
 - Content API responses include `x-correlation-id`
 - Web Vitals endpoint: `/api/analytics/web-vitals`
-
-## Operations
-
-- Release runbook: `docs/runbooks/release-and-rollback.md`
-- SLOs: `docs/operations/slo.md`
+- Structured JSON logging via `src/infra/observability/logger.ts`
+- Request metrics with correlation IDs via `src/infra/observability/request-metrics.ts`
 
 ## Topic Points
 
@@ -82,8 +93,8 @@ npm run perf:budget
 Recommended baseline routes:
 
 - `/topics`
-- `/continuum-mechanics`
-- `/complex-physics`
+- `/topics/continuum-mechanics`
+- `/topics/complex-physics`
 
 Quick local content API concurrency check (run while `next start` is active):
 

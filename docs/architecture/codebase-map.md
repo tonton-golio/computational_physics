@@ -8,12 +8,12 @@ Provide a concrete directory and module map so contributors and autonomous agent
 
 ```
 computational_physics/
-  content/topics/       markdown lessons grouped by topic slug (10 topics, ~123 files)
+  content/topics/       markdown lessons grouped by topic slug (10 topics, ~114 files)
   docs/                 project documentation
   scripts/              validation, performance, and build utility scripts
   src/                  application source code
-  public/               static assets (images, data files)
-  .claw/                autonomous workflow instructions and state artifacts
+  public/               static assets (images, figures, data files)
+  .claw/                autonomous workflow instructions, skills, and state artifacts
 ```
 
 ## src/ Directory Map
@@ -41,37 +41,40 @@ src/
 
   components/
     content/            MarkdownContent.tsx, ExportPdfButton.tsx
-    effects/            Antigravity.tsx (homepage effect)
+    effects/            AntigravityClient.tsx (homepage particle effect)
     layout/             Header, AuthButton, ThemeToggle, LeaderboardButton,
-                        SuggestionBox, CollapsibleTopicLayout
+                        SuggestionBox, TopicSidebar, CollapsibleTopicLayout
     performance/        WebVitalsReporter.tsx
     topics/             TopicsSearchGrid.tsx (point cloud + search)
     ui/                 button, card, canvas-chart, canvas-heatmap, code-editor,
-                        CodeToggleBlock, label, simulation-panel, slider, table
+                        CodeToggleBlock, figure-lightbox, fullscreen-button,
+                        simulation-main, simulation-panel, label, slider, table
     visualization/
       *Simulations.tsx  11 topic simulation registries
       InteractiveGraph.tsx              fallback graph component
-      advanced-deep-learning/           11 simulation components
-      applied-machine-learning/         8 components + ml-utils.ts
-      applied-statistics/               6 components
-      complex-physics/                  15 components
-      continuum-mechanics/              6 components
-      dynamical-models/                 9 components
+      advanced-deep-learning/           16 simulation components
+      applied-machine-learning/         23 components + ml-utils.ts
+      applied-statistics/               23 components
+      complex-physics/                  20 components
+      continuum-mechanics/              18 components
+      dynamical-models/                 21 components
       eigenvalue/                       10 components + eigen-utils.ts
-      inverse-problems/                 9 components
+      inverse-problems/                 16 components
       nonlinear-equations/              2 components (Himmelblau2D, Newton1D)
-      online-reinforcement/             18 components
-      quantum-optics/                   5 components
-      scientific-computing/             3 components
+      online-reinforcement/             21 components
+      quantum-optics/                   10 components
+      scientific-computing/             12 components
 
   domain/content/       models.ts (pure transforms), models.test.ts
   features/
-    content/            content-gateway.ts (orchestration + cache), test
+    content/            content-gateway.ts (orchestration + cache),
+                        topic-lessons.ts (ordering, landing pages, lesson listing), test
     simulation/         SimulationHost.tsx, simulation-manifest.ts,
                         simulation-worker.client.ts
   infra/
     content/            file-content-repository.ts (filesystem read + parse)
     observability/      logger.ts, request-metrics.ts
+    supabase/           client.ts (browser), server.ts (server with cookie sync)
   lib/
     canvas-theme.ts     shared dark/light theme for canvas components
     chart-colors.ts     color palette constants
@@ -79,8 +82,6 @@ src/
     figure-definitions.ts   aggregated figure metadata
     markdown-to-html.ts     markdown + LaTeX + placeholder conversion
     simulation-descriptions.ts  aggregated simulation descriptions
-    supabase/client.ts  browser Supabase client
-    supabase/server.ts  server Supabase client (async cookies)
     topic-config.ts     TOPICS record (10 topics) and TopicSlug type
     topic-navigation.ts route slug to content id mapping
     topic-navigation.server.ts  lesson ordering, summaries, landing pages
@@ -104,9 +105,10 @@ src/
 | `src/lib/topic-config.ts` | `TOPICS` metadata registry (titles, colors, difficulty) and `TopicSlug` type |
 | `src/lib/content.ts` | Re-exports `TOPICS` and `TopicSlug` from topic-config |
 | `src/lib/topic-navigation.ts` | Route slug to content id mapping (`TOPIC_ROUTES`) |
-| `src/lib/topic-navigation.server.ts` | Lesson ordering (`TOPIC_LESSON_ORDER`), summaries (`LESSON_SUMMARIES`), landing pages |
+| `src/lib/topic-navigation.server.ts` | Lesson ordering config (`TOPIC_LESSON_ORDER`), summaries (`LESSON_SUMMARIES`), landing page priority |
+| `src/features/content/topic-lessons.ts` | Ordering functions (`getOrderedLessonSlugs`, `getLessonsForTopic`, `getLandingPageSlug`) |
 | `src/infra/content/file-content-repository.ts` | Filesystem read, frontmatter parse, Zod validation |
-| `src/features/content/content-gateway.ts` | Cached topic/lesson retrieval orchestration (uses `getOrderedLessonSlugs` for correct ordering) |
+| `src/features/content/content-gateway.ts` | Cached topic/lesson retrieval orchestration |
 | `src/app/api/content/route.ts` | Public content API endpoint |
 
 ### Page rendering
@@ -138,8 +140,8 @@ src/
 | File | Role |
 |---|---|
 | `src/auth-middleware.ts` | Supabase auth middleware (route protection, redirects) |
-| `src/lib/supabase/client.ts` | Browser Supabase client |
-| `src/lib/supabase/server.ts` | Server Supabase client (async cookies) |
+| `src/infra/supabase/client.ts` | Browser Supabase client |
+| `src/infra/supabase/server.ts` | Server Supabase client (async cookies) |
 
 ### Observability
 
@@ -160,19 +162,19 @@ All topics have matching route slugs and content IDs.
 | `applied-statistics` | 14 | Beginner |
 | `applied-machine-learning` | 8 | Intermediate |
 | `dynamical-models` | 10 | Beginner |
-| `scientific-computing` | 12 | Intermediate |
+| `scientific-computing` | 11 | Intermediate |
 | `complex-physics` | 13 | Intermediate |
 | `continuum-mechanics` | 16 | Expert |
-| `inverse-problems` | 9 | Advanced |
-| `quantum-optics` | 21 | Expert |
+| `inverse-problems` | 8 | Advanced |
+| `quantum-optics` | 14 | Expert |
 | `online-reinforcement-learning` | 11 | Intermediate |
 | `advanced-deep-learning` | 9 | Advanced |
 
 ## Agent-Facing Control Plane
 
-- `.claw/claw/AGENTS.md`: operating policy and priority queue
-- `.claw/workflows/`: executable runbooks for recurring operations
-- `../../AGENTS.md`: workspace-level agent policy
+- `.claw/AGENTS.md`: operating policy and priority queue
+- `.claw/workflows/`: executable runbooks for recurring operations (add_new_subject, process_suggestion, post_to_x)
+- `.claw/skills/`: reusable agent skills (kcs-checkpoint, validate-suggestion, update-point-cloud, etc.)
 
 ## Actionable Checklist
 

@@ -32,7 +32,13 @@ src/infra/content/file-content-repository.ts
         |
         v
 src/lib/topic-navigation.server.ts
+  -> TOPIC_LESSON_ORDER, LESSON_SUMMARIES, LANDING_PAGE_PRIORITY (config)
+        |
+        v
+src/features/content/topic-lessons.ts
   -> getOrderedLessonSlugs(topicId): string[]  (applies TOPIC_LESSON_ORDER)
+  -> getLessonsForTopic(topicId): {slug, title, summary?}[]
+  -> getLandingPageSlug(topicId): string | null
         |
         v
 src/features/content/content-gateway.ts
@@ -89,7 +95,6 @@ Sources: `src/features/simulation/simulation-manifest.ts`, `src/features/simulat
 
 - `SimulationHost` defers expensive loads until near/in viewport (IntersectionObserver).
 - Definitions lazily resolved by id across 11 topic registries.
-- Fast path: `ONLINE_REINFORCEMENT_IDS` set avoids scanning all registries for known RL simulation ids.
 - Registry load failures are isolated (one bad registry does not break all simulations).
 - If simulation id is not found, host falls back to `InteractiveGraph`.
 - If both simulation and fallback fail, host renders an error placeholder.
