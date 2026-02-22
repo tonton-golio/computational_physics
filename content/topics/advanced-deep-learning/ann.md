@@ -30,27 +30,8 @@ This converges for linearly separable data but can't solve nonlinear problems li
 
 ## Your first training loop
 
-Enough theory. Let's actually train something. Here's the simplest possible neural network on MNIST handwritten digits -- load the data, build a model, train it in under 20 lines. Run this, watch the loss go down, and then we'll explain every piece:
+Enough theory. Let's actually train something. Here's the simplest possible neural network on MNIST handwritten digits:
 
-```python
-train_data = datasets.MNIST(root='data', train=True, download=True,
-                            transform=transforms.ToTensor())
-train_loader = torch.utils.data.DataLoader(train_data, batch_size=100, shuffle=True)
-
-model = nn.Sequential(nn.Flatten(), nn.Linear(784, 10))
-criterion = nn.CrossEntropyLoss()
-optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
-
-for epoch in range(5):
-    for batch_x, batch_y in train_loader:
-        optimizer.zero_grad()
-        output = model(batch_x)
-        loss = criterion(output, batch_y)
-        loss.backward()
-        optimizer.step()
-    print(f"Epoch {epoch+1}, Loss: {loss.item():.4f}")
-```
-<!--code-toggle-->
 ```pseudocode
 train_data = LOAD_DATASET("MNIST", split="train")
 APPLY_TRANSFORM(train_data, to_tensor)
@@ -101,21 +82,6 @@ $$
 
 Dimensions change at each layer: $784 \to 120 \to 84 \to 10$. The final softmax converts logits into a probability distribution over 10 digit classes.
 
-```python
-class MultilayerPerceptron(nn.Module):
-    def __init__(self, in_sz=784, out_sz=10, layers=[120, 84]):
-        super().__init__()
-        self.fc1 = nn.Linear(in_sz, layers[0])
-        self.fc2 = nn.Linear(layers[0], layers[1])
-        self.out = nn.Linear(layers[1], out_sz)
-
-    def forward(self, x):
-        x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
-        x = self.out(x)
-        return F.log_softmax(x, dim=1)
-```
-<!--code-toggle-->
 ```pseudocode
 CLASS MultilayerPerceptron:
     INIT(in_sz=784, out_sz=10, layers=[120, 84]):
@@ -164,20 +130,6 @@ Why is this such a big deal? Without backprop, training a million-parameter netw
 
 Now let's put all the pieces together. Each training step does four things: forward pass, loss computation, backward pass, parameter update:
 
-```python
-model = MultilayerPerceptron()
-criterion = nn.CrossEntropyLoss()
-optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
-
-for epoch in range(10):
-    for batch_x, batch_y in train_loader:
-        optimizer.zero_grad()
-        output = model(batch_x.view(-1, 784))
-        loss = criterion(output, batch_y)
-        loss.backward()
-        optimizer.step()
-```
-<!--code-toggle-->
 ```pseudocode
 model = MultilayerPerceptron()
 criterion = CROSS_ENTROPY_LOSS()
