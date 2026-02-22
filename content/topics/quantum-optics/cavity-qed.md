@@ -5,9 +5,9 @@
 The Jaynes-Cummings model describes a perfect, isolated atom-cavity system. Real life isn't so kind. Photons leak out of the cavity, atoms decay into unwanted modes, and the question becomes: can the atom and field exchange energy *before* everything dissipates?
 
 Three rates determine the answer:
-- $g$: atom-cavity coupling strength (how fast they talk)
-- $\kappa$: cavity decay rate (how fast photons leak out)
-- $\gamma$: atomic decay rate (how fast the atom emits into non-cavity modes)
+* $g$: atom-cavity coupling strength (how fast they talk)
+* $\kappa$: cavity decay rate (how fast photons leak out)
+* $\gamma$: atomic decay rate (how fast the atom emits into non-cavity modes)
 
 **Strong coupling** ($g \gg \kappa, \gamma$): the atom and field exchange excitations many times before either decays. You see reversible Rabi oscillations, vacuum Rabi splitting, and all the gorgeous JC physics.
 
@@ -65,10 +65,10 @@ where $\mathcal{D}[\hat{O}]\hat{\rho} = \hat{O}\hat{\rho}\hat{O}^\dag - \frac{1}
 
 ## Big Ideas
 
-- Cavity QED is defined by the race between coupling $g$, cavity decay $\kappa$, and atomic decay $\gamma$. Strong coupling is where the quantum magic happens.
-- Spontaneous emission is not a fixed atomic property -- it's an atom-environment interaction. Change the cavity, change the decay rate (Purcell effect).
-- Cat states can be created and observed, and their decoherence scales as $|\alpha|^2$ -- bigger cats die faster.
-- Circuit QED extends this physics to superconducting chips, making strong coupling routine and powering modern quantum computing.
+* Cavity QED is defined by the race between coupling $g$, cavity decay $\kappa$, and atomic decay $\gamma$. Strong coupling is where the quantum magic happens.
+* Spontaneous emission is not a fixed atomic property -- it's an atom-environment interaction. Change the cavity, change the decay rate (Purcell effect).
+* Cat states can be created and observed, and their decoherence scales as $|\alpha|^2$ -- bigger cats die faster.
+* Circuit QED extends this physics to superconducting chips, making strong coupling routine and powering modern quantum computing.
 
 ## Check Your Understanding
 

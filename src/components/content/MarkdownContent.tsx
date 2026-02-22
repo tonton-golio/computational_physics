@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { CodeEditor } from "../ui/code-editor";
-import { CodeToggleBlock } from "../ui/CodeToggleBlock";
+import { CodeEditor } from "@/components/ui/code-editor";
+import { CodeToggleBlock } from "@/components/ui/CodeToggleBlock";
 import { SimulationHost } from "@/features/simulation/SimulationHost";
 import { FIGURE_DEFS } from "@/lib/figure-definitions";
 import { markdownToHtml } from "@/lib/markdown-to-html";
-import { FigureLightbox } from "../ui/figure-lightbox";
+import { FigureLightbox } from "@/components/ui/figure-lightbox";
 
 interface MarkdownContentProps {
   content: string;

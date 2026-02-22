@@ -104,10 +104,10 @@ $$
 
 ## Big Ideas
 
-- The electromagnetic field in a cavity is mathematically identical to a harmonic oscillator. Quantizing the field *is* quantizing that oscillator.
-- Photons aren't little particles flying around -- they're excitation quanta of a field mode, counted by $\hat{n} = \hat{a}^\dag\hat{a}$.
-- Even with zero photons, the field carries vacuum energy $\frac{1}{2}\hbar\omega$. The vacuum is not empty.
-- The commutation relation $[\hat{a}, \hat{a}^\dag] = 1$ generates the entire ladder of energy levels and everything non-classical that follows.
+* The electromagnetic field in a cavity is mathematically identical to a harmonic oscillator. Quantizing the field *is* quantizing that oscillator.
+* Photons aren't little particles flying around -- they're excitation quanta of a field mode, counted by $\hat{n} = \hat{a}^\dag\hat{a}$.
+* Even with zero photons, the field carries vacuum energy $\frac{1}{2}\hbar\omega$. The vacuum is not empty.
+* The commutation relation $[\hat{a}, \hat{a}^\dag] = 1$ generates the entire ladder of energy levels and everything non-classical that follows.
 
 ## Check Your Understanding
 

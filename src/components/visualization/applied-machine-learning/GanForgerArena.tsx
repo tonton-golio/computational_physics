@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
-import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationResults, SimulationLabel, SimulationButton, SimulationPlayButton } from '@/components/ui/simulation-panel';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationResults, SimulationLabel, SimulationButton, SimulationPlayButton, SimulationCheckbox } from '@/components/ui/simulation-panel';
 import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 import { mulberry32, gaussianPair, linspace } from './ml-utils';
@@ -229,22 +229,8 @@ export default function GanForgerArena({}: SimulationComponentProps): React.Reac
           </SimulationButton>
         </div>
         <div className="flex flex-col gap-1">
-          <SimulationLabel className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={wasserstein}
-              onChange={(e) => setWasserstein(e.target.checked)}
-            />
-            Wasserstein loss
-          </SimulationLabel>
-          <SimulationLabel className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={modeCollapse}
-              onChange={(e) => setModeCollapse(e.target.checked)}
-            />
-            Force mode collapse
-          </SimulationLabel>
+          <SimulationCheckbox checked={wasserstein} onChange={setWasserstein} label="Wasserstein loss" />
+          <SimulationCheckbox checked={modeCollapse} onChange={setModeCollapse} label="Force mode collapse" />
         </div>
       </SimulationSettings>
       <SimulationConfig>

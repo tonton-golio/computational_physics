@@ -17,9 +17,9 @@ $$
 Since $\hat{a}$ isn't Hermitian, the eigenvalue $\alpha$ is a complex number. That complex number encodes everything: $|\alpha|$ sets the amplitude, and $\arg(\alpha)$ sets the phase of the oscillating field.
 
 There are three equivalent ways to think about coherent states:
-- Eigenstates of $\hat{a}$
-- States that minimize the uncertainty relation with equal noise in both quadratures
-- Displaced vacuum states
+* Eigenstates of $\hat{a}$
+* States that minimize the uncertainty relation with equal noise in both quadratures
+* Displaced vacuum states
 
 We'll see all three.
 
@@ -101,10 +101,10 @@ Overcomplete means you can expand any state in the coherent basis, but not uniqu
 
 ## Big Ideas
 
-- A coherent state is the eigenstate of $\hat{a}$, with complex eigenvalue $\alpha$ encoding both amplitude and phase.
-- Photon statistics are Poissonian: $P_n = e^{-\bar{n}}\bar{n}^n/n!$, with mean equal to variance.
-- The field variance is independent of $\alpha$ -- same noise as vacuum. Coherent states are as classical as quantum mechanics allows.
-- Coherent states are non-orthogonal but overcomplete, forming the foundation of phase-space representations.
+* A coherent state is the eigenstate of $\hat{a}$, with complex eigenvalue $\alpha$ encoding both amplitude and phase.
+* Photon statistics are Poissonian: $P_n = e^{-\bar{n}}\bar{n}^n/n!$, with mean equal to variance.
+* The field variance is independent of $\alpha$ -- same noise as vacuum. Coherent states are as classical as quantum mechanics allows.
+* Coherent states are non-orthogonal but overcomplete, forming the foundation of phase-space representations.
 
 ## Check Your Understanding
 

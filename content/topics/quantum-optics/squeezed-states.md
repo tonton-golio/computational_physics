@@ -54,8 +54,8 @@ $$
 
 The result is a minimum-uncertainty state centered at $\alpha$ with an **elliptical** noise distribution. The orientation of the ellipse relative to the coherent amplitude determines the type:
 
-- **Amplitude squeezed**: squeeze axis aligned with the amplitude direction. Reduced intensity noise, sub-Poissonian statistics ($Q < 0$). Great for precision intensity measurements.
-- **Phase squeezed**: squeeze axis perpendicular. Reduced phase noise, below shot noise for phase measurements. This is what LIGO uses.
+* **Amplitude squeezed**: squeeze axis aligned with the amplitude direction. Reduced intensity noise, sub-Poissonian statistics ($Q < 0$). Great for precision intensity measurements.
+* **Phase squeezed**: squeeze axis perpendicular. Reduced phase noise, below shot noise for phase measurements. This is what LIGO uses.
 
 [[simulation wigner-squeezed]]
 
@@ -85,10 +85,10 @@ Both vanish as $r \to \infty$ -- that's the original EPR state. The Duan criteri
 
 ## Big Ideas
 
-- Squeezed states redistribute quantum noise: one quadrature drops below vacuum while the other inflates, always satisfying $\Delta X \cdot \Delta P \ge 1/4$.
-- The squeezing operator creates photons in pairs -- that's why squeezed vacuum has only even photon numbers.
-- Parametric down-conversion is the workhorse: a nonlinear crystal breaks pump photons into pairs, and that pairwise creation *is* the squeezing Hamiltonian.
-- Two-mode squeezing creates EPR-type entanglement: individually thermal, jointly correlated beyond any classical limit.
+* Squeezed states redistribute quantum noise: one quadrature drops below vacuum while the other inflates, always satisfying $\Delta X \cdot \Delta P \ge 1/4$.
+* The squeezing operator creates photons in pairs -- that's why squeezed vacuum has only even photon numbers.
+* Parametric down-conversion is the workhorse: a nonlinear crystal breaks pump photons into pairs, and that pairwise creation *is* the squeezing Hamiltonian.
+* Two-mode squeezing creates EPR-type entanglement: individually thermal, jointly correlated beyond any classical limit.
 
 ## Check Your Understanding
 

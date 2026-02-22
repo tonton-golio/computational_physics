@@ -58,9 +58,9 @@ States that *saturate* this bound -- where the product equals exactly $1/16$ -- 
 
 ## Big Ideas
 
-- Number states have zero average field but nonzero variance -- the field fluctuates even when its mean is silent.
-- The quadrature operators $\hat{X}_1$ and $\hat{X}_2$ decompose the field into two oscillation components; measuring one unavoidably disturbs the other.
-- The uncertainty product $\langle(\Delta\hat{X}_1)^2\rangle\langle(\Delta\hat{X}_2)^2\rangle \ge 1/16$ is not an instrumental limitation -- it's built into the structure of the quantum field.
+* Number states have zero average field but nonzero variance -- the field fluctuates even when its mean is silent.
+* The quadrature operators $\hat{X}_1$ and $\hat{X}_2$ decompose the field into two oscillation components; measuring one unavoidably disturbs the other.
+* The uncertainty product $\langle(\Delta\hat{X}_1)^2\rangle\langle(\Delta\hat{X}_2)^2\rangle \ge 1/16$ is not an instrumental limitation -- it's built into the structure of the quantum field.
 
 ## Check Your Understanding
 

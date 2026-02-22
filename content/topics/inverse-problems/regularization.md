@@ -66,10 +66,10 @@ That $\epsilon^2\mathbf{I}$ term is doing all the heavy lifting. Without it, $\m
 
 Here's the practical recipe:
 
-- Sweep $\epsilon$ over a log-scale range (say, $10^{-4}$ to $10^{2}$)
-- For each value, solve the regularized problem and record residual norm vs. model norm
-- Plot the L-curve
-- Pick the corner — the simplest model that still explains the data within its uncertainty
+* Sweep $\epsilon$ over a log-scale range (say, $10^{-4}$ to $10^{2}$)
+* For each value, solve the regularized problem and record residual norm vs. model norm
+* Plot the L-curve
+* Pick the corner — the simplest model that still explains the data within its uncertainty
 
 [[simulation l-curve-construction]]
 

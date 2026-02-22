@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart, type ChartTrace } from '@/components/ui/canvas-chart';
-import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationLabel, SimulationCheckbox } from '@/components/ui/simulation-panel';
 import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
@@ -93,15 +93,7 @@ export default function PoiseuilleVsPowerLaw({}: SimulationComponentProps) {
     <SimulationPanel title="Poiseuille Flow: Newtonian vs Power-Law Fluid" caption="The velocity profile across a pipe depends on the power-law index n. Shear-thinning fluids (n<1) have a blunted profile; shear-thickening fluids (n>1) have a more pointed profile. Glaciers use n\u22483.">
       <SimulationSettings>
         <div className="flex items-end">
-          <SimulationLabel className="flex items-center gap-2 cursor-pointer select-none">
-            <input
-              type="checkbox"
-              checked={showGlacier}
-              onChange={(e) => setShowGlacier(e.target.checked)}
-              className="rounded"
-            />
-            Show Glen&apos;s flow law (n=3)
-          </SimulationLabel>
+          <SimulationCheckbox checked={showGlacier} onChange={setShowGlacier} label="Show Glen's flow law (n=3)" />
         </div>
       </SimulationSettings>
       <SimulationConfig>

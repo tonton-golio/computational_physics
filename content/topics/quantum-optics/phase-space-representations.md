@@ -52,17 +52,17 @@ $$
 
 And here's the gorgeous part: **the Wigner function can go negative**. Negative values are a smoking gun for non-classicality:
 
-- **Coherent states**: positive Gaussian. Classical behavior.
-- **Fock states** ($n \ge 1$): oscillating $W$ with negative regions. No classical analogue.
-- **Cat states**: interference fringes between two coherent blobs -- visible only in $W$, invisible in $Q$.
+* **Coherent states**: positive Gaussian. Classical behavior.
+* **Fock states** ($n \ge 1$): oscillating $W$ with negative regions. No classical analogue.
+* **Cat states**: interference fringes between two coherent blobs -- visible only in $W$, invisible in $Q$.
 
 [[simulation phase-space-explorer]]
 
 ## Big Ideas
 
-- A coherent state is a fuzzy dot in phase space; a number state is a ring with no angular localization -- it knows photon count but not phase.
-- The P function is the classicality test: $P \ge 0$ and no worse than a delta means classical; anything else is genuinely quantum.
-- The Wigner function is the most informative quasi-probability: its marginals are real probabilities, but its negativity is the clearest signature of non-classical light.
+* A coherent state is a fuzzy dot in phase space; a number state is a ring with no angular localization -- it knows photon count but not phase.
+* The P function is the classicality test: $P \ge 0$ and no worse than a delta means classical; anything else is genuinely quantum.
+* The Wigner function is the most informative quasi-probability: its marginals are real probabilities, but its negativity is the clearest signature of non-classical light.
 
 ## Check Your Understanding
 

@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
 import { Slider } from '@/components/ui/slider';
 import { useTheme } from '@/lib/use-theme';
-import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationResults, SimulationLabel, SimulationCheckbox } from '@/components/ui/simulation-panel';
 import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
@@ -286,15 +286,7 @@ export default function ConvolutionDemo({}: SimulationComponentProps) {
             </select>
           </div>
           <div className="flex items-end">
-            <SimulationLabel className="flex items-center gap-2 text-sm text-[var(--text-muted)] cursor-pointer">
-              <input
-                type="checkbox"
-                checked={stepMode}
-                onChange={(e) => setStepMode(e.target.checked)}
-                className="accent-blue-500"
-              />
-              Step-by-step mode
-            </SimulationLabel>
+            <SimulationCheckbox checked={stepMode} onChange={setStepMode} label="Step-by-step mode" />
           </div>
         </div>
 

@@ -70,16 +70,16 @@ $$
 
 Double your photons, *double* your precision. Strategies include:
 
-- **Squeezed vacuum** injected into the dark port of the MZI. This is what LIGO actually does -- squeezed light reduces the noise in the measured quadrature, pushing sensitivity below the shot-noise limit.
-- **NOON states** $\Ket{N,0} + \Ket{0,N}$: Heisenberg-limited but fragile.
-- **Twin-Fock states** $\Ket{N,N}$: more robust against losses.
+* **Squeezed vacuum** injected into the dark port of the MZI. This is what LIGO actually does -- squeezed light reduces the noise in the measured quadrature, pushing sensitivity below the shot-noise limit.
+* **NOON states** $\Ket{N,0} + \Ket{0,N}$: Heisenberg-limited but fragile.
+* **Twin-Fock states** $\Ket{N,N}$: more robust against losses.
 
 ## Big Ideas
 
-- A single photon at a beam splitter never splits: one detector clicks, never both. That's proof of quantization.
-- The Hong-Ou-Mandel effect: two indistinguishable photons always exit together. Zero coincidences. No classical explanation.
-- Homodyne detection projects onto a quadrature; rotating the LO phase enables full state tomography.
-- The shot-noise limit $1/\sqrt{\bar{n}}$ is not fundamental -- squeezing or entanglement can breach it, approaching the Heisenberg limit $1/\bar{n}$.
+* A single photon at a beam splitter never splits: one detector clicks, never both. That's proof of quantization.
+* The Hong-Ou-Mandel effect: two indistinguishable photons always exit together. Zero coincidences. No classical explanation.
+* Homodyne detection projects onto a quadrature; rotating the LO phase enables full state tomography.
+* The shot-noise limit $1/\sqrt{\bar{n}}$ is not fundamental -- squeezing or entanglement can breach it, approaching the Heisenberg limit $1/\bar{n}$.
 
 ## Check Your Understanding
 

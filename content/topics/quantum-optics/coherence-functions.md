@@ -27,9 +27,9 @@ G^{(1)}(\mathbf{r}_1, t_1; \mathbf{r}_2, t_2) = \langle\hat{E}^{(-)}(\mathbf{r}_
 $$
 
 Different quantum states have different coherence:
-- **Coherent state** $\Ket{\alpha}$: $|g^{(1)}(\tau)| = 1$ -- perfect first-order coherence, just like a classical wave.
-- **Number state** $\Ket{n}$: also $|g^{(1)}(\tau)| = 1$ -- perfect coherence in first order!
-- **Thermal state**: $|g^{(1)}(\tau)|$ decays with $\tau$.
+* **Coherent state** $\Ket{\alpha}$: $|g^{(1)}(\tau)| = 1$ -- perfect first-order coherence, just like a classical wave.
+* **Number state** $\Ket{n}$: also $|g^{(1)}(\tau)| = 1$ -- perfect coherence in first order!
+* **Thermal state**: $|g^{(1)}(\tau)|$ decays with $\tau$.
 
 Wait -- a number state and a coherent state look the same in first-order coherence? Yes. First-order coherence alone **cannot** distinguish quantum from classical light. The real quantum signatures show up at higher orders.
 
@@ -53,9 +53,9 @@ The probability of detecting a photon at $(\mathbf{r}, t)$ is proportional to $G
 
 ## Big Ideas
 
-- $g^{(1)}(\tau)$ measures how well the field remembers its own past -- it governs interference fringe visibility.
-- The Wiener-Khintchine theorem ties time-domain coherence to spectral purity: narrow linewidth means long memory.
-- First-order coherence can't distinguish quantum from classical light. The real quantum signatures show up at higher orders.
+* $g^{(1)}(\tau)$ measures how well the field remembers its own past -- it governs interference fringe visibility.
+* The Wiener-Khintchine theorem ties time-domain coherence to spectral purity: narrow linewidth means long memory.
+* First-order coherence can't distinguish quantum from classical light. The real quantum signatures show up at higher orders.
 
 ## Check Your Understanding
 

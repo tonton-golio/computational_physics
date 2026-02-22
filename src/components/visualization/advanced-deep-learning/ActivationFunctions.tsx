@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { Slider } from '@/components/ui/slider';
-import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationLabel, SimulationCheckbox } from '@/components/ui/simulation-panel';
 import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
@@ -206,43 +206,21 @@ export default function ActivationFunctions({}: SimulationComponentProps) {
             {ALL_ACTIVATION_NAMES.map((name) => {
               const info = ACTIVATION_INFO[name];
               return (
-                <SimulationLabel
+                <SimulationCheckbox
                   key={name}
-                  className="flex items-center gap-2 text-sm cursor-pointer"
+                  checked={selected.has(name)}
+                  onChange={() => toggleActivation(name)}
+                  label={info.label}
                   style={{ color: selected.has(name) ? info.color : '#666' }}
-                >
-                  <input
-                    type="checkbox"
-                    checked={selected.has(name)}
-                    onChange={() => toggleActivation(name)}
-                    className="accent-blue-500"
-                  />
-                  {info.label}
-                </SimulationLabel>
+                />
               );
             })}
 
             <hr className="border-[var(--border-strong)] my-3" />
 
-            <SimulationLabel className="flex items-center gap-2 text-sm text-[var(--text-muted)] cursor-pointer">
-              <input
-                type="checkbox"
-                checked={showDerivatives}
-                onChange={(e) => setShowDerivatives(e.target.checked)}
-                className="accent-blue-500"
-              />
-              Show Derivatives (dashed)
-            </SimulationLabel>
+            <SimulationCheckbox checked={showDerivatives} onChange={setShowDerivatives} label="Show Derivatives (dashed)" />
 
-            <SimulationLabel className="flex items-center gap-2 text-sm text-[var(--text-muted)] cursor-pointer">
-              <input
-                type="checkbox"
-                checked={showGradientRegions}
-                onChange={(e) => setShowGradientRegions(e.target.checked)}
-                className="accent-blue-500"
-              />
-              Highlight Vanishing Gradient Regions
-            </SimulationLabel>
+            <SimulationCheckbox checked={showGradientRegions} onChange={setShowGradientRegions} label="Highlight Vanishing Gradient Regions" />
 
             {/* Gradient annotation panel */}
             <div className="mt-3 p-3 bg-[var(--surface-2)] rounded text-xs text-[var(--text-muted)] space-y-2">

@@ -8,6 +8,6 @@ For everything you can't solve by hand (which is most of the real world), you cu
 
 ## Why This Topic Matters
 
-- Stress and strain underpin engineering, geophysics, and biomechanics -- if it bends, breaks, or flows, this is the theory behind it.
-- The Navier-Stokes equations govern weather, ocean currents, blood flow, and industrial processes -- and remain one of the deepest unsolved problems in mathematics.
-- Numerical simulation of continua is how modern engineers and earth scientists actually build and predict things.
+* Stress and strain underpin engineering, geophysics, and biomechanics -- if it bends, breaks, or flows, this is the theory behind it.
+* The Navier-Stokes equations govern weather, ocean currents, blood flow, and industrial processes -- and remain one of the deepest unsolved problems in mathematics.
+* Numerical simulation of continua is how modern engineers and earth scientists actually build and predict things.

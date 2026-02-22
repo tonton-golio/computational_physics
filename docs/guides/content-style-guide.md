@@ -148,6 +148,15 @@ Guidelines for each closing section:
 
 **Topic-specific editorial overrides.** The four-section default can be adjusted per topic when the editorial feedback calls for it. Some topics keep all four sections (applied-statistics, dynamical-models), some remove CYU and Challenge entirely (advanced-deep-learning, online-reinforcement-learning), and some rename or restyle them. Follow the topic-specific feedback when it conflicts with the default.
 
+Current overrides:
+
+| Topic | Override |
+|---|---|
+| applied-machine-learning | `## So what did we really learn?` replaces `## Big Ideas` |
+| inverse-problems | `## Let's Make Sure You Really Got It` replaces `## Check Your Understanding` |
+| advanced-deep-learning | No CYU or Challenge sections |
+| online-reinforcement-learning | No CYU or Challenge sections |
+
 Do not use other closing patterns: no `## What We Just Learned`, no bold summary lines (`**What we just learned in one sentence:**`), no italic teaser paragraphs separated by `---`, no `## Further reading`, no `## Takeaway`.
 
 ---

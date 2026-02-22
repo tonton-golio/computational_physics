@@ -360,15 +360,7 @@ export function LatentInterpolationDemo() {
   return (
     <SimulationPanel title="Latent Space Interpolation (VAE Intuition)">
       <SimulationSettings>
-        <SimulationLabel className="flex items-center gap-2 text-sm text-[var(--text-muted)] cursor-pointer">
-          <input
-            type="checkbox"
-            checked={showGrid}
-            onChange={(e) => setShowGrid(e.target.checked)}
-            className="accent-blue-500"
-          />
-          Show 2D decoded grid
-        </SimulationLabel>
+        <SimulationCheckbox checked={showGrid} onChange={setShowGrid} label="Show 2D decoded grid" />
       </SimulationSettings>
       <SimulationConfig>
         <div className="flex-1 min-w-[200px]">

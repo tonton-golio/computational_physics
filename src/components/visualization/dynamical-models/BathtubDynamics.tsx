@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
-import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel, SimulationCheckbox } from '@/components/ui/simulation-panel';
 import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
@@ -136,15 +136,7 @@ export default function BathtubDynamics({}: SimulationComponentProps) {
         </div>
 
         <div>
-          <label className="inline-flex items-center gap-2 text-sm text-[var(--text-muted)] cursor-pointer select-none">
-            <input
-              type="checkbox"
-              checked={showAnalytical}
-              onChange={(e) => setShowAnalytical(e.target.checked)}
-              className="w-4 h-4 rounded border-[var(--border-strong)] accent-[var(--accent)]"
-            />
-            Show analytical steady-state labels
-          </label>
+          <SimulationCheckbox checked={showAnalytical} onChange={setShowAnalytical} label="Show analytical steady-state labels" />
         </div>
       </SimulationConfig>
 

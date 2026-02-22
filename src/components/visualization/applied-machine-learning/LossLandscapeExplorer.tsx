@@ -6,7 +6,7 @@ import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
 import { SimulationMain } from '@/components/ui/simulation-main';
-import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationResults, SimulationAux, SimulationLabel, SimulationButton } from '@/components/ui/simulation-panel';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationResults, SimulationAux, SimulationLabel, SimulationButton, SimulationCheckbox } from '@/components/ui/simulation-panel';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 import { linspace } from './ml-utils';
 
@@ -297,14 +297,7 @@ export default function LossLandscapeExplorer({}: SimulationComponentProps): Rea
             </select>
           </div>
           <div className="flex flex-col gap-1">
-            <SimulationLabel className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={showContour}
-                onChange={(e) => setShowContour(e.target.checked)}
-              />
-              Show loss curve
-            </SimulationLabel>
+            <SimulationCheckbox checked={showContour} onChange={setShowContour} label="Show loss curve" />
           </div>
         </div>
       </SimulationSettings>

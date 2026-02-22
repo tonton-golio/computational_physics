@@ -57,10 +57,10 @@ where $\chi = g^2/\Delta$. The cavity frequency shifts by $\pm\chi$ depending on
 
 ## Big Ideas
 
-- The JC model is exactly solvable because total excitation number is conserved, splitting the Hilbert space into $2\times 2$ blocks.
-- The $\sqrt{n+1}$ Rabi frequency is a purely quantum effect -- a classical field can't produce it.
-- Collapse and revival with a coherent field is the clearest fingerprint of field quantization: discrete photon numbers cause dephasing and rephasing that no classical model can explain.
-- In the dispersive regime, the atom becomes a phase meter for cavity photons without absorbing them.
+* The JC model is exactly solvable because total excitation number is conserved, splitting the Hilbert space into $2\times 2$ blocks.
+* The $\sqrt{n+1}$ Rabi frequency is a purely quantum effect -- a classical field can't produce it.
+* Collapse and revival with a coherent field is the clearest fingerprint of field quantization: discrete photon numbers cause dephasing and rephasing that no classical model can explain.
+* In the dispersive regime, the atom becomes a phase meter for cavity photons without absorbing them.
 
 ## Check Your Understanding
 

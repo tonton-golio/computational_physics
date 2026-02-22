@@ -66,10 +66,10 @@ This comes from the trade-off between measurement imprecision (not enough photon
 
 ## Big Ideas
 
-- Every detection event changes the quantum state. The post-measurement state matters as much as the outcome probability.
-- POVMs capture realistic detectors: threshold detectors, homodyne, heterodyne -- each corresponds to different POVM elements.
-- Quantum state tomography reconstructs the full density matrix from quadrature histograms via the inverse Radon transform -- same math as CT scanning.
-- Back-action is unavoidable: learning about $\hat{X}$ disturbs $\hat{P}$. Beating the SQL requires correlating the disturbance, not eliminating it.
+* Every detection event changes the quantum state. The post-measurement state matters as much as the outcome probability.
+* POVMs capture realistic detectors: threshold detectors, homodyne, heterodyne -- each corresponds to different POVM elements.
+* Quantum state tomography reconstructs the full density matrix from quadrature histograms via the inverse Radon transform -- same math as CT scanning.
+* Back-action is unavoidable: learning about $\hat{X}$ disturbs $\hat{P}$. Beating the SQL requires correlating the disturbance, not eliminating it.
 
 ## Check Your Understanding
 

@@ -1,4 +1,4 @@
-import type { MDPSimulationParams, MDPSimulationResult } from "../../shared/types/simulation";
+import type { MDPSimulationParams, MDPSimulationResult } from "@/shared/types/simulation";
 
 function mulberry32(a: number) {
   return function rng() {

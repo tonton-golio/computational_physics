@@ -70,7 +70,7 @@ After content edits:
 - keep slugs stable once linked publicly
 - keep placeholder ids exact and lowercase where possible
 - use one topic directory per content domain id
-- add summaries for every lesson in `LESSON_SUMMARIES`
+- add summaries for every non-landing lesson in `LESSON_SUMMARIES`
 
 ### Don't
 

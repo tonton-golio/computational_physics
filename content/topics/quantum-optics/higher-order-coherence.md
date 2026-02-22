@@ -61,9 +61,9 @@ For thermal light, $g^{(n)}(0) = n!$, while for coherent light, $g^{(n)}(0) = 1$
 
 ## Big Ideas
 
-- $g^{(2)}(0)$ is the single most powerful number for classifying light: $= 1$ coherent, $= 2$ thermal, $< 1$ non-classical, $= 0$ single photon.
-- Any measurement giving $g^{(2)}(0) < 1$ is direct proof that quantum mechanics is needed.
-- Bunching is bosonic statistics, not photon-photon attraction. Antibunching is a single emitter that can't fire twice in a row.
+* $g^{(2)}(0)$ is the single most powerful number for classifying light: $= 1$ coherent, $= 2$ thermal, $< 1$ non-classical, $= 0$ single photon.
+* Any measurement giving $g^{(2)}(0) < 1$ is direct proof that quantum mechanics is needed.
+* Bunching is bosonic statistics, not photon-photon attraction. Antibunching is a single emitter that can't fire twice in a row.
 
 ## Check Your Understanding
 

@@ -6,7 +6,7 @@ You'll start with the simplest equation you can write down -- molecules appearin
 
 ## Why This Topic Matters
 
-- Differential equations and stochastic simulation let you predict how gene circuits behave before building them in the lab.
-- Feedback motifs -- switches, oscillators, filters -- are the design principles behind synthetic biology.
-- Noise in gene expression explains why genetically identical cells can make different life-or-death decisions.
-- Resource allocation models connect single-cell physiology to bacterial growth rate, antibiotic resistance, and infection dynamics.
+* Differential equations and stochastic simulation let you predict how gene circuits behave before building them in the lab.
+* Feedback motifs -- switches, oscillators, filters -- are the design principles behind synthetic biology.
+* Noise in gene expression explains why genetically identical cells can make different life-or-death decisions.
+* Resource allocation models connect single-cell physiology to bacterial growth rate, antibiotic resistance, and infection dynamics.

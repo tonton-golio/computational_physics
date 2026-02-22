@@ -46,9 +46,9 @@ These terms oscillate at $2\omega$ and average to nearly zero when $g \ll \omega
 
 ## Big Ideas
 
-- The dipole approximation works because optical wavelengths dwarf atomic sizes ($|\vec{k}\cdot\vec{r}| \ll 1$), reducing the interaction to $-\hat{\vec{d}}\cdot\hat{\vec{E}}$.
-- The two-level approximation holds when the driving field is near-resonant with one transition, so all other levels can be ignored.
-- Coupling a two-level atom to a quantized field produces entangled atom-field states (dressed states) that are neither pure atom nor pure field.
+* The dipole approximation works because optical wavelengths dwarf atomic sizes ($|\vec{k}\cdot\vec{r}| \ll 1$), reducing the interaction to $-\hat{\vec{d}}\cdot\hat{\vec{E}}$.
+* The two-level approximation holds when the driving field is near-resonant with one transition, so all other levels can be ignored.
+* Coupling a two-level atom to a quantized field produces entangled atom-field states (dressed states) that are neither pure atom nor pure field.
 
 ## Check Your Understanding
 

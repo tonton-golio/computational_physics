@@ -5,7 +5,7 @@ import { clamp } from '@/lib/math';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
-import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationResults, SimulationLabel, SimulationButton } from '@/components/ui/simulation-panel';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationResults, SimulationLabel, SimulationButton, SimulationCheckbox } from '@/components/ui/simulation-panel';
 import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 import { mulberry32, gaussianPair, CLUSTER_COLORS, linspace } from './ml-utils';
@@ -245,14 +245,7 @@ export default function XorEnsembleArena({}: SimulationComponentProps): React.Re
             </SimulationButton>
           ))}
         </div>
-        <SimulationLabel className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={addNoise}
-            onChange={(e) => setAddNoise(e.target.checked)}
-          />
-          Add noise
-        </SimulationLabel>
+        <SimulationCheckbox checked={addNoise} onChange={setAddNoise} label="Add noise" />
       </SimulationSettings>
       <SimulationConfig>
         <div className="grid grid-cols-2 gap-4 md:grid-cols-2">

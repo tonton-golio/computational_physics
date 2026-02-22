@@ -1,4 +1,4 @@
-import type { LotkaVolterraParams, LotkaVolterraResult } from "../../shared/types/simulation";
+import type { LotkaVolterraParams, LotkaVolterraResult } from "@/shared/types/simulation";
 
 function solveLotkaVolterra({
   alpha,

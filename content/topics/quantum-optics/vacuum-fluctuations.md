@@ -78,9 +78,9 @@ The minus sign means attraction. The force scales as $1/d^4$ -- it's tiny, but i
 
 ## Big Ideas
 
-- A real field has infinitely many modes, each an independent quantum oscillator. Thermal light at room temperature has essentially zero photons per visible mode.
-- The Lamb shift splits hydrogen's $2S$ and $2P$ levels by about 1 GHz because the electron trembles in the vacuum field.
-- Two neutral conducting plates attract each other (Casimir effect) because the vacuum modes between them are restricted while modes outside are not -- the energy imbalance produces a measurable force.
+* A real field has infinitely many modes, each an independent quantum oscillator. Thermal light at room temperature has essentially zero photons per visible mode.
+* The Lamb shift splits hydrogen's $2S$ and $2P$ levels by about 1 GHz because the electron trembles in the vacuum field.
+* Two neutral conducting plates attract each other (Casimir effect) because the vacuum modes between them are restricted while modes outside are not -- the energy imbalance produces a measurable force.
 
 ## Check Your Understanding
 

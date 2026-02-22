@@ -1,9 +1,10 @@
 import type { SimulationDefinition, SimulationComponent } from "@/shared/types/simulation";
+import type { TopicId } from "@/lib/topic-config";
 
 type SimulationRegistry = Record<string, SimulationComponent>;
 
 interface RegistryGroup {
-  topic: string;
+  topic: TopicId;
   title: string;
   load: () => Promise<SimulationRegistry>;
 }
