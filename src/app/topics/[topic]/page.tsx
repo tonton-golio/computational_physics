@@ -1,17 +1,17 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { MarkdownContent } from "@/components/content/MarkdownContent";
-import { ExportPdfButton } from "@/components/content/ExportPdfButton";
 import { CollapsibleTopicLayout } from "@/components/layout/CollapsibleTopicLayout";
-import { TOPICS } from "@/lib/content";
-import { readLessonDocument } from "@/infra/content/file-content-repository";
+import { TopicSidebar } from "@/components/layout/TopicSidebar";
+import { TOPICS } from "@/lib/topic-config";
+import { getTopicLesson } from "@/features/content/content-gateway";
 import { resolveTopicRoute, topicHref, TOPIC_ROUTES } from "@/lib/topic-navigation";
 import {
+  isLandingPage,
   getLandingPageSlug,
   getLessonsForTopic,
   getOrderedLessonSlugs,
-  isLandingPage,
-} from "@/lib/topic-navigation.server";
+} from "@/features/content/topic-lessons";
 
 interface TopicPageProps {
   params: Promise<{ topic: string }>;
@@ -26,49 +26,29 @@ export default async function TopicPage({ params }: TopicPageProps) {
   const route = resolveTopicRoute(topic);
   if (!route) notFound();
 
-  const landingSlug = getLandingPageSlug(route.contentId);
+  const landingSlug = getLandingPageSlug(route.topicId);
 
   if (!landingSlug) {
-    const slugs = getOrderedLessonSlugs(route.contentId);
+    const slugs = getOrderedLessonSlugs(route.topicId);
     if (!slugs.length) redirect("/topics");
     redirect(topicHref(route.routeSlug, slugs[0]));
   }
 
-  const topicMeta = TOPICS[route.contentId];
-  const lessons = getLessonsForTopic(route.contentId).filter((l) => !isLandingPage(l.slug));
-  const lesson = readLessonDocument(route.contentId, landingSlug);
+  const topicMeta = TOPICS[route.topicId];
+  const lessons = getLessonsForTopic(route.topicId).filter((l) => !isLandingPage(l.slug));
+  const lesson = await getTopicLesson(route.topicId, landingSlug);
   if (!lesson) notFound();
 
   return (
     <div className="min-h-screen px-4 py-6 md:px-6">
       <CollapsibleTopicLayout
         sidebar={
-          <aside className="h-fit rounded-xl border border-[var(--border-strong)] bg-[var(--surface-1)] p-4">
-            <div className="border-b border-[var(--border-strong)] pb-3">
-              <div className="text-[11px] uppercase tracking-[0.18em] text-[var(--accent)]">Topic</div>
-              <Link href={topicHref(route.routeSlug)} className="mt-1 block text-lg font-semibold text-[var(--text-strong)] hover:text-[var(--accent)] transition">{topicMeta.title}</Link>
-              <p className="mt-2 text-xs text-[var(--text-muted)]">{topicMeta.description}</p>
-              <ExportPdfButton topicContentId={route.contentId} topicTitle={topicMeta.title} />
-            </div>
-
-            <div className="mt-4 space-y-1 font-mono text-sm">
-              {lessons.map((entry) => (
-                <Link
-                  key={entry.slug}
-                  href={topicHref(route.routeSlug, entry.slug)}
-                  title={entry.summary}
-                  className="block rounded-md border border-transparent px-3 py-2 transition text-[var(--text-muted)] hover:border-[var(--border-strong)] hover:bg-[var(--surface-2)] hover:text-[var(--text-strong)]"
-                >
-                  <span className="text-[var(--accent)]">$</span> {entry.title}
-                  {entry.summary && (
-                    <span className="mt-0.5 block font-sans text-[10px] leading-tight text-[var(--text-soft)]">
-                      {entry.summary}
-                    </span>
-                  )}
-                </Link>
-              ))}
-            </div>
-          </aside>
+          <TopicSidebar
+            routeSlug={route.routeSlug}
+            topicMeta={topicMeta}
+            topicId={route.topicId}
+            lessons={lessons}
+          />
         }
       >
         <article className="rounded-xl border border-[var(--border-strong)] bg-[var(--surface-1)] p-5 md:p-7">

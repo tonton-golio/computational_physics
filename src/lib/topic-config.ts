@@ -1,4 +1,4 @@
-interface TopicConfig {
+export interface TopicConfig {
   title: string;
   description: string;
   difficulty: "Beginner" | "Intermediate" | "Advanced" | "Expert";
@@ -79,4 +79,4 @@ export const TOPICS = {
   },
 } as const satisfies Record<string, TopicConfig>;
 
-export type TopicSlug = keyof typeof TOPICS;
+export type TopicId = keyof typeof TOPICS;

@@ -1,9 +1,12 @@
-'use client';
+"use client";
 
 import React, { useMemo, useState } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
-import { mulberry32, gaussianPair, linspace } from './ml-utils';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationLabel, SimulationButton } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
+import { mulberry32, gaussianPair, linspace } from '@/lib/math';
 
 /**
  * Simple 1D decision stump: find the best split on xs to predict ys.
@@ -72,7 +75,7 @@ function fitDeepTree(
   return (x: number) => predict(root, x);
 }
 
-export default function ForestVsSingleTree(): React.ReactElement {
+export default function ForestVsSingleTree({}: SimulationComponentProps): React.ReactElement {
   const [nTrees, setNTrees] = useState(20);
   const [noiseLevel, setNoiseLevel] = useState(1.5);
   const [seed, setSeed] = useState(42);
@@ -128,92 +131,89 @@ export default function ForestVsSingleTree(): React.ReactElement {
   }, []);
 
   return (
-    <div className="w-full rounded-lg bg-[var(--surface-1)] p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">
-        Single Deep Tree vs Random Forest
-      </h3>
-
-      <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-3">
-        <div>
-          <label className="text-sm text-[var(--text-muted)]">
-            Trees in forest: {nTrees}
-          </label>
-          <Slider
-            min={1}
-            max={100}
-            step={1}
-            value={[nTrees]}
-            onValueChange={([v]) => setNTrees(v)}
-          />
+    <SimulationPanel title="Single Deep Tree vs Random Forest">
+      <SimulationSettings>
+        <SimulationButton variant="secondary" onClick={() => setSeed((s) => s + 1)}>
+          New Data
+        </SimulationButton>
+      </SimulationSettings>
+      <SimulationConfig>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div>
+            <SimulationLabel>
+              Trees in forest: {nTrees}
+            </SimulationLabel>
+            <Slider
+              min={1}
+              max={100}
+              step={1}
+              value={[nTrees]}
+              onValueChange={([v]) => setNTrees(v)}
+            />
+          </div>
+          <div>
+            <SimulationLabel>
+              Noise level: {noiseLevel.toFixed(1)}
+            </SimulationLabel>
+            <Slider
+              min={0.2}
+              max={3}
+              step={0.1}
+              value={[noiseLevel]}
+              onValueChange={([v]) => setNoiseLevel(v)}
+            />
+          </div>
         </div>
-        <div>
-          <label className="text-sm text-[var(--text-muted)]">
-            Noise level: {noiseLevel.toFixed(1)}
-          </label>
-          <Slider
-            min={0.2}
-            max={3}
-            step={0.1}
-            value={[noiseLevel]}
-            onValueChange={([v]) => setNoiseLevel(v)}
-          />
-        </div>
-        <div className="flex items-end">
-          <button
-            onClick={() => setSeed((s) => s + 1)}
-            className="rounded bg-[var(--surface-2,#27272a)] px-4 py-1.5 text-sm font-medium text-[var(--text-strong)] hover:opacity-90"
-          >
-            New Data
-          </button>
-        </div>
-      </div>
+      </SimulationConfig>
 
-      <CanvasChart
-        data={[
-          {
-            x: xs,
-            y: ys,
-            type: 'scatter',
-            mode: 'markers',
-            marker: { color: '#64748b', size: 5, opacity: 0.5 },
-            name: 'Noisy data',
-          },
-          {
-            x: trueLine.x,
-            y: trueLine.y,
-            type: 'scatter',
-            mode: 'lines',
-            line: { color: '#6366f1', width: 2, dash: 'dash' },
-            name: 'True f(x)=sin(x)',
-          },
-          {
-            x: singleTreePred.x,
-            y: singleTreePred.y,
-            type: 'scatter',
-            mode: 'lines',
-            line: { color: '#ef4444', width: 2 },
-            name: 'Single tree (depth 10)',
-          },
-          {
-            x: forestPred.x,
-            y: forestPred.y,
-            type: 'scatter',
-            mode: 'lines',
-            line: { color: '#10b981', width: 2.5 },
-            name: `Forest (${nTrees} trees)`,
-          },
-        ]}
-        layout={{
-          xaxis: { title: { text: 'x' } },
-          yaxis: { title: { text: 'y' } },
-          margin: { t: 20, r: 20, b: 45, l: 55 },
-        }}
-        style={{ width: '100%', height: 420 }}
-      />
+      <SimulationMain>
+        <CanvasChart
+          data={[
+            {
+              x: xs,
+              y: ys,
+              type: 'scatter',
+              mode: 'markers',
+              marker: { color: '#64748b', size: 5, opacity: 0.5 },
+              name: 'Noisy data',
+            },
+            {
+              x: trueLine.x,
+              y: trueLine.y,
+              type: 'scatter',
+              mode: 'lines',
+              line: { color: '#6366f1', width: 2, dash: 'dash' },
+              name: 'True f(x)=sin(x)',
+            },
+            {
+              x: singleTreePred.x,
+              y: singleTreePred.y,
+              type: 'scatter',
+              mode: 'lines',
+              line: { color: '#ef4444', width: 2 },
+              name: 'Single tree (depth 10)',
+            },
+            {
+              x: forestPred.x,
+              y: forestPred.y,
+              type: 'scatter',
+              mode: 'lines',
+              line: { color: '#10b981', width: 2.5 },
+              name: `Forest (${nTrees} trees)`,
+            },
+          ]}
+          layout={{
+            xaxis: { title: { text: 'x' } },
+            yaxis: { title: { text: 'y' } },
+            margin: { t: 20, r: 20, b: 45, l: 55 },
+          }}
+          style={{ width: '100%', height: 420 }}
+        />
 
-      <div className="mt-3 text-xs text-[var(--text-muted)]">
-        The red single tree overfits with jagged predictions. The green forest averages many shallow trees, producing a smoother curve closer to the true function (dashed).
-      </div>
-    </div>
+        <div className="mt-3 text-xs text-[var(--text-muted)]">
+          The red single tree overfits with jagged predictions. The green forest averages many shallow trees, producing a smoother curve closer to the true function (dashed).
+        </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

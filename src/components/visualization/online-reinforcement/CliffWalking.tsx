@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
+import { clamp } from '@/lib/math';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart, type ChartTrace } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationLabel, SimulationButton, SimulationSettings, SimulationConfig } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 const ROWS = 4, COLS = 12;
@@ -12,8 +15,8 @@ const ACTIONS = [[-1, 0], [1, 0], [0, -1], [0, 1]]; // up, down, left, right
 function isCliff(r: number, c: number) { return r === 3 && c > 0 && c < 11; }
 
 function step(r: number, c: number, a: number): [number, number, number] {
-  const nr = Math.max(0, Math.min(ROWS - 1, r + ACTIONS[a][0]));
-  const nc = Math.max(0, Math.min(COLS - 1, c + ACTIONS[a][1]));
+  const nr = clamp(r + ACTIONS[a][0], 0, ROWS - 1);
+  const nc = clamp(c + ACTIONS[a][1], 0, COLS - 1);
   if (isCliff(nr, nc)) return [START[0], START[1], -100];
   return [nr, nc, -1];
 }
@@ -91,7 +94,7 @@ function smooth(arr: number[], w: number): number[] {
   return out;
 }
 
-export default function CliffWalking({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function CliffWalking({}: SimulationComponentProps) {
   const [epsilon, setEpsilon] = useState(0.1);
   const [numEpisodes, setNumEpisodes] = useState(300);
   const [seed, setSeed] = useState(7);
@@ -128,28 +131,23 @@ export default function CliffWalking({ id }: SimulationComponentProps) { // esli
   const handleResample = useCallback(() => setSeed((s) => s + 1), []);
 
   return (
-    <div className="w-full rounded-lg bg-[var(--surface-1)] p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-3 text-[var(--text-strong)]">
-        Cliff Walking: SARSA vs Q-Learning
-      </h3>
-      <p className="text-sm text-[var(--text-muted)] mb-4">
-        SARSA learns a safe path away from the cliff (accounting for its own exploration),
-        while Q-learning finds the optimal path along the cliff edge.
-      </p>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+    <SimulationPanel title="Cliff Walking: SARSA vs Q-Learning" caption="SARSA learns a safe path away from the cliff (accounting for its own exploration), while Q-learning finds the optimal path along the cliff edge.">
+      <SimulationSettings>
+        <SimulationButton variant="primary" onClick={handleResample}>
+          Re-sample
+        </SimulationButton>
+      </SimulationSettings>
+      <SimulationConfig>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Epsilon: {epsilon.toFixed(2)}</label>
+          <SimulationLabel>Epsilon: {epsilon.toFixed(2)}</SimulationLabel>
           <Slider value={[epsilon]} onValueChange={([v]) => setEpsilon(v)} min={0.01} max={0.5} step={0.01} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Episodes: {numEpisodes}</label>
+          <SimulationLabel>Episodes: {numEpisodes}</SimulationLabel>
           <Slider value={[numEpisodes]} onValueChange={([v]) => setNumEpisodes(v)} min={50} max={1000} step={25} />
         </div>
-        <button onClick={handleResample}
-          className="rounded bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white text-sm px-3 py-2">
-          Re-sample
-        </button>
-      </div>
+      </SimulationConfig>
+      <SimulationMain>
       <CanvasChart data={pathTraces} layout={{
         title: { text: 'Learned greedy paths (4x12 grid, start=bottom-left, goal=bottom-right)' },
         xaxis: { title: { text: 'column' }, range: [-0.5, 11.5] },
@@ -163,6 +161,7 @@ export default function CliffWalking({ id }: SimulationComponentProps) { // esli
         yaxis: { title: { text: 'reward' } },
         height: 320,
       }} style={{ width: '100%' }} />
-    </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

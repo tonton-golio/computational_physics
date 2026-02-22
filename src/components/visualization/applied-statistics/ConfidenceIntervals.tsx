@@ -1,15 +1,12 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { Slider } from '@/components/ui/slider';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
-
-
-// Gaussian PDF
-function gaussPdf(x: number, mu: number, sigma: number): number {
-  return (1 / (sigma * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * ((x - mu) / sigma) ** 2);
-}
+import { gaussPdf } from '@/lib/math';
 
 // Log-likelihood for normal distribution
 function logLikelihood(sample: number[], mu: number, sigma: number): number {
@@ -45,7 +42,7 @@ function goldenSectionMin(
  * Draws a sample from N(mu, sigma), then uses linear search and golden-section
  * minimization to find the MLE for mu and sigma.
  */
-export default function AppliedStatsSim6({ }: SimulationComponentProps) {
+export default function AppliedStatsSim6({}: SimulationComponentProps) {
   const [muTrue, setMuTrue] = useState(0);
   const [sigTrue, setSigTrue] = useState(1);
   const [sampleSize, setSampleSize] = useState(120);
@@ -131,104 +128,103 @@ export default function AppliedStatsSim6({ }: SimulationComponentProps) {
   }, [muTrue, sigTrue, sampleSize, seed]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Maximum Likelihood Estimation</h3>
-      <p className="text-sm text-[var(--text-muted)] mb-4">
-        Draw samples from a normal distribution, then find the best-fit parameters via maximum likelihood.
-        The left plot shows the sample histogram overlaid with the MLE-fitted Gaussian PDF.
-        The right plot shows the log-likelihood as a function of the parameter being optimized.
-      </p>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-        <div>
-          <label className="text-sm text-[var(--text-muted)]">True mu: {muTrue.toFixed(1)}</label>
-          <Slider min={-3} max={3} step={0.1} value={[muTrue]}
-            onValueChange={([v]) => setMuTrue(v)} />
+    <SimulationPanel title="Maximum Likelihood Estimation" caption="Draw samples from a normal distribution, then find the best-fit parameters via maximum likelihood. The left plot shows the sample histogram overlaid with the MLE-fitted Gaussian PDF. The right plot shows the log-likelihood as a function of the parameter being optimized.">
+      <SimulationConfig>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div>
+            <SimulationLabel>True mu: {muTrue.toFixed(1)}</SimulationLabel>
+            <Slider min={-3} max={3} step={0.1} value={[muTrue]}
+              onValueChange={([v]) => setMuTrue(v)} />
+          </div>
+          <div>
+            <SimulationLabel>True sigma: {sigTrue.toFixed(1)}</SimulationLabel>
+            <Slider min={0.3} max={4} step={0.1} value={[sigTrue]}
+              onValueChange={([v]) => setSigTrue(v)} />
+          </div>
+          <div>
+            <SimulationLabel>Sample size: {sampleSize}</SimulationLabel>
+            <Slider min={10} max={2000} step={10} value={[sampleSize]}
+              onValueChange={([v]) => setSampleSize(v)} />
+          </div>
+          <div>
+            <SimulationLabel>Seed: {seed}</SimulationLabel>
+            <Slider min={1} max={200} step={1} value={[seed]}
+              onValueChange={([v]) => setSeed(v)} />
+          </div>
         </div>
-        <div>
-          <label className="text-sm text-[var(--text-muted)]">True sigma: {sigTrue.toFixed(1)}</label>
-          <Slider min={0.3} max={4} step={0.1} value={[sigTrue]}
-            onValueChange={([v]) => setSigTrue(v)} />
+      </SimulationConfig>
+      <SimulationMain>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <CanvasChart
+            data={[
+              {
+                x: result.sample,
+                type: 'histogram',
+                histnorm: 'probability density',
+                nbinsx: Math.max(15, Math.floor(sampleSize ** 0.5)),
+                name: 'Sample',
+                marker: { color: '#ef4444' },
+                opacity: 0.5,
+              } as any,
+              {
+                x: result.xPdf,
+                y: result.yPdf,
+                type: 'scatter',
+                mode: 'lines',
+                line: { color: 'cyan', width: 2, dash: 'dash' },
+                name: 'MLE fit',
+              },
+            ]}
+            layout={{
+              title: { text: 'Sample & MLE Fit' },
+              margin: { t: 40, r: 20, b: 50, l: 50 },
+              xaxis: { title: { text: 'Value' } },
+              yaxis: { title: { text: 'Density' } },
+              legend: {},
+            }}
+            style={{ width: '100%', height: 400 }}
+          />
+          <CanvasChart
+            data={[
+              {
+                x: result.muRange,
+                y: result.muLL,
+                type: 'scatter',
+                mode: 'lines',
+                line: { color: '#3b82f6', width: 2 },
+                name: 'LL(mu)',
+              },
+              {
+                x: result.sigRange,
+                y: result.sigLL,
+                type: 'scatter',
+                mode: 'lines',
+                line: { color: '#f59e0b', width: 2 },
+                name: 'LL(sigma)',
+              },
+            ]}
+            layout={{
+              title: { text: 'Log-Likelihood Curves' },
+              margin: { t: 40, r: 20, b: 50, l: 50 },
+              xaxis: { title: { text: 'Parameter value' } },
+              yaxis: { title: { text: 'Log-likelihood' } },
+              legend: {},
+            }}
+            style={{ width: '100%', height: 400 }}
+          />
         </div>
-        <div>
-          <label className="text-sm text-[var(--text-muted)]">Sample size: {sampleSize}</label>
-          <Slider min={10} max={2000} step={10} value={[sampleSize]}
-            onValueChange={([v]) => setSampleSize(v)} />
+      </SimulationMain>
+      <SimulationResults>
+        <div className="grid grid-cols-2 gap-4 text-sm text-[var(--text-muted)]">
+          <div>
+            <strong className="text-[var(--text-strong)]">Golden-section search:</strong> mu = {result.muBest.toFixed(4)}, sigma = {result.sigBest.toFixed(4)}
+            <br/>Calls: mu={result.nCallsMu}, sig={result.nCallsSig}
+          </div>
+          <div>
+            <strong className="text-[var(--text-strong)]">Linear search:</strong> mu = {result.muBestLinear.toFixed(4)}, sigma = {result.sigBestLinear.toFixed(4)}
+          </div>
         </div>
-        <div>
-          <label className="text-sm text-[var(--text-muted)]">Seed: {seed}</label>
-          <Slider min={1} max={200} step={1} value={[seed]}
-            onValueChange={([v]) => setSeed(v)} />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4 text-sm text-[var(--text-muted)] mb-4">
-        <div>
-          <strong className="text-[var(--text-strong)]">Golden-section search:</strong> mu = {result.muBest.toFixed(4)}, sigma = {result.sigBest.toFixed(4)}
-          <br/>Calls: mu={result.nCallsMu}, sig={result.nCallsSig}
-        </div>
-        <div>
-          <strong className="text-[var(--text-strong)]">Linear search:</strong> mu = {result.muBestLinear.toFixed(4)}, sigma = {result.sigBestLinear.toFixed(4)}
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <CanvasChart
-          data={[
-            {
-              x: result.sample,
-              type: 'histogram',
-              histnorm: 'probability density',
-              nbinsx: Math.max(15, Math.floor(sampleSize ** 0.5)),
-              name: 'Sample',
-              marker: { color: 'rgba(239,68,68,0.5)' },
-            } as any,
-            {
-              x: result.xPdf,
-              y: result.yPdf,
-              type: 'scatter',
-              mode: 'lines',
-              line: { color: 'cyan', width: 2, dash: 'dash' },
-              name: 'MLE fit',
-            },
-          ]}
-          layout={{
-            title: { text: 'Sample & MLE Fit' },
-            margin: { t: 40, r: 20, b: 50, l: 50 },
-            xaxis: { title: { text: 'Value' } },
-            yaxis: { title: { text: 'Density' } },
-            legend: {},
-          }}
-          style={{ width: '100%', height: 400 }}
-        />
-        <CanvasChart
-          data={[
-            {
-              x: result.muRange,
-              y: result.muLL,
-              type: 'scatter',
-              mode: 'lines',
-              line: { color: '#3b82f6', width: 2 },
-              name: 'LL(mu)',
-            },
-            {
-              x: result.sigRange,
-              y: result.sigLL,
-              type: 'scatter',
-              mode: 'lines',
-              line: { color: '#f59e0b', width: 2 },
-              name: 'LL(sigma)',
-            },
-          ]}
-          layout={{
-            title: { text: 'Log-Likelihood Curves' },
-            margin: { t: 40, r: 20, b: 50, l: 50 },
-            xaxis: { title: { text: 'Parameter value' } },
-            yaxis: { title: { text: 'Log-likelihood' } },
-            legend: {},
-          }}
-          style={{ width: '100%', height: 400 }}
-        />
-      </div>
-    </div>
+      </SimulationResults>
+    </SimulationPanel>
   );
 }

@@ -12,8 +12,8 @@ describe("topic-navigation", () => {
       expect(new Set(slugs).size).toBe(slugs.length);
     });
 
-    it("has unique content IDs", () => {
-      const ids = TOPIC_ROUTES.map((r) => r.contentId);
+    it("has unique topic IDs", () => {
+      const ids = TOPIC_ROUTES.map((r) => r.topicId);
       expect(new Set(ids).size).toBe(ids.length);
     });
   });
@@ -23,7 +23,7 @@ describe("topic-navigation", () => {
       const result = resolveTopicRoute("complex-physics");
       expect(result).toEqual({
         routeSlug: "complex-physics",
-        contentId: "complex-physics",
+        topicId: "complex-physics",
       });
     });
 

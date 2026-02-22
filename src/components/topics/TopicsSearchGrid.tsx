@@ -10,7 +10,7 @@ import { ExportPdfButton } from "@/components/content/ExportPdfButton";
 
 export interface TopicsSearchEntry {
   routeSlug: string;
-  contentId: string;
+  topicId: string;
   meta: {
     title: string;
     description?: string;
@@ -437,7 +437,7 @@ export function TopicsSearchGrid({ entries }: TopicsSearchGridProps) {
                     </Link>
                     <p className="mt-3 text-sm text-[var(--text-muted)]">{entry.meta.description}</p>
                   </div>
-                  <ExportPdfButton topicContentId={entry.contentId} topicTitle={entry.meta.title} variant="compact" />
+                  <ExportPdfButton topicId={entry.topicId} topicTitle={entry.meta.title} variant="compact" />
                 </div>
 
                 <div className="mt-4 flex flex-wrap gap-2">

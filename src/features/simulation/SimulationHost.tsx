@@ -7,7 +7,7 @@ import { useFullscreen } from "@/lib/use-fullscreen";
 import { FullscreenButton } from "@/components/ui/fullscreen-button";
 import { SimulationFullscreenProvider } from "@/lib/simulation-fullscreen-context";
 import { SIMULATION_DESCRIPTIONS } from "@/lib/simulation-descriptions";
-import { InlineSuggestionBox } from "@/components/layout/InlineSuggestionBox";
+import { SuggestionBox } from "@/components/layout/SuggestionBox";
 
 type GraphComponent = React.ComponentType<{ type: string; params?: Record<string, number> }>;
 type LoadResult = {
@@ -318,7 +318,7 @@ export function SimulationHost({ id }: { id: string }) {
         </div>
       )}
 
-      {isFullscreen && <InlineSuggestionBox />}
+      {isFullscreen && <SuggestionBox variant="inline" />}
 
       <FullscreenButton
         isFullscreen={isFullscreen}

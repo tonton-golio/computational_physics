@@ -1,7 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
+import { mulberry32 } from '@/lib/math';
 import { Slider } from '@/components/ui/slider';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 /**
  * NotchDeltaCheckerboard: Lateral inhibition simulation (Notch-Delta signaling).
@@ -34,11 +38,7 @@ function getNeighbors(row: number, col: number, size: number): Array<[number, nu
 }
 
 function initGrid(size: number, seed: number): Float64Array {
-  let state = seed;
-  const rand = () => {
-    state = (state * 1664525 + 1013904223) & 0x7fffffff;
-    return state / 0x7fffffff;
-  };
+  const rand = mulberry32(seed);
 
   const grid = new Float64Array(size * size);
   for (let i = 0; i < grid.length; i++) {
@@ -110,7 +110,7 @@ function deltaToColor(value: number, maxVal: number): string {
   return `rgb(${r},${g},${b})`;
 }
 
-export default function NotchDeltaCheckerboard() {
+export default function NotchDeltaCheckerboard({}: SimulationComponentProps) {
   const [hillN, setHillN] = useState(4);
   const [K, setK] = useState(0.5);
   const [steps, setSteps] = useState(200);
@@ -148,45 +148,35 @@ export default function NotchDeltaCheckerboard() {
   const svgSize = GRID_SIZE * cellSize;
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">
-        Notch-Delta Lateral Inhibition: Checkerboard Pattern
-      </h3>
-
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+    <SimulationPanel title="Notch-Delta Lateral Inhibition: Checkerboard Pattern">
+      <SimulationConfig>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">
+          <SimulationLabel>
             Hill coefficient n: {hillN}
-          </label>
+          </SimulationLabel>
           <Slider value={[hillN]} onValueChange={([v]) => setHillN(v)} min={1} max={8} step={1} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">
+          <SimulationLabel>
             Threshold K: {K.toFixed(2)}
-          </label>
+          </SimulationLabel>
           <Slider value={[K]} onValueChange={([v]) => setK(v)} min={0.1} max={1.5} step={0.05} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">
+          <SimulationLabel>
             Simulation steps: {steps}
-          </label>
+          </SimulationLabel>
           <Slider value={[steps]} onValueChange={([v]) => setSteps(v)} min={10} max={500} step={10} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">
+          <SimulationLabel>
             Random seed: {seed}
-          </label>
+          </SimulationLabel>
           <Slider value={[seed]} onValueChange={([v]) => setSeed(v)} min={1} max={100} step={1} />
         </div>
-      </div>
+      </SimulationConfig>
 
-      <div className="mb-3 text-sm text-[var(--text-muted)]">
-        Pattern score: <span className="font-mono font-semibold">{patternScore.toFixed(3)}</span>
-        <span className="ml-2 text-xs">
-          (higher = stronger checkerboard; 1.0 = perfect alternation)
-        </span>
-      </div>
-
+      <SimulationMain scaleMode="contain">
       <div className="flex justify-center overflow-x-auto">
         <svg
           width={svgSize}
@@ -228,6 +218,16 @@ export default function NotchDeltaCheckerboard() {
         />
         <span>High Delta</span>
       </div>
+      </SimulationMain>
+
+      <SimulationResults>
+        <div className="text-sm text-[var(--text-muted)]">
+          Pattern score: <span className="font-mono font-semibold">{patternScore.toFixed(3)}</span>
+          <span className="ml-2 text-xs">
+            (higher = stronger checkerboard; 1.0 = perfect alternation)
+          </span>
+        </div>
+      </SimulationResults>
 
       <div className="mt-4 border-l-4 border-blue-500 pl-4 text-sm text-[var(--text-muted)]">
         <p className="font-medium text-[var(--text-strong)] mb-1">What to notice</p>
@@ -240,6 +240,6 @@ export default function NotchDeltaCheckerboard() {
           longer make sharp decisions and the pattern becomes blurry.
         </p>
       </div>
-    </div>
+    </SimulationPanel>
   );
 }

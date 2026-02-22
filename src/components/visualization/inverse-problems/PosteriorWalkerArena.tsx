@@ -1,20 +1,12 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
+import { mulberry32, gaussianPair } from '@/lib/math';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
-
-function seededRandom(seed: number): () => number {
-  let s = Math.max(1, Math.floor(seed));
-  return () => { s = (s * 1664525 + 1013904223) % 4294967296; return s / 4294967296; };
-}
-
-function randn(rng: () => number): number {
-  const u1 = Math.max(rng(), 1e-12);
-  const u2 = rng();
-  return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
-}
 
 // 2D bimodal posterior: sum of two Gaussians with correlation
 function logPosterior(x: number, y: number): number {
@@ -29,14 +21,14 @@ function logPosterior(x: number, y: number): number {
   return Math.log(p1 + p2 + 1e-30);
 }
 
-export default function PosteriorWalkerArena({ id: _id }: SimulationComponentProps) {
+export default function PosteriorWalkerArena({}: SimulationComponentProps) {
   const [nWalkers, setNWalkers] = useState(4);
   const [stepSize, setStepSize] = useState(0.5);
   const [nSteps, setNSteps] = useState(200);
   const [burnIn, setBurnIn] = useState(50);
 
   const result = useMemo(() => {
-    const rng = seededRandom(7);
+    const rng = mulberry32(7);
     const walkerTraces: { x: number[]; y: number[] }[] = [];
     const burnSamples: { x: number[]; y: number[] } = { x: [], y: [] };
     const postSamples: { x: number[]; y: number[] } = { x: [], y: [] };
@@ -49,8 +41,8 @@ export default function PosteriorWalkerArena({ id: _id }: SimulationComponentPro
       const trY: number[] = [cy];
 
       for (let s = 0; s < nSteps; s++) {
-        const px = cx + randn(rng) * stepSize;
-        const py = cy + randn(rng) * stepSize;
+        const px = cx + gaussianPair(rng)[0] * stepSize;
+        const py = cy + gaussianPair(rng)[0] * stepSize;
         const propLP = logPosterior(px, py);
 
         if (Math.log(rng()) < propLP - curLP) {
@@ -109,27 +101,29 @@ export default function PosteriorWalkerArena({ id: _id }: SimulationComponentPro
   const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'];
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Posterior Walker Arena</h3>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-        <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Walkers: {nWalkers}</label>
-          <Slider value={[nWalkers]} onValueChange={([v]) => setNWalkers(v)} min={1} max={8} step={1} />
+    <SimulationPanel title="Posterior Walker Arena">
+      <SimulationConfig>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div>
+            <SimulationLabel className="mb-1 block text-sm text-[var(--text-muted)]">Walkers: {nWalkers}</SimulationLabel>
+            <Slider value={[nWalkers]} onValueChange={([v]) => setNWalkers(v)} min={1} max={8} step={1} />
+          </div>
+          <div>
+            <SimulationLabel className="mb-1 block text-sm text-[var(--text-muted)]">Step size: {stepSize.toFixed(2)}</SimulationLabel>
+            <Slider value={[stepSize]} onValueChange={([v]) => setStepSize(v)} min={0.05} max={2.0} step={0.05} />
+          </div>
+          <div>
+            <SimulationLabel className="mb-1 block text-sm text-[var(--text-muted)]">Steps: {nSteps}</SimulationLabel>
+            <Slider value={[nSteps]} onValueChange={([v]) => setNSteps(v)} min={50} max={500} step={10} />
+          </div>
+          <div>
+            <SimulationLabel className="mb-1 block text-sm text-[var(--text-muted)]">Burn-in: {burnIn}</SimulationLabel>
+            <Slider value={[burnIn]} onValueChange={([v]) => setBurnIn(v)} min={0} max={200} step={10} />
+          </div>
         </div>
-        <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Step size: {stepSize.toFixed(2)}</label>
-          <Slider value={[stepSize]} onValueChange={([v]) => setStepSize(v)} min={0.05} max={2.0} step={0.05} />
-        </div>
-        <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Steps: {nSteps}</label>
-          <Slider value={[nSteps]} onValueChange={([v]) => setNSteps(v)} min={50} max={500} step={10} />
-        </div>
-        <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Burn-in: {burnIn}</label>
-          <Slider value={[burnIn]} onValueChange={([v]) => setBurnIn(v)} min={0} max={200} step={10} />
-        </div>
-      </div>
+      </SimulationConfig>
 
+      <SimulationMain>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
         <CanvasChart
           data={[
@@ -195,6 +189,7 @@ export default function PosteriorWalkerArena({ id: _id }: SimulationComponentPro
           settle into the high-probability regions (blue).
         </p>
       </div>
-    </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

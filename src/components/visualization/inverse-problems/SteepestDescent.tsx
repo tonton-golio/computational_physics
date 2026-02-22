@@ -1,9 +1,12 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
+import { mulberry32, clamp } from '@/lib/math';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 
@@ -16,7 +19,7 @@ function costFunction(x: number, y: number, params: number[]): number {
 
 const COST_PARAMS = [1, 1, 0.77, 1.11, 0.31, 0.31];
 
-export default function SteepestDescent({ id: _id }: SimulationComponentProps) {
+export default function SteepestDescent({}: SimulationComponentProps) {
   const [lr, setLr] = useState(0.1);
   const [nSteps, setNSteps] = useState(30);
   const [seed, setSeed] = useState(1);
@@ -43,12 +46,9 @@ export default function SteepestDescent({ id: _id }: SimulationComponentProps) {
     }
 
     // Start from a seeded pseudo-random point
-    const pseudoRng = (s: number) => {
-      const v = Math.sin(s * 12.9898 + 78.233) * 43758.5453;
-      return v - Math.floor(v);
-    };
-    const x0 = -3 + 6 * pseudoRng(seed);
-    const y0 = -3 + 6 * pseudoRng(seed + 0.5);
+    const rng = mulberry32(seed);
+    const x0 = -3 + 6 * rng();
+    const y0 = -3 + 6 * rng();
 
     // Steepest descent
     const h = 0.001;
@@ -67,8 +67,8 @@ export default function SteepestDescent({ id: _id }: SimulationComponentProps) {
       cy -= gradY * lr;
 
       // Clamp to grid bounds
-      cx = Math.max(low, Math.min(high, cx));
-      cy = Math.max(low, Math.min(high, cy));
+      cx = clamp(cx, low, high);
+      cy = clamp(cy, low, high);
 
       pathX.push(cx);
       pathY.push(cy);
@@ -81,15 +81,10 @@ export default function SteepestDescent({ id: _id }: SimulationComponentProps) {
   const lrOptions = [0.001, 0.003, 0.01, 0.032, 0.1, 0.316, 1.0];
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Steepest Descent Optimization</h3>
-      <p className="text-[var(--text-muted)] text-sm mb-4">
-        Gradient descent on a non-convex surface. The optimizer follows the negative gradient with a
-        given learning rate. Observe how step size and number of iterations affect convergence.
-      </p>
-      <div className="grid grid-cols-3 gap-4 mb-4">
+    <SimulationPanel title="Steepest Descent Optimization" caption="Gradient descent on a non-convex surface. The optimizer follows the negative gradient with a given learning rate. Observe how step size and number of iterations affect convergence.">
+      <SimulationSettings>
         <div>
-          <label className="text-[var(--text-muted)] text-sm">Learning rate: {lr}</label>
+          <SimulationLabel className="text-[var(--text-muted)] text-sm">Learning rate: {lr}</SimulationLabel>
           <select
             value={lr}
             onChange={(e) => setLr(parseFloat(e.target.value))}
@@ -100,24 +95,29 @@ export default function SteepestDescent({ id: _id }: SimulationComponentProps) {
             ))}
           </select>
         </div>
-        <div>
-          <label className="text-[var(--text-muted)] text-sm">Steps: {nSteps}</label>
-          <Slider
-            min={1} max={100} step={1} value={[nSteps]}
-            onValueChange={([v]) => setNSteps(v)}
-            className="w-full"
-          />
+      </SimulationSettings>
+      <SimulationConfig>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-sm">Steps: {nSteps}</SimulationLabel>
+            <Slider
+              min={1} max={100} step={1} value={[nSteps]}
+              onValueChange={([v]) => setNSteps(v)}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-sm">Random start (seed): {seed}</SimulationLabel>
+            <Slider
+              min={1} max={20} step={1} value={[seed]}
+              onValueChange={([v]) => setSeed(v)}
+              className="w-full"
+            />
+          </div>
         </div>
-        <div>
-          <label className="text-[var(--text-muted)] text-sm">Random start (seed): {seed}</label>
-          <Slider
-            min={1} max={20} step={1} value={[seed]}
-            onValueChange={([v]) => setSeed(v)}
-            className="w-full"
-          />
-        </div>
-      </div>
+      </SimulationConfig>
 
+      <SimulationMain>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="relative">
           <CanvasHeatmap
@@ -201,6 +201,7 @@ export default function SteepestDescent({ id: _id }: SimulationComponentProps) {
       <p className="text-[var(--text-soft)] text-xs mt-3">
         Try different starting seeds and learning rates to see how the optimizer can get stuck in local minima or overshoot.
       </p>
-    </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

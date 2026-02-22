@@ -1,14 +1,13 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
+import { mulberry32 } from '@/lib/math';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-function seededRandom(seed: number): () => number {
-  let s = Math.max(1, Math.floor(seed));
-  return () => { s = (s * 1664525 + 1013904223) % 4294967296; return s / 4294967296; };
-}
 function randn(rng: () => number): number {
   return Math.sqrt(-2 * Math.log(Math.max(rng(), 1e-12))) * Math.cos(2 * Math.PI * rng());
 }
@@ -21,14 +20,14 @@ function misfit(dObs: number[], dPred: number[], sigma: number): number {
   return 0.5 * s;
 }
 
-export default function TradeoffCloud({ id: _id }: SimulationComponentProps) {
+export default function TradeoffCloud({}: SimulationComponentProps) {
   const [noiseLevel, setNoiseLevel] = useState(0.05);
   const [nSamples, setNSamples] = useState(300);
   const [trueDepth, setTrueDepth] = useState(3.0);
   const trueSlip = 5.0;
 
   const result = useMemo(() => {
-    const rng = seededRandom(42), sigma = Math.max(noiseLevel, 0.005);
+    const rng = mulberry32(42), sigma = Math.max(noiseLevel, 0.005);
     const xObs = Array.from({ length: 15 }, (_, i) => 0.5 + i * 0.7);
     const dObs = forward(trueDepth, trueSlip, xObs).map(d => d + sigma * randn(rng));
     let curD = 2 + rng() * 4, curS = 2 + rng() * 6;
@@ -61,22 +60,24 @@ export default function TradeoffCloud({ id: _id }: SimulationComponentProps) {
   }, [noiseLevel, nSamples, trueDepth]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Trade-off Cloud</h3>
-      <div className="grid grid-cols-3 gap-4 mb-4">
-        <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Noise: {noiseLevel.toFixed(3)}</label>
-          <Slider value={[noiseLevel]} onValueChange={([v]) => setNoiseLevel(v)} min={0.005} max={0.3} step={0.005} />
+    <SimulationPanel title="Trade-off Cloud">
+      <SimulationConfig>
+        <div className="grid grid-cols-3 gap-4">
+          <div>
+            <SimulationLabel className="mb-1 block text-sm text-[var(--text-muted)]">Noise: {noiseLevel.toFixed(3)}</SimulationLabel>
+            <Slider value={[noiseLevel]} onValueChange={([v]) => setNoiseLevel(v)} min={0.005} max={0.3} step={0.005} />
+          </div>
+          <div>
+            <SimulationLabel className="mb-1 block text-sm text-[var(--text-muted)]">Samples: {nSamples}</SimulationLabel>
+            <Slider value={[nSamples]} onValueChange={([v]) => setNSamples(v)} min={100} max={800} step={50} />
+          </div>
+          <div>
+            <SimulationLabel className="mb-1 block text-sm text-[var(--text-muted)]">True depth: {trueDepth.toFixed(1)}</SimulationLabel>
+            <Slider value={[trueDepth]} onValueChange={([v]) => setTrueDepth(v)} min={1.0} max={6.0} step={0.5} />
+          </div>
         </div>
-        <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Samples: {nSamples}</label>
-          <Slider value={[nSamples]} onValueChange={([v]) => setNSamples(v)} min={100} max={800} step={50} />
-        </div>
-        <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">True depth: {trueDepth.toFixed(1)}</label>
-          <Slider value={[trueDepth]} onValueChange={([v]) => setTrueDepth(v)} min={1.0} max={6.0} step={0.5} />
-        </div>
-      </div>
+      </SimulationConfig>
+      <SimulationMain>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
         <CanvasChart
           data={[
@@ -95,7 +96,7 @@ export default function TradeoffCloud({ id: _id }: SimulationComponentProps) {
         <div className="space-y-2">
           <CanvasChart
             data={[{ x: result.dBins, y: result.dCounts, type: 'bar',
-              marker: { color: 'rgba(59,130,246,0.7)' }, name: 'Depth marginal' }]}
+              marker: { color: '#3b82f6' }, opacity: 0.7, name: 'Depth marginal' }]}
             layout={{
               title: { text: 'Depth Marginal' }, xaxis: { title: { text: 'Depth' } },
               yaxis: { title: { text: 'Count' } }, height: 190,
@@ -107,7 +108,7 @@ export default function TradeoffCloud({ id: _id }: SimulationComponentProps) {
           />
           <CanvasChart
             data={[{ x: result.sBins, y: result.sCounts, type: 'bar',
-              marker: { color: 'rgba(16,185,129,0.7)' }, name: 'Slip marginal' }]}
+              marker: { color: '#10b981' }, opacity: 0.7, name: 'Slip marginal' }]}
             layout={{
               title: { text: 'Slip Marginal' }, xaxis: { title: { text: 'Slip' } },
               yaxis: { title: { text: 'Count' } }, height: 190,
@@ -128,6 +129,7 @@ export default function TradeoffCloud({ id: _id }: SimulationComponentProps) {
           trade-off strength. Marginal histograms show individual parameter uncertainty.
         </p>
       </div>
-    </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

@@ -1,9 +1,12 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
+import { mulberry32 } from '@/lib/math';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
 import { Slider } from '@/components/ui/slider';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 
@@ -12,19 +15,13 @@ import type { SimulationComponentProps } from '@/shared/types/simulation';
  * Generates noisy linear data y = a*x + b, computes chi2 over a grid of (a,b),
  * then shows the data + fit alongside a chi2 surface heatmap.
  */
-export default function AppliedStatsSim5({ }: SimulationComponentProps) {
+export default function AppliedStatsSim5({}: SimulationComponentProps) {
   const [resolution, setResolution] = useState(40);
   const [nSamples, setNSamples] = useState(15);
   const [seed, setSeed] = useState(42);
 
   const result = useMemo(() => {
-    // Seeded pseudo-random using a simple LCG for reproducibility
-    let s = seed;
-    const seededRandom = () => {
-      s = (s * 1664525 + 1013904223) % 4294967296;
-      return s / 4294967296;
-    };
-    // Box-Muller with seeded random
+    const seededRandom = mulberry32(seed);
     const seededNormal = () => {
       const u1 = seededRandom();
       const u2 = seededRandom();
@@ -103,85 +100,83 @@ export default function AppliedStatsSim5({ }: SimulationComponentProps) {
   }, [resolution, nSamples, seed]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Chi-Squared Grid Search Demo</h3>
-      <p className="text-sm text-[var(--text-muted)] mb-4">
-        Generate noisy data from y = 2x + 4, then search over a grid of (a, b) values to find the parameters
-        that minimize the chi-squared statistic. The left plot shows data and the best fit; the right plot
-        shows the chi-squared surface as a heatmap.
-      </p>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        <div>
-          <label className="text-sm text-[var(--text-muted)]">Resolution: {resolution}</label>
-          <Slider min={10} max={80} step={5} value={[resolution]}
-            onValueChange={([v]) => setResolution(v)} />
+    <SimulationPanel title="Chi-Squared Grid Search Demo" caption="Generate noisy data from y = 2x + 4, then search over a grid of (a, b) values to find the parameters that minimize the chi-squared statistic. The left plot shows data and the best fit; the right plot shows the chi-squared surface as a heatmap.">
+      <SimulationConfig>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <SimulationLabel>Resolution: {resolution}</SimulationLabel>
+            <Slider min={10} max={80} step={5} value={[resolution]}
+              onValueChange={([v]) => setResolution(v)} />
+          </div>
+          <div>
+            <SimulationLabel>Data Points: {nSamples}</SimulationLabel>
+            <Slider min={5} max={40} step={1} value={[nSamples]}
+              onValueChange={([v]) => setNSamples(v)} />
+          </div>
+          <div>
+            <SimulationLabel>Seed: {seed}</SimulationLabel>
+            <Slider min={1} max={200} step={1} value={[seed]}
+              onValueChange={([v]) => setSeed(v)} />
+          </div>
         </div>
-        <div>
-          <label className="text-sm text-[var(--text-muted)]">Data Points: {nSamples}</label>
-          <Slider min={5} max={40} step={1} value={[nSamples]}
-            onValueChange={([v]) => setNSamples(v)} />
+      </SimulationConfig>
+      <SimulationMain>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <CanvasChart
+            data={[
+              {
+                x: result.x,
+                y: result.yGt,
+                type: 'scatter',
+                mode: 'markers',
+                marker: { color: 'cyan', size: 8, symbol: 'x' },
+                name: 'Data',
+              },
+              {
+                x: result.xFit,
+                y: result.yFit,
+                type: 'scatter',
+                mode: 'lines',
+                line: { color: '#ef4444', width: 2 },
+                name: 'Best fit',
+              },
+            ]}
+            layout={{
+              title: { text: 'Data and Best Fit' },
+              margin: { t: 40, r: 20, b: 50, l: 50 },
+              xaxis: { title: { text: 'x' } },
+              yaxis: { title: { text: 'y' } },
+              legend: {},
+            }}
+            style={{ width: '100%', height: 400 }}
+          />
+          <CanvasHeatmap
+            data={[
+              {
+                z: result.Z,
+                x: result.bList,
+                y: result.aList,
+                type: 'heatmap',
+                colorscale: 'Hot',
+                reversescale: true,
+                colorbar: { title: { text: '\u03C7\u00B2', side: 'right' } },
+              },
+            ]}
+            layout={{
+              title: { text: '\u03C7\u00B2 Surface' },
+              margin: { t: 40, r: 80, b: 50, l: 50 },
+              xaxis: { title: { text: 'b' } },
+              yaxis: { title: { text: 'a' } },
+            }}
+            style={{ width: '100%', height: 400 }}
+          />
         </div>
-        <div>
-          <label className="text-sm text-[var(--text-muted)]">Seed: {seed}</label>
-          <Slider min={1} max={200} step={1} value={[seed]}
-            onValueChange={([v]) => setSeed(v)} />
+      </SimulationMain>
+      <SimulationResults>
+        <div className="text-sm text-[var(--text-muted)]">
+          Best fit: a = {result.bestA.toFixed(3)}, b = {result.bestB.toFixed(3)} | RMSE = {result.rmse.toFixed(4)}
         </div>
-      </div>
-
-      <div className="text-sm text-[var(--text-muted)] mb-2">
-        Best fit: a = {result.bestA.toFixed(3)}, b = {result.bestB.toFixed(3)} | RMSE = {result.rmse.toFixed(4)}
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <CanvasChart
-          data={[
-            {
-              x: result.x,
-              y: result.yGt,
-              type: 'scatter',
-              mode: 'markers',
-              marker: { color: 'cyan', size: 8, symbol: 'x' },
-              name: 'Data',
-            },
-            {
-              x: result.xFit,
-              y: result.yFit,
-              type: 'scatter',
-              mode: 'lines',
-              line: { color: '#ef4444', width: 2 },
-              name: 'Best fit',
-            },
-          ]}
-          layout={{
-            title: { text: 'Data and Best Fit' },
-            margin: { t: 40, r: 20, b: 50, l: 50 },
-            xaxis: { title: { text: 'x' } },
-            yaxis: { title: { text: 'y' } },
-            legend: {},
-          }}
-          style={{ width: '100%', height: 400 }}
-        />
-        <CanvasHeatmap
-          data={[
-            {
-              z: result.Z,
-              x: result.bList,
-              y: result.aList,
-              type: 'heatmap',
-              colorscale: 'Hot',
-              reversescale: true,
-              colorbar: { title: { text: '\u03C7\u00B2', side: 'right' } },
-            },
-          ]}
-          layout={{
-            title: { text: '\u03C7\u00B2 Surface' },
-            margin: { t: 40, r: 80, b: 50, l: 50 },
-            xaxis: { title: { text: 'b' } },
-            yaxis: { title: { text: 'a' } },
-          }}
-          style={{ width: '100%', height: 400 }}
-        />
-      </div>
-    </div>
+      </SimulationResults>
+    </SimulationPanel>
   );
 }

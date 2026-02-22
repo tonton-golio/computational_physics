@@ -1,6 +1,7 @@
-'use client';
+"use client";
 
 import React, { useRef, useState, useEffect, useCallback, useMemo } from 'react';
+import { mulberry32, clamp } from '@/lib/math';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
@@ -8,21 +9,9 @@ import * as THREE from 'three';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { SimulationMain } from '@/components/ui/simulation-main';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationResults, SimulationAux, SimulationLabel, SimulationPlayButton, SimulationButton } from '@/components/ui/simulation-panel';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 import { useTheme, type Theme } from '@/lib/use-theme';
-
-/* ------------------------------------------------------------------ */
-/*  Deterministic RNG                                                  */
-/* ------------------------------------------------------------------ */
-
-function mulberry32(seed: number) {
-  let s = seed >>> 0;
-  return () => {
-    s += 0x6D2B79F5;
-    let t = Math.imul(s ^ (s >>> 15), 1 | s);
-    t ^= t + Math.imul(t ^ (t >>> 7), 61 | t);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
 
 /* ------------------------------------------------------------------ */
 /*  Topple logic                                                       */
@@ -62,12 +51,12 @@ function topple(grid: number[][], i: number, j: number, size: number): number {
 /* ------------------------------------------------------------------ */
 
 function turboColor(t: number): [number, number, number] {
-  const r = Math.max(0, Math.min(1,
-    0.13572138 + t * (4.6153926 + t * (-42.66032258 + t * (132.13108234 + t * (-152.94239396 + t * 59.28637943))))));
-  const g = Math.max(0, Math.min(1,
-    0.09140261 + t * (2.19418839 + t * (4.84296658 + t * (-14.18503333 + t * 7.56348409)))));
-  const b = Math.max(0, Math.min(1,
-    0.10667330 + t * (12.64194608 + t * (-60.58204836 + t * (110.36276771 + t * (-89.90310912 + t * 27.34824973))))));
+  const r = clamp(
+    0.13572138 + t * (4.6153926 + t * (-42.66032258 + t * (132.13108234 + t * (-152.94239396 + t * 59.28637943)))), 0, 1);
+  const g = clamp(
+    0.09140261 + t * (2.19418839 + t * (4.84296658 + t * (-14.18503333 + t * 7.56348409))), 0, 1);
+  const b = clamp(
+    0.10667330 + t * (12.64194608 + t * (-60.58204836 + t * (110.36276771 + t * (-89.90310912 + t * 27.34824973)))), 0, 1);
   return [r, g, b];
 }
 
@@ -231,7 +220,7 @@ function GroundPlane({ size, theme }: { size: number; theme: Theme }) {
 /*  Main exported component                                            */
 /* ------------------------------------------------------------------ */
 
-export function SandpileModel() {
+export default function SandpileModel({}: SimulationComponentProps) {
   const theme = useTheme();
   const isDark = theme === 'dark';
   const [size, setSize] = useState(35);
@@ -264,34 +253,23 @@ export function SandpileModel() {
   const camDist = size * 0.7;
 
   return (
-    <div className="space-y-6">
-      {/* Controls */}
-      <div className="flex flex-wrap gap-6 items-center">
+    <SimulationPanel title="Abelian Sandpile Model">
+      <SimulationSettings>
+        <SimulationPlayButton isRunning={playing} onToggle={() => setPlaying(p => !p)} />
+        <SimulationButton variant="secondary" onClick={() => setRerun(v => v + 1)}>
+          Reset
+        </SimulationButton>
+      </SimulationSettings>
+      <SimulationConfig>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Grid Size: {size}</label>
+          <SimulationLabel>Grid Size: {size}</SimulationLabel>
           <Slider value={[size]} onValueChange={([v]) => setSize(v)} min={15} max={80} step={5} className="w-48" />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Speed: {speed} grains/frame</label>
+          <SimulationLabel>Speed: {speed} grains/frame</SimulationLabel>
           <Slider value={[speed]} onValueChange={([v]) => setSpeed(v)} min={1} max={50} step={1} className="w-48" />
         </div>
-        <button
-          onClick={() => setPlaying(p => !p)}
-          className="px-4 py-2 bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white rounded text-sm mt-4"
-        >
-          {playing ? 'Pause' : 'Play'}
-        </button>
-        <button
-          onClick={() => setRerun(v => v + 1)}
-          className="px-4 py-2 bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white rounded text-sm mt-4"
-        >
-          Reset
-        </button>
-      </div>
-
-      <div className="text-sm text-[var(--text-muted)]">
-        Step: {stepCount.toLocaleString()} | Avalanches: {avalancheCount.toLocaleString()}
-      </div>
+      </SimulationConfig>
 
       {/* 3D Height-Field Visualization */}
       <SimulationMain
@@ -349,10 +327,15 @@ export function SandpileModel() {
           )}
         </Canvas>
       </SimulationMain>
+      <SimulationResults>
+        <div className="text-sm text-[var(--text-muted)]">
+          Step: {stepCount.toLocaleString()} | Avalanches: {avalancheCount.toLocaleString()}
+        </div>
+      </SimulationResults>
 
       {/* Avalanche Histogram */}
       {chartAvalanches.length > 0 && (
-        <div className="w-full">
+        <SimulationAux>
           <CanvasChart
             data={[
               {
@@ -370,8 +353,8 @@ export function SandpileModel() {
             }}
             style={{ width: '100%', height: 360 }}
           />
-        </div>
+        </SimulationAux>
       )}
-    </div>
+    </SimulationPanel>
   );
 }

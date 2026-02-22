@@ -1,9 +1,13 @@
-'use client';
+"use client";
 
 import React, { useMemo, useState } from 'react';
+import { clamp } from '@/lib/math';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationResults, SimulationLabel, SimulationButton } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 import { mulberry32, gaussianPair, CLUSTER_COLORS, linspace } from './ml-utils';
 
 // ── Minimal CART decision tree ──────────────────────────────────────────
@@ -147,7 +151,7 @@ function generateXorData(
 
 type Method = 'single' | 'rf' | 'gbt';
 
-export default function XorEnsembleArena(): React.ReactElement {
+export default function XorEnsembleArena({}: SimulationComponentProps): React.ReactElement {
   const [method, setMethod] = useState<Method>('rf');
   const [maxDepth, setMaxDepth] = useState(5);
   const [nTrees, setNTrees] = useState(50);
@@ -193,7 +197,7 @@ export default function XorEnsembleArena(): React.ReactElement {
       stumps.push({ tree, weight: lr });
       predictions = predictions.map((p, i) => {
         const pred = predictTree(tree, X[i]);
-        return Math.max(0, Math.min(1, p + lr * pred));
+        return clamp(p + lr * pred, 0, 1);
       });
     }
 
@@ -202,7 +206,7 @@ export default function XorEnsembleArena(): React.ReactElement {
       for (const { tree, weight } of stumps) {
         pred += weight * predictTree(tree, x);
       }
-      return Math.max(0, Math.min(1, pred));
+      return clamp(pred, 0, 1);
     };
   }, [X, y, method, maxDepth, nTrees]);
 
@@ -228,56 +232,45 @@ export default function XorEnsembleArena(): React.ReactElement {
   const groundColors = y.map((l) => (l === 0 ? CLUSTER_COLORS[0] : CLUSTER_COLORS[3]));
 
   return (
-    <div className="w-full rounded-lg bg-[var(--surface-1)] p-6">
-      <h3 className="mb-4 text-xl font-semibold text-[var(--text-strong)]">
-        XOR Ensemble Arena
-      </h3>
-
-      <div className="mb-4 flex flex-wrap gap-2">
-        {(['single', 'rf', 'gbt'] as Method[]).map((m) => (
-          <button
-            key={m}
-            onClick={() => setMethod(m)}
-            className={`rounded px-4 py-1.5 text-sm font-medium ${
-              method === m
-                ? 'bg-[var(--accent,#3b82f6)] text-white'
-                : 'bg-[var(--surface-2,#27272a)] text-[var(--text-strong)] hover:opacity-90'
-            }`}
-          >
-            {m === 'single' ? 'Single Tree' : m === 'rf' ? 'Random Forest' : 'Gradient Boosted'}
-          </button>
-        ))}
-      </div>
-
-      <div className="mb-4 grid grid-cols-2 gap-4 md:grid-cols-4">
-        <div>
-          <label className="text-sm text-[var(--text-muted)]">Max depth: {maxDepth}</label>
-          <Slider min={1} max={15} step={1} value={[maxDepth]} onValueChange={([v]) => setMaxDepth(v)} />
+    <SimulationPanel title="XOR Ensemble Arena">
+      <SimulationSettings>
+        <div className="flex flex-wrap gap-2">
+          {(['single', 'rf', 'gbt'] as Method[]).map((m) => (
+            <SimulationButton
+              key={m}
+              variant={method === m ? 'primary' : 'secondary'}
+              onClick={() => setMethod(m)}
+            >
+              {m === 'single' ? 'Single Tree' : m === 'rf' ? 'Random Forest' : 'Gradient Boosted'}
+            </SimulationButton>
+          ))}
         </div>
-        {method !== 'single' && (
+        <SimulationLabel className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={addNoise}
+            onChange={(e) => setAddNoise(e.target.checked)}
+          />
+          Add noise
+        </SimulationLabel>
+      </SimulationSettings>
+      <SimulationConfig>
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-2">
           <div>
-            <label className="text-sm text-[var(--text-muted)]">Trees: {nTrees}</label>
-            <Slider min={5} max={100} step={5} value={[nTrees]} onValueChange={([v]) => setNTrees(v)} />
+            <SimulationLabel>Max depth: {maxDepth}</SimulationLabel>
+            <Slider min={1} max={15} step={1} value={[maxDepth]} onValueChange={([v]) => setMaxDepth(v)} />
           </div>
-        )}
-        <div className="flex items-end">
-          <label className="flex items-center gap-2 text-sm text-[var(--text-muted)]">
-            <input
-              type="checkbox"
-              checked={addNoise}
-              onChange={(e) => setAddNoise(e.target.checked)}
-            />
-            Add noise
-          </label>
+          {method !== 'single' && (
+            <div>
+              <SimulationLabel>Trees: {nTrees}</SimulationLabel>
+              <Slider min={5} max={100} step={5} value={[nTrees]} onValueChange={([v]) => setNTrees(v)} />
+            </div>
+          )}
         </div>
-        <div className="flex items-end">
-          <div className="rounded bg-[var(--surface-2,#27272a)] px-3 py-1.5 text-sm font-medium text-[var(--text-strong)]">
-            Accuracy: {(accuracy * 100).toFixed(1)}%
-          </div>
-        </div>
-      </div>
+      </SimulationConfig>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <SimulationMain>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div>
           <p className="mb-1 text-center text-sm text-[var(--text-muted)]">Decision boundary</p>
           <CanvasHeatmap
@@ -314,18 +307,24 @@ export default function XorEnsembleArena(): React.ReactElement {
         </div>
       </div>
 
-      {addNoise && method === 'single' && maxDepth > 8 && (
-        <div className="mt-3 rounded bg-red-900/30 p-3 text-sm text-red-300">
-          The single tree is overfitting to noise. Notice the jagged decision boundary.
-          Switch to Random Forest to see how ensembles stay stable.
+        {addNoise && method === 'single' && maxDepth > 8 && (
+          <div className="mt-3 rounded bg-red-900/30 p-3 text-sm text-red-300">
+            The single tree is overfitting to noise. Notice the jagged decision boundary.
+            Switch to Random Forest to see how ensembles stay stable.
+          </div>
+        )}
+        {method === 'rf' && accuracy > 0.9 && (
+          <div className="mt-3 rounded bg-emerald-900/30 p-3 text-sm text-emerald-300">
+            The Random Forest handles the XOR pattern by combining many weak learners.
+            Each tree sees a different bootstrap sample and feature subset.
+          </div>
+        )}
+      </SimulationMain>
+      <SimulationResults>
+        <div className="rounded bg-[var(--surface-2,#27272a)] px-3 py-1.5 text-sm font-medium text-[var(--text-strong)]">
+          Accuracy: {(accuracy * 100).toFixed(1)}%
         </div>
-      )}
-      {method === 'rf' && accuracy > 0.9 && (
-        <div className="mt-3 rounded bg-emerald-900/30 p-3 text-sm text-emerald-300">
-          The Random Forest handles the XOR pattern by combining many weak learners.
-          Each tree sees a different bootstrap sample and feature subset.
-        </div>
-      )}
-    </div>
+      </SimulationResults>
+    </SimulationPanel>
   );
 }

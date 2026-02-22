@@ -1,8 +1,12 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
+import { mulberry32 } from '@/lib/math';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 /**
  * Gillespie (Stochastic Simulation Algorithm) for a birth-death process.
@@ -18,11 +22,8 @@ import { CanvasChart } from '@/components/ui/canvas-chart';
 function gillespieTrajectory(
   k: number, gamma: number, tMax: number, seed: number,
 ): { times: number[]; counts: number[] } {
-  let state = seed;
-  const rand = () => {
-    state = (state * 1664525 + 1013904223) & 0x7fffffff;
-    return Math.max(1e-15, state / 0x7fffffff);
-  };
+  const _rand = mulberry32(seed);
+  const rand = () => Math.max(1e-15, _rand());
 
   let N = 0;
   let t = 0;
@@ -84,7 +85,7 @@ function subsampleTrajectory(
   return { t: tSampled, n: nSampled };
 }
 
-export default function GillespieTrajectory() {
+export default function GillespieTrajectory({}: SimulationComponentProps) {
   const [k, setK] = useState(20);
   const [gamma, setGamma] = useState(0.5);
   const [numTrajectories, setNumTrajectories] = useState(5);
@@ -145,38 +146,35 @@ export default function GillespieTrajectory() {
   };
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">
-        Gillespie Algorithm: Stochastic Birth-Death Process
-      </h3>
-
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+    <SimulationPanel title="Gillespie Algorithm: Stochastic Birth-Death Process">
+      <SimulationConfig>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">
+          <SimulationLabel>
             Production rate k: {k}
-          </label>
+          </SimulationLabel>
           <Slider value={[k]} onValueChange={([v]) => setK(v)} min={1} max={100} step={1} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">
+          <SimulationLabel>
             Degradation rate &Gamma;: {gamma.toFixed(2)}
-          </label>
+          </SimulationLabel>
           <Slider value={[gamma]} onValueChange={([v]) => setGamma(v)} min={0.05} max={2.0} step={0.05} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">
+          <SimulationLabel>
             Trajectories: {numTrajectories}
-          </label>
+          </SimulationLabel>
           <Slider value={[numTrajectories]} onValueChange={([v]) => setNumTrajectories(v)} min={1} max={8} step={1} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">
+          <SimulationLabel>
             Seed: {seed}
-          </label>
+          </SimulationLabel>
           <Slider value={[seed]} onValueChange={([v]) => setSeed(v)} min={1} max={100} step={1} />
         </div>
-      </div>
+      </SimulationConfig>
 
+      <SimulationMain>
       <CanvasChart
         data={[ssLine, ...stochasticTraces, odeTrace] as any}
         layout={{
@@ -194,8 +192,10 @@ export default function GillespieTrajectory() {
         }}
         style={{ width: '100%' }}
       />
+      </SimulationMain>
 
-      <div className="mt-4 grid grid-cols-3 gap-3 text-sm">
+      <SimulationResults>
+      <div className="grid grid-cols-3 gap-3 text-sm">
         <div className="bg-[var(--surface-2)] rounded-md p-3">
           <div className="font-medium text-[var(--text-strong)]">Steady state</div>
           <div className="text-lg font-mono">{nSS.toFixed(1)}</div>
@@ -212,6 +212,7 @@ export default function GillespieTrajectory() {
           <div className="text-xs">Var/Mean (Poisson)</div>
         </div>
       </div>
+      </SimulationResults>
 
       <div className="mt-4 border-l-4 border-blue-500 pl-4 text-sm text-[var(--text-muted)]">
         <p className="font-medium text-[var(--text-strong)] mb-1">What to notice</p>
@@ -224,6 +225,6 @@ export default function GillespieTrajectory() {
           small-number effect in action.
         </p>
       </div>
-    </div>
+    </SimulationPanel>
   );
 }

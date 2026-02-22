@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { type CanvasTheme, DARK_THEME, getCanvasTheme } from '@/lib/canvas-theme';
+import { extractText, fmtNum } from '@/lib/canvas-utils';
 import { useSimulationFullscreen } from '@/lib/simulation-fullscreen-context';
+import { useIsInsideMain } from '@/components/ui/simulation-main';
+import { useThemeChangeKey } from '@/lib/use-theme';
 
 // ── Types (Plotly-compatible for easy migration) ───────────────────────
 
@@ -103,12 +106,6 @@ const PALETTE = [
 
 // ── Utility ────────────────────────────────────────────────────────────
 
-function extractText(v?: string | { text: string; font?: unknown }): string {
-  if (!v) return '';
-  if (typeof v === 'string') return v;
-  return v.text || '';
-}
-
 function niceNum(range: number, round: boolean): number {
   const exp = Math.floor(Math.log10(range));
   const frac = range / Math.pow(10, exp);
@@ -141,15 +138,6 @@ function genLogTicks(min: number, max: number): number[] {
   const ticks: number[] = [];
   for (let e = logMin; e <= logMax; e++) ticks.push(Math.pow(10, e));
   return ticks;
-}
-
-function fmtNum(v: number): string {
-  if (v === 0) return '0';
-  const abs = Math.abs(v);
-  if (abs >= 1e6 || (abs < 0.01 && abs > 0)) return v.toExponential(1);
-  if (abs >= 100) return v.toFixed(0);
-  if (abs >= 1) return v.toFixed(1);
-  return v.toPrecision(3);
 }
 
 function fmtLogNum(v: number): string {
@@ -244,9 +232,19 @@ function draw(
       const nbins = trace.nbinsx || 20;
       const hd = histBins(vals, nbins);
       const xs = hd.edges.slice(0, -1).map((e, i) => (e + hd.edges[i + 1]) / 2);
+      // Normalize to probability density if requested
+      let ys = hd.counts;
+      if ((trace as Record<string, unknown>).histnorm === 'probability density') {
+        const n = vals.length;
+        ys = hd.counts.map((c, i) => {
+          const binW = hd.edges[i + 1] - hd.edges[i];
+          return binW > 0 ? c / (n * binW) : 0;
+        });
+        hd.counts = ys;
+      }
       allX.push(...hd.edges);
-      allY.push(0, ...hd.counts);
-      processedTraces.push({ trace, xs, ys: hd.counts, isHist: true, histData: hd, isBar: false });
+      allY.push(0, ...ys);
+      processedTraces.push({ trace, xs, ys, isHist: true, histData: hd, isBar: false });
     } else if (isBar) {
       const ys = trace.y || [];
       const xs = (trace.x as number[]) || ys.map((_, i) => i);
@@ -595,15 +593,9 @@ function draw(
 export function CanvasChart({ data, layout, style }: CanvasChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [themeKey, setThemeKey] = useState(0);
+  const themeKey = useThemeChangeKey();
   const isFullscreen = useSimulationFullscreen();
-
-  // Watch for theme changes
-  useEffect(() => {
-    const observer = new MutationObserver(() => setThemeKey(k => k + 1));
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-    return () => observer.disconnect();
-  }, []);
+  const insideMain = useIsInsideMain();
 
   useEffect(() => {
     const container = containerRef.current;
@@ -642,8 +634,14 @@ export function CanvasChart({ data, layout, style }: CanvasChartProps) {
   return (
     <div
       ref={containerRef}
-      data-fs-role={isFullscreen ? 'chart' : undefined}
-      style={isFullscreen ? undefined : { width: style?.width || '100%' }}
+      data-fs-role={isFullscreen && !insideMain ? 'chart' : undefined}
+      style={
+        isFullscreen && insideMain === 'main'
+          ? { width: '100%', height: '100%' }
+          : isFullscreen && !insideMain
+            ? undefined
+            : { width: style?.width || '100%' }
+      }
     >
       <canvas ref={canvasRef} style={{ display: 'block', borderRadius: '4px' }} />
     </div>

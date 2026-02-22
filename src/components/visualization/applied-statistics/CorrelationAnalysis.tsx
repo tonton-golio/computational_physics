@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
+import { mulberry32 } from '@/lib/math';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { Slider } from '@/components/ui/slider';
+import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 
@@ -11,19 +14,14 @@ import type { SimulationComponentProps } from '@/shared/types/simulation';
  * Shows samples from Uniform, Poisson (approximated), Binomial, and Gaussian distributions
  * side by side, controlled by a single sample-size slider.
  */
-export default function AppliedStatsSim7({ }: SimulationComponentProps) {
+export default function AppliedStatsSim7({}: SimulationComponentProps) {
   const [size, setSize] = useState(500);
   const [nBinomial, setNBinomial] = useState(100);
   const [pBinomial, setPBinomial] = useState(0.2);
   const [seed, setSeed] = useState(69);
 
   const result = useMemo(() => {
-    // Seeded pseudo-random
-    let s = seed;
-    const seededRandom = () => {
-      s = (s * 1664525 + 1013904223) % 4294967296;
-      return s / 4294967296;
-    };
+    const seededRandom = mulberry32(seed);
     const seededNormal = () => {
       const u1 = seededRandom();
       const u2 = seededRandom();
@@ -71,109 +69,107 @@ export default function AppliedStatsSim7({ }: SimulationComponentProps) {
   }, [size, nBinomial, pBinomial, seed]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Probability Density Functions</h3>
-      <p className="text-sm text-[var(--text-muted)] mb-4">
-        Compare samples drawn from four fundamental distributions: Uniform, Poisson, Binomial, and Gaussian.
-        Adjust the number of samples and binomial parameters to see how the histograms change.
-      </p>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-        <div>
-          <label className="text-sm text-[var(--text-muted)]">Samples: {size}</label>
-          <Slider min={50} max={5000} step={50} value={[size]}
-            onValueChange={([v]) => setSize(v)} />
+    <SimulationPanel title="Probability Density Functions" caption="Compare samples drawn from four fundamental distributions: Uniform, Poisson, Binomial, and Gaussian. Adjust the number of samples and binomial parameters to see how the histograms change.">
+      <SimulationConfig>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div>
+            <SimulationLabel>Samples: {size}</SimulationLabel>
+            <Slider min={50} max={5000} step={50} value={[size]}
+              onValueChange={([v]) => setSize(v)} />
+          </div>
+          <div>
+            <SimulationLabel>Binomial n: {nBinomial}</SimulationLabel>
+            <Slider min={5} max={200} step={5} value={[nBinomial]}
+              onValueChange={([v]) => setNBinomial(v)} />
+          </div>
+          <div>
+            <SimulationLabel>Binomial p: {pBinomial.toFixed(2)}</SimulationLabel>
+            <Slider min={0.01} max={0.99} step={0.01} value={[pBinomial]}
+              onValueChange={([v]) => setPBinomial(v)} />
+          </div>
+          <div>
+            <SimulationLabel>Seed: {seed}</SimulationLabel>
+            <Slider min={1} max={200} step={1} value={[seed]}
+              onValueChange={([v]) => setSeed(v)} />
+          </div>
         </div>
-        <div>
-          <label className="text-sm text-[var(--text-muted)]">Binomial n: {nBinomial}</label>
-          <Slider min={5} max={200} step={5} value={[nBinomial]}
-            onValueChange={([v]) => setNBinomial(v)} />
+      </SimulationConfig>
+      <SimulationMain>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+          <CanvasChart
+            data={[{
+              x: result.uniform,
+              type: 'histogram',
+              nbinsx: 40,
+              marker: { color: '#f97316' }, opacity: 0.7,
+              name: 'Uniform',
+            }]}
+            layout={{
+              title: { text: 'Uniform', font: { size: 13 } },
+              font: { size: 10 },
+              margin: { t: 35, r: 10, b: 30, l: 35 },
+              xaxis: {},
+              yaxis: {},
+              showlegend: false,
+            }}
+            style={{ width: '100%', height: 280 }}
+          />
+          <CanvasChart
+            data={[{
+              x: result.poisson,
+              type: 'histogram',
+              nbinsx: 40,
+              marker: { color: '#ec4899' }, opacity: 0.7,
+              name: 'Poisson',
+            }]}
+            layout={{
+              title: { text: `Poisson (lambda=${result.lambda.toFixed(1)})`, font: { size: 13 } },
+              font: { size: 10 },
+              margin: { t: 35, r: 10, b: 30, l: 35 },
+              xaxis: {},
+              yaxis: {},
+              showlegend: false,
+            }}
+            style={{ width: '100%', height: 280 }}
+          />
+          <CanvasChart
+            data={[{
+              x: result.binomial,
+              type: 'histogram',
+              nbinsx: 40,
+              marker: { color: '#f97316' }, opacity: 0.7,
+              name: 'Binomial',
+            }]}
+            layout={{
+              title: { text: `Binomial (n=${nBinomial}, p=${pBinomial.toFixed(2)})`, font: { size: 13 } },
+              font: { size: 10 },
+              margin: { t: 35, r: 10, b: 30, l: 35 },
+              xaxis: {},
+              yaxis: {},
+              showlegend: false,
+            }}
+            style={{ width: '100%', height: 280 }}
+          />
+          <CanvasChart
+            data={[{
+              x: result.gaussian,
+              type: 'histogram',
+              nbinsx: 30,
+              marker: { color: '#ec4899' }, opacity: 0.7,
+              name: 'Gaussian',
+            }]}
+            layout={{
+              title: { text: 'Gaussian', font: { size: 13 } },
+              font: { size: 10 },
+              margin: { t: 35, r: 10, b: 30, l: 35 },
+              xaxis: {},
+              yaxis: {},
+              showlegend: false,
+            }}
+            style={{ width: '100%', height: 280 }}
+          />
         </div>
-        <div>
-          <label className="text-sm text-[var(--text-muted)]">Binomial p: {pBinomial.toFixed(2)}</label>
-          <Slider min={0.01} max={0.99} step={0.01} value={[pBinomial]}
-            onValueChange={([v]) => setPBinomial(v)} />
-        </div>
-        <div>
-          <label className="text-sm text-[var(--text-muted)]">Seed: {seed}</label>
-          <Slider min={1} max={200} step={1} value={[seed]}
-            onValueChange={([v]) => setSeed(v)} />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-        <CanvasChart
-          data={[{
-            x: result.uniform,
-            type: 'histogram',
-            nbinsx: 40,
-            marker: { color: 'rgba(249,115,22,0.7)' },
-            name: 'Uniform',
-          }]}
-          layout={{
-            title: { text: 'Uniform', font: { size: 13 } },
-            font: { size: 10 },
-            margin: { t: 35, r: 10, b: 30, l: 35 },
-            xaxis: {},
-            yaxis: {},
-            showlegend: false,
-          }}
-          style={{ width: '100%', height: 280 }}
-        />
-        <CanvasChart
-          data={[{
-            x: result.poisson,
-            type: 'histogram',
-            nbinsx: 40,
-            marker: { color: 'rgba(236,72,153,0.7)' },
-            name: 'Poisson',
-          }]}
-          layout={{
-            title: { text: `Poisson (lambda=${result.lambda.toFixed(1)})`, font: { size: 13 } },
-            font: { size: 10 },
-            margin: { t: 35, r: 10, b: 30, l: 35 },
-            xaxis: {},
-            yaxis: {},
-            showlegend: false,
-          }}
-          style={{ width: '100%', height: 280 }}
-        />
-        <CanvasChart
-          data={[{
-            x: result.binomial,
-            type: 'histogram',
-            nbinsx: 40,
-            marker: { color: 'rgba(249,115,22,0.7)' },
-            name: 'Binomial',
-          }]}
-          layout={{
-            title: { text: `Binomial (n=${nBinomial}, p=${pBinomial.toFixed(2)})`, font: { size: 13 } },
-            font: { size: 10 },
-            margin: { t: 35, r: 10, b: 30, l: 35 },
-            xaxis: {},
-            yaxis: {},
-            showlegend: false,
-          }}
-          style={{ width: '100%', height: 280 }}
-        />
-        <CanvasChart
-          data={[{
-            x: result.gaussian,
-            type: 'histogram',
-            nbinsx: 30,
-            marker: { color: 'rgba(236,72,153,0.7)' },
-            name: 'Gaussian',
-          }]}
-          layout={{
-            title: { text: 'Gaussian', font: { size: 13 } },
-            font: { size: 10 },
-            margin: { t: 35, r: 10, b: 30, l: 35 },
-            xaxis: {},
-            yaxis: {},
-            showlegend: false,
-          }}
-          style={{ width: '100%', height: 280 }}
-        />
-      </div>
-    </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

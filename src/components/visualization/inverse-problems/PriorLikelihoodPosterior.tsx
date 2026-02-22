@@ -1,16 +1,14 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
+import { gaussPdf } from '@/lib/math';
 
-function gaussianPdf(x: number, mean: number, std: number): number {
-  const z = (x - mean) / std;
-  return Math.exp(-0.5 * z * z) / (std * Math.sqrt(2 * Math.PI));
-}
-
-export default function PriorLikelihoodPosterior({ id: _id }: SimulationComponentProps) {
+export default function PriorLikelihoodPosterior({}: SimulationComponentProps) {
   const [priorMean, setPriorMean] = useState(0);
   const [priorStd, setPriorStd] = useState(2);
   const [dataValue, setDataValue] = useState(3);
@@ -44,56 +42,54 @@ export default function PriorLikelihoodPosterior({ id: _id }: SimulationComponen
     for (let i = 0; i < nPts; i++) {
       const x = lo + i * step;
       xArr.push(x);
-      priorY.push(gaussianPdf(x, priorMean, priorStd));
-      likeY.push(gaussianPdf(x, dataValue, noiseStd));
-      postY.push(gaussianPdf(x, postMean, postStd));
+      priorY.push(gaussPdf(x, priorMean, priorStd));
+      likeY.push(gaussPdf(x, dataValue, noiseStd));
+      postY.push(gaussPdf(x, postMean, postStd));
     }
 
     return { xArr, priorY, likeY, postY, postMean, postStd, epsilonRatio };
   }, [priorMean, priorStd, dataValue, noiseStd]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Prior-Likelihood-Posterior Update</h3>
-      <p className="text-[var(--text-muted)] text-sm mb-4">
-        1D Gaussian conjugate update. The posterior (green) is the product of the prior (blue) and likelihood (red),
-        renormalized. The MAP estimate (yellow line) is the posterior peak.
-      </p>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-        <div>
-          <label className="text-[var(--text-muted)] text-sm">Prior mean: {priorMean.toFixed(1)}</label>
-          <Slider
-            min={-5} max={5} step={0.1} value={[priorMean]}
-            onValueChange={([v]) => setPriorMean(v)}
-            className="w-full"
-          />
+    <SimulationPanel title="Prior-Likelihood-Posterior Update" caption="1D Gaussian conjugate update. The posterior (green) is the product of the prior (blue) and likelihood (red), renormalized. The MAP estimate (yellow line) is the posterior peak.">
+      <SimulationConfig>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-sm">Prior mean: {priorMean.toFixed(1)}</SimulationLabel>
+            <Slider
+              min={-5} max={5} step={0.1} value={[priorMean]}
+              onValueChange={([v]) => setPriorMean(v)}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-sm">Prior std: {priorStd.toFixed(1)}</SimulationLabel>
+            <Slider
+              min={0.3} max={5} step={0.1} value={[priorStd]}
+              onValueChange={([v]) => setPriorStd(v)}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-sm">Data value: {dataValue.toFixed(1)}</SimulationLabel>
+            <Slider
+              min={-5} max={5} step={0.1} value={[dataValue]}
+              onValueChange={([v]) => setDataValue(v)}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-sm">Noise std: {noiseStd.toFixed(1)}</SimulationLabel>
+            <Slider
+              min={0.3} max={5} step={0.1} value={[noiseStd]}
+              onValueChange={([v]) => setNoiseStd(v)}
+              className="w-full"
+            />
+          </div>
         </div>
-        <div>
-          <label className="text-[var(--text-muted)] text-sm">Prior std: {priorStd.toFixed(1)}</label>
-          <Slider
-            min={0.3} max={5} step={0.1} value={[priorStd]}
-            onValueChange={([v]) => setPriorStd(v)}
-            className="w-full"
-          />
-        </div>
-        <div>
-          <label className="text-[var(--text-muted)] text-sm">Data value: {dataValue.toFixed(1)}</label>
-          <Slider
-            min={-5} max={5} step={0.1} value={[dataValue]}
-            onValueChange={([v]) => setDataValue(v)}
-            className="w-full"
-          />
-        </div>
-        <div>
-          <label className="text-[var(--text-muted)] text-sm">Noise std: {noiseStd.toFixed(1)}</label>
-          <Slider
-            min={0.3} max={5} step={0.1} value={[noiseStd]}
-            onValueChange={([v]) => setNoiseStd(v)}
-            className="w-full"
-          />
-        </div>
-      </div>
+      </SimulationConfig>
 
+      <SimulationMain>
       <CanvasChart
         data={[
           {
@@ -144,6 +140,12 @@ export default function PriorLikelihoodPosterior({ id: _id }: SimulationComponen
         style={{ width: '100%' }}
       />
 
+      <p className="text-[var(--text-soft)] text-xs mt-2">
+        The ε ratio (noise_std / prior_std) corresponds to the Tikhonov regularization parameter.
+        Small ε: data dominates. Large ε: prior dominates.
+      </p>
+      </SimulationMain>
+      <SimulationResults>
       <div className="mt-3 grid grid-cols-3 gap-4 text-sm">
         <div className="text-[var(--text-muted)]">
           MAP estimate: <span className="text-[var(--text-strong)] font-mono">{result.postMean.toFixed(3)}</span>
@@ -155,10 +157,7 @@ export default function PriorLikelihoodPosterior({ id: _id }: SimulationComponen
           Effective ε ratio: <span className="text-[var(--text-strong)] font-mono">{result.epsilonRatio.toFixed(3)}</span>
         </div>
       </div>
-      <p className="text-[var(--text-soft)] text-xs mt-2">
-        The ε ratio (noise_std / prior_std) corresponds to the Tikhonov regularization parameter.
-        Small ε: data dominates. Large ε: prior dominates.
-      </p>
-    </div>
+      </SimulationResults>
+    </SimulationPanel>
   );
 }

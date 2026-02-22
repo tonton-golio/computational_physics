@@ -1,15 +1,19 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
+import { mulberry32 } from '@/lib/math';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationResults, SimulationLabel, SimulationButton } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 /**
  * Stochastic gene expression simulation using the Gillespie algorithm.
  * Simulates mRNA production/degradation and protein production/degradation
  * with optional repressor binding.
  */
-export default function GeneExpressionNoise() {
+export default function GeneExpressionNoise({}: SimulationComponentProps) {
   const [kmRNA, setKmRNA] = useState(10.0);
   const [gmRNA, setGmRNA] = useState(1.0);
   const [kpro, setKpro] = useState(1.0);
@@ -18,12 +22,7 @@ export default function GeneExpressionNoise() {
   const [seed, setSeed] = useState(0);
 
   const { tVals, mRNATrace, proteinTrace, repTrace, stats } = useMemo(() => {
-    // Seeded pseudo-random number generator (simple LCG)
-    let rngState = (seed + 1) * 2654435761;
-    function random() {
-      rngState = (rngState * 1664525 + 1013904223) & 0xffffffff;
-      return (rngState >>> 0) / 4294967296;
-    }
+    const random = mulberry32((seed + 1) * 2654435761);
 
     const tFinal = 500;
     const nRecord = 500;
@@ -168,40 +167,36 @@ export default function GeneExpressionNoise() {
   };
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Stochastic Gene Expression (Gillespie Algorithm)</h3>
-
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+    <SimulationPanel title="Stochastic Gene Expression (Gillespie Algorithm)">
+      <SimulationSettings>
+        <SimulationButton variant="primary" onClick={() => setSeed((s) => s + 1)}>
+          Re-run simulation
+        </SimulationButton>
+      </SimulationSettings>
+      <SimulationConfig>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">mRNA production rate k_mRNA: {kmRNA.toFixed(1)}</label>
+          <SimulationLabel>mRNA production rate k_mRNA: {kmRNA.toFixed(1)}</SimulationLabel>
           <Slider value={[kmRNA]} onValueChange={([v]) => setKmRNA(v)} min={1} max={50} step={1} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">mRNA degradation rate g_mRNA: {gmRNA.toFixed(1)}</label>
+          <SimulationLabel>mRNA degradation rate g_mRNA: {gmRNA.toFixed(1)}</SimulationLabel>
           <Slider value={[gmRNA]} onValueChange={([v]) => setGmRNA(v)} min={0.1} max={5} step={0.1} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Protein production rate k_pro: {kpro.toFixed(1)}</label>
+          <SimulationLabel>Protein production rate k_pro: {kpro.toFixed(1)}</SimulationLabel>
           <Slider value={[kpro]} onValueChange={([v]) => setKpro(v)} min={0.1} max={5} step={0.1} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Protein degradation rate g_pro: {gpro.toFixed(2)}</label>
+          <SimulationLabel>Protein degradation rate g_pro: {gpro.toFixed(2)}</SimulationLabel>
           <Slider value={[gpro]} onValueChange={([v]) => setGpro(v)} min={0.01} max={1} step={0.01} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Number of Repressors: {nRepressor}</label>
+          <SimulationLabel>Number of Repressors: {nRepressor}</SimulationLabel>
           <Slider value={[nRepressor]} onValueChange={([v]) => setNRepressor(v)} min={0} max={50} step={1} />
         </div>
-        <div>
-          <button
-            onClick={() => setSeed((s) => s + 1)}
-            className="mt-4 px-4 py-2 bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white rounded text-sm"
-          >
-            Re-run simulation
-          </button>
-        </div>
-      </div>
+      </SimulationConfig>
 
+      <SimulationMain>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <CanvasChart
           data={[
@@ -252,8 +247,10 @@ export default function GeneExpressionNoise() {
           style={{ width: '100%' }}
         />
       )}
+      </SimulationMain>
 
-      <div className="mt-4 grid grid-cols-2 md:grid-cols-5 gap-2 text-sm">
+      <SimulationResults>
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-2 text-sm">
         <div className="bg-[var(--surface-1)] border border-[var(--border-strong)] rounded p-3">
           <div className="text-[var(--text-soft)]">mRNA avg</div>
           <div className="text-[var(--text-strong)] font-mono">{stats.mrnaMean}</div>
@@ -275,6 +272,7 @@ export default function GeneExpressionNoise() {
           <div className="text-[var(--text-strong)] font-mono">{stats.proNoise}</div>
         </div>
       </div>
-    </div>
+      </SimulationResults>
+    </SimulationPanel>
   );
 }

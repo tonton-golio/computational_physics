@@ -1,6 +1,9 @@
-import { NextResponse } from "next/server";
 import { z } from "zod";
 import { logger } from "@/infra/observability/logger";
+import { AppError } from "@/shared/errors/app-error";
+import { apiSuccess, withApiHandler } from "@/shared/errors/api-error";
+
+export const runtime = "nodejs";
 
 const metricSchema = z.object({
   id: z.string().optional(),
@@ -12,11 +15,10 @@ const metricSchema = z.object({
   timestamp: z.number().optional(),
 });
 
-export async function POST(request: Request) {
+export const POST = withApiHandler("/api/analytics/web-vitals", "POST", async (request, ctx) => {
   try {
     const payload = metricSchema.parse(await request.json());
 
-    // Keep this endpoint lightweight so it remains safe under high traffic.
     if (process.env.NODE_ENV !== "production" || process.env.LOG_WEB_VITALS === "1") {
       logger.info("web-vitals.metric", {
         id: payload.id,
@@ -29,8 +31,11 @@ export async function POST(request: Request) {
       });
     }
 
-    return NextResponse.json({ ok: true }, { status: 202 });
-  } catch {
-    return NextResponse.json({ ok: false }, { status: 400 });
+    return apiSuccess(ctx, { ok: true }, 202);
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      throw new AppError("BAD_REQUEST", "Invalid metric payload", 400, err.issues);
+    }
+    throw err;
   }
-}
+});

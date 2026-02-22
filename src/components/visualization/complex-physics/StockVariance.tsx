@@ -1,8 +1,12 @@
-'use client';
+"use client";
 
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
+import { gaussianPair } from '@/lib/math';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { Slider } from '@/components/ui/slider';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationLabel, SimulationButton } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 const STOCK_PRESETS: Record<string, { drift: number; vol: number }> = {
   GOOGL: { drift: 0.0006, vol: 0.018 },
@@ -20,16 +24,10 @@ function mulberry32(seed: number) {
   };
 }
 
-function gaussian(rand: () => number): number {
-  const u1 = Math.max(rand(), 1e-10);
-  const u2 = rand();
-  return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
-}
-
 function generateStockSeries(n: number, drift: number, vol: number, rand: () => number): number[] {
   const series = [100];
   for (let i = 1; i < n; i++) {
-    const shock = gaussian(rand);
+    const shock = gaussianPair(rand)[0];
     const prev = series[i - 1];
     const next = prev * Math.exp((drift - 0.5 * vol * vol) + vol * shock);
     series.push(next);
@@ -53,7 +51,7 @@ function varianceVsLag(logSeries: number[], maxLag: number): { lags: number[]; v
   return { lags, variances };
 }
 
-export function StockVariance() {
+export default function StockVariance({}: SimulationComponentProps) {
   const [ticker, setTicker] = useState<'GOOGL' | 'AAPL' | 'TSLA'>('GOOGL');
   const [length, setLength] = useState(600);
   const [noiseScale, setNoiseScale] = useState(1);
@@ -69,30 +67,33 @@ export function StockVariance() {
   }, [ticker, length, noiseScale, rerun]);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap gap-6 items-center">
+    <SimulationPanel title="Stock Variance Analysis">
+      <SimulationSettings>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Ticker</label>
+          <SimulationLabel>Ticker</SimulationLabel>
           <select value={ticker} onChange={e => setTicker(e.target.value as 'GOOGL' | 'AAPL' | 'TSLA')} className="bg-[var(--surface-1)] border border-[var(--border-strong)] rounded px-3 py-2 text-sm text-[var(--text-muted)]">
             <option value="GOOGL">GOOGL</option>
             <option value="AAPL">AAPL</option>
             <option value="TSLA">TSLA</option>
           </select>
         </div>
+        <SimulationButton variant="primary" onClick={() => setRerun(v => v + 1)}>
+          Re-simulate
+        </SimulationButton>
+      </SimulationSettings>
+      <SimulationConfig>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Series Length: {length}</label>
+          <SimulationLabel>Series Length: {length}</SimulationLabel>
           <Slider value={[length]} onValueChange={([v]) => setLength(v)} min={200} max={1500} step={50} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Noise Scale: {noiseScale.toFixed(2)}</label>
+          <SimulationLabel>Noise Scale: {noiseScale.toFixed(2)}</SimulationLabel>
           <Slider value={[noiseScale]} onValueChange={([v]) => setNoiseScale(v)} min={0.4} max={2.5} step={0.05} />
         </div>
-        <button onClick={() => setRerun(v => v + 1)} className="px-4 py-2 bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white rounded text-sm mt-4">
-          Re-simulate
-        </button>
-      </div>
+      </SimulationConfig>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <SimulationMain>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <CanvasChart
           data={[{ y: prices, type: 'scatter', mode: 'lines', line: { color: '#3b82f6', width: 1.5 } }]}
           layout={{
@@ -115,7 +116,8 @@ export function StockVariance() {
           }}
           style={{ width: '100%', height: 320 }}
         />
-      </div>
-    </div>
+        </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

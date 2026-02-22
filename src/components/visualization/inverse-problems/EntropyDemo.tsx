@@ -1,15 +1,12 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
+import { gaussianPair, gaussPdf } from '@/lib/math';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
-
-
-function gaussPdf(x: number, mu: number, sigma: number): number {
-  return (1 / (sigma * Math.sqrt(2 * Math.PI))) *
-    Math.exp(-0.5 * ((x - mu) / sigma) ** 2);
-}
 
 function seededRandom(seed: number): () => number {
   let s = seed;
@@ -19,14 +16,7 @@ function seededRandom(seed: number): () => number {
   };
 }
 
-function boxMullerNormal(rng: () => number, mu: number, sigma: number): number {
-  const u1 = rng();
-  const u2 = rng();
-  const z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
-  return mu + sigma * z;
-}
-
-export default function EntropyDemo({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function EntropyDemo({}: SimulationComponentProps) {
   const [loc, setLoc] = useState(-8);
   const [scale, setScale] = useState(3.0);
   const [sizeExp, setSizeExp] = useState(8);
@@ -38,7 +28,7 @@ export default function EntropyDemo({ id }: SimulationComponentProps) { // eslin
     // Discrete: sample from normal, round to integers
     const xDiscrete: number[] = [];
     for (let i = 0; i < size; i++) {
-      xDiscrete.push(Math.round(boxMullerNormal(rng, loc, scale)));
+      xDiscrete.push(Math.round(loc + scale * gaussianPair(rng)[0]));
     }
 
     // Compute discrete entropy
@@ -95,35 +85,37 @@ export default function EntropyDemo({ id }: SimulationComponentProps) { // eslin
   }, [loc, scale, size]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Discrete vs Continuous Entropy</h3>
-      <div className="grid grid-cols-3 gap-4 mb-4">
-        <div>
-          <label className="text-[var(--text-muted)] text-sm">Location (mean): {loc}</label>
-          <Slider
-            min={-20} max={4} step={1} value={[loc]}
-            onValueChange={([v]) => setLoc(v)}
-            className="w-full"
-          />
+    <SimulationPanel title="Discrete vs Continuous Entropy">
+      <SimulationConfig>
+        <div className="grid grid-cols-3 gap-4">
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-sm">Location (mean): {loc}</SimulationLabel>
+            <Slider
+              min={-20} max={4} step={1} value={[loc]}
+              onValueChange={([v]) => setLoc(v)}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-sm">Scale (std): {scale.toFixed(1)}</SimulationLabel>
+            <Slider
+              min={0.5} max={10} step={0.1} value={[scale]}
+              onValueChange={([v]) => setScale(v)}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-sm">Sample size: 2^{sizeExp} = {size}</SimulationLabel>
+            <Slider
+              min={4} max={10} step={1} value={[sizeExp]}
+              onValueChange={([v]) => setSizeExp(v)}
+              className="w-full"
+            />
+          </div>
         </div>
-        <div>
-          <label className="text-[var(--text-muted)] text-sm">Scale (std): {scale.toFixed(1)}</label>
-          <Slider
-            min={0.5} max={10} step={0.1} value={[scale]}
-            onValueChange={([v]) => setScale(v)}
-            className="w-full"
-          />
-        </div>
-        <div>
-          <label className="text-[var(--text-muted)] text-sm">Sample size: 2^{sizeExp} = {size}</label>
-          <Slider
-            min={4} max={10} step={1} value={[sizeExp]}
-            onValueChange={([v]) => setSizeExp(v)}
-            className="w-full"
-          />
-        </div>
-      </div>
+      </SimulationConfig>
 
+      <SimulationMain>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div>
           <CanvasChart
@@ -131,7 +123,8 @@ export default function EntropyDemo({ id }: SimulationComponentProps) { // eslin
               x: result.bins,
               y: result.binCounts,
               type: 'bar' as const,
-              marker: { color: 'rgba(239,68,68,0.8)' },
+              marker: { color: '#ef4444' },
+              opacity: 0.8,
               name: 'Discrete samples',
             }]}
             layout={{
@@ -170,6 +163,7 @@ export default function EntropyDemo({ id }: SimulationComponentProps) { // eslin
       <p className="text-[var(--text-soft)] text-xs mt-3">
         Discrete Shannon entropy is always non-negative. Differential entropy can be negative and is not a direct measure of information content. Note that differential entropy is translation-invariant.
       </p>
-    </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

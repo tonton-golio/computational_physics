@@ -8,9 +8,10 @@ import { LeaderboardButton } from "@/components/layout/LeaderboardButton";
 import { AuthButton } from "@/components/layout/AuthButton";
 import { TOPICS } from "@/lib/topic-config";
 import { TOPIC_ROUTES } from "@/lib/topic-navigation";
+import { ArrowLeftIcon } from "@/components/ui/icons";
 
 const TOPIC_TITLES: Record<string, string> = Object.fromEntries(
-  TOPIC_ROUTES.map(({ routeSlug, contentId }) => [routeSlug, TOPICS[contentId].title])
+  TOPIC_ROUTES.map(({ routeSlug, topicId }) => [routeSlug, TOPICS[topicId].title])
 );
 
 export function Header() {
@@ -75,8 +76,8 @@ function HeaderContent() {
                   href="/topics"
                   className="flex items-center gap-1.5 rounded-md border border-[var(--border-strong)] bg-[var(--surface-1)] px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
                 >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
-                  back to topics
+                  <ArrowLeftIcon size={14} />
+                  back
                 </Link>
                 <Link
                   href={`/topics/${pathname.split("/")[2]}`}

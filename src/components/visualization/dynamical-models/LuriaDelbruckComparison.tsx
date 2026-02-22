@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
+import { mulberry32 } from '@/lib/math';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-/* ── Seeded pseudo-random number generator (LCG) ──────────────────────── */
+/* ── Seeded pseudo-random number generator ─────────────────────────────── */
 function createRng(seed: number) {
-  let state = (seed + 1) * 2654435761;
-  return function random() {
-    state = (state * 1664525 + 1013904223) & 0xffffffff;
-    return (state >>> 0) / 4294967296;
-  };
+  return mulberry32((seed + 1) * 2654435761);
 }
 
 /* ── Draw a Poisson sample using the inversion method ────────────────── */
@@ -45,7 +45,7 @@ function computeStats(samples: number[]) {
   return { mean, variance, fano };
 }
 
-export default function LuriaDelbruckComparison() {
+export default function LuriaDelbruckComparison({}: SimulationComponentProps) {
   const [nCultures, setNCultures] = useState(50);
   const [mu, setMu] = useState(1.0);
 
@@ -153,23 +153,12 @@ export default function LuriaDelbruckComparison() {
   const commonMargin = { t: 40, b: 50, l: 55, r: 20 };
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8 space-y-4">
-      <h3 className="text-xl font-semibold text-[var(--text-strong)]">
-        Luria-Delbr&uuml;ck: Directed vs Spontaneous Mutation
-      </h3>
-
-      <p className="text-sm text-[var(--text-muted)]">
-        Compare the mutant count distribution across parallel cultures under two
-        competing hypotheses: directed mutation (Poisson) versus spontaneous
-        mutation during growth (Luria-Delbr&uuml;ck).
-      </p>
-
-      {/* ── Controls ──────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <SimulationPanel title="Luria-Delbr&uuml;ck: Directed vs Spontaneous Mutation" caption="Compare the mutant count distribution across parallel cultures under two competing hypotheses: directed mutation (Poisson) versus spontaneous mutation during growth (Luria-Delbr&uuml;ck).">
+      <SimulationConfig>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">
+          <SimulationLabel>
             Number of cultures: {nCultures}
-          </label>
+          </SimulationLabel>
           <Slider
             value={[nCultures]}
             onValueChange={([v]) => setNCultures(v)}
@@ -179,9 +168,9 @@ export default function LuriaDelbruckComparison() {
           />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">
+          <SimulationLabel>
             Mutation rate &mu;: {mu.toFixed(1)}
-          </label>
+          </SimulationLabel>
           <Slider
             value={[mu]}
             onValueChange={([v]) => setMu(v)}
@@ -190,9 +179,9 @@ export default function LuriaDelbruckComparison() {
             step={0.1}
           />
         </div>
-      </div>
+      </SimulationConfig>
 
-      {/* ── Side-by-side histograms ───────────────────────────────────── */}
+      <SimulationMain>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <CanvasChart
@@ -265,6 +254,7 @@ export default function LuriaDelbruckComparison() {
           </div>
         </div>
       </div>
+      </SimulationMain>
 
       {/* ── Explanation ────────────────────────────────────────────────── */}
       <div className="mt-3 text-sm text-[var(--text-muted)] space-y-2">
@@ -289,6 +279,6 @@ export default function LuriaDelbruckComparison() {
           prediction, confirming that mutations are spontaneous and not directed.
         </p>
       </div>
-    </div>
+    </SimulationPanel>
   );
 }

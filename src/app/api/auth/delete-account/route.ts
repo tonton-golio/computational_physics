@@ -1,19 +1,22 @@
-import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/infra/supabase/server";
 import { createClient as createAdminClient } from "@supabase/supabase-js";
 import { logger } from "@/infra/observability/logger";
+import { AppError } from "@/shared/errors/app-error";
+import { apiSuccess, withApiHandler } from "@/shared/errors/api-error";
 
-export async function DELETE() {
+export const runtime = "nodejs";
+
+export const DELETE = withApiHandler("/api/auth/delete-account", "DELETE", async (request, ctx) => {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
-    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    throw new AppError("UNAUTHORIZED", "Not authenticated", 401);
   }
 
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!serviceRoleKey) {
-    return NextResponse.json({ error: "Service role key not configured" }, { status: 500 });
+    throw new AppError("INTERNAL_ERROR", "Service role key not configured", 500);
   }
 
   const admin = createAdminClient(
@@ -26,8 +29,8 @@ export async function DELETE() {
 
   if (error) {
     logger.error("Delete user error", { error });
-    return NextResponse.json({ error: "Failed to delete account" }, { status: 500 });
+    throw new AppError("INTERNAL_ERROR", "Failed to delete account", 500);
   }
 
-  return NextResponse.json({ success: true });
-}
+  return apiSuccess(ctx, { success: true });
+});

@@ -2,44 +2,10 @@
  * Shared utilities for Applied Machine Learning simulations.
  */
 
-export function linspace(start: number, stop: number, n: number): number[] {
-  if (n <= 1) return [start];
-  const step = (stop - start) / (n - 1);
-  return Array.from({ length: n }, (_, i) => start + i * step);
-}
+import { mulberry32, pseudoRandom, gaussianPair } from "@/lib/math";
 
-/** Deterministic pseudo-random in [0,1). */
-export function pseudoRandom(seed: number): number {
-  const x = Math.sin(seed * 12.9898 + 78.233) * 43758.5453;
-  return x - Math.floor(x);
-}
-
-/** Mulberry32 – a full-period 32-bit PRNG. Returns a callable that yields values in [0,1). */
-export function mulberry32(seed: number): () => number {
-  let s = seed | 0;
-  return () => {
-    s = (s + 0x6d2b79f5) | 0;
-    let t = Math.imul(s ^ (s >>> 15), 1 | s);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-/** Gaussian noise using Box-Muller transform with deterministic seed. */
-export function gaussianNoise(seed: number, scale: number): number {
-  const u1 = Math.max(pseudoRandom(seed), 1e-8);
-  const u2 = pseudoRandom(seed + 1.2345);
-  const r = Math.sqrt(-2 * Math.log(u1));
-  return scale * r * Math.cos(2 * Math.PI * u2);
-}
-
-/** Gaussian pair from a PRNG function (Box-Muller). */
-export function gaussianPair(rng: () => number): [number, number] {
-  const u1 = Math.max(rng(), 1e-8);
-  const u2 = rng();
-  const r = Math.sqrt(-2 * Math.log(u1));
-  return [r * Math.cos(2 * Math.PI * u2), r * Math.sin(2 * Math.PI * u2)];
-}
+// Re-export generic math utilities from the shared module
+export { linspace, pseudoRandom, mulberry32, gaussianNoise, gaussianPair } from "@/lib/math";
 
 /** Cluster color palette. */
 export const CLUSTER_COLORS = [
@@ -48,7 +14,7 @@ export const CLUSTER_COLORS = [
 ] as const;
 
 /**
- * Minimal t-SNE implementation (O(n^2) – suitable for up to ~2000 points).
+ * Minimal t-SNE implementation (O(n^2) -- suitable for up to ~2000 points).
  * Returns 2D coordinates for each input point.
  */
 export function tsne(
@@ -182,7 +148,7 @@ export function tsne(
 }
 
 /**
- * Principal Component Analysis – returns the top-k 2D projection.
+ * Principal Component Analysis -- returns the top-k 2D projection.
  * For simplicity, always projects to 2D.
  */
 export function pca2d(data: number[][]): number[][] {

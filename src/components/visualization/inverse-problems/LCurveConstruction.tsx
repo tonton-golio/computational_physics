@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
+import { gaussianPair } from '@/lib/math';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 function seededRandom(seed: number): () => number {
   let s = seed;
   return () => { s = (s * 16807 + 0) % 2147483647; return s / 2147483647; };
-}
-function randn(rng: () => number): number {
-  return Math.sqrt(-2 * Math.log(Math.max(rng(), 1e-12))) * Math.cos(2 * Math.PI * rng());
 }
 function vecNorm(v: number[]): number {
   return Math.sqrt(v.reduce((s, x) => s + x * x, 0));
@@ -38,7 +38,7 @@ function solveTikhonov(GtG: number[][], Gtd: number[], eps: number, n: number): 
   return m;
 }
 
-export default function LCurveConstruction({ id: _id }: SimulationComponentProps) {
+export default function LCurveConstruction({}: SimulationComponentProps) {
   const [noiseLevel, setNoiseLevel] = useState(0.05);
   const [nParams, setNParams] = useState(20);
 
@@ -54,7 +54,7 @@ export default function LCurveConstruction({ id: _id }: SimulationComponentProps
       const s = (j + 0.5) / n;
       return Math.sin(2 * Math.PI * s) * Math.exp(-2 * (s - 0.5) ** 2);
     });
-    const dObs = G.map(row => row.reduce((s, g, j) => s + g * mTrue[j], 0) + noiseLevel * randn(rng));
+    const dObs = G.map(row => row.reduce((s, g, j) => s + g * mTrue[j], 0) + noiseLevel * gaussianPair(rng)[0]);
     const GtG: number[][] = Array.from({ length: n }, () => new Array(n).fill(0));
     for (let i = 0; i < n; i++)
       for (let j = 0; j <= i; j++) {
@@ -89,18 +89,20 @@ export default function LCurveConstruction({ id: _id }: SimulationComponentProps
   }, [noiseLevel, nParams]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">L-Curve Method</h3>
-      <div className="grid grid-cols-2 gap-6 mb-4">
-        <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Noise level: {noiseLevel.toFixed(3)}</label>
-          <Slider value={[noiseLevel]} onValueChange={([v]) => setNoiseLevel(v)} min={0.001} max={0.3} step={0.001} />
+    <SimulationPanel title="L-Curve Method">
+      <SimulationConfig>
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <SimulationLabel className="mb-1 block text-sm text-[var(--text-muted)]">Noise level: {noiseLevel.toFixed(3)}</SimulationLabel>
+            <Slider value={[noiseLevel]} onValueChange={([v]) => setNoiseLevel(v)} min={0.001} max={0.3} step={0.001} />
+          </div>
+          <div>
+            <SimulationLabel className="mb-1 block text-sm text-[var(--text-muted)]">Parameters: {nParams}</SimulationLabel>
+            <Slider value={[nParams]} onValueChange={([v]) => setNParams(v)} min={8} max={40} step={1} />
+          </div>
         </div>
-        <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Parameters: {nParams}</label>
-          <Slider value={[nParams]} onValueChange={([v]) => setNParams(v)} min={8} max={40} step={1} />
-        </div>
-      </div>
+      </SimulationConfig>
+      <SimulationMain>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
         <CanvasChart
           data={[
@@ -144,6 +146,7 @@ export default function LCurveConstruction({ id: _id }: SimulationComponentProps
           The corner picks the optimal compromise. Increase noise to see the corner shift rightward.
         </p>
       </div>
-    </div>
+      </SimulationMain>
+    </SimulationPanel>
   );
 }

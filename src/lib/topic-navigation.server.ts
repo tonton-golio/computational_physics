@@ -1,13 +1,11 @@
-import { listLessonSlugs, readLessonDocument } from "@/infra/content/file-content-repository";
-
-const LANDING_PAGE_PRIORITY = new Map<string, number>([
+export const LANDING_PAGE_PRIORITY = new Map<string, number>([
   ["home", -30],
   ["intro", -20],
   ["introduction", -10],
   ["landingPage", -5],
 ]);
 
-const TOPIC_LESSON_ORDER: Record<string, string[]> = {
+export const TOPIC_LESSON_ORDER: Record<string, string[]> = {
   "complex-physics": [
     "statisticalMechanics",
     "metropolisAlgorithm",
@@ -62,10 +60,10 @@ const TOPIC_LESSON_ORDER: Record<string, string[]> = {
     "stressandstrain",
     "elasticity",
     "dynamics",
-    "creepingflow",
     "fluids",
     "fluidsinmotion",
     "viscousflow",
+    "creepingflow",
     "channelsandpipes",
     "gravitywaves",
     "weakstokes",
@@ -108,13 +106,11 @@ const TOPIC_LESSON_ORDER: Record<string, string[]> = {
   "quantum-optics": [
     "quantization-single-mode",
     "quantum-fluctuations",
-    "multimode-fields",
     "vacuum-fluctuations",
     "coherent-states",
     "phase-space-representations",
     "coherence-functions",
     "higher-order-coherence",
-    "single-photon-experiments",
     "interferometry",
     "squeezed-states",
     "atom-field-interaction",
@@ -166,9 +162,9 @@ export const LESSON_SUMMARIES: Record<string, Record<string, string>> = {
     "trees-ensembles": "Decision trees, random forests, and boosting methods",
     "dimensionality-reduction": "PCA, t-SNE, and manifold learning techniques",
     "neural-networks-fundamentals": "Basic neural network architectures and training",
-    "recurrent-neural-networks": "Sequential data modeling with RNNs and LSTMs",
+    "recurrent-neural-networks": "Extension: Sequential data modeling with RNNs and LSTMs",
     "graph-neural-networks": "Message passing and learning on graph-structured data",
-    "generative-adversarial-networks": "GAN architectures for generative modeling",
+    "generative-adversarial-networks": "Extension: GAN architectures for generative modeling",
   },
   "applied-statistics": {
     "introduction-concepts": "Core statistical concepts: mean, variance, and distributions",
@@ -194,9 +190,9 @@ export const LESSON_SUMMARIES: Record<string, Record<string, string>> = {
     fluids: "Fluid statics, pressure, and buoyancy principles",
     fluidsinmotion: "Euler and Navier-Stokes equations for fluid flow",
     viscousflow: "Viscous effects, boundary layers, and Reynolds number",
+    creepingflow: "Low Reynolds number Stokes flow solutions",
     channelsandpipes: "Poiseuille flow and flow in channels and pipes",
     gravitywaves: "Surface gravity waves and dispersion relations",
-    creepingflow: "Low Reynolds number Stokes flow solutions",
     weakstokes: "Weak formulation of Stokes equations",
     fem: "Finite element method for continuum problems",
     pythonpackages: "Python tools for continuum mechanics simulations",
@@ -237,14 +233,12 @@ export const LESSON_SUMMARIES: Record<string, Record<string, string>> = {
   "quantum-optics": {
     "quantization-single-mode": "Canonical quantization of a single electromagnetic mode",
     "quantum-fluctuations": "Vacuum fluctuations, zero-point energy, and quadrature operators",
-    "multimode-fields": "Quantization of multimode electromagnetic fields",
-    "vacuum-fluctuations": "Casimir effect and vacuum energy consequences",
+    "vacuum-fluctuations": "Multimode fields, thermal states, Casimir effect, and vacuum energy consequences",
     "coherent-states": "Coherent states: definition, photon statistics, displacement operator, and algebraic properties",
     "phase-space-representations": "Q, P, and Wigner quasi-probability distributions for visualizing quantum light",
     "coherence-functions": "First-order correlation and optical coherence",
     "higher-order-coherence": "Photon bunching, antibunching, and g(2) functions",
-    "single-photon-experiments": "Single photon detection and quantum light experiments",
-    interferometry: "Mach-Zehnder and quantum-enhanced interferometry",
+    interferometry: "Single-photon experiments, beam splitters, HOM effect, and quantum-enhanced interferometry",
     "squeezed-states": "Quadrature squeezing, displaced squeezed states, and two-mode entanglement",
     "atom-field-interaction": "Dipole coupling and the rotating wave approximation",
     "jaynes-cummings": "Jaynes-Cummings model, Rabi oscillations, and collapse-revival dynamics",
@@ -265,59 +259,12 @@ export const LESSON_SUMMARIES: Record<string, Record<string, string>> = {
   },
 };
 
-export function getLessonSummary(contentId: string, slug: string): string | undefined {
-  return LESSON_SUMMARIES[contentId]?.[slug];
-}
-
-export function getOrderedLessonSlugs(contentId: string): string[] {
-  const slugs = listLessonSlugs(contentId);
-  const topicOrder = TOPIC_LESSON_ORDER[contentId];
-
-  if (topicOrder) {
-    const orderIndex = new Map(topicOrder.map((slug, i) => [slug, i + 1]));
-    return slugs.sort((a, b) => {
-      const pa = LANDING_PAGE_PRIORITY.get(a) ?? orderIndex.get(a) ?? 1000;
-      const pb = LANDING_PAGE_PRIORITY.get(b) ?? orderIndex.get(b) ?? 1000;
-      if (pa !== pb) return pa - pb;
-      return a.localeCompare(b);
-    });
-  }
-
-  return slugs.sort((a, b) => {
-    const pa = LANDING_PAGE_PRIORITY.get(a) ?? 0;
-    const pb = LANDING_PAGE_PRIORITY.get(b) ?? 0;
-    if (pa !== pb) return pa - pb;
-    return a.localeCompare(b);
-  });
-}
-
-export function getLandingPageSlug(contentId: string): string | null {
-  const slugs = listLessonSlugs(contentId);
-  let best: string | null = null;
-  let bestPriority = Infinity;
-  for (const slug of slugs) {
-    const priority = LANDING_PAGE_PRIORITY.get(slug);
-    if (priority !== undefined && priority < bestPriority) {
-      best = slug;
-      bestPriority = priority;
-    }
-  }
-  return best;
+export function getLessonSummary(topicId: string, slug: string): string | undefined {
+  return LESSON_SUMMARIES[topicId]?.[slug];
 }
 
 export function isLandingPage(slug: string): boolean {
   return LANDING_PAGE_PRIORITY.has(slug);
-}
-
-export function getLessonsForTopic(contentId: string): Array<{ slug: string; title: string; summary?: string }> {
-  return getOrderedLessonSlugs(contentId)
-    .map((slug) => {
-      const doc = readLessonDocument(contentId, slug);
-      if (!doc) return null;
-      const summary = getLessonSummary(contentId, slug);
-      return { slug, title: doc.title, ...(summary ? { summary } : {}) };
-    })
-    .filter((lesson): lesson is { slug: string; title: string; summary?: string } => lesson !== null);
 }
 
 export interface SearchableLesson {
@@ -325,22 +272,4 @@ export interface SearchableLesson {
   title: string;
   summary?: string;
   searchableText: string;
-}
-
-export function getSearchableLessonsForTopic(contentId: string): SearchableLesson[] {
-  return getOrderedLessonSlugs(contentId)
-    .filter((slug) => !isLandingPage(slug))
-    .map((slug) => {
-      const doc = readLessonDocument(contentId, slug);
-      if (!doc) return null;
-
-      const summary = getLessonSummary(contentId, slug);
-      return {
-        slug,
-        title: doc.title,
-        ...(summary ? { summary } : {}),
-        searchableText: `${doc.title}\n${doc.content}`.toLowerCase(),
-      };
-    })
-    .filter((lesson): lesson is SearchableLesson => lesson !== null);
 }

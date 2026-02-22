@@ -1,16 +1,16 @@
 import { Suspense } from "react";
-import { TOPICS } from "@/lib/content";
+import { TOPICS } from "@/lib/topic-config";
 import { TOPIC_ROUTES } from "@/lib/topic-navigation";
-import { getSearchableLessonsForTopic } from "@/lib/topic-navigation.server";
+import { getSearchableLessonsForTopic } from "@/features/content/topic-lessons";
 import { TopicsSearchGrid } from "@/components/topics/TopicsSearchGrid";
 
 export default function TopicsPage() {
   const entries = TOPIC_ROUTES.map((topic) => ({
     routeSlug: topic.routeSlug,
-    contentId: topic.contentId,
-    meta: TOPICS[topic.contentId],
-    lessons: getSearchableLessonsForTopic(topic.contentId),
-  }));
+    topicId: topic.topicId,
+    meta: TOPICS[topic.topicId],
+    lessons: getSearchableLessonsForTopic(topic.topicId),
+  })).sort((a, b) => a.meta.title.localeCompare(b.meta.title));
 
   return (
     <div className="h-[calc(100vh-4rem)] w-full overflow-hidden">

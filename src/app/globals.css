@@ -8,6 +8,7 @@
   --surface-1: #f5f6f9;
   --surface-2: #e4e8f0;
   --surface-3: #d8dde8;
+  --border: #d0d8e8;
   --border-strong: #bcc6da;
   --text-muted: #4a5a72;
   --text-soft: #657488;
@@ -32,6 +33,7 @@
     --surface-1: #0d1322;
     --surface-2: #101a2d;
     --surface-3: #14233f;
+    --border: #1e3250;
     --border-strong: #2c4166;
     --text-muted: #a5b5d0;
     --text-soft: #7f94b6;
@@ -49,6 +51,7 @@
   --surface-1: #f5f6f9;
   --surface-2: #e4e8f0;
   --surface-3: #d8dde8;
+  --border: #d0d8e8;
   --border-strong: #bcc6da;
   --text-muted: #4a5a72;
   --text-soft: #657488;
@@ -65,6 +68,7 @@
   --surface-1: #0d1322;
   --surface-2: #101a2d;
   --surface-3: #14233f;
+  --border: #1e3250;
   --border-strong: #2c4166;
   --text-muted: #a5b5d0;
   --text-soft: #7f94b6;
@@ -221,9 +225,10 @@ body {
 }
 
 /* ── Fallback: non-hybrid visual children (canvas/video/svg without SimulationMain) ── */
-.sim-fs-content > * > *:has(canvas):not(.sim-fs-main),
-.sim-fs-content > * > *:has(video):not(.sim-fs-main),
-.sim-fs-content > * > *:has(> svg[viewBox]):not(.sim-fs-main) {
+/* Excludes elements with explicit data-fs-role (e.g. chart overlays) or data-sim-slot (e.g. aux) */
+.sim-fs-content > * > *:has(canvas):not(.sim-fs-main):not([data-fs-role]):not([data-sim-slot]),
+.sim-fs-content > * > *:has(video):not(.sim-fs-main):not([data-fs-role]):not([data-sim-slot]),
+.sim-fs-content > * > *:has(> svg[viewBox]):not(.sim-fs-main):not([data-fs-role]):not([data-sim-slot]) {
   position: absolute;
   top: 44px;
   left: 0;
@@ -243,7 +248,7 @@ body {
 }
 
 /* ── Grid/flex wrappers between sim root and role elements: transparent ── */
-.sim-fs-content > * > *:not([data-fs-role]):not(.sim-fs-main):not(:has(canvas)):not(:has(video)):not(:has(> svg[viewBox])) {
+.sim-fs-content > * > *:not([data-fs-role]):not([data-sim-slot]):not(.sim-fs-main):not(:has(canvas)):not(:has(video)):not(:has(> svg[viewBox])):not(:has([data-sim-slot])) {
   position: relative;
   z-index: 5;
   max-width: min(360px, calc(100% - 24px));
@@ -262,14 +267,50 @@ body {
 }
 
 /* ── Controls (Card, SimulationPanel): overlay bottom-left ── */
+/* backdrop-filter moved to ::before so it doesn't create a containing block
+   (which would trap position:fixed children like charts) */
 .sim-fs-content [data-fs-role="controls"] {
   position: relative;
   z-index: 5;
   max-width: min(360px, calc(100% - 24px));
-  background: color-mix(in srgb, var(--surface-1) 80%, transparent);
-  backdrop-filter: blur(12px);
+  background: transparent;
+  backdrop-filter: none;
   pointer-events: auto;
   flex-shrink: 0;
+}
+
+/* Glass effect via pseudo-element — provides visual backdrop without
+   creating a containing block for position:fixed children */
+.sim-fs-content [data-fs-role="controls"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--surface-1) 80%, transparent);
+  backdrop-filter: blur(12px);
+  border-radius: inherit;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Charts inside controls escape to viewport via position:fixed */
+.sim-fs-content [data-fs-role="controls"] [data-fs-role="chart"] {
+  position: fixed;
+}
+
+/* Promoted charts (sim-fs-main) inside controls also escape */
+.sim-fs-content [data-fs-role="controls"] .sim-fs-main {
+  position: fixed;
+}
+
+/* Nested controls: outer panel becomes transparent when inner
+   SimulationControls handles controls role */
+.sim-fs-content [data-fs-role="controls"]:has([data-fs-role="controls"]) {
+  display: contents;
+}
+
+/* Hide glass effect on the transparent outer panel */
+.sim-fs-content [data-fs-role="controls"]:has([data-fs-role="controls"])::before {
+  display: none;
 }
 
 /* ── Charts (CanvasChart): base overlay style ── */
@@ -310,7 +351,7 @@ body {
   right: 12px;
 }
 
-/* ── Fullscreen title overlay ── */
+/* ── Fullscreen title overlay (legacy — from SimulationHost) ── */
 .sim-fs-title {
   position: absolute;
   top: 12px;
@@ -326,6 +367,100 @@ body {
   padding: 6px 16px;
   white-space: nowrap;
   pointer-events: none;
+}
+
+/* ── Fullscreen title — top center (from SimulationPanel slot) ── */
+.sim-fs-title-center {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-strong);
+  background: color-mix(in srgb, var(--surface-1) 70%, transparent);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  padding: 6px 16px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* ── Semantic slot glass boxes — fullscreen left stack ── */
+
+/* Shared base for all left-stack slots */
+.sim-fs-content [data-sim-slot="caption"],
+.sim-fs-content [data-sim-slot="settings"],
+.sim-fs-content [data-sim-slot="config"],
+.sim-fs-content [data-sim-slot="results"] {
+  position: relative;
+  z-index: 5;
+  background: transparent;
+  backdrop-filter: none;
+  border-radius: 12px;
+  border: 1px solid var(--border-strong);
+  padding: 12px;
+  pointer-events: auto;
+  flex-shrink: 0;
+}
+
+/* Settings: variable width (buttons/toggles don't need full width) */
+.sim-fs-content [data-sim-slot="settings"] {
+  max-width: min(510px, 37.5vw);
+}
+
+/* Caption, config, results: fixed width matching aux container */
+.sim-fs-content [data-sim-slot="caption"],
+.sim-fs-content [data-sim-slot="config"],
+.sim-fs-content [data-sim-slot="results"] {
+  width: min(510px, 37.5vw);
+}
+
+/* Glass via pseudo to avoid containing block issues */
+.sim-fs-content [data-sim-slot="caption"]::before,
+.sim-fs-content [data-sim-slot="settings"]::before,
+.sim-fs-content [data-sim-slot="config"]::before,
+.sim-fs-content [data-sim-slot="results"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--surface-1) 80%, transparent);
+  backdrop-filter: blur(12px);
+  border-radius: inherit;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* ── Aux — right side overlay in fullscreen ── */
+.sim-fs-content [data-sim-slot="aux"] {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 6;
+  width: min(510px, 37.5vw);
+  max-height: 80vh;
+  overflow-y: auto;
+  background: color-mix(in srgb, var(--surface-1) 80%, transparent);
+  backdrop-filter: blur(12px);
+  border-radius: 12px;
+  border: 1px solid var(--border-strong);
+  padding: 8px;
+  pointer-events: auto;
+}
+
+/* ── Wrapper dissolution: grids containing slots dissolve in fullscreen ── */
+.sim-fs-content > * > *:has([data-sim-slot]):not([data-sim-slot]):not(.sim-fs-main) {
+  display: contents;
+}
+
+/* ── Outer panel transparent when it contains new-style slots ── */
+.sim-fs-content [data-fs-role="controls"]:has([data-sim-slot]) {
+  display: contents;
+}
+.sim-fs-content [data-fs-role="controls"]:has([data-sim-slot])::before {
+  display: none;
 }
 
 /* Shimmer animation for loading skeletons */

@@ -1,8 +1,10 @@
-'use client';
+"use client";
 
 import { useState, useMemo } from 'react';
+import { gaussianPair } from '@/lib/math';
 import { Slider } from '@/components/ui/slider';
-import { SimulationPanel, SimulationLabel, SimulationToggle } from '@/components/ui/simulation-panel';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationResults, SimulationLabel, SimulationToggle } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
@@ -32,13 +34,6 @@ function xorshift32(seed: number) {
     state ^= state << 5;
     return (state >>> 0) / 4294967296;
   };
-}
-
-// Box-Muller transform for normal samples
-function normalSample(rng: () => number): number {
-  const u1 = rng();
-  const u2 = rng();
-  return Math.sqrt(-2 * Math.log(u1 + 1e-15)) * Math.cos(2 * Math.PI * u2);
 }
 
 // True Wigner function
@@ -89,14 +84,14 @@ function sampleQuadrature(
   if (state === 'coherent') {
     const { mean } = quadratureMoments(state, theta, alpha);
     for (let i = 0; i < nSamples; i++) {
-      samples.push(mean + 0.5 * normalSample(rng));
+      samples.push(mean + 0.5 * gaussianPair(rng)[0]);
     }
   } else {
     // Cat: sample from mixture of two Gaussians
     const proj = Math.sqrt(2) * alpha * Math.cos(theta);
     for (let i = 0; i < nSamples; i++) {
       const component = rng() < 0.5 ? 1 : -1;
-      samples.push(component * proj + 0.5 * normalSample(rng));
+      samples.push(component * proj + 0.5 * gaussianPair(rng)[0]);
     }
   }
 
@@ -228,89 +223,89 @@ export default function HomodyneTomography({}: SimulationComponentProps) {
   }, [nSamples, stateChoice]);
 
   return (
-    <SimulationPanel>
-      <h3 className="text-lg font-semibold text-[var(--text-strong)]">
-        Homodyne Tomography
-      </h3>
-      <p className="text-sm text-[var(--text-soft)] mb-3">
-        Quadrature measurements at {nAngles} phase angles are back-projected to reconstruct the Wigner function. Increase samples to see the reconstruction converge to the true state.
-      </p>
+    <SimulationPanel title="Homodyne Tomography" caption={`Quadrature measurements at ${nAngles} phase angles are back-projected to reconstruct the Wigner function. Increase samples to see the reconstruction converge to the true state.`}>
+      <SimulationSettings>
+        <div>
+          <SimulationToggle
+            options={STATE_OPTIONS}
+            value={stateChoice}
+            onChange={(v) => setStateChoice(v as StateChoice)}
+          />
+        </div>
+      </SimulationSettings>
 
-      <div className="mb-4">
-        <SimulationToggle
-          options={STATE_OPTIONS}
-          value={stateChoice}
-          onChange={(v) => setStateChoice(v as StateChoice)}
-        />
-      </div>
+      <SimulationConfig>
+        <div>
+          <SimulationLabel>Samples: {nSamples}</SimulationLabel>
+          <Slider
+            value={[nSamples]}
+            onValueChange={(v) => setNSamples(Math.round(v[0]))}
+            min={10}
+            max={5000}
+            step={10}
+            className="w-full"
+          />
+        </div>
+      </SimulationConfig>
 
-      <div className="mb-4">
-        <SimulationLabel>Samples: {nSamples}</SimulationLabel>
-        <Slider
-          value={[nSamples]}
-          onValueChange={(v) => setNSamples(Math.round(v[0]))}
-          min={10}
-          max={5000}
-          step={10}
-          className="w-full"
-        />
-      </div>
+      <SimulationMain>
+        {/* Side-by-side heatmaps */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <CanvasHeatmap
+            data={[{
+              z: reconstructedGrid,
+              x: xvec,
+              y: pvec,
+              type: 'heatmap',
+              colorscale: 'RdBu',
+              colorbar: { title: { text: 'W(q,p)' } },
+            }]}
+            layout={{
+              title: { text: 'Reconstructed Wigner' },
+              xaxis: { title: { text: 'q' } },
+              yaxis: { title: { text: 'p' }, scaleanchor: 'x' },
+              height: 400,
+              margin: { t: 35, r: 20, b: 45, l: 50 },
+            }}
+            style={{ width: '100%', height: '400px' }}
+          />
+          <CanvasHeatmap
+            data={[{
+              z: trueGrid,
+              x: xvec,
+              y: pvec,
+              type: 'heatmap',
+              colorscale: 'RdBu',
+              colorbar: { title: { text: 'W(q,p)' } },
+            }]}
+            layout={{
+              title: { text: 'True Wigner' },
+              xaxis: { title: { text: 'q' } },
+              yaxis: { title: { text: 'p' }, scaleanchor: 'x' },
+              height: 400,
+              margin: { t: 35, r: 20, b: 45, l: 50 },
+            }}
+            style={{ width: '100%', height: '400px' }}
+          />
+        </div>
+      </SimulationMain>
 
-      {/* Readout */}
-      <div className="grid grid-cols-2 gap-3 mb-4">
-        <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
-          <div className="text-xs text-[var(--text-muted)]">Total samples</div>
-          <div className="text-base font-mono font-semibold text-[var(--text-strong)]">
-            {nSamples}
+      <SimulationResults>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
+            <div className="text-xs text-[var(--text-muted)]">Total samples</div>
+            <div className="text-base font-mono font-semibold text-[var(--text-strong)]">
+              {nSamples}
+            </div>
+          </div>
+          <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
+            <div className="text-xs text-[var(--text-muted)]">Reconstruction fidelity</div>
+            <div className="text-base font-mono font-semibold text-[var(--text-strong)]">
+              {(fidelity * 100).toFixed(1)}%
+            </div>
           </div>
         </div>
-        <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
-          <div className="text-xs text-[var(--text-muted)]">Reconstruction fidelity</div>
-          <div className="text-base font-mono font-semibold text-[var(--text-strong)]">
-            {(fidelity * 100).toFixed(1)}%
-          </div>
-        </div>
-      </div>
-
-      {/* Side-by-side heatmaps */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <CanvasHeatmap
-          data={[{
-            z: reconstructedGrid,
-            x: xvec,
-            y: pvec,
-            type: 'heatmap',
-            colorscale: 'RdBu',
-            colorbar: { title: { text: 'W(q,p)' } },
-          }]}
-          layout={{
-            title: { text: 'Reconstructed Wigner' },
-            xaxis: { title: { text: 'q' } },
-            yaxis: { title: { text: 'p' }, scaleanchor: 'x' },
-            height: 400,
-            margin: { t: 35, r: 20, b: 45, l: 50 },
-          }}
-          style={{ width: '100%', height: '400px' }}
-        />
-        <CanvasHeatmap
-          data={[{
-            z: trueGrid,
-            x: xvec,
-            y: pvec,
-            type: 'heatmap',
-            colorscale: 'RdBu',
-            colorbar: { title: { text: 'W(q,p)' } },
-          }]}
-          layout={{
-            title: { text: 'True Wigner' },
-            xaxis: { title: { text: 'q' } },
-            yaxis: { title: { text: 'p' }, scaleanchor: 'x' },
-            height: 400,
-            margin: { t: 35, r: 20, b: 45, l: 50 },
-          }}
-          style={{ width: '100%', height: '400px' }}
-        />
-      </div>
+      </SimulationResults>
     </SimulationPanel>
   );
 }

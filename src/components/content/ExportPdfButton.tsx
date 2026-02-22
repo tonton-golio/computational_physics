@@ -1,7 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { markdownToHtml, type FigureMode } from "@/lib/markdown-to-html";
+import { markdownToHtml, escapeHtml, type FigureMode } from "@/lib/markdown-to-html";
+import { CloseIcon } from "@/components/ui/close-icon";
+import { Modal } from "@/components/ui/modal";
+import { ICON_BUTTON_CLASS } from "@/components/ui/icon-button";
 
 /* ─── Types ─── */
 
@@ -16,17 +19,13 @@ interface Lesson {
 }
 
 interface ExportPdfButtonProps {
-  topicContentId: string;
+  topicId: string;
   topicTitle: string;
   /** "default" renders full-width sidebar button; "compact" renders a small icon button for cards */
   variant?: "default" | "compact";
 }
 
 /* ─── Helpers ─── */
-
-function escapeHtml(text: string): string {
-  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
 
 function sanitizeFilename(title: string): string {
   return title
@@ -452,11 +451,11 @@ const FIGURE_MODE_OPTIONS: Array<{ mode: FigureMode; label: string; desc: string
 ];
 
 function ExportModal({
-  topicContentId,
+  topicId,
   topicTitle,
   onClose,
 }: {
-  topicContentId: string;
+  topicId: string;
   topicTitle: string;
   onClose: () => void;
 }) {
@@ -467,7 +466,7 @@ function ExportModal({
   const [fModes, setFModes] = useState<Set<FigureMode>>(new Set(["screenshot", "alt-text", "code"]));
 
   useEffect(() => {
-    fetch(`/api/content/export?topic=${encodeURIComponent(topicContentId)}`)
+    fetch(`/api/content/export?topic=${encodeURIComponent(topicId)}`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed");
         return res.json();
@@ -478,19 +477,7 @@ function ExportModal({
         setState("ready");
       })
       .catch(() => setState("error"));
-  }, [topicContentId]);
-
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", handleKey);
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", handleKey);
-      document.body.style.overflow = "";
-    };
-  }, [onClose]);
+  }, [topicId]);
 
   const PINNED_SLUGS = new Set(["home", "intro", "introduction", "landingPage"]);
   const isPinned = (slug: string) => PINNED_SLUGS.has(slug);
@@ -537,12 +524,7 @@ function ExportModal({
   const canExport = (state === "ready" || state === "error") && selectedCount > 0;
 
   return (
-    <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
-    >
+    <Modal onClose={onClose}>
       <div className="mx-4 flex max-h-[85vh] w-full max-w-md flex-col rounded-xl border border-[var(--border-strong)] bg-[var(--surface-1)] shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[var(--border-strong)] px-5 py-4">
@@ -555,9 +537,7 @@ function ExportModal({
             className="rounded-md p-1 text-[var(--text-soft)] transition hover:text-[var(--text-strong)]"
             aria-label="Close"
           >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-              <path d="M4 4l8 8M12 4l-8 8" />
-            </svg>
+            <CloseIcon size={16} />
           </button>
         </div>
 
@@ -710,13 +690,13 @@ function ExportModal({
           </button>
         </div>
       </div>
-    </div>
+    </Modal>
   );
 }
 
 /* ─── Entry point ─── */
 
-export function ExportPdfButton({ topicContentId, topicTitle, variant = "default" }: ExportPdfButtonProps) {
+export function ExportPdfButton({ topicId, topicTitle, variant = "default" }: ExportPdfButtonProps) {
   const [showModal, setShowModal] = useState(false);
 
   const downloadIcon = (
@@ -733,7 +713,7 @@ export function ExportPdfButton({ topicContentId, topicTitle, variant = "default
         <button
           onClick={() => setShowModal(true)}
           title="Export"
-          className="shrink-0 rounded-md border border-[var(--border-strong)] bg-[var(--surface-2)] p-1.5 text-[var(--text-muted)] transition hover:border-[var(--accent)] hover:bg-[var(--surface-3)] hover:text-[var(--text-strong)]"
+          className={`shrink-0 ${ICON_BUTTON_CLASS} hover:border-[var(--accent)] hover:bg-[var(--surface-3)]`}
         >
           {downloadIcon}
         </button>
@@ -749,7 +729,7 @@ export function ExportPdfButton({ topicContentId, topicTitle, variant = "default
 
       {showModal && (
         <ExportModal
-          topicContentId={topicContentId}
+          topicId={topicId}
           topicTitle={topicTitle}
           onClose={() => setShowModal(false)}
         />

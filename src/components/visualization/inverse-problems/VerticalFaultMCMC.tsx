@@ -1,9 +1,12 @@
-'use client';
+"use client";
 
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
+import { mulberry32, gaussianPair } from '@/lib/math';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 
@@ -14,20 +17,6 @@ const D_OBS = [
   3.5852089e-8, 3.0216871e-8, 2.572369e-8, 2.210488e-8, 1.9160639e-8, 1.674152e-8,
   1.473511e-8, 1.305617e-8, 1.163955e-8, 9.4032977e-9, 8.5137701e-9, 7.7420141e-9,
 ];
-
-function seededRandom(seed: number): () => number {
-  let s = Math.max(1, Math.floor(seed));
-  return () => {
-    s = (s * 1664525 + 1013904223) % 4294967296;
-    return s / 4294967296;
-  };
-}
-
-function randn(rng: () => number): number {
-  const u1 = Math.max(rng(), 1e-12);
-  const u2 = rng();
-  return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
-}
 
 function clip(v: number, lo: number, hi: number): number {
   return Math.max(lo, Math.min(hi, v));
@@ -66,7 +55,7 @@ function loss(obs: number[], pred: number[], sigma: number): number {
   return s / (2 * sigma * sigma);
 }
 
-export default function VerticalFaultMCMC({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function VerticalFaultMCMC({}: SimulationComponentProps) {
   const [nWalkers, setNWalkers] = useState(8);
   const [nSteps, setNSteps] = useState(400);
   const [burnIn, setBurnIn] = useState(120);
@@ -76,7 +65,7 @@ export default function VerticalFaultMCMC({ id }: SimulationComponentProps) { //
   const [seed, setSeed] = useState(42);
 
   const result = useMemo(() => {
-    const rng = seededRandom(seed);
+    const rng = mulberry32(seed);
     const nSlabs = 5;
     const sigma = 4e-9;
 
@@ -101,8 +90,8 @@ export default function VerticalFaultMCMC({ id }: SimulationComponentProps) { //
       let accepted = 0;
 
       for (let step = 0; step < nSteps; step++) {
-        const proposalHeights = heights.map((h) => clip(h + randn(rng) * proposalH, 2000, 10000));
-        const proposalRhos = rhos.map((rho) => clip(rho + randn(rng) * proposalRho, -2000, 2000));
+        const proposalHeights = heights.map((h) => clip(h + gaussianPair(rng)[0] * proposalH, 2000, 10000));
+        const proposalRhos = rhos.map((rho) => clip(rho + gaussianPair(rng)[0] * proposalRho, -2000, 2000));
         const predNew = forwardModel(proposalHeights, proposalRhos, X_OBS);
         const newLoss = loss(D_OBS, predNew, sigma);
 
@@ -156,44 +145,41 @@ export default function VerticalFaultMCMC({ id }: SimulationComponentProps) { //
   }, [nWalkers, nSteps, burnIn, proposalH, proposalRho, beta, seed]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Vertical Fault (MCMC Inversion)</h3>
-      <p className="text-[var(--text-muted)] text-sm mb-4">
-        Infer slab heights and density contrasts from observed gravity-gradient data using Metropolis-Hastings
-        sampling. This modernized version preserves the old assignment intent while exposing core MCMC controls.
-      </p>
+    <SimulationPanel title="Vertical Fault (MCMC Inversion)" caption="Infer slab heights and density contrasts from observed gravity-gradient data using Metropolis-Hastings sampling. This modernized version preserves the old assignment intent while exposing core MCMC controls.">
+      <SimulationConfig>
+        <div className="grid grid-cols-2 lg:grid-cols-7 gap-3">
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-xs">Walkers: {nWalkers}</SimulationLabel>
+            <Slider min={2} max={24} step={1} value={[nWalkers]} onValueChange={([v]) => setNWalkers(v)} />
+          </div>
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-xs">Steps: {nSteps}</SimulationLabel>
+            <Slider min={120} max={1200} step={20} value={[nSteps]} onValueChange={([v]) => setNSteps(v)} />
+          </div>
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-xs">Burn-in: {burnIn}</SimulationLabel>
+            <Slider min={20} max={500} step={10} value={[burnIn]} onValueChange={([v]) => setBurnIn(v)} />
+          </div>
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-xs">Height step: {proposalH}</SimulationLabel>
+            <Slider min={30} max={1200} step={10} value={[proposalH]} onValueChange={([v]) => setProposalH(v)} />
+          </div>
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-xs">Density step: {proposalRho}</SimulationLabel>
+            <Slider min={5} max={300} step={5} value={[proposalRho]} onValueChange={([v]) => setProposalRho(v)} />
+          </div>
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-xs">Beta: {beta.toFixed(2)}</SimulationLabel>
+            <Slider min={0.2} max={2.0} step={0.05} value={[beta]} onValueChange={([v]) => setBeta(v)} />
+          </div>
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-xs">Seed: {seed}</SimulationLabel>
+            <Slider min={1} max={300} step={1} value={[seed]} onValueChange={([v]) => setSeed(v)} />
+          </div>
+        </div>
+      </SimulationConfig>
 
-      <div className="grid grid-cols-2 lg:grid-cols-7 gap-3 mb-4">
-        <div>
-          <label className="text-[var(--text-muted)] text-xs">Walkers: {nWalkers}</label>
-          <Slider min={2} max={24} step={1} value={[nWalkers]} onValueChange={([v]) => setNWalkers(v)} />
-        </div>
-        <div>
-          <label className="text-[var(--text-muted)] text-xs">Steps: {nSteps}</label>
-          <Slider min={120} max={1200} step={20} value={[nSteps]} onValueChange={([v]) => setNSteps(v)} />
-        </div>
-        <div>
-          <label className="text-[var(--text-muted)] text-xs">Burn-in: {burnIn}</label>
-          <Slider min={20} max={500} step={10} value={[burnIn]} onValueChange={([v]) => setBurnIn(v)} />
-        </div>
-        <div>
-          <label className="text-[var(--text-muted)] text-xs">Height step: {proposalH}</label>
-          <Slider min={30} max={1200} step={10} value={[proposalH]} onValueChange={([v]) => setProposalH(v)} />
-        </div>
-        <div>
-          <label className="text-[var(--text-muted)] text-xs">Density step: {proposalRho}</label>
-          <Slider min={5} max={300} step={5} value={[proposalRho]} onValueChange={([v]) => setProposalRho(v)} />
-        </div>
-        <div>
-          <label className="text-[var(--text-muted)] text-xs">Beta: {beta.toFixed(2)}</label>
-          <Slider min={0.2} max={2.0} step={0.05} value={[beta]} onValueChange={([v]) => setBeta(v)} />
-        </div>
-        <div>
-          <label className="text-[var(--text-muted)] text-xs">Seed: {seed}</label>
-          <Slider min={1} max={300} step={1} value={[seed]} onValueChange={([v]) => setSeed(v)} />
-        </div>
-      </div>
-
+      <SimulationMain>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
         <CanvasChart
           data={result.lossTraces.map((trace, i) => ({
@@ -229,7 +215,8 @@ export default function VerticalFaultMCMC({ id }: SimulationComponentProps) { //
               x: Array.from({ length: result.acceptanceRates.length }, (_, i) => `w${i + 1}`),
               y: result.acceptanceRates,
               type: 'bar' as const,
-              marker: { color: 'rgba(96,165,250,0.8)' },
+              marker: { color: '#60a5fa' },
+              opacity: 0.8,
               name: 'acceptance',
             },
           ]}
@@ -305,6 +292,8 @@ export default function VerticalFaultMCMC({ id }: SimulationComponentProps) { //
         })()}
       </div>
 
+      </SimulationMain>
+      <SimulationResults>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 text-sm">
         <div className="bg-[var(--surface-1)] rounded p-3 border border-[var(--border-strong)]">
           <div className="text-[var(--text-soft)]">Best loss</div>
@@ -319,6 +308,7 @@ export default function VerticalFaultMCMC({ id }: SimulationComponentProps) { //
           <div className="text-[var(--text-strong)] font-mono">{result.globalBestRhos.map((v) => v.toFixed(0)).join(', ')}</div>
         </div>
       </div>
-    </div>
+      </SimulationResults>
+    </SimulationPanel>
   );
 }

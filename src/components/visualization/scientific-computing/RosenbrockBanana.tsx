@@ -1,10 +1,12 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
+import { clamp } from '@/lib/math';
 import { Slider } from '@/components/ui/slider';
 import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
 import { CanvasChart } from '@/components/ui/canvas-chart';
-import { SimulationPanel, SimulationLabel, SimulationToggle } from '@/components/ui/simulation-panel';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationResults, SimulationLabel, SimulationToggle } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 /**
@@ -53,8 +55,8 @@ export default function RosenbrockBanana({}: SimulationComponentProps) {
       py -= lr * gy;
 
       // Clamp to prevent divergence
-      px = Math.max(-3, Math.min(3, px));
-      py = Math.max(-2, Math.min(4, py));
+      px = clamp(px, -3, 3);
+      py = clamp(py, -2, 4);
 
       path.push([px, py]);
     }
@@ -99,8 +101,8 @@ export default function RosenbrockBanana({}: SimulationComponentProps) {
       px += alpha * dx;
       py += alpha * dy;
 
-      px = Math.max(-3, Math.min(3, px));
-      py = Math.max(-2, Math.min(4, py));
+      px = clamp(px, -3, 3);
+      py = clamp(py, -2, 4);
 
       path.push([px, py]);
     }
@@ -139,16 +141,8 @@ export default function RosenbrockBanana({}: SimulationComponentProps) {
   const newtonFinal = newtonPath.length > 0 ? newtonPath[newtonPath.length - 1] : [x0, y0];
 
   return (
-    <SimulationPanel>
-      <h3 className="text-lg font-semibold text-[var(--text-strong)]">
-        Rosenbrock Banana Function: Optimizer Comparison
-      </h3>
-      <p className="text-sm text-[var(--text-soft)] mb-4">
-        The Rosenbrock function f(x,y) = (1-x)^2 + 100(y-x^2)^2 has a
-        narrow curved valley. Gradient descent zigzags; Newton&apos;s method follows the curvature.
-      </p>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-4">
+    <SimulationPanel title="Rosenbrock Banana Function: Optimizer Comparison" caption="The Rosenbrock function f(x,y) = (1-x)^2 + 100(y-x^2)^2 has a narrow curved valley. Gradient descent zigzags; Newton's method follows the curvature.">
+      <SimulationSettings>
         <div>
           <SimulationLabel>Method</SimulationLabel>
           <SimulationToggle
@@ -161,136 +155,144 @@ export default function RosenbrockBanana({}: SimulationComponentProps) {
             onChange={(v) => setMethod(v as 'gd' | 'newton' | 'both')}
           />
         </div>
-        <div>
-          <SimulationLabel>GD learning rate: {lr.toFixed(4)}</SimulationLabel>
-          <Slider
-            value={[lr]}
-            onValueChange={([v]) => setLr(v)}
-            min={0.0001}
-            max={0.01}
-            step={0.0001}
-            className="w-full"
-          />
+      </SimulationSettings>
+      <SimulationConfig>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div>
+            <SimulationLabel>GD learning rate: {lr.toFixed(4)}</SimulationLabel>
+            <Slider
+              value={[lr]}
+              onValueChange={([v]) => setLr(v)}
+              min={0.0001}
+              max={0.01}
+              step={0.0001}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel>x0: {x0.toFixed(1)}</SimulationLabel>
+            <Slider
+              value={[x0]}
+              onValueChange={([v]) => setX0(v)}
+              min={-2}
+              max={2}
+              step={0.1}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel>y0: {y0.toFixed(1)}</SimulationLabel>
+            <Slider
+              value={[y0]}
+              onValueChange={([v]) => setY0(v)}
+              min={-1}
+              max={3}
+              step={0.1}
+              className="w-full"
+            />
+          </div>
+          <div>
+            <SimulationLabel>Max steps: {maxSteps}</SimulationLabel>
+            <Slider
+              value={[maxSteps]}
+              onValueChange={([v]) => setMaxSteps(v)}
+              min={10}
+              max={500}
+              step={10}
+              className="w-full"
+            />
+          </div>
         </div>
-        <div>
-          <SimulationLabel>x0: {x0.toFixed(1)}</SimulationLabel>
-          <Slider
-            value={[x0]}
-            onValueChange={([v]) => setX0(v)}
-            min={-2}
-            max={2}
-            step={0.1}
-            className="w-full"
-          />
-        </div>
-        <div>
-          <SimulationLabel>y0: {y0.toFixed(1)}</SimulationLabel>
-          <Slider
-            value={[y0]}
-            onValueChange={([v]) => setY0(v)}
-            min={-1}
-            max={3}
-            step={0.1}
-            className="w-full"
-          />
-        </div>
-        <div>
-          <SimulationLabel>Max steps: {maxSteps}</SimulationLabel>
-          <Slider
-            value={[maxSteps]}
-            onValueChange={([v]) => setMaxSteps(v)}
-            min={10}
-            max={500}
-            step={10}
-            className="w-full"
-          />
-        </div>
-      </div>
+      </SimulationConfig>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <CanvasHeatmap
-          data={[
-            {
-              z: contourData.z,
-              x: contourData.xgrid,
-              y: contourData.ygrid,
-              colorscale: 'Inferno',
-              showscale: true,
-            },
-          ]}
-          layout={{
-            title: { text: 'log10(f) Contour + Paths' },
-            xaxis: { title: { text: 'x' } },
-            yaxis: { title: { text: 'y' } },
-            margin: { t: 40, r: 60, b: 50, l: 60 },
-          }}
-          style={{ width: '100%', height: 420 }}
-        />
+      <SimulationMain>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <CanvasHeatmap
+            data={[
+              {
+                z: contourData.z,
+                x: contourData.xgrid,
+                y: contourData.ygrid,
+                colorscale: 'Inferno',
+                showscale: true,
+              },
+            ]}
+            layout={{
+              title: { text: 'log10(f) Contour + Paths' },
+              xaxis: { title: { text: 'x' } },
+              yaxis: { title: { text: 'y' } },
+              margin: { t: 40, r: 60, b: 50, l: 60 },
+            }}
+            style={{ width: '100%', height: 420 }}
+          />
 
-        <CanvasChart
-          data={[
-            ...(gdPath.length > 0
-              ? [
-                  {
-                    x: convergenceData.gdVals.map((_, i) => i),
-                    y: convergenceData.gdVals,
-                    type: 'scatter' as const,
-                    mode: 'lines' as const,
-                    line: { color: '#3b82f6', width: 2 },
-                    name: `GD (${gdPath.length} steps)`,
-                  },
-                ]
-              : []),
-            ...(newtonPath.length > 0
-              ? [
-                  {
-                    x: convergenceData.newtonVals.map((_, i) => i),
-                    y: convergenceData.newtonVals,
-                    type: 'scatter' as const,
-                    mode: 'lines' as const,
-                    line: { color: '#ef4444', width: 2 },
-                    name: `Newton (${newtonPath.length} steps)`,
-                  },
-                ]
-              : []),
-          ]}
-          layout={{
-            title: { text: 'Convergence: f(x_k) vs iteration' },
-            xaxis: { title: { text: 'Iteration' } },
-            yaxis: { title: { text: 'f(x,y)' }, type: 'log' },
-            showlegend: true,
-            margin: { t: 40, r: 20, b: 50, l: 60 },
-          }}
-          style={{ width: '100%', height: 420 }}
-        />
-      </div>
+          <CanvasChart
+            data={[
+              ...(gdPath.length > 0
+                ? [
+                    {
+                      x: convergenceData.gdVals.map((_, i) => i),
+                      y: convergenceData.gdVals,
+                      type: 'scatter' as const,
+                      mode: 'lines' as const,
+                      line: { color: '#3b82f6', width: 2 },
+                      name: `GD (${gdPath.length} steps)`,
+                    },
+                  ]
+                : []),
+              ...(newtonPath.length > 0
+                ? [
+                    {
+                      x: convergenceData.newtonVals.map((_, i) => i),
+                      y: convergenceData.newtonVals,
+                      type: 'scatter' as const,
+                      mode: 'lines' as const,
+                      line: { color: '#ef4444', width: 2 },
+                      name: `Newton (${newtonPath.length} steps)`,
+                    },
+                  ]
+                : []),
+            ]}
+            layout={{
+              title: { text: 'Convergence: f(x_k) vs iteration' },
+              xaxis: { title: { text: 'Iteration' } },
+              yaxis: { title: { text: 'f(x,y)' }, type: 'log' },
+              showlegend: true,
+              margin: { t: 40, r: 20, b: 50, l: 60 },
+            }}
+            style={{ width: '100%', height: 420 }}
+          />
+        </div>
+      </SimulationMain>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
-        <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
-          <div className="text-xs text-[var(--text-muted)]">GD final f</div>
-          <div className="text-sm font-mono font-semibold text-[#3b82f6]">
-            {rosenbrock(gdFinal[0], gdFinal[1]).toExponential(2)}
+      <SimulationResults>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
+            <div className="text-xs text-[var(--text-muted)]">GD final f</div>
+            <div className="text-sm font-mono font-semibold text-[#3b82f6]">
+              {rosenbrock(gdFinal[0], gdFinal[1]).toExponential(2)}
+            </div>
+          </div>
+          <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
+            <div className="text-xs text-[var(--text-muted)]">GD final (x,y)</div>
+            <div className="text-sm font-mono font-semibold text-[var(--text-strong)]">
+              ({gdFinal[0].toFixed(3)}, {gdFinal[1].toFixed(3)})
+            </div>
+          </div>
+          <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
+            <div className="text-xs text-[var(--text-muted)]">Newton final f</div>
+            <div className="text-sm font-mono font-semibold text-[#ef4444]">
+              {rosenbrock(newtonFinal[0], newtonFinal[1]).toExponential(2)}
+            </div>
+          </div>
+          <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
+            <div className="text-xs text-[var(--text-muted)]">Newton final (x,y)</div>
+            <div className="text-sm font-mono font-semibold text-[var(--text-strong)]">
+              ({newtonFinal[0].toFixed(3)}, {newtonFinal[1].toFixed(3)})
+            </div>
           </div>
         </div>
-        <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
-          <div className="text-xs text-[var(--text-muted)]">GD final (x,y)</div>
-          <div className="text-sm font-mono font-semibold text-[var(--text-strong)]">
-            ({gdFinal[0].toFixed(3)}, {gdFinal[1].toFixed(3)})
-          </div>
-        </div>
-        <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
-          <div className="text-xs text-[var(--text-muted)]">Newton final f</div>
-          <div className="text-sm font-mono font-semibold text-[#ef4444]">
-            {rosenbrock(newtonFinal[0], newtonFinal[1]).toExponential(2)}
-          </div>
-        </div>
-        <div className="rounded-md border border-[var(--border)] bg-[var(--surface-2)]/50 p-2.5 text-center">
-          <div className="text-xs text-[var(--text-muted)]">Newton final (x,y)</div>
-          <div className="text-sm font-mono font-semibold text-[var(--text-strong)]">
-            ({newtonFinal[0].toFixed(3)}, {newtonFinal[1].toFixed(3)})
-          </div>
-        </div>
-      </div>
+      </SimulationResults>
     </SimulationPanel>
   );
 }

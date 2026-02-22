@@ -1,19 +1,19 @@
 import Link from "next/link";
-import Antigravity from "@/components/effects/Antigravity";
 import { TOPIC_ROUTES } from "@/lib/topic-navigation";
-import { getLessonsForTopic } from "@/lib/topic-navigation.server";
+import AntigravityClient from "@/components/effects/AntigravityClient";
+import { getLessonsForTopic } from "@/features/content/topic-lessons";
 
 export default function HomePage() {
   const topicCount = TOPIC_ROUTES.length;
   const subtopicCount = TOPIC_ROUTES.reduce(
-    (sum, route) => sum + getLessonsForTopic(route.contentId).length,
+    (sum, route) => sum + getLessonsForTopic(route.topicId).length,
     0
   );
   return (
     <div className="relative h-[calc(100vh-4rem)] overflow-hidden">
       <div className="absolute inset-0 flex justify-center">
         <div className="h-full w-full">
-          <Antigravity
+          <AntigravityClient
             count={320}
             magnetRadius={6}
             ringRadius={7}
@@ -38,7 +38,7 @@ export default function HomePage() {
       <div className="relative z-10 h-full px-[50px] py-8">
         <div className="mx-auto grid h-full max-w-[1200px] content-center grid-cols-1 gap-4 lg:grid-cols-12">
           <section className="lg:col-span-7 flex flex-col justify-center rounded-lg border border-[var(--border-strong)] bg-[var(--surface-1)]/30 p-5 backdrop-blur-lg">
-            <p className="font-mono text-xs uppercase tracking-[0.28em] text-[var(--accent)]">koala brain :: V02.01.02</p>
+            <p className="font-mono text-xs uppercase tracking-[0.28em] text-[var(--accent)]">koala brain :: V02.01.002</p>
             <p className="mt-3 max-w-2xl text-sm text-[var(--text-muted)]">
               Computational physics you can touch. Every equation runs, every model bends, every
               simulation is yours to break.

@@ -1,6 +1,10 @@
-'use client';
+"use client";
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { clamp } from '@/lib/math';
+import { SimulationPanel, SimulationSettings, SimulationResults, SimulationLabel, SimulationButton } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 type Aggregation = 'mean' | 'sum' | 'max';
 
@@ -104,7 +108,7 @@ function embeddingDistance(a: number[], b: number[]): number {
   return Math.sqrt(sum);
 }
 
-export default function GnnMessagePassingLive(): React.ReactElement {
+export default function GnnMessagePassingLive({}: SimulationComponentProps): React.ReactElement {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [preset, setPreset] = useState<string>('Small graph');
   const [layer, setLayer] = useState(0);
@@ -180,7 +184,7 @@ export default function GnnMessagePassingLive(): React.ReactElement {
         // Update: combine self + aggregated neighbors (simple MLP simulation)
         const newEmb = node.embedding.map((v, d) => {
           const combined = 0.5 * v + 0.5 * aggregated[d];
-          return Math.max(0, Math.min(1, combined)); // ReLU-like clamp
+          return clamp(combined, 0, 1); // ReLU-like clamp
         });
 
         return { ...node, embedding: newEmb };
@@ -218,7 +222,7 @@ export default function GnnMessagePassingLive(): React.ReactElement {
     }
     const avgDist = totalDist / count;
     // Normalize: initial avg dist is ~0.5, oversmoothed is ~0
-    return Math.max(0, Math.min(100, Math.round((1 - avgDist / 0.5) * 100)));
+    return clamp(Math.round((1 - avgDist / 0.5) * 100), 0, 100);
   }, [nodes]);
 
   // Draw graph on canvas
@@ -350,69 +354,46 @@ export default function GnnMessagePassingLive(): React.ReactElement {
   }, [selectedNode, nodes, getNeighbors]);
 
   return (
-    <div className="w-full rounded-lg bg-[var(--surface-1)] p-6">
-      <h3 className="mb-4 text-xl font-semibold text-[var(--text-strong)]">
-        GNN Message Passing Live
-      </h3>
-
-      <div className="mb-4 grid grid-cols-2 gap-4 md:grid-cols-4">
-        <div>
-          <label className="text-sm text-[var(--text-muted)]">Preset</label>
-          <select
-            value={preset}
-            onChange={(e) => setPreset(e.target.value)}
-            className="mt-1 w-full rounded bg-[var(--surface-2,#27272a)] px-3 py-1.5 text-sm text-[var(--text-strong)]"
-          >
-            {Object.keys(PRESET_GRAPHS).map((k) => (
-              <option key={k} value={k}>{k}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="text-sm text-[var(--text-muted)]">Aggregation</label>
-          <select
-            value={aggregation}
-            onChange={(e) => setAggregation(e.target.value as Aggregation)}
-            className="mt-1 w-full rounded bg-[var(--surface-2,#27272a)] px-3 py-1.5 text-sm text-[var(--text-strong)]"
-          >
-            <option value="mean">Mean</option>
-            <option value="sum">Sum</option>
-            <option value="max">Max</option>
-          </select>
-        </div>
-        <div className="flex items-end gap-2">
-          <button
-            onClick={step}
-            disabled={layer >= 8}
-            className="rounded bg-[var(--accent,#3b82f6)] px-4 py-1.5 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50"
-          >
-            Step (Layer {layer + 1})
-          </button>
-          <button
-            onClick={reset}
-            className="rounded bg-[var(--surface-2,#27272a)] px-4 py-1.5 text-sm font-medium text-[var(--text-strong)] hover:opacity-90"
-          >
-            Reset
-          </button>
-        </div>
-        <div>
-          <label className="text-sm text-[var(--text-muted)]">
-            Oversmoothing: {oversmoothingScore}%
-          </label>
-          <div className="mt-1 h-4 w-full overflow-hidden rounded-full bg-[var(--surface-2,#27272a)]">
-            <div
-              className="h-full rounded-full transition-all"
-              style={{
-                width: `${oversmoothingScore}%`,
-                backgroundColor: oversmoothingScore > 70 ? '#ef4444' : oversmoothingScore > 40 ? '#f59e0b' : '#10b981',
-              }}
-            />
+    <SimulationPanel title="GNN Message Passing Live">
+      <SimulationSettings>
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+          <div>
+            <SimulationLabel>Preset</SimulationLabel>
+            <select
+              value={preset}
+              onChange={(e) => setPreset(e.target.value)}
+              className="mt-1 w-full rounded bg-[var(--surface-2,#27272a)] px-3 py-1.5 text-sm text-[var(--text-strong)]"
+            >
+              {Object.keys(PRESET_GRAPHS).map((k) => (
+                <option key={k} value={k}>{k}</option>
+              ))}
+            </select>
           </div>
-          <span className="text-xs text-[var(--text-muted)]">Layers applied: {layer}/8</span>
+          <div>
+            <SimulationLabel>Aggregation</SimulationLabel>
+            <select
+              value={aggregation}
+              onChange={(e) => setAggregation(e.target.value as Aggregation)}
+              className="mt-1 w-full rounded bg-[var(--surface-2,#27272a)] px-3 py-1.5 text-sm text-[var(--text-strong)]"
+            >
+              <option value="mean">Mean</option>
+              <option value="sum">Sum</option>
+              <option value="max">Max</option>
+            </select>
+          </div>
+          <div className="flex items-end gap-2">
+            <SimulationButton variant="primary" onClick={step} disabled={layer >= 8}>
+              Step (Layer {layer + 1})
+            </SimulationButton>
+            <SimulationButton variant="secondary" onClick={reset}>
+              Reset
+            </SimulationButton>
+          </div>
         </div>
-      </div>
+      </SimulationSettings>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+      <SimulationMain scaleMode="contain">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <div className="md:col-span-2">
           <canvas
             ref={canvasRef}
@@ -483,13 +464,31 @@ export default function GnnMessagePassingLive(): React.ReactElement {
         </div>
       </div>
 
-      {oversmoothingScore > 70 && (
-        <div className="mt-3 rounded bg-amber-900/30 p-3 text-sm text-amber-300">
-          Oversmoothing detected ({oversmoothingScore}%). After many message-passing
-          layers, all node embeddings converge to similar values — the graph loses its
-          ability to distinguish between nodes. This is why most GNNs use 2-3 layers.
+        {oversmoothingScore > 70 && (
+          <div className="mt-3 rounded bg-amber-900/30 p-3 text-sm text-amber-300">
+            Oversmoothing detected ({oversmoothingScore}%). After many message-passing
+            layers, all node embeddings converge to similar values — the graph loses its
+            ability to distinguish between nodes. This is why most GNNs use 2-3 layers.
+          </div>
+        )}
+      </SimulationMain>
+      <SimulationResults>
+        <div>
+          <SimulationLabel>
+            Oversmoothing: {oversmoothingScore}%
+          </SimulationLabel>
+          <div className="mt-1 h-4 w-full overflow-hidden rounded-full bg-[var(--surface-2,#27272a)]">
+            <div
+              className="h-full rounded-full transition-all"
+              style={{
+                width: `${oversmoothingScore}%`,
+                backgroundColor: oversmoothingScore > 70 ? '#ef4444' : oversmoothingScore > 40 ? '#f59e0b' : '#10b981',
+              }}
+            />
+          </div>
+          <span className="text-xs text-[var(--text-muted)]">Layers applied: {layer}/8</span>
         </div>
-      )}
-    </div>
+      </SimulationResults>
+    </SimulationPanel>
   );
 }

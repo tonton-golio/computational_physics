@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
+import { mulberry32 } from '@/lib/math';
 import { Slider } from '@/components/ui/slider';
 import { SimulationMain } from '@/components/ui/simulation-main';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 /**
  * BacterialLineageTree: Visualizes a bacterial population dividing over
@@ -21,12 +24,7 @@ interface CellNode {
 }
 
 function buildTree(initialMolecules: number, generations: number, seed: number): CellNode {
-  // Seeded pseudo-random for determinism with same params
-  let state = seed;
-  const rand = () => {
-    state = (state * 1664525 + 1013904223) & 0x7fffffff;
-    return state / 0x7fffffff;
-  };
+  const rand = mulberry32(seed);
 
   function seededBinomialSplit(n: number): [number, number] {
     let left = 0;
@@ -82,7 +80,7 @@ function moleculeColor(molecules: number, maxMol: number): string {
   return `rgb(${r},${g},${b})`;
 }
 
-export default function BacterialLineageTree() {
+export default function BacterialLineageTree({}: SimulationComponentProps) {
   const [initialMolecules, setInitialMolecules] = useState(40);
   const [generations, setGenerations] = useState(5);
   const [seed, setSeed] = useState(42);
@@ -121,29 +119,27 @@ export default function BacterialLineageTree() {
   const nodeRadius = Math.max(6, 18 - generations * 2);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Bacterial Lineage Tree: Stochastic Partitioning</h3>
-
-      <div className="grid grid-cols-3 gap-4 mb-4">
+    <SimulationPanel title="Bacterial Lineage Tree: Stochastic Partitioning">
+      <SimulationConfig>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">
+          <SimulationLabel>
             Initial molecules: {initialMolecules}
-          </label>
+          </SimulationLabel>
           <Slider value={[initialMolecules]} onValueChange={([v]) => setInitialMolecules(v)} min={4} max={100} step={2} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">
+          <SimulationLabel>
             Generations: {generations}
-          </label>
+          </SimulationLabel>
           <Slider value={[generations]} onValueChange={([v]) => setGenerations(v)} min={2} max={7} step={1} />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">
+          <SimulationLabel>
             Random seed: {seed}
-          </label>
+          </SimulationLabel>
           <Slider value={[seed]} onValueChange={([v]) => setSeed(v)} min={1} max={100} step={1} />
         </div>
-      </div>
+      </SimulationConfig>
 
       <SimulationMain scaleMode="contain" className="overflow-x-auto">
         <svg
@@ -209,8 +205,8 @@ export default function BacterialLineageTree() {
         </svg>
       </SimulationMain>
 
-      {/* Statistics */}
-      <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+      <SimulationResults>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
         <div className="bg-[var(--surface-2)] rounded-md p-3">
           <div className="font-medium text-[var(--text-strong)]">Leaf mean</div>
           <div className="text-lg font-mono">{stats.mean.toFixed(1)}</div>
@@ -229,6 +225,7 @@ export default function BacterialLineageTree() {
           <div className="text-xs text-[var(--text-muted)]">1/&radic;N theory</div>
         </div>
       </div>
+      </SimulationResults>
 
       <div className="mt-4 border-l-4 border-blue-500 pl-4 text-sm text-[var(--text-muted)]">
         <p className="font-medium text-[var(--text-strong)] mb-1">What to notice</p>
@@ -241,6 +238,6 @@ export default function BacterialLineageTree() {
           Try reducing initial molecules to 4&ndash;10 to see the effect.
         </p>
       </div>
-    </div>
+    </SimulationPanel>
   );
 }

@@ -1,7 +1,11 @@
-'use client';
+"use client";
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { type CanvasTheme, DARK_THEME, getCanvasTheme } from '@/lib/canvas-theme';
+import { extractText } from '@/lib/canvas-utils';
+import { useSimulationFullscreen } from '@/lib/simulation-fullscreen-context';
+import { useIsInsideMain } from '@/components/ui/simulation-main';
+import { useThemeChangeKey } from '@/lib/use-theme';
 
 // ── Colorscales ────────────────────────────────────────────────────────
 
@@ -120,12 +124,6 @@ export interface CanvasHeatmapProps {
 }
 
 // ── Utility ────────────────────────────────────────────────────────────
-
-function extractText(v?: string | { text: string; font?: unknown }): string {
-  if (!v) return '';
-  if (typeof v === 'string') return v;
-  return v.text || '';
-}
 
 function fmtNum(v: number): string {
   if (v === 0) return '0';
@@ -306,13 +304,9 @@ function draw(
 export function CanvasHeatmap({ data, layout, style }: CanvasHeatmapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [themeKey, setThemeKey] = useState(0);
-
-  useEffect(() => {
-    const observer = new MutationObserver(() => setThemeKey(k => k + 1));
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-    return () => observer.disconnect();
-  }, []);
+  const themeKey = useThemeChangeKey();
+  const isFullscreen = useSimulationFullscreen();
+  const insideMain = useIsInsideMain();
 
   useEffect(() => {
     const container = containerRef.current;
@@ -322,7 +316,9 @@ export function CanvasHeatmap({ data, layout, style }: CanvasHeatmapProps) {
     const redraw = () => {
       THEME = getCanvasTheme();
       const width = container.clientWidth;
-      const height = parseInt(String(style?.height || 320), 10);
+      const height = isFullscreen && container.clientHeight > 0
+        ? container.clientHeight
+        : parseInt(String(style?.height || 320), 10);
       const dpr = window.devicePixelRatio || 1;
 
       canvas.width = width * dpr;
@@ -341,10 +337,20 @@ export function CanvasHeatmap({ data, layout, style }: CanvasHeatmapProps) {
     const ro = new ResizeObserver(redraw);
     ro.observe(container);
     return () => ro.disconnect();
-  }, [data, layout, style, themeKey]);
+  }, [data, layout, style, themeKey, isFullscreen]);
 
   return (
-    <div ref={containerRef} style={{ width: style?.width || '100%' }}>
+    <div
+      ref={containerRef}
+      data-fs-role={isFullscreen && !insideMain ? 'chart' : undefined}
+      style={
+        isFullscreen && insideMain === 'main'
+          ? { width: '100%', height: '100%' }
+          : isFullscreen && !insideMain
+            ? undefined
+            : { width: style?.width || '100%' }
+      }
+    >
       <canvas ref={canvasRef} style={{ display: 'block', borderRadius: '4px' }} />
     </div>
   );

@@ -1,10 +1,13 @@
-'use client';
+"use client";
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { clamp } from '@/lib/math';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { CanvasHeatmap } from '@/components/ui/canvas-heatmap';
 import { SimulationMain } from '@/components/ui/simulation-main';
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationResults, SimulationAux, SimulationLabel, SimulationButton } from '@/components/ui/simulation-panel';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 import { linspace } from './ml-utils';
 
 type Optimizer = 'gd' | 'momentum' | 'rmsprop' | 'adam';
@@ -98,8 +101,8 @@ function stepOptimizer(
   }
 
   // Clamp to grid
-  s.x = Math.max(-RANGE, Math.min(RANGE, s.x));
-  s.y = Math.max(-RANGE, Math.min(RANGE, s.y));
+  s.x = clamp(s.x, -RANGE, RANGE);
+  s.y = clamp(s.y, -RANGE, RANGE);
   return s;
 }
 
@@ -183,7 +186,7 @@ function TrailOverlay({
   );
 }
 
-export default function LossLandscapeExplorer(): React.ReactElement {
+export default function LossLandscapeExplorer({}: SimulationComponentProps): React.ReactElement {
   const [lr, setLr] = useState(0.05);
   const [momentumCoeff, setMomentumCoeff] = useState(0.9);
   const [optimizer, setOptimizer] = useState<Optimizer>('adam');
@@ -260,98 +263,79 @@ export default function LossLandscapeExplorer(): React.ReactElement {
   }, []);
 
   return (
-    <div className="w-full rounded-lg bg-[var(--surface-1)] p-6">
-      <h3 className="mb-4 text-xl font-semibold text-[var(--text-strong)]">
-        Loss Landscape Explorer
-      </h3>
-
-      <div className="mb-4 grid grid-cols-2 gap-4 md:grid-cols-4">
-        <div>
-          <label className="text-sm text-[var(--text-muted)]">
-            Learning rate: {lr.toFixed(4)}
-          </label>
-          <Slider
-            min={0.001}
-            max={2.0}
-            step={0.001}
-            value={[lr]}
-            onValueChange={([v]) => setLr(v)}
-          />
+    <SimulationPanel title="Loss Landscape Explorer">
+      <SimulationSettings>
+        <div className="flex flex-wrap gap-2">
+          <SimulationButton variant="primary" onClick={dropBall}>
+            Drop Ball (random)
+          </SimulationButton>
+          <SimulationButton variant="primary" onClick={() => doStep()} disabled={running}>
+            Step
+          </SimulationButton>
+          <SimulationButton variant="primary" onClick={() => runSteps(200)} disabled={running}>
+            Run 200 Steps
+          </SimulationButton>
+          <SimulationButton variant="danger" onClick={failureDiverge}>
+            Divergence Demo
+          </SimulationButton>
+          <SimulationButton variant="secondary" onClick={failureStuck}>
+            Getting Stuck Demo
+          </SimulationButton>
         </div>
-        <div>
-          <label className="text-sm text-[var(--text-muted)]">
-            Momentum: {momentumCoeff.toFixed(2)}
-          </label>
-          <Slider
-            min={0}
-            max={0.99}
-            step={0.01}
-            value={[momentumCoeff]}
-            onValueChange={([v]) => setMomentumCoeff(v)}
-          />
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-2">
+          <div>
+            <SimulationLabel>Optimizer</SimulationLabel>
+            <select
+              value={optimizer}
+              onChange={(e) => setOptimizer(e.target.value as Optimizer)}
+              className="mt-1 w-full rounded bg-[var(--surface-2,#27272a)] px-3 py-1.5 text-sm text-[var(--text-strong)]"
+            >
+              <option value="gd">Gradient Descent</option>
+              <option value="momentum">Momentum</option>
+              <option value="rmsprop">RMSProp</option>
+              <option value="adam">Adam</option>
+            </select>
+          </div>
+          <div className="flex flex-col gap-1">
+            <SimulationLabel className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={showContour}
+                onChange={(e) => setShowContour(e.target.checked)}
+              />
+              Show loss curve
+            </SimulationLabel>
+          </div>
         </div>
-        <div>
-          <label className="text-sm text-[var(--text-muted)]">Optimizer</label>
-          <select
-            value={optimizer}
-            onChange={(e) => setOptimizer(e.target.value as Optimizer)}
-            className="mt-1 w-full rounded bg-[var(--surface-2,#27272a)] px-3 py-1.5 text-sm text-[var(--text-strong)]"
-          >
-            <option value="gd">Gradient Descent</option>
-            <option value="momentum">Momentum</option>
-            <option value="rmsprop">RMSProp</option>
-            <option value="adam">Adam</option>
-          </select>
-        </div>
-        <div className="flex flex-col gap-1">
-          <label className="flex items-center gap-2 text-sm text-[var(--text-muted)]">
-            <input
-              type="checkbox"
-              checked={showContour}
-              onChange={(e) => setShowContour(e.target.checked)}
+      </SimulationSettings>
+      <SimulationConfig>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div>
+            <SimulationLabel>
+              Learning rate: {lr.toFixed(4)}
+            </SimulationLabel>
+            <Slider
+              min={0.001}
+              max={2.0}
+              step={0.001}
+              value={[lr]}
+              onValueChange={([v]) => setLr(v)}
             />
-            Show loss curve
-          </label>
-          <span className="text-xs text-[var(--text-muted)]">
-            Steps: {stepCountRef.current}
-          </span>
+          </div>
+          <div>
+            <SimulationLabel>
+              Momentum: {momentumCoeff.toFixed(2)}
+            </SimulationLabel>
+            <Slider
+              min={0}
+              max={0.99}
+              step={0.01}
+              value={[momentumCoeff]}
+              onValueChange={([v]) => setMomentumCoeff(v)}
+            />
+          </div>
         </div>
-      </div>
-
-      <div className="mb-4 flex flex-wrap gap-2">
-        <button
-          onClick={dropBall}
-          className="rounded bg-[var(--accent,#3b82f6)] px-4 py-1.5 text-sm font-medium text-white hover:opacity-90"
-        >
-          Drop Ball (random)
-        </button>
-        <button
-          onClick={() => doStep()}
-          disabled={running}
-          className="rounded bg-[var(--surface-2,#27272a)] px-4 py-1.5 text-sm font-medium text-[var(--text-strong)] hover:opacity-90 disabled:opacity-50"
-        >
-          Step
-        </button>
-        <button
-          onClick={() => runSteps(200)}
-          disabled={running}
-          className="rounded bg-emerald-600 px-4 py-1.5 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50"
-        >
-          Run 200 Steps
-        </button>
-        <button
-          onClick={failureDiverge}
-          className="rounded bg-red-600/80 px-4 py-1.5 text-sm font-medium text-white hover:opacity-90"
-        >
-          Divergence Demo
-        </button>
-        <button
-          onClick={failureStuck}
-          className="rounded bg-amber-600/80 px-4 py-1.5 text-sm font-medium text-white hover:opacity-90"
-        >
-          Getting Stuck Demo
-        </button>
-      </div>
+      </SimulationConfig>
 
       <div className={showContour ? 'grid grid-cols-1 gap-4 md:grid-cols-2' : ''}>
         <SimulationMain scaleMode="contain" className="relative">
@@ -378,7 +362,7 @@ export default function LossLandscapeExplorer(): React.ReactElement {
         </SimulationMain>
 
         {showContour && lossHistory.length > 0 && (
-          <div>
+          <SimulationAux>
             <CanvasChart
               data={[
                 {
@@ -397,18 +381,23 @@ export default function LossLandscapeExplorer(): React.ReactElement {
               }}
               style={{ width: '100%', height: 420 }}
             />
-          </div>
+          </SimulationAux>
         )}
       </div>
 
-      {trail.length > 0 && !running && stepCountRef.current >= 50 && (
-        <div className="mt-3 rounded bg-[var(--surface-2,#27272a)] p-3 text-sm text-[var(--text-muted)]">
-          Final loss: {lossHistory[lossHistory.length - 1]?.toFixed(4)} after{' '}
-          {stepCountRef.current} steps with {optimizer.toUpperCase()}.
-          {optimizer === 'adam' && lossHistory[lossHistory.length - 1] < 1.2 &&
-            ' Adam adapts per-parameter learning rates, making it the default optimizer in modern deep learning.'}
-        </div>
-      )}
-    </div>
+      <SimulationResults>
+        <span className="text-xs text-[var(--text-muted)]">
+          Steps: {stepCountRef.current}
+        </span>
+        {trail.length > 0 && !running && stepCountRef.current >= 50 && (
+          <div className="mt-3 rounded bg-[var(--surface-2,#27272a)] p-3 text-sm text-[var(--text-muted)]">
+            Final loss: {lossHistory[lossHistory.length - 1]?.toFixed(4)} after{' '}
+            {stepCountRef.current} steps with {optimizer.toUpperCase()}.
+            {optimizer === 'adam' && lossHistory[lossHistory.length - 1] < 1.2 &&
+              ' Adam adapts per-parameter learning rates, making it the default optimizer in modern deep learning.'}
+          </div>
+        )}
+      </SimulationResults>
+    </SimulationPanel>
   );
 }

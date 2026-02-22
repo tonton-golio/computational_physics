@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
+import { gaussianPair } from '@/lib/math';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 
@@ -15,12 +18,6 @@ function seededRandom(seed: number): () => number {
     s = (s * 1103515245 + 12345) % 2147483648;
     return s / 2147483648;
   };
-}
-
-function randn(rng: () => number): number {
-  const u1 = Math.max(rng(), 1e-12);
-  const u2 = rng();
-  return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
 }
 
 function clip(v: number, lo: number, hi: number): number {
@@ -66,7 +63,7 @@ function percentile(values: number[], p: number): number {
   return sorted[idx];
 }
 
-export default function GlacierThicknessMCMC({ id }: SimulationComponentProps) { // eslint-disable-line @typescript-eslint/no-unused-vars
+export default function GlacierThicknessMCMC({}: SimulationComponentProps) {
   const [nWalkers, setNWalkers] = useState(6);
   const [nSteps, setNSteps] = useState(450);
   const [burnIn, setBurnIn] = useState(140);
@@ -106,7 +103,7 @@ export default function GlacierThicknessMCMC({ id }: SimulationComponentProps) {
       let accepted = 0;
 
       for (let step = 0; step < nSteps; step++) {
-        const proposal = thickness.map((h) => clip(h + randn(rng) * proposalStd, 20, 900));
+        const proposal = thickness.map((h) => clip(h + gaussianPair(rng)[0] * proposalStd, 20, 900));
         const predNew = forward(proposal, K, scale);
         const newLoss = mseLoss(D_OBS, predNew) + smoothnessWeight * roughness(proposal);
 
@@ -164,48 +161,45 @@ export default function GlacierThicknessMCMC({ id }: SimulationComponentProps) {
   }, [nWalkers, nSteps, burnIn, proposalStd, smoothnessWeight, kernelWidth, scale, seed]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Glacier Thickness (MCMC Inversion)</h3>
-      <p className="text-[var(--text-muted)] text-sm mb-4">
-        Estimate a glacier thickness profile from Bouguer-anomaly data using a simplified forward model and
-        Metropolis sampling. The posterior gives both a best-fit profile and uncertainty bounds.
-      </p>
+    <SimulationPanel title="Glacier Thickness (MCMC Inversion)" caption="Estimate a glacier thickness profile from Bouguer-anomaly data using a simplified forward model and Metropolis sampling. The posterior gives both a best-fit profile and uncertainty bounds.">
+      <SimulationConfig>
+        <div className="grid grid-cols-2 lg:grid-cols-8 gap-3">
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-xs">Walkers: {nWalkers}</SimulationLabel>
+            <Slider min={2} max={18} step={1} value={[nWalkers]} onValueChange={([v]) => setNWalkers(v)} />
+          </div>
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-xs">Steps: {nSteps}</SimulationLabel>
+            <Slider min={160} max={1500} step={20} value={[nSteps]} onValueChange={([v]) => setNSteps(v)} />
+          </div>
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-xs">Burn-in: {burnIn}</SimulationLabel>
+            <Slider min={20} max={700} step={10} value={[burnIn]} onValueChange={([v]) => setBurnIn(v)} />
+          </div>
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-xs">Proposal: {proposalStd}</SimulationLabel>
+            <Slider min={2} max={80} step={1} value={[proposalStd]} onValueChange={([v]) => setProposalStd(v)} />
+          </div>
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-xs">Smoothness: {smoothnessWeight.toFixed(2)}</SimulationLabel>
+            <Slider min={0} max={1} step={0.01} value={[smoothnessWeight]} onValueChange={([v]) => setSmoothnessWeight(v)} />
+          </div>
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-xs">Kernel width: {kernelWidth}</SimulationLabel>
+            <Slider min={120} max={700} step={10} value={[kernelWidth]} onValueChange={([v]) => setKernelWidth(v)} />
+          </div>
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-xs">Scale: {scale.toFixed(2)}</SimulationLabel>
+            <Slider min={0.04} max={0.4} step={0.01} value={[scale]} onValueChange={([v]) => setScale(v)} />
+          </div>
+          <div>
+            <SimulationLabel className="text-[var(--text-muted)] text-xs">Seed: {seed}</SimulationLabel>
+            <Slider min={1} max={200} step={1} value={[seed]} onValueChange={([v]) => setSeed(v)} />
+          </div>
+        </div>
+      </SimulationConfig>
 
-      <div className="grid grid-cols-2 lg:grid-cols-8 gap-3 mb-4">
-        <div>
-          <label className="text-[var(--text-muted)] text-xs">Walkers: {nWalkers}</label>
-          <Slider min={2} max={18} step={1} value={[nWalkers]} onValueChange={([v]) => setNWalkers(v)} />
-        </div>
-        <div>
-          <label className="text-[var(--text-muted)] text-xs">Steps: {nSteps}</label>
-          <Slider min={160} max={1500} step={20} value={[nSteps]} onValueChange={([v]) => setNSteps(v)} />
-        </div>
-        <div>
-          <label className="text-[var(--text-muted)] text-xs">Burn-in: {burnIn}</label>
-          <Slider min={20} max={700} step={10} value={[burnIn]} onValueChange={([v]) => setBurnIn(v)} />
-        </div>
-        <div>
-          <label className="text-[var(--text-muted)] text-xs">Proposal: {proposalStd}</label>
-          <Slider min={2} max={80} step={1} value={[proposalStd]} onValueChange={([v]) => setProposalStd(v)} />
-        </div>
-        <div>
-          <label className="text-[var(--text-muted)] text-xs">Smoothness: {smoothnessWeight.toFixed(2)}</label>
-          <Slider min={0} max={1} step={0.01} value={[smoothnessWeight]} onValueChange={([v]) => setSmoothnessWeight(v)} />
-        </div>
-        <div>
-          <label className="text-[var(--text-muted)] text-xs">Kernel width: {kernelWidth}</label>
-          <Slider min={120} max={700} step={10} value={[kernelWidth]} onValueChange={([v]) => setKernelWidth(v)} />
-        </div>
-        <div>
-          <label className="text-[var(--text-muted)] text-xs">Scale: {scale.toFixed(2)}</label>
-          <Slider min={0.04} max={0.4} step={0.01} value={[scale]} onValueChange={([v]) => setScale(v)} />
-        </div>
-        <div>
-          <label className="text-[var(--text-muted)] text-xs">Seed: {seed}</label>
-          <Slider min={1} max={200} step={1} value={[seed]} onValueChange={([v]) => setSeed(v)} />
-        </div>
-      </div>
-
+      <SimulationMain>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
         <CanvasChart
           data={result.lossTraces.map((trace, i) => ({
@@ -240,7 +234,8 @@ export default function GlacierThicknessMCMC({ id }: SimulationComponentProps) {
             x: Array.from({ length: result.acceptanceRates.length }, (_, i) => `w${i + 1}`),
             y: result.acceptanceRates,
             type: 'bar' as const,
-            marker: { color: 'rgba(167,139,250,0.85)' },
+            marker: { color: '#a78bfa' },
+            opacity: 0.85,
           }]}
           layout={{
             title: { text: 'Acceptance Rate per Walker' },
@@ -329,10 +324,13 @@ export default function GlacierThicknessMCMC({ id }: SimulationComponentProps) {
         />
       </div>
 
+      </SimulationMain>
+      <SimulationResults>
       <div className="bg-[var(--surface-1)] rounded p-3 text-sm border border-[var(--border-strong)]">
         <div className="text-[var(--text-soft)]">Best posterior objective</div>
         <div className="text-[var(--text-strong)] font-mono">{result.bestLoss.toFixed(4)}</div>
       </div>
-    </div>
+      </SimulationResults>
+    </SimulationPanel>
   );
 }

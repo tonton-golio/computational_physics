@@ -1,8 +1,12 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
+import { gaussianPair } from '@/lib/math';
 import { Slider } from '@/components/ui/slider';
 import { CanvasChart } from '@/components/ui/canvas-chart';
+import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 function gammaRandom(shape: number): number {
   // Marsaglia and Tsang's method for shape >= 1
@@ -14,7 +18,7 @@ function gammaRandom(shape: number): number {
   for (;;) {
     let x: number, v: number;
     do {
-      x = normalRandom();
+      x = gaussianPair(Math.random)[0];
       v = 1 + c * x;
     } while (v <= 0);
     v = v * v * v;
@@ -24,22 +28,26 @@ function gammaRandom(shape: number): number {
   }
 }
 
-function normalRandom(): number {
-  const u1 = Math.random();
-  const u2 = Math.random();
-  return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
-}
-
-export default function WhichAverage() {
-  const [skewness, setSkewness] = useState(3.0);
+export default function WhichAverage({}: SimulationComponentProps) {
+  const [skewness, setSkewness] = useState(0);
+  const [numSamples, setNumSamples] = useState(5000);
 
   const { bins, counts, mean, median, mode, maxCount } = useMemo(() => {
-    const N = 5000;
-    const alpha = Math.max(0.5, 10 - skewness * 2);
-    const beta = 1;
+    const N = numSamples;
     const samples: number[] = [];
-    for (let i = 0; i < N; i++) {
-      samples.push(gammaRandom(alpha) * beta);
+
+    if (skewness < 0.1) {
+      // Normal distribution — truly symmetric
+      for (let i = 0; i < N; i++) {
+        samples.push(5 + gaussianPair(Math.random)[0]);
+      }
+    } else {
+      // Gamma with target skewness: gamma_skew = 2/sqrt(alpha) → alpha = 4/skew²
+      const alpha = 4 / (skewness * skewness);
+      for (let i = 0; i < N; i++) {
+        // Standardize to mean 5, std 1 so chart stays comparable across skewness values
+        samples.push((gammaRandom(alpha) - alpha) / Math.sqrt(alpha) + 5);
+      }
     }
     const sorted = [...samples].sort((a, b) => a - b);
     const mn = sorted.reduce((s, v) => s + v, 0) / N;
@@ -64,22 +72,21 @@ export default function WhichAverage() {
     }
     const mx = Math.max(...cts);
     return { bins: bns, counts: cts, mean: mn, median: med, mode: bns[modeIdx], maxCount: mx };
-  }, [skewness]);
+  }, [skewness, numSamples]);
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">Which Average? Mean vs Median vs Mode</h3>
-      <div className="grid grid-cols-1 gap-6 mb-4">
+    <SimulationPanel title="Which Average? Mean vs Median vs Mode">
+      <SimulationConfig>
         <div>
-          <label className="mb-1 block text-sm text-[var(--text-muted)]">Skewness: {skewness.toFixed(1)}</label>
-          <Slider value={[skewness]} onValueChange={([v]) => setSkewness(v)} min={0.5} max={5} step={0.1} />
+          <SimulationLabel>Skewness: {skewness.toFixed(1)}</SimulationLabel>
+          <Slider value={[skewness]} onValueChange={([v]) => setSkewness(v)} min={0} max={5} step={0.1} />
         </div>
-      </div>
-      <div className="mb-3 text-sm text-[var(--text-muted)] flex flex-wrap gap-4">
-        <span><span className="inline-block w-3 h-3 rounded mr-1" style={{ background: '#ef4444' }} /> Mean: {mean.toFixed(2)}</span>
-        <span><span className="inline-block w-3 h-3 rounded mr-1" style={{ background: '#10b981' }} /> Median: {median.toFixed(2)}</span>
-        <span><span className="inline-block w-3 h-3 rounded mr-1" style={{ background: '#8b5cf6' }} /> Mode: {mode.toFixed(2)}</span>
-      </div>
+        <div>
+          <SimulationLabel>Samples: {numSamples}</SimulationLabel>
+          <Slider value={[numSamples]} onValueChange={([v]) => setNumSamples(v)} min={100} max={20000} step={100} />
+        </div>
+      </SimulationConfig>
+      <SimulationMain>
       <CanvasChart
         data={[
           { x: bins, y: counts, type: 'bar', marker: { color: '#3b82f6' }, opacity: 0.6, name: 'Histogram' },
@@ -96,6 +103,14 @@ export default function WhichAverage() {
         }}
         style={{ width: '100%' }}
       />
-    </div>
+      </SimulationMain>
+      <SimulationResults>
+        <div className="text-sm text-[var(--text-muted)] flex flex-wrap gap-4">
+          <span><span className="inline-block w-3 h-3 rounded mr-1" style={{ background: '#ef4444' }} /> Mean: {mean.toFixed(2)}</span>
+          <span><span className="inline-block w-3 h-3 rounded mr-1" style={{ background: '#10b981' }} /> Median: {median.toFixed(2)}</span>
+          <span><span className="inline-block w-3 h-3 rounded mr-1" style={{ background: '#8b5cf6' }} /> Mode: {mode.toFixed(2)}</span>
+        </div>
+      </SimulationResults>
+    </SimulationPanel>
   );
 }

@@ -8,7 +8,7 @@ interface RegistryGroup {
   load: () => Promise<SimulationRegistry>;
 }
 
-const registryCache = new Map<string, Promise<SimulationRegistry>>();
+const registryCache = new Map<number, Promise<SimulationRegistry>>();
 const resolvedDefinitionCache = new Map<string, SimulationDefinition | null>();
 const inFlightDefinitionCache = new Map<string, Promise<SimulationDefinition | null>>();
 
@@ -89,35 +89,11 @@ const registryGroups: RegistryGroup[] = [
   },
 ];
 
-const ONLINE_REINFORCEMENT_IDS = new Set<string>([
-  "concentration-bounds",
-  "bernoulli-trials",
-  "multi-armed-bandit",
-  "mdp-simulation",
-  "activation-functions",
-  "stochastic-approximation",
-  "cartpole-learning-curves",
-  "regret-growth-comparison",
-  "ftl-instability",
-  "hedge-weights-regret",
-  "bandit-regret-comparison",
-  "contextual-bandit-exp4",
-  "gridworld-mdp",
-  "dp-convergence",
-  "monte-carlo-convergence",
-  "sarsa-vs-qlearning",
-  "dqn-stability",
-  "average-reward-vs-discounted",
-  "blackjack-trajectory",
-  "cliff-walking",
-  "replay-buffer-explorer",
-]);
-
-function loadRegistry(group: RegistryGroup): Promise<SimulationRegistry> {
-  const cached = registryCache.get(group.topic);
+function loadRegistry(groupIndex: number, group: RegistryGroup): Promise<SimulationRegistry> {
+  const cached = registryCache.get(groupIndex);
   if (cached) return cached;
   const promise = group.load();
-  registryCache.set(group.topic, promise);
+  registryCache.set(groupIndex, promise);
   return promise;
 }
 
@@ -139,24 +115,10 @@ export async function resolveSimulationDefinition(id: string): Promise<Simulatio
   if (inFlightDefinition) return inFlightDefinition;
 
   const lookupPromise = (async (): Promise<SimulationDefinition | null> => {
-  // Fast path: online-reinforcement pages can render many placeholders at once.
-  // Avoid scanning/importing all registry groups before reaching this topic.
-  if (ONLINE_REINFORCEMENT_IDS.has(id)) {
-    const onlineGroup = registryGroups.find((group) => group.topic === "online-reinforcement-learning");
-    if (onlineGroup) {
-      try {
-        const registry = await loadRegistry(onlineGroup);
-        const component = registry[id];
-        if (component) return makeDefinition(onlineGroup, id, component);
-      } catch {
-        // Fall through to general lookup.
-      }
-    }
-  }
-
-  for (const group of registryGroups) {
+  for (let i = 0; i < registryGroups.length; i++) {
+    const group = registryGroups[i];
     try {
-      const registry = await loadRegistry(group);
+      const registry = await loadRegistry(i, group);
       const component = registry[id];
       if (!component) continue;
       return makeDefinition(group, id, component);

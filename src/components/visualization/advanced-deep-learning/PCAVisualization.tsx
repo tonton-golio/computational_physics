@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
 import { useState, useMemo } from 'react';
+import { gaussianPair } from '@/lib/math';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { Slider } from '@/components/ui/slider';
-
-interface PCAVisualizationProps {
-  id?: string;
-}
+import { SimulationPanel, SimulationSettings, SimulationConfig, SimulationResults, SimulationLabel, SimulationCheckbox } from '@/components/ui/simulation-panel';
+import { SimulationMain } from '@/components/ui/simulation-main';
+import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 function mulberry32(seed: number) {
   return function () {
@@ -17,15 +17,7 @@ function mulberry32(seed: number) {
   };
 }
 
-function gaussianRandom(rng: () => number): number {
-  let u = 0,
-    v = 0;
-  while (u === 0) u = rng();
-  while (v === 0) v = rng();
-  return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
-}
-
-export default function PCAVisualization({ id: _id }: PCAVisualizationProps) {
+export default function PCAVisualization({}: SimulationComponentProps) {
   const [nClusters, setNClusters] = useState(3);
   const [nPoints, setNPoints] = useState(80);
   const [spread, setSpread] = useState(0.6);
@@ -38,8 +30,8 @@ export default function PCAVisualization({ id: _id }: PCAVisualizationProps) {
     const clusterCenters: [number, number][] = [];
     for (let c = 0; c < nClusters; c++) {
       clusterCenters.push([
-        gaussianRandom(rng) * 3,
-        gaussianRandom(rng) * 3,
+        gaussianPair(rng)[0] * 3,
+        gaussianPair(rng)[0] * 3,
       ]);
     }
 
@@ -48,8 +40,8 @@ export default function PCAVisualization({ id: _id }: PCAVisualizationProps) {
     for (let c = 0; c < nClusters; c++) {
       for (let i = 0; i < pointsPerCluster; i++) {
         pts.push({
-          x: clusterCenters[c][0] + gaussianRandom(rng) * spread,
-          y: clusterCenters[c][1] + gaussianRandom(rng) * spread,
+          x: clusterCenters[c][0] + gaussianPair(rng)[0] * spread,
+          y: clusterCenters[c][1] + gaussianPair(rng)[0] * spread,
           cluster: c,
         });
       }
@@ -205,98 +197,87 @@ export default function PCAVisualization({ id: _id }: PCAVisualizationProps) {
   }
 
   return (
-    <div className="w-full bg-[var(--surface-1)] rounded-lg p-6 mb-8">
-      <h3 className="text-xl font-semibold mb-4 text-[var(--text-strong)]">
-        Interactive PCA Visualization
-      </h3>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Controls */}
+    <SimulationPanel title="Interactive PCA Visualization">
+      <SimulationSettings>
+        <SimulationCheckbox checked={showPCs} onChange={setShowPCs} label="Show Principal Components" />
+        <SimulationCheckbox checked={showProjection} onChange={setShowProjection} label="Show Projection onto PC1" />
+      </SimulationSettings>
+      <SimulationConfig>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm text-[var(--text-muted)] mb-1">
+            <SimulationLabel className="block text-sm text-[var(--text-muted)] mb-1">
               Number of Clusters: {nClusters}
-            </label>
+            </SimulationLabel>
             <Slider min={2} max={5} step={1} value={[nClusters]} onValueChange={([v]) => setNClusters(v)} className="w-full" />
           </div>
           <div>
-            <label className="block text-sm text-[var(--text-muted)] mb-1">
+            <SimulationLabel className="block text-sm text-[var(--text-muted)] mb-1">
               Points per Cluster: {Math.floor(nPoints / nClusters)}
-            </label>
+            </SimulationLabel>
             <Slider min={30} max={200} step={10} value={[nPoints]} onValueChange={([v]) => setNPoints(v)} className="w-full" />
           </div>
           <div>
-            <label className="block text-sm text-[var(--text-muted)] mb-1">
+            <SimulationLabel className="block text-sm text-[var(--text-muted)] mb-1">
               Cluster Spread: {spread.toFixed(2)}
-            </label>
+            </SimulationLabel>
             <Slider min={0.1} max={2.0} step={0.1} value={[spread]} onValueChange={([v]) => setSpread(v)} className="w-full" />
           </div>
-          <label className="flex items-center gap-2 text-sm text-[var(--text-muted)] cursor-pointer">
-            <input type="checkbox" checked={showPCs} onChange={(e) => setShowPCs(e.target.checked)} className="accent-blue-500" />
-            Show Principal Components
-          </label>
-          <label className="flex items-center gap-2 text-sm text-[var(--text-muted)] cursor-pointer">
-            <input type="checkbox" checked={showProjection} onChange={(e) => setShowProjection(e.target.checked)} className="accent-blue-500" />
-            Show Projection onto PC1
-          </label>
-
-          {/* Explained variance bar chart */}
-          <div className="mt-4 p-3 bg-[var(--surface-2)] rounded text-sm text-[var(--text-muted)]">
-            <p className="font-semibold text-[var(--text-strong)] mb-2">Explained Variance:</p>
-            <div className="space-y-2">
-              <div>
-                <div className="flex justify-between text-xs mb-1">
-                  <span style={{ color: '#f39c12' }}>PC1</span>
-                  <span>{totalVar > 0 ? ((eigenvalues[0] / totalVar) * 100).toFixed(1) : 0}%</span>
-                </div>
-                <div className="h-3 bg-[var(--surface-1)] rounded overflow-hidden">
-                  <div
-                    className="h-full rounded"
-                    style={{
-                      width: `${totalVar > 0 ? (eigenvalues[0] / totalVar) * 100 : 0}%`,
-                      backgroundColor: '#f39c12',
-                    }}
-                  />
-                </div>
+        </div>
+      </SimulationConfig>
+      <SimulationMain>
+        <CanvasChart
+          data={plotData}
+          layout={{
+            xaxis: { title: { text: 'Feature 1' } },
+            yaxis: { title: { text: 'Feature 2' }, scaleanchor: 'x' },
+            margin: { t: 30, b: 50, l: 60, r: 30 },
+            autosize: true,
+          }}
+          style={{ width: '100%', height: '450px' }}
+        />
+      </SimulationMain>
+      <SimulationResults>
+        <div className="p-3 bg-[var(--surface-2)] rounded text-sm text-[var(--text-muted)]">
+          <p className="font-semibold text-[var(--text-strong)] mb-2">Explained Variance:</p>
+          <div className="space-y-2">
+            <div>
+              <div className="flex justify-between text-xs mb-1">
+                <span style={{ color: '#f39c12' }}>PC1</span>
+                <span>{totalVar > 0 ? ((eigenvalues[0] / totalVar) * 100).toFixed(1) : 0}%</span>
               </div>
-              <div>
-                <div className="flex justify-between text-xs mb-1">
-                  <span style={{ color: '#e74c3c' }}>PC2</span>
-                  <span>{totalVar > 0 ? ((eigenvalues[1] / totalVar) * 100).toFixed(1) : 0}%</span>
-                </div>
-                <div className="h-3 bg-[var(--surface-1)] rounded overflow-hidden">
-                  <div
-                    className="h-full rounded"
-                    style={{
-                      width: `${totalVar > 0 ? (eigenvalues[1] / totalVar) * 100 : 0}%`,
-                      backgroundColor: '#e74c3c',
-                    }}
-                  />
-                </div>
+              <div className="h-3 bg-[var(--surface-1)] rounded overflow-hidden">
+                <div
+                  className="h-full rounded"
+                  style={{
+                    width: `${totalVar > 0 ? (eigenvalues[0] / totalVar) * 100 : 0}%`,
+                    backgroundColor: '#f39c12',
+                  }}
+                />
               </div>
             </div>
-            {showProjection && (
-              <p className="mt-2 text-xs text-blue-400/70">
-                PC1 captures {totalVar > 0 ? ((eigenvalues[0] / totalVar) * 100).toFixed(1) : 0}% of total variance because the data varies most along this direction. Projecting onto PC1 preserves this information while reducing to 1D.
-              </p>
-            )}
+            <div>
+              <div className="flex justify-between text-xs mb-1">
+                <span style={{ color: '#e74c3c' }}>PC2</span>
+                <span>{totalVar > 0 ? ((eigenvalues[1] / totalVar) * 100).toFixed(1) : 0}%</span>
+              </div>
+              <div className="h-3 bg-[var(--surface-1)] rounded overflow-hidden">
+                <div
+                  className="h-full rounded"
+                  style={{
+                    width: `${totalVar > 0 ? (eigenvalues[1] / totalVar) * 100 : 0}%`,
+                    backgroundColor: '#e74c3c',
+                  }}
+                />
+              </div>
+            </div>
           </div>
+          {showProjection && (
+            <p className="mt-2 text-xs text-blue-400/70">
+              PC1 captures {totalVar > 0 ? ((eigenvalues[0] / totalVar) * 100).toFixed(1) : 0}% of total variance because the data varies most along this direction. Projecting onto PC1 preserves this information while reducing to 1D.
+            </p>
+          )}
         </div>
-
-        {/* Plot */}
-        <div className="lg:col-span-2">
-          <CanvasChart
-            data={plotData}
-            layout={{
-              xaxis: { title: { text: 'Feature 1' } },
-              yaxis: { title: { text: 'Feature 2' }, scaleanchor: 'x' },
-              margin: { t: 30, b: 50, l: 60, r: 30 },
-              autosize: true,
-            }}
-            style={{ width: '100%', height: '450px' }}
-          />
-        </div>
-      </div>
-    </div>
+      </SimulationResults>
+    </SimulationPanel>
   );
 }
