@@ -466,6 +466,20 @@ body {
   display: none;
 }
 
+/* ── Embedded mode: no title bar offset ────────────────────────────── */
+
+[data-sim-embedded] .sim-fs-main {
+  top: 16px;
+  height: calc(100% - 16px);
+}
+
+[data-sim-embedded] .sim-fs-content > * > *:has(canvas):not(.sim-fs-main):not([data-fs-role]):not([data-sim-slot]),
+[data-sim-embedded] .sim-fs-content > * > *:has(video):not(.sim-fs-main):not([data-fs-role]):not([data-sim-slot]),
+[data-sim-embedded] .sim-fs-content > * > *:has(> svg[viewBox]):not(.sim-fs-main):not([data-fs-role]):not([data-sim-slot]) {
+  top: 16px;
+  height: calc(100% - 16px);
+}
+
 /* Shimmer animation for loading skeletons */
 @keyframes shimmer {
   0% {

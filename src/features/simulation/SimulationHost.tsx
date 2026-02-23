@@ -83,7 +83,7 @@ function SimulationError({ id }: { id: string }) {
   );
 }
 
-export function SimulationHost({ id }: { id: string }) {
+export function SimulationHost({ id, variant }: { id: string; variant?: "embedded" }) {
   const [Simulation, setSimulation] = useState<SimulationComponent | null>(null);
   const [Graph, setGraph] = useState<GraphComponent | null>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -93,6 +93,7 @@ export function SimulationHost({ id }: { id: string }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const loadStartRef = useRef<number | null>(null);
   const measuredRef = useRef(false);
+  const isEmbedded = variant === "embedded";
 
   useEffect(() => {
     loadStartRef.current = null;
@@ -185,6 +186,7 @@ export function SimulationHost({ id }: { id: string }) {
   }, [id, Simulation, Graph]);
 
   const { isFullscreen, toggle: toggleFullscreen } = useFullscreen(containerRef);
+  const useFullscreenLayout = isFullscreen || isEmbedded;
 
   // Minimal fullscreen effect: index charts for CSS stacking, handle multi-main split,
   // and promote charts to mains when there is no primary visualization.
@@ -281,37 +283,38 @@ export function SimulationHost({ id }: { id: string }) {
     <div
       ref={containerRef}
       className={
-        isFullscreen
+        useFullscreenLayout
           ? "relative w-full h-full bg-[var(--surface-1)] overflow-hidden"
           : "relative w-full rounded-xl border border-[var(--border-strong)] bg-[var(--surface-1)] py-4 shadow-[inset_0_1px_2px_rgba(0,0,0,0.04)] overflow-hidden"
       }
+      data-sim-embedded={isEmbedded && !isFullscreen ? "" : undefined}
       onMouseEnter={() => setHasUserIntent(true)}
       onFocus={() => setHasUserIntent(true)}
       onClick={() => setHasUserIntent(true)}
       onTouchStart={() => setHasUserIntent(true)}
     >
       {/* Accent stripe */}
-      {!isFullscreen && (
+      {!useFullscreenLayout && (
         <div
           className="h-[3px] -mt-4 mb-4"
           style={{ background: "linear-gradient(90deg, var(--accent), var(--accent-strong))" }}
         />
       )}
 
-      <div className={isFullscreen ? "sim-fs-content" : undefined}>
-        <SimulationFullscreenProvider value={isFullscreen}>
+      <div className={useFullscreenLayout ? "sim-fs-content" : undefined}>
+        <SimulationFullscreenProvider value={useFullscreenLayout}>
           {simContent}
         </SimulationFullscreenProvider>
       </div>
 
       {/* Inline caption (normal mode only) */}
-      {!isFullscreen && SIMULATION_DESCRIPTIONS[id] && (
+      {!useFullscreenLayout && SIMULATION_DESCRIPTIONS[id] && (
         <div className="px-4 pt-2 pb-1 text-xs text-[var(--text-soft)]">
           {SIMULATION_DESCRIPTIONS[id]}
         </div>
       )}
 
-      {/* Fullscreen title overlay */}
+      {/* Fullscreen title overlay — actual fullscreen only */}
       {isFullscreen && SIMULATION_DESCRIPTIONS[id] && (
         <div className="sim-fs-title">
           {SIMULATION_DESCRIPTIONS[id]}
@@ -326,7 +329,9 @@ export function SimulationHost({ id }: { id: string }) {
         className={
           isFullscreen
             ? "absolute top-3 right-3 z-20"
-            : "absolute top-5 right-3 z-10"
+            : isEmbedded
+              ? "absolute top-3 right-3 z-10"
+              : "absolute top-5 right-3 z-10"
         }
       />
     </div>

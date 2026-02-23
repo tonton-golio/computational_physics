@@ -225,7 +225,7 @@ export default function SandpileModel({}: SimulationComponentProps) {
   const isDark = theme === 'dark';
   const [size, setSize] = useState(35);
   const [speed, setSpeed] = useState(5);
-  const [playing, setPlaying] = useState(true);
+  const [playing, setPlaying] = useState(false);
   const [stepCount, setStepCount] = useState(0);
   const [avalancheCount, setAvalancheCount] = useState(0);
   const [rerun, setRerun] = useState(0);

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { TOPIC_ROUTES } from "@/lib/topic-navigation";
 import AntigravityClient from "@/components/effects/AntigravityClient";
 import { getLessonsForTopic } from "@/features/content/topic-lessons";
+import { FeaturedSimulations } from "@/components/landing/FeaturedSimulations";
 
 export default function HomePage() {
   const topicCount = TOPIC_ROUTES.length;
@@ -35,8 +36,9 @@ export default function HomePage() {
 
       <div className="pointer-events-none absolute inset-0 bg-[var(--background)]/30" />
 
-      <div className="relative z-10 h-full px-4 sm:px-8 lg:px-[50px] py-8">
-        <div className="mx-auto grid h-full max-w-[1200px] content-center grid-cols-1 gap-4 lg:grid-cols-12">
+      <div className="relative z-10 flex h-full flex-col px-4 sm:px-8 lg:px-[50px] pt-6 pb-20">
+        {/* Hero */}
+        <div className="mx-auto grid w-full max-w-[1200px] grid-cols-1 gap-4 lg:grid-cols-12">
           <section className="lg:col-span-7 flex flex-col justify-center rounded-lg border border-[var(--border-strong)] bg-[var(--surface-1)]/30 p-5 backdrop-blur-lg">
             <p className="font-mono text-xs uppercase tracking-[0.28em] text-[var(--accent)]">koala brain :: V02.01.002</p>
             <p className="mt-3 max-w-2xl text-sm text-[var(--text-muted)]">
@@ -83,6 +85,11 @@ export default function HomePage() {
               <p className="mt-1 text-[var(--text-strong)]">An open, self-evolving learning platform — powered by agents, shaped by contributors.</p>
             </div>
           </section>
+        </div>
+
+        {/* Featured simulations carousel */}
+        <div className="mx-auto mt-4 w-full max-w-[1200px] flex-1 min-h-0">
+          <FeaturedSimulations />
         </div>
       </div>
     </div>
