@@ -1,107 +1,81 @@
 # Koala Brain
 
-**[koalabrain.org](https://koalabrain.org)**
+> Computational physics you can touch — every equation runs, every model bends, every simulation is yours to break.
 
-Computational physics you can touch. Every equation runs, every model bends, every simulation is yours to break.
+**Live at [koalabrain.org](https://koalabrain.org)**
 
-## Architecture
+An open, self-evolving learning platform: **10 topics · 114 lessons · 150+ interactive simulations**, built with Next.js 16, React 19, TypeScript (strict), and Tailwind 4, and deployed on Vercel.
 
-Next.js 16 (React 19, TypeScript strict, Tailwind 4) educational platform with 10 topics, ~114 lessons, and 190+ interactive simulations. Deployed on Vercel (standalone output).
+## Quickstart
+
+```bash
+git clone https://github.com/tonton-golio/computational_physics.git
+cd computational_physics
+npm install
+npm run dev          # → http://localhost:3000
+```
+
+No environment variables required — auth and analytics are optional, and the app runs fully without them. Node ≥ 20 (the repo pins Node 22 via `.nvmrc`).
+
+## What's inside
+
+- **114 Markdown lessons** across 10 topics (`content/topics/<topic>/<slug>.md`), with LaTeX via KaTeX and a placeholder syntax for embedding interactives.
+- **150+ interactive simulations** on Canvas/p5.js, Three.js (`@react-three/fiber`), and SVG — lazy-loaded through `SimulationHost` with per-registry error isolation.
+- **Optional accounts** (Supabase OAuth) powering community suggestions and a contributor leaderboard.
+- **Production plumbing** — structured JSON logging, health/readiness probes, correlation IDs, Web Vitals, and per-route JS bundle budgets.
+
+## Project structure
 
 ```
 src/
-  app/            # Next.js App Router — pages, API routes, middleware
-  features/       # Feature modules (content gateway, topic-lessons, simulation system)
-  domain/         # Pure business/domain logic
-  infra/          # Adapters (file-content-repository, supabase clients, observability)
-  shared/         # Shared contracts and error models
-  lib/            # Config, utilities, markdown rendering, topic navigation
-  components/     # React components (layout, content, visualization, ui)
-  workers/        # Web Workers for heavy computation
-content/topics/   # Markdown lesson files organized by topic ID
+  app/         Next.js App Router — pages, API routes, proxy (middleware)
+  features/    Content gateway, topic-lessons, simulation system
+  domain/      Pure business/domain logic
+  infra/       Adapters — file content repo, Supabase clients, observability
+  shared/      Cross-cutting contracts and error models
+  lib/         Config, markdown rendering, topic navigation, utilities
+  components/  React UI — layout, content, visualization, ui
+  workers/     Web Workers for heavy computation
+content/topics/  Markdown lessons, organized by topic id
 ```
 
-The simulation runtime uses a typed manifest and `SimulationHost` to isolate dynamic import failures per registry. Simulations use Canvas/p5.js, Three.js (@react-three/fiber), or SVG with a slot-based UI model (`SimulationPanel`, `SimulationMain`, `SimulationSettings`, `SimulationConfig`, `SimulationResults`, `SimulationAux`).
+Lessons embed interactives with a placeholder syntax — `[[simulation <id>]]`, `[[figure <id>]]`, `[[code-toggle …]]` — resolved at render time. The runtime maps each id to a lazily-imported component through a typed registry, isolating any one topic's load failures. The full architecture lives in [`docs/`](docs/).
 
-## Reliability And Quality Commands
+## Scripts
 
-```bash
-# Validate markdown simulation placeholders map to registered simulations
-npm run check:simulations
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Dev server (Turbopack) |
+| `npm run build` · `npm start` | Production build · serve |
+| `npm test` · `npm run test:e2e` | Unit tests (Vitest) · E2E smoke (Playwright) |
+| `npm run lint` | ESLint |
+| `npm run check:simulations` | Validate `[[simulation]]` placeholders ↔ registry |
+| `npm run perf:budget` · `npm run perf:analyze` | Enforce route bundle budgets · bundle analysis |
+| `npm run build:points` | Rebuild the Topics 2D point cloud (needs [`uv`](https://docs.astral.sh/uv/) + `OPENAI_API_KEY`) |
 
-# Run unit tests
-npm test
+**CI** (Node 22): `lint → check:simulations → test → build → perf:budget`.
 
-# Run end-to-end smoke test
-npm run test:e2e
+## Configuration
 
-# ESLint
-npm run lint
-```
+Every variable is optional — set only the features you want.
 
-CI pipeline (Node 22): lint → check:simulations → test → build → perf:budget
+| Variable | Enables |
+| --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Auth (login, profile, suggestions, leaderboard) |
+| `SUPABASE_SERVICE_ROLE_KEY` | Account deletion |
+| `NEXT_PUBLIC_ENABLE_WEB_VITALS`, `LOG_WEB_VITALS` | Client / server Web Vitals reporting |
+| `OPENAI_API_KEY` | `build:points` topic-cloud generation |
 
-## Observability And Health
+Health and readiness probes are served at `/api/health` and `/api/ready`; content responses carry an `x-correlation-id`.
 
-- Health endpoint: `/api/health`
-- Readiness endpoint: `/api/ready`
-- Content API responses include `x-correlation-id`
-- Web Vitals endpoint: `/api/analytics/web-vitals`
-- Structured JSON logging via `src/infra/observability/logger.ts`
-- Request metrics with correlation IDs via `src/infra/observability/request-metrics.ts`
+## Documentation
 
-## Topic Points
+In-depth references live in [`docs/`](docs/):
 
-Generate the 2D points JSON used by the Topics visualization. This embeds each sub-topic via OpenAI and projects the vectors to 2D with t-SNE.
+- **Architecture** — [codebase map](docs/architecture/codebase-map.md) · [request → content → simulation flow](docs/architecture/request-content-simulation-flow.md)
+- **Guides** — [content authoring](docs/guides/content-authoring.md) · [simulations](docs/guides/simulations.md) · [figures](docs/guides/figures.md) · [API contracts](docs/guides/api-contracts.md) · [content style](docs/guides/content-style-guide.md)
+- **Standards** — [coding standards](docs/standards/coding-standards.md) · [versioning](docs/versioning.md) · [contributing](docs/CONTRIBUTING.md)
 
-**Prerequisites:**
+## Autonomous operations
 
-- [`uv`](https://docs.astral.sh/uv/) installed (`brew install uv`)
-- `OPENAI_API_KEY` set in `.env` at the project root
-
-```bash
-npm run build:points
-```
-
-Output: `public/data/topic-points.json`
-
-Optional flags (pass after `--`):
-
-```bash
-npm run build:points -- --output path/to/out.json --batch-size 32 --max-chars 4000
-```
-
-## Performance Baseline And Monitoring
-
-- Web Vitals are reported from the client via `useReportWebVitals` to `/api/analytics/web-vitals`.
-- Enable reporting locally by setting `NEXT_PUBLIC_ENABLE_WEB_VITALS=1`.
-- Enable server-side log output in production with `LOG_WEB_VITALS=1`.
-
-Useful commands:
-
-```bash
-# Build with bundle analysis report (see ./analyze/client.html)
-npm run perf:analyze
-
-# Production-like local run for Lighthouse/WebPageTest style checks
-npm run perf:baseline
-
-# Enforce route-level JS bundle budgets after build
-npm run perf:budget
-```
-
-Recommended baseline routes:
-
-- `/topics`
-- `/topics/continuum-mechanics`
-- `/topics/complex-physics`
-
-Quick local content API concurrency check (run while `next start` is active):
-
-```bash
-BASE_URL=http://127.0.0.1:3000 npm run perf:load-test
-```
-
-## Autonomous Operations
-
-This project is operated by [KoalaClaw](https://github.com/koalaclaw69), an autonomous agent that handles content updates, issue triage, and platform maintenance.
+Maintained by [KoalaClaw](https://github.com/koalaclaw69), an autonomous agent that handles content updates, issue triage, and platform upkeep.
