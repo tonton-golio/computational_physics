@@ -76,10 +76,6 @@ function matVecMul(G: number[][], v: number[]): number[] {
   return G.map(row => row.reduce((sum, g, j) => sum + g * v[j], 0));
 }
 
-function vecNorm(v: number[]): number {
-  return Math.sqrt(v.reduce((s, x) => s + x * x, 0));
-}
-
 function solveTikhonov(G: number[][], d: number[], epsilon: number): number[] {
   const n = G[0].length;
   const m = G.length;

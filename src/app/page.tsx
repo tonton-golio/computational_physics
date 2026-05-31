@@ -40,6 +40,7 @@ export default function HomePage() {
         {/* Hero */}
         <div className="mx-auto grid w-full max-w-[1200px] grid-cols-1 gap-4 lg:grid-cols-12">
           <section className="lg:col-span-7 flex flex-col justify-center rounded-lg border border-[var(--border-strong)] bg-[var(--surface-1)]/30 p-5 backdrop-blur-lg">
+            <h1 className="sr-only">Koala Brain — computational physics</h1>
             <p className="font-mono text-xs uppercase tracking-[0.28em] text-[var(--accent)]">koala brain :: V02.01.002</p>
             <p className="mt-3 max-w-2xl text-sm text-[var(--text-muted)]">
               Computational physics you can touch. Every equation runs, every model bends, every

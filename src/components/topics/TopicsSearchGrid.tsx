@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
-import type { WheelEvent as ReactWheelEvent } from "react";
 import { topicHref } from "@/lib/topic-navigation";
 import { useTheme } from "@/lib/use-theme";
 import { ExportPdfButton } from "@/components/content/ExportPdfButton";
@@ -118,10 +117,11 @@ export function TopicsSearchGrid({ entries }: TopicsSearchGridProps) {
   }, []);
 
   useEffect(() => {
+    if (view !== "points") return;
     let active = true;
     async function loadPointCloud() {
       try {
-        const response = await fetch("/data/topic-points.json", { cache: "no-store" });
+        const response = await fetch("/data/topic-points.json");
         if (!response.ok) {
           throw new Error("Unable to load points data.");
         }
@@ -139,7 +139,7 @@ export function TopicsSearchGrid({ entries }: TopicsSearchGridProps) {
     return () => {
       active = false;
     };
-  }, []);
+  }, [view]);
 
   const lessonSummaryMap = useMemo(() => {
     const map = new Map<string, string>();
@@ -231,7 +231,7 @@ export function TopicsSearchGrid({ entries }: TopicsSearchGridProps) {
     resetView();
   }, [view, normalizedQuery]);
 
-  function handleWheel(event: ReactWheelEvent<HTMLDivElement>) {
+  const handleWheel = useCallback((event: WheelEvent) => {
     event.preventDefault();
     const container = cloudRef.current;
     if (!container) return;
@@ -247,7 +247,14 @@ export function TopicsSearchGrid({ entries }: TopicsSearchGridProps) {
 
     setZoom(nextZoom);
     setPan({ x: clamp(nextPanX, -1.5, 1.5), y: clamp(nextPanY, -1.5, 1.5) });
-  }
+  }, [zoom, pan.x, pan.y]);
+
+  useEffect(() => {
+    const el = cloudRef.current;
+    if (!el) return;
+    el.addEventListener("wheel", handleWheel, { passive: false });
+    return () => el.removeEventListener("wheel", handleWheel);
+  }, [handleWheel, view]);
 
   const handlePointerDown = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
     pointersRef.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
@@ -386,7 +393,6 @@ export function TopicsSearchGrid({ entries }: TopicsSearchGridProps) {
         <div className="relative mx-3 sm:mx-6 mt-3 min-h-0 flex-1 overflow-hidden">
           <div
             ref={cloudRef}
-            onWheel={handleWheel}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}

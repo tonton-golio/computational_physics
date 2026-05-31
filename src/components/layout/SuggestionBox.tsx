@@ -59,6 +59,7 @@ export function SuggestionBox({ variant = "default" }: SuggestionBoxProps) {
             <div className={`flex items-center gap-2 ${inline ? "px-3 py-1.5" : "px-4 py-2"}`}>
               <textarea
                 ref={textareaRef}
+                aria-label="Suggest an improvement"
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
                 onKeyDown={(e) => {

@@ -250,7 +250,7 @@ export default function MandelbrotFractal({}: SimulationComponentProps) {
     }
   }, []);
 
-  const handleWheel = useCallback((e: React.WheelEvent<HTMLDivElement>) => {
+  const handleWheel = useCallback((e: WheelEvent) => {
     e.preventDefault();
     if (!containerRef.current) return;
 
@@ -276,6 +276,13 @@ export default function MandelbrotFractal({}: SimulationComponentProps) {
 
     syncDisplay();
   }, [syncDisplay]);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    el.addEventListener('wheel', handleWheel, { passive: false });
+    return () => el.removeEventListener('wheel', handleWheel);
+  }, [handleWheel]);
 
   const handleReset = useCallback(() => {
     centerRef.current = [...DEFAULT_CENTER];
@@ -305,7 +312,6 @@ export default function MandelbrotFractal({}: SimulationComponentProps) {
           onPointerUp={handlePointerUp}
           onPointerLeave={handlePointerLeave}
           onPointerCancel={handlePointerUp}
-          onWheel={handleWheel}
         >
           <Canvas
             orthographic

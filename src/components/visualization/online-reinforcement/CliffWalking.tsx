@@ -45,7 +45,7 @@ function train(algo: 'sarsa' | 'qlearning', eps: number, numEp: number, seed: nu
 
   for (let ep = 0; ep < numEp; ep++) {
     let r = START[0], c = START[1], totalR = 0;
-    const si = r * COLS + c;
+    let si = r * COLS + c;
     let a = epsGreedy(Q, si, eps, rng);
     for (let t = 0; t < 500; t++) {
       const [nr, nc, reward] = step(r, c, a);
@@ -54,13 +54,13 @@ function train(algo: 'sarsa' | 'qlearning', eps: number, numEp: number, seed: nu
       if (algo === 'sarsa') {
         const na = (nr === GOAL[0] && nc === GOAL[1]) ? 0 : epsGreedy(Q, nsi, eps, rng);
         Q[si * 4 + a] += alpha * (reward + gamma * Q[nsi * 4 + na] - Q[si * 4 + a]);
-        r = nr; c = nc; a = na;
+        r = nr; c = nc; a = na; si = nsi;
       } else {
         let maxQ = Q[nsi * 4];
         for (let b = 1; b < 4; b++) if (Q[nsi * 4 + b] > maxQ) maxQ = Q[nsi * 4 + b];
         Q[si * 4 + a] += alpha * (reward + gamma * maxQ - Q[si * 4 + a]);
-        r = nr; c = nc;
-        a = epsGreedy(Q, r * COLS + c, eps, rng);
+        r = nr; c = nc; si = nsi;
+        a = epsGreedy(Q, si, eps, rng);
       }
       if (r === GOAL[0] && c === GOAL[1]) break;
     }

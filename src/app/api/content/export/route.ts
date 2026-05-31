@@ -7,6 +7,10 @@ import { apiSuccess, withApiHandler } from "@/shared/errors/api-error";
 
 export const runtime = "nodejs";
 
+const CACHE_HEADERS = {
+  "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+};
+
 const querySchema = z.object({
   topic: z.string().min(1),
 });
@@ -34,5 +38,5 @@ export const GET = withApiHandler("/api/content/export", "GET", async (request, 
     return { slug: doc.slug, title: doc.title, content: doc.content, ...(summary ? { summary } : {}) };
   });
 
-  return apiSuccess(ctx, { topic, lessons });
+  return apiSuccess(ctx, { topic, lessons }, 200, CACHE_HEADERS);
 });

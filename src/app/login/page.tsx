@@ -8,7 +8,12 @@ import { createClient } from "@/infra/supabase/client";
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") ?? "/";
+  const rawRedirectTo = searchParams.get("redirectTo") ?? "/";
+  // Only allow same-origin relative paths to prevent open-redirect.
+  const redirectTo =
+    rawRedirectTo.startsWith("/") && !rawRedirectTo.startsWith("//") && !rawRedirectTo.startsWith("/\\")
+      ? rawRedirectTo
+      : "/";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -21,6 +26,10 @@ function LoginForm() {
 
   async function handleGoogleLogin() {
     const supabase = createClient();
+    if (!supabase) {
+      setError("Authentication is not configured.");
+      return;
+    }
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
@@ -36,6 +45,11 @@ function LoginForm() {
     setError(null);
     setMessage(null);
     const supabase = createClient();
+    if (!supabase) {
+      setError("Authentication is not configured.");
+      setLoading(false);
+      return;
+    }
 
     if (mode === "signup") {
       const { error } = await supabase.auth.signUp({

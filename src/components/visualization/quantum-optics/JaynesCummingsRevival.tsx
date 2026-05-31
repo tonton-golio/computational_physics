@@ -59,7 +59,9 @@ export default function JaynesCummingsRevival({}: SimulationComponentProps) {
       let sz = 0;
       for (let n = 0; n <= nMax; n++) {
         const OmegaN = Math.sqrt(Delta * Delta + 4 * g * g * (n + 1));
-        sz += P[n] * Math.cos(OmegaN * t);
+        const amp = (4 * g * g * (n + 1)) / (OmegaN * OmegaN);
+        const dc = (Delta * Delta) / (OmegaN * OmegaN);
+        sz += P[n] * (dc + amp * Math.cos(OmegaN * t));
       }
       sigmaZ.push(sz);
     }

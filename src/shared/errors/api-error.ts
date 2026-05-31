@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { AppError, asErrorEnvelope } from "./app-error";
+import { logger } from "@/infra/observability/logger";
 import { logRequestMetric, correlationIdFrom } from "@/infra/observability/request-metrics";
 
 export interface ApiContext {
@@ -35,6 +36,7 @@ export function apiSuccess(ctx: ApiContext, data: unknown, status = 200, headers
 export function apiError(ctx: ApiContext, error: unknown): NextResponse {
   const correlationId = correlationIdFrom(ctx.request);
   const status = error instanceof AppError ? error.status : 500;
+  logger.error("API error", { route: ctx.route, method: ctx.method, error });
   const response = NextResponse.json(asErrorEnvelope(error), { status });
   response.headers.set("x-correlation-id", correlationId);
   logRequestMetric({

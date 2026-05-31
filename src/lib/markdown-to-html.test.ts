@@ -82,6 +82,23 @@ describe("markdownToHtml", () => {
       expect(html).toContain("<pre");
       expect(html).toContain("some code");
     });
+
+    it("preserves ** and * inside a python fenced block (no bold/italic)", () => {
+      const md = "```python\nx = a**2 * b\n```";
+      const { html } = markdownToHtml(md, noKatex);
+      expect(html).toContain("x = a**2 * b");
+      expect(html).not.toContain("<strong>");
+      expect(html).not.toContain("<em>");
+    });
+
+    it("does not wrap a fenced code block in a <p> tag", () => {
+      const md = "```python\nx = 1\n\ny = 2\n```";
+      const { html } = markdownToHtml(md, noKatex);
+      expect(html).toContain("<pre");
+      // The <pre> must not be wrapped in / contain an injected <p>
+      expect(html).not.toMatch(/<p[^>]*>\s*<pre/);
+      expect(html).not.toMatch(/<pre[\s\S]*?<p[^>]*>[\s\S]*?<\/pre>/);
+    });
   });
 
   describe("lists", () => {
@@ -281,6 +298,64 @@ describe("markdownToHtml", () => {
     it("returns empty figures array in non-static mode", () => {
       const { figures } = markdownToHtml("[[figure test]]", noKatex);
       expect(figures).toEqual([]);
+    });
+
+    it("resolves a known figure id in static mode", () => {
+      // 'vertical-fault-diagram' is a real entry in INVERSE_FIGURES
+      const { html, figures } = markdownToHtml(
+        "[[figure vertical-fault-diagram]]",
+        noKatex,
+        { staticMode: true }
+      );
+      expect(figures).toHaveLength(1);
+      expect(figures[0]).toMatchObject({
+        id: "vertical-fault-diagram",
+        src: "/figures/vertical-fault-diagram.svg",
+        caption: "Simplified geometry used in vertical-fault inversion.",
+        localFilename: "vertical-fault-diagram.svg",
+      });
+      expect(html).toContain("<img");
+    });
+
+    it("falls back to /figures/<id>.png for an unknown id without extension", () => {
+      const { html, figures } = markdownToHtml(
+        "[[figure unknown-fig]]",
+        noKatex,
+        { staticMode: true }
+      );
+      expect(figures).toHaveLength(1);
+      expect(figures[0].src).toBe("/figures/unknown-fig.png");
+      expect(figures[0].localFilename).toBe("unknown-fig.png");
+      expect(html).toContain("<img");
+    });
+
+    it("preserves the extension for an unknown id that already has one", () => {
+      const { figures } = markdownToHtml("[[figure foo.svg]]", noKatex, {
+        staticMode: true,
+      });
+      expect(figures).toHaveLength(1);
+      expect(figures[0].src).toBe("/figures/foo.svg");
+      expect(figures[0].localFilename).toBe("foo.svg");
+    });
+
+    it("uses figureBasePath for the <img> src but keeps figures[].src fetchable", () => {
+      const { html, figures } = markdownToHtml(
+        "[[figure vertical-fault-diagram]]",
+        noKatex,
+        { staticMode: true, figureBasePath: "figures/" }
+      );
+      expect(html).toContain('src="figures/vertical-fault-diagram.svg"');
+      expect(figures[0].src).toBe("/figures/vertical-fault-diagram.svg");
+    });
+
+    it("leaves figures empty when only alt-text mode is requested", () => {
+      const { html, figures } = markdownToHtml(
+        "[[figure vertical-fault-diagram]]",
+        noKatex,
+        { staticMode: true, figureModes: new Set(["alt-text"]) }
+      );
+      expect(figures).toEqual([]);
+      expect(html).not.toContain("<img");
     });
   });
 });

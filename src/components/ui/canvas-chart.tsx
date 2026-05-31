@@ -170,11 +170,25 @@ function hexToRgba(hex: string, alpha: number): string {
   return `rgba(${r},${g},${b},${alpha})`;
 }
 
+// Bounded min/max over an array (spreads like Math.min(...arr) overflow the
+// call stack on large arrays).
+function arrMin(arr: number[]): number {
+  let m = Infinity;
+  for (let i = 0; i < arr.length; i++) if (arr[i] < m) m = arr[i];
+  return m;
+}
+
+function arrMax(arr: number[]): number {
+  let m = -Infinity;
+  for (let i = 0; i < arr.length; i++) if (arr[i] > m) m = arr[i];
+  return m;
+}
+
 // ── Histogram binning ──────────────────────────────────────────────────
 
 function histBins(values: number[], nbins: number): { edges: number[]; counts: number[] } {
-  const min = Math.min(...values);
-  const max = Math.max(...values);
+  const min = arrMin(values);
+  const max = arrMax(values);
   const range = max - min || 1;
   const step = range / nbins;
   const edges: number[] = [];
@@ -267,10 +281,10 @@ function draw(
 
   if (allX.length === 0 || allY.length === 0) return;
 
-  let xMin = layout?.xaxis?.range?.[0] ?? Math.min(...allX);
-  let xMax = layout?.xaxis?.range?.[1] ?? Math.max(...allX);
-  let yMin = layout?.yaxis?.range?.[0] ?? Math.min(...allY);
-  let yMax = layout?.yaxis?.range?.[1] ?? Math.max(...allY);
+  let xMin = layout?.xaxis?.range?.[0] ?? arrMin(allX);
+  let xMax = layout?.xaxis?.range?.[1] ?? arrMax(allX);
+  let yMin = layout?.yaxis?.range?.[0] ?? arrMin(allY);
+  let yMax = layout?.yaxis?.range?.[1] ?? arrMax(allY);
 
   // Add padding (log axes use log-scale padding to avoid pushing min to ~0)
   if (!layout?.xaxis?.range) {
@@ -590,6 +604,17 @@ function draw(
 
 // ── React Component ────────────────────────────────────────────────────
 
+// Build a text alternative for the canvas from the layout titles, falling
+// back to a generic label.
+function chartAriaLabel(layout?: ChartLayout): string {
+  const parts = [
+    extractText(layout?.title),
+    extractText(layout?.xaxis?.title),
+    extractText(layout?.yaxis?.title),
+  ].filter(Boolean);
+  return parts.length > 0 ? parts.join(', ') : 'Data visualization';
+}
+
 export function CanvasChart({ data, layout, style }: CanvasChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -643,7 +668,12 @@ export function CanvasChart({ data, layout, style }: CanvasChartProps) {
             : { width: style?.width || '100%' }
       }
     >
-      <canvas ref={canvasRef} style={{ display: 'block', borderRadius: '4px' }} />
+      <canvas
+        ref={canvasRef}
+        role="img"
+        aria-label={chartAriaLabel(layout)}
+        style={{ display: 'block', borderRadius: '4px' }}
+      />
     </div>
   );
 }

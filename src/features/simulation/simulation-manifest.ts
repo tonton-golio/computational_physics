@@ -12,6 +12,10 @@ interface RegistryGroup {
 const registryCache = new Map<number, Promise<SimulationRegistry>>();
 const resolvedDefinitionCache = new Map<string, SimulationDefinition | null>();
 const inFlightDefinitionCache = new Map<string, Promise<SimulationDefinition | null>>();
+// Fast-path index: simulation id → registryGroups index. Populated only from
+// registries that have actually been loaded, so it never contains guessed ids.
+// A miss simply falls back to the full scan below, preserving correctness.
+const idToGroupIndex = new Map<string, number>();
 
 const registryGroups: RegistryGroup[] = [
   {
@@ -93,7 +97,15 @@ const registryGroups: RegistryGroup[] = [
 function loadRegistry(groupIndex: number, group: RegistryGroup): Promise<SimulationRegistry> {
   const cached = registryCache.get(groupIndex);
   if (cached) return cached;
-  const promise = group.load();
+  const promise = group.load().then((registry) => {
+    // Record every id this registry exposes so future lookups can take the
+    // fast path (load only this one chunk) instead of scanning all groups.
+    for (const registryId of Object.keys(registry)) {
+      if (!idToGroupIndex.has(registryId)) idToGroupIndex.set(registryId, groupIndex);
+    }
+    return registry;
+  });
+  promise.catch(() => registryCache.delete(groupIndex));
   registryCache.set(groupIndex, promise);
   return promise;
 }
@@ -116,6 +128,21 @@ export async function resolveSimulationDefinition(id: string): Promise<Simulatio
   if (inFlightDefinition) return inFlightDefinition;
 
   const lookupPromise = (async (): Promise<SimulationDefinition | null> => {
+  // Fast path: if we already know which registry group owns this id, load only
+  // that one chunk instead of scanning (and importing) every topic registry.
+  const knownIndex = idToGroupIndex.get(id);
+  if (knownIndex !== undefined) {
+    const group = registryGroups[knownIndex];
+    try {
+      const registry = await loadRegistry(knownIndex, group);
+      const component = registry[id];
+      if (component) return makeDefinition(group, id, component);
+    } catch {
+      // Fall through to the full scan below if the targeted chunk fails.
+    }
+  }
+
+  // Fallback full scan — also the only path the first time an id is seen.
   for (let i = 0; i < registryGroups.length; i++) {
     const group = registryGroups[i];
     try {

@@ -301,6 +301,17 @@ function draw(
 
 // ── React Component ────────────────────────────────────────────────────
 
+// Build a text alternative for the canvas from the layout titles, falling
+// back to a generic label.
+function heatmapAriaLabel(layout?: HeatmapLayout): string {
+  const parts = [
+    extractText(layout?.title),
+    extractText(layout?.xaxis?.title as string | { text: string }),
+    extractText(layout?.yaxis?.title as string | { text: string }),
+  ].filter(Boolean);
+  return parts.length > 0 ? parts.join(', ') : 'Data visualization';
+}
+
 export function CanvasHeatmap({ data, layout, style }: CanvasHeatmapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -351,7 +362,12 @@ export function CanvasHeatmap({ data, layout, style }: CanvasHeatmapProps) {
             : { width: style?.width || '100%' }
       }
     >
-      <canvas ref={canvasRef} style={{ display: 'block', borderRadius: '4px' }} />
+      <canvas
+        ref={canvasRef}
+        role="img"
+        aria-label={heatmapAriaLabel(layout)}
+        style={{ display: 'block', borderRadius: '4px' }}
+      />
     </div>
   );
 }

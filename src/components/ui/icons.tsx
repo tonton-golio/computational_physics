@@ -19,6 +19,8 @@ function iconDefaults(size: number | undefined, props: Omit<IconProps, 'size'>):
     strokeWidth: 2,
     strokeLinecap: 'round' as const,
     strokeLinejoin: 'round' as const,
+    'aria-hidden': true,
+    focusable: false,
     ...props,
   };
 }

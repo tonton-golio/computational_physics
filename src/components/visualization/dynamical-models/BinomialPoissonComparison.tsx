@@ -7,16 +7,10 @@ import { SimulationPanel, SimulationConfig, SimulationLabel } from '@/components
 import { SimulationMain } from '@/components/ui/simulation-main';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
-function factorial(n: number): number {
-  if (n <= 1) return 1;
-  let out = 1;
-  for (let i = 2; i <= n; i++) out *= i;
-  return out;
-}
-
-function choose(n: number, k: number): number {
-  if (k < 0 || k > n) return 0;
-  return factorial(n) / (factorial(k) * factorial(n - k));
+function logFactorial(n: number): number {
+  let s = 0;
+  for (let i = 2; i <= n; i++) s += Math.log(i);
+  return s;
 }
 
 export default function BinomialPoissonComparison({}: SimulationComponentProps) {
@@ -27,8 +21,12 @@ export default function BinomialPoissonComparison({}: SimulationComponentProps) 
     const p = mean / n;
     const maxK = Math.max(20, Math.ceil(mean * 2.8));
     const ks = Array.from({ length: maxK + 1 }, (_, i) => i);
-    const binom = ks.map((k) => choose(n, k) * p ** k * (1 - p) ** (n - k));
-    const poisson = ks.map((k) => Math.exp(-mean) * mean ** k / factorial(k));
+    const binom = ks.map((k) =>
+      k > n
+        ? 0
+        : Math.exp(logFactorial(n) - logFactorial(k) - logFactorial(n - k) + k * Math.log(p) + (n - k) * Math.log(1 - p))
+    );
+    const poisson = ks.map((k) => Math.exp(k * Math.log(mean) - mean - logFactorial(k)));
     return { ks, binom, poisson };
   }, [n, mean]);
 

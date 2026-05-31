@@ -104,4 +104,4 @@ BASE_URL=http://127.0.0.1:3000 npm run perf:load-test
 
 ## Autonomous Operations
 
-This project is operated by [KoalaClaw](https://github.com/koalaclaw69), an autonomous agent that handles content updates, issue triage, and platform maintenance. See `.openclaw/` for configuration.
+This project is operated by [KoalaClaw](https://github.com/koalaclaw69), an autonomous agent that handles content updates, issue triage, and platform maintenance.

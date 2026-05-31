@@ -39,14 +39,24 @@ function extractPlaceholderIds() {
 function extractRegistryIds() {
   const ids = new Set();
   const files = walkFiles(VIS_ROOT, ["Simulations.tsx"]);
-  const idPattern = /'([^']+)'\s*:/g;
+  // Scope extraction to the `export const *_SIMULATIONS = { ... }` object
+  // literals only. Scanning the whole file would also grab keys from the
+  // co-located *_DESCRIPTIONS / *_FIGURES registries (and miss double-quoted
+  // keys entirely).
+  const blockRe = /export const \w*_SIMULATIONS[^=]*=\s*\{([\s\S]*?)\n\};/g;
 
   for (const file of files) {
     const raw = fs.readFileSync(file, "utf-8");
-    let match = idPattern.exec(raw);
-    while (match) {
-      ids.add(match[1]);
-      match = idPattern.exec(raw);
+    let block = blockRe.exec(raw);
+    while (block) {
+      const body = block[1];
+      const keyPattern = /['"]([^'"]+)['"]\s*:/g;
+      let match = keyPattern.exec(body);
+      while (match) {
+        ids.add(match[1]);
+        match = keyPattern.exec(body);
+      }
+      block = blockRe.exec(raw);
     }
   }
   return ids;
@@ -62,6 +72,14 @@ if (missing.length > 0) {
     console.error(`- ${id}`);
   }
   process.exit(1);
+}
+
+const orphans = [...registered].filter((id) => !placeholders.has(id)).sort();
+if (orphans.length) {
+  console.warn(
+    `Note: ${orphans.length} registered simulation ids are never referenced by a [[simulation ...]] placeholder.`
+  );
+  orphans.forEach((id) => console.warn("  - " + id));
 }
 
 console.info(`Simulation integrity check passed (${placeholders.size} placeholders, ${registered.size} registry ids).`);

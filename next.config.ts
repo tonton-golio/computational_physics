@@ -3,16 +3,9 @@ import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
 
 const nextConfig: NextConfig = {
   images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "**",
-      },
-      {
-        protocol: "http",
-        hostname: "www.earth.ox.ac.uk",
-      },
-    ],
+    // No remote images are consumed via next/image (only local /figures/* paths,
+    // and the profile/leaderboard avatars use plain <img>). Avoid an open optimizer
+    // proxy — add a specific hostname here if a remote next/image source is introduced.
     formats: ["image/webp", "image/avif"],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
@@ -31,9 +24,19 @@ const nextConfig: NextConfig = {
             key: "X-Frame-Options",
             value: "DENY",
           },
+          // X-XSS-Protection is deprecated and can introduce vulnerabilities in
+          // legacy browsers; modern guidance is to rely on CSP/sniff protection.
           {
-            key: "X-XSS-Protection",
-            value: "1; mode=block",
+            key: "Referrer-Policy",
+            value: "strict-origin-when-cross-origin",
+          },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=()",
+          },
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=63072000; includeSubDomains; preload",
           },
         ],
       },
@@ -60,7 +63,6 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: [
       "katex",
-      "mathjs",
       "@react-three/fiber",
       "@react-three/drei",
     ],

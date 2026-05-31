@@ -67,6 +67,7 @@ export default function BackpropBlameGame({}: SimulationComponentProps): React.R
   const [layers, setLayers] = useState<LayerConfig[]>(LAYER_DEFAULTS.map((l) => ({ ...l })));
   const [animPhase, setAnimPhase] = useState(0); // 0-1 for backward flow animation
   const rafRef = useRef<number>(0);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const gradients = useMemo(() => computeGradients(layers, loss), [layers, loss]);
 
@@ -105,7 +106,7 @@ export default function BackpropBlameGame({}: SimulationComponentProps): React.R
         rafRef.current = requestAnimationFrame(tick);
       } else {
         // Restart after a pause
-        setTimeout(() => {
+        timeoutRef.current = setTimeout(() => {
           start = null;
           rafRef.current = requestAnimationFrame(tick);
         }, 1000);
@@ -113,7 +114,10 @@ export default function BackpropBlameGame({}: SimulationComponentProps): React.R
     };
 
     rafRef.current = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafRef.current);
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
   }, []);
 
   // Draw the network
@@ -247,10 +251,6 @@ export default function BackpropBlameGame({}: SimulationComponentProps): React.R
         ctx.fillText(`|g|=${Math.abs(gradMag).toFixed(3)}`, positions[li][0].x, 14);
       }
     }
-
-    // Reset canvas dimensions (prevent accumulating DPR scaling)
-    canvas.width = W;
-    canvas.height = H;
   }, [layers, gradients, loss, animPhase]);
 
   const allSigmoid = layers.slice(1, -1).every((l) => l.activation === 'sigmoid');

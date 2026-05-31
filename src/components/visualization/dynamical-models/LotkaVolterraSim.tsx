@@ -272,7 +272,7 @@ export default function LotkaVolterraSim({}: SimulationComponentProps) {
           )}
         </div>
         <div>
-          <h3 className="text-lg font-semibold mb-4">Bifurcation Diagram (vs Alpha)</h3>
+          <h3 className="text-lg font-semibold mb-4">Oscillation Amplitude vs α</h3>
           {bifurcationData && (
             <CanvasChart
               data={bifurcationData as any}

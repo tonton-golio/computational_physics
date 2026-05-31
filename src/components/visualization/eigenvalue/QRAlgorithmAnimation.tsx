@@ -34,7 +34,7 @@ function buildQRChartState(A: number[][], iter: number) {
 }
 
 export default function QRAlgorithmAnimation({}: SimulationComponentProps) {
-  const [iteration, setIteration] = useState(0);
+  const [, setIteration] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const matrixRef = useRef<number[][]>([[4, 1, 2], [2, 3, 1], [1, 2, 2]]);
   const [chartState, setChartState] = useState<{ data: Array<{ z: number[][]; x: string[]; y: string[]; colorscale: string; showscale: boolean }>; layout: { title: { text: string }; annotations: Array<{ x: number; y: number; text: string; font: { color: string }; showarrow: boolean }> } }>(() => buildQRChartState(matrixRef.current, 0));
@@ -98,9 +98,12 @@ export default function QRAlgorithmAnimation({}: SimulationComponentProps) {
     }
 
     matrixRef.current = newA;
-    setIteration(i => i + 1);
-    setChartState(buildQRChartState(newA, iteration + 1));
-  }, [iteration]);
+    setIteration(i => {
+      const next = i + 1;
+      setChartState(buildQRChartState(newA, next));
+      return next;
+    });
+  }, []);
 
   const reset = () => {
     matrixRef.current = [[4, 1, 2], [2, 3, 1], [1, 2, 2]];

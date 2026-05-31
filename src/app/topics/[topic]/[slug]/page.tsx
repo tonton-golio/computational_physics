@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MarkdownContent } from "@/components/content/MarkdownContent";
@@ -6,10 +7,30 @@ import { TopicSidebar } from "@/components/layout/TopicSidebar";
 import { TOPICS } from "@/lib/topic-config";
 import { getTopicLesson } from "@/features/content/content-gateway";
 import { resolveTopicRoute, topicHref, TOPIC_ROUTES } from "@/lib/topic-navigation";
-import { isLandingPage, getLessonsForTopic } from "@/features/content/topic-lessons";
+import { isLandingPage, getLessonsForTopic, getLessonSummary } from "@/features/content/topic-lessons";
 
 interface LessonPageProps {
   params: Promise<{ topic: string; slug: string }>;
+}
+
+export async function generateMetadata({ params }: LessonPageProps): Promise<Metadata> {
+  const { topic, slug } = await params;
+  const route = resolveTopicRoute(topic);
+  if (!route) return { title: "Not found" };
+
+  const topicMeta = TOPICS[route.topicId];
+  const lesson = await getTopicLesson(route.topicId, slug);
+  const title = lesson?.title ?? slug;
+  const summary = getLessonSummary(route.topicId, slug);
+
+  return {
+    title: `${title} · ${topicMeta.title}`,
+    description: summary,
+    openGraph: {
+      title: `${title} · ${topicMeta.title}`,
+      description: summary,
+    },
+  };
 }
 
 export function generateStaticParams() {

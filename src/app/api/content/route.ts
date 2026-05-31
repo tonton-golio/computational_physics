@@ -11,8 +11,11 @@ const CACHE_HEADERS = {
 };
 
 const querySchema = z.object({
-  topic: z.string().optional(),
-  slug: z.string().optional(),
+  // Allowlist id charsets — rejects '/', '.', '\' so a slug can never traverse
+  // outside content/topics/<topicId> before reaching the filesystem. Slugs are
+  // mixed-case (some lessons use camelCase filenames, e.g. statisticalMechanics).
+  topic: z.string().regex(/^[a-z0-9-]+$/).optional(),
+  slug: z.string().regex(/^[A-Za-z0-9_-]+$/).optional(),
 });
 
 export const GET = withApiHandler("/api/content", "GET", async (request, ctx) => {

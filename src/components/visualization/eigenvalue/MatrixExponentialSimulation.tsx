@@ -11,9 +11,9 @@ import { type Matrix2x2, computeUnitEllipse, matrixExp } from './eigen-utils';
 export default function MatrixExponentialSimulation({}: SimulationComponentProps) {
   const [matrix, setMatrix] = useState<Matrix2x2>([[1, 0.5], [0, 2]]);
 
-  const { data, layout } = useMemo(() => {
-    const expA = matrixExp(matrix);
+  const expA = useMemo(() => matrixExp(matrix), [matrix]);
 
+  const { data, layout } = useMemo(() => {
     // Compute unit circle transformations
     const { circleX, circleY, ellipseX: linearX, ellipseY: linearY } = computeUnitEllipse(matrix);
     const { ellipseX: expX, ellipseY: expY } = computeUnitEllipse(expA);
@@ -34,7 +34,7 @@ export default function MatrixExponentialSimulation({}: SimulationComponentProps
     };
 
     return { data, layout };
-  }, [matrix]);
+  }, [matrix, expA]);
 
   return (
     <SimulationPanel title="Matrix Exponential: Linear vs Exponential Transformation" caption="The exponential smooths linear transformations, preserving positivity and orientation.">
@@ -74,8 +74,8 @@ export default function MatrixExponentialSimulation({}: SimulationComponentProps
       <SimulationResults>
         <div className="text-sm text-[var(--text-soft)] space-y-1">
           <div>e^A ≈ [
-            {matrixExp(matrix)[0][0].toFixed(3)}, {matrixExp(matrix)[0][1].toFixed(3)};
-            {matrixExp(matrix)[1][0].toFixed(3)}, {matrixExp(matrix)[1][1].toFixed(3)}
+            {expA[0][0].toFixed(3)}, {expA[0][1].toFixed(3)};
+            {expA[1][0].toFixed(3)}, {expA[1][1].toFixed(3)}
           ]</div>
         </div>
       </SimulationResults>

@@ -53,7 +53,7 @@ function trueWigner(
   const g1 = Math.exp(-((x - x0) ** 2) - p * p);
   const g2 = Math.exp(-((x + x0) ** 2) - p * p);
   const interference = 2 * Math.cos(2 * p * x0) * Math.exp(-x * x - p * p);
-  return (1 / Math.PI) * (g1 + g2 + interference) / norm * 2;
+  return (1 / Math.PI) * (g1 + g2 + interference) / norm;
 }
 
 // Quadrature mean and variance for sampling

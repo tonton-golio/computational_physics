@@ -95,6 +95,7 @@ function HeaderContent() {
               <div className="flex shrink-0 items-center gap-2">
               <button
                 type="button"
+                aria-pressed={view === "boxes"}
                 onClick={() => updateTopicsParam("view", "boxes")}
                 className={`rounded-md border px-3 py-1 text-xs font-semibold uppercase tracking-wide transition ${
                   view === "boxes"
@@ -106,6 +107,7 @@ function HeaderContent() {
               </button>
               <button
                 type="button"
+                aria-pressed={view === "points"}
                 onClick={() => updateTopicsParam("view", "points")}
                 className={`rounded-md border px-3 py-1 text-xs font-semibold uppercase tracking-wide transition ${
                   view === "points"

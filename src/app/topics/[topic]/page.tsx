@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { MarkdownContent } from "@/components/content/MarkdownContent";
@@ -19,6 +20,23 @@ interface TopicPageProps {
 
 export function generateStaticParams() {
   return TOPIC_ROUTES.map((topic) => ({ topic: topic.routeSlug }));
+}
+
+export async function generateMetadata({ params }: TopicPageProps): Promise<Metadata> {
+  const { topic } = await params;
+  const route = resolveTopicRoute(topic);
+  if (!route) return { title: "Not found" };
+
+  const topicMeta = TOPICS[route.topicId];
+
+  return {
+    title: topicMeta.title,
+    description: topicMeta.description,
+    openGraph: {
+      title: topicMeta.title,
+      description: topicMeta.description,
+    },
+  };
 }
 
 export default async function TopicPage({ params }: TopicPageProps) {

@@ -30,13 +30,8 @@ export interface ErrorEnvelope {
 
 export function asErrorEnvelope(error: unknown): ErrorEnvelope {
   if (error instanceof AppError) {
-    return {
-      error: {
-        code: error.code,
-        message: error.message,
-        details: error.details,
-      },
-    };
+    const base = { code: error.code, message: error.message };
+    return { error: error.status >= 500 ? base : { ...base, details: error.details } };
   }
 
   return {

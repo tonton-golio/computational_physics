@@ -13,7 +13,6 @@ computational_physics/
   scripts/              validation, performance, and build utility scripts
   src/                  application source code
   public/               static assets (images, figures, data files)
-  .claw/                autonomous workflow instructions, skills, and state artifacts
 ```
 
 ## src/ Directory Map
@@ -37,7 +36,7 @@ src/
     topics/[topic]/page.tsx           topic landing page
     topics/[topic]/[slug]/page.tsx    lesson page
 
-  auth-middleware.ts    Supabase auth middleware (protected routes, redirects)
+  proxy.ts              Supabase auth middleware (protected routes, redirects)
 
   components/
     content/            MarkdownContent.tsx, ExportPdfButton.tsx
@@ -139,7 +138,7 @@ src/
 
 | File | Role |
 |---|---|
-| `src/auth-middleware.ts` | Supabase auth middleware (route protection, redirects) |
+| `src/proxy.ts` | Supabase auth middleware (route protection, redirects) |
 | `src/infra/supabase/client.ts` | Browser Supabase client |
 | `src/infra/supabase/server.ts` | Server Supabase client (async cookies) |
 
@@ -170,15 +169,9 @@ All topics have matching route slugs and content IDs.
 | `online-reinforcement-learning` | 11 | Intermediate |
 | `advanced-deep-learning` | 9 | Advanced |
 
-## Agent-Facing Control Plane
-
-- `.claw/AGENTS.md`: operating policy and priority queue
-- `.claw/workflows/`: executable runbooks for recurring operations (add_new_subject, process_suggestion, post_to_x)
-- `.claw/skills/`: reusable agent skills (kcs-checkpoint, validate-suggestion, update-point-cloud, etc.)
-
 ## Actionable Checklist
 
-- Before edits, identify whether the task belongs to `app`, `features`, `infra`, `domain`, `shared`, or `.claw`.
+- Before edits, identify whether the task belongs to `app`, `features`, `infra`, `domain`, or `shared`.
 - For page/content bugs, inspect `topic-navigation` and `file-content-repository` before changing UI code.
 - For simulation placeholder failures, run `npm run check:simulations` and inspect topic registries.
 - For API changes, update `docs/guides/api-contracts.md` in the same change.

@@ -213,10 +213,7 @@ export default function GanForgerArena({}: SimulationComponentProps): React.Reac
       <SimulationSettings>
         <div className="flex flex-wrap gap-2">
           <SimulationButton variant="primary" onClick={() => trainN(5)} disabled={running || state.epoch >= 200}>
-            Train D 5 steps
-          </SimulationButton>
-          <SimulationButton variant="primary" onClick={() => trainN(5)} disabled={running || state.epoch >= 200}>
-            Train G 5 steps
+            Train 5 steps
           </SimulationButton>
           <SimulationPlayButton
             isRunning={running}

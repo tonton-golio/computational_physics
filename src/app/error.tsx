@@ -10,7 +10,7 @@ export default function Error({
   return (
     <div className="min-h-[60vh] flex items-center justify-center px-4">
       <div className="w-full max-w-xl rounded-xl border border-[var(--danger-border)] bg-[var(--surface-1)] p-6 text-[var(--text-strong)]">
-        <h2 className="text-lg font-semibold text-red-400">Something went wrong</h2>
+        <h1 className="text-lg font-semibold text-[var(--text-strong)]">Something went wrong</h1>
         <p className="mt-2 text-sm text-[var(--text-muted)]">{error.message || "Unexpected application error."}</p>
         <button
           onClick={reset}

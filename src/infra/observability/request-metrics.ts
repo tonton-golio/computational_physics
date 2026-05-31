@@ -19,5 +19,9 @@ export function logRequestMetric(input: RequestMetricInput): void {
 }
 
 export function correlationIdFrom(request: Request): string {
-  return request.headers.get("x-correlation-id") ?? crypto.randomUUID();
+  const provided = request.headers.get("x-correlation-id");
+  if (provided) {
+    return provided.replace(/[^A-Za-z0-9._-]/g, "").slice(0, 128);
+  }
+  return crypto.randomUUID();
 }

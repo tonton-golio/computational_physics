@@ -14,7 +14,7 @@ type LeaderboardEntry = {
 export default async function LeaderboardPage() {
   const supabase = await createClient();
 
-  const { data } = await supabase.rpc("get_leaderboard");
+  const { data } = supabase ? await supabase.rpc("get_leaderboard") : { data: null };
   const entries: LeaderboardEntry[] = data ?? [];
 
   return (

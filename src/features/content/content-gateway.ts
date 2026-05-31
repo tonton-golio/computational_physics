@@ -41,7 +41,7 @@ export async function getTopicIndexes(): Promise<TopicIndex[]> {
   }
 }
 
-export async function getTopicLessons(topicId: string): Promise<{ topic: TopicDefinition; lessons: ContentDocument[] }> {
+async function loadTopicLessons(topicId: string): Promise<{ topic: TopicDefinition; lessons: ContentDocument[] }> {
   const topic = asTopicDefinition(topicId);
   const lessons = getOrderedLessonSlugs(topicId)
     .map((slug) => readLessonDocument(topicId, slug))
@@ -50,7 +50,35 @@ export async function getTopicLessons(topicId: string): Promise<{ topic: TopicDe
   return { topic, lessons };
 }
 
-export async function getTopicLesson(topicId: string, slug: string): Promise<ContentDocument | null> {
+const getTopicLessonsCached = unstable_cache(loadTopicLessons, ["topics:lessons"], {
+  revalidate: 3600,
+  tags: ["topics:lessons"],
+});
+
+export async function getTopicLessons(topicId: string): Promise<{ topic: TopicDefinition; lessons: ContentDocument[] }> {
+  try {
+    return await getTopicLessonsCached(topicId);
+  } catch {
+    // Test runners and non-Next runtimes may not provide incremental cache.
+    return loadTopicLessons(topicId);
+  }
+}
+
+async function loadTopicLesson(topicId: string, slug: string): Promise<ContentDocument | null> {
   asTopicDefinition(topicId);
   return readLessonDocument(topicId, slug);
+}
+
+const getTopicLessonCached = unstable_cache(loadTopicLesson, ["topics:lesson"], {
+  revalidate: 3600,
+  tags: ["topics:lesson"],
+});
+
+export async function getTopicLesson(topicId: string, slug: string): Promise<ContentDocument | null> {
+  try {
+    return await getTopicLessonCached(topicId, slug);
+  } catch {
+    // Test runners and non-Next runtimes may not provide incremental cache.
+    return loadTopicLesson(topicId, slug);
+  }
 }

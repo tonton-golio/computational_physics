@@ -25,9 +25,10 @@ export default function GershgorinCircles({}: SimulationComponentProps) {
       radii.push(r);
     }
 
-    // Compute actual eigenvalues (using power iteration approximation for demo)
-    // For simplicity, we'll use numpy-style eigenvalue computation approximation
-    const eigenvalues = [4.732, 2.268, 1.0]; // Approximate eigenvalues of the default matrix
+    // Compute the exact eigenvalues of the 2x2 matrix in closed form
+    const a = matrix[0][0], b = matrix[0][1], c = matrix[1][0], dd = matrix[1][1];
+    const disc = Math.sqrt((a - dd) ** 2 + 4 * b * c);
+    const eigenvalues = [(a + dd + disc) / 2, (a + dd - disc) / 2];
 
     // Create circle traces
     const data: Array<{

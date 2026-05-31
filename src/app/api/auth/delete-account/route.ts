@@ -8,6 +8,9 @@ export const runtime = "nodejs";
 
 export const DELETE = withApiHandler("/api/auth/delete-account", "DELETE", async (request, ctx) => {
   const supabase = await createClient();
+  if (!supabase) {
+    throw new AppError("UNAUTHORIZED", "Not authenticated", 401);
+  }
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {

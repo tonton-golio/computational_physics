@@ -36,7 +36,7 @@ export default function RandomizationVsBlocking({}: SimulationComponentProps) {
         // In CRD, the block effect is part of the residual
         const crdResidual = y - groupMean;
         // In RBD, the block effect is removed
-        const rbdResidual = y - groupMean - blockMeans[b];
+        const rbdResidual = y - treatMeans[t] - blockMeans[b];
         crdRes.push(crdResidual);
         rbdRes.push(rbdResidual);
         crdX.push(idx);

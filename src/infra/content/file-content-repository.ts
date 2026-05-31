@@ -65,6 +65,11 @@ export function readLessonDocument(topicId: string, slug: string): ContentDocume
   const txtPath = path.join(dir, `${slug}.txt`);
   const target = fs.existsSync(mdPath) ? mdPath : txtPath;
 
+  // Defense-in-depth against path traversal: never read outside the topic dir,
+  // regardless of how the slug reached us (the API schema is the first line of defense).
+  const root = path.resolve(dir);
+  if (!path.resolve(target).startsWith(root + path.sep)) return null;
+
   if (!fs.existsSync(target)) return null;
 
   let raw = "";

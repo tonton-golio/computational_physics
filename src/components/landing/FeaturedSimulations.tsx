@@ -49,6 +49,11 @@ export function FeaturedSimulations() {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
     startTimeRef.current = Date.now();
     setProgress(0);
+    if (
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    )
+      return;
     rafRef.current = requestAnimationFrame(tick);
     intervalRef.current = setInterval(() => {
       setActive((prev) => (prev + 1) % FEATURED.length);
@@ -85,7 +90,8 @@ export function FeaturedSimulations() {
                 key={i}
                 onClick={() => goto(i)}
                 className="relative h-1.5 w-6 overflow-hidden rounded-full bg-[var(--text-soft)]/20"
-                aria-label={`Go to visualization ${i + 1}`}
+                aria-current={i === active ? "true" : undefined}
+                aria-label={`Go to visualization ${i + 1}: ${FEATURED[i].title}`}
               >
                 <div
                   className="absolute inset-y-0 left-0 rounded-full bg-[var(--accent)] transition-none"
@@ -119,12 +125,18 @@ export function FeaturedSimulations() {
       </div>
 
       {/* Outer card */}
-      <div className="relative flex-1 min-h-0 flex flex-col overflow-hidden rounded-lg border border-[var(--border-strong)]">
+      <div
+        role="group"
+        aria-roledescription="carousel"
+        aria-label="Featured visualizations"
+        className="relative flex-1 min-h-0 flex flex-col overflow-hidden rounded-lg border border-[var(--border-strong)]"
+      >
         {/* Simulation area — stacked slides */}
         <div className="relative flex-1 min-h-0">
           {FEATURED.map((item, i) => (
             <div
               key={item.id}
+              aria-hidden={i !== active}
               className={`absolute inset-0 transition-opacity duration-500 ${
                 i === active
                   ? "opacity-100 z-[1]"
@@ -137,7 +149,10 @@ export function FeaturedSimulations() {
         </div>
 
         {/* Info bar */}
-        <div className="relative z-[2] flex items-center gap-4 border-t border-[var(--border-strong)] bg-[var(--surface-1)]/60 backdrop-blur-sm px-4 py-2.5">
+        <div
+          aria-live="polite"
+          className="relative z-[2] flex items-center gap-4 border-t border-[var(--border-strong)] bg-[var(--surface-1)]/60 backdrop-blur-sm px-4 py-2.5"
+        >
           <p className="font-mono text-sm text-[var(--text-strong)] shrink-0">
             {FEATURED[active].title}
           </p>

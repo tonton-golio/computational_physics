@@ -81,9 +81,9 @@ function computeWigner(
         }
 
         case 'number': {
-          // W_n(x,p) = ((-1)^n / pi) * L_n(4(x^2 + p^2)) * exp(-2(x^2 + p^2))
+          // W_n(x,p) = ((-1)^n / pi) * L_n(2(x^2 + p^2)) * exp(-(x^2 + p^2))
           const r2 = x * x + p * p;
-          val = (Math.pow(-1, n_state) / Math.PI) * laguerre(n_state, 4 * r2) * Math.exp(-2 * r2);
+          val = (Math.pow(-1, n_state) / Math.PI) * laguerre(n_state, 2 * r2) * Math.exp(-r2);
           break;
         }
 
@@ -97,7 +97,7 @@ function computeWigner(
           const g1 = Math.exp(-((x - x0) ** 2) - p * p);
           const g2 = Math.exp(-((x + x0) ** 2) - p * p);
           const interference = 2 * Math.cos(2 * p * x0) * Math.exp(-x * x - p * p);
-          val = (1 / Math.PI) * (g1 + g2 + interference) / norm * 2;
+          val = (1 / Math.PI) * (g1 + g2 + interference) / norm;
           break;
         }
       }
@@ -170,7 +170,7 @@ function computeQ(
           const g2 = Math.exp(-dbm);
           // cross term
           const cross = 2 * Math.exp(-(beta_re ** 2 + beta_im ** 2 + a * a)) * Math.cos(2 * a * beta_im);
-          val = (1 / Math.PI) * (g1 + g2 + cross) / norm * 2;
+          val = (1 / Math.PI) * (g1 + g2 + cross) / norm;
           break;
         }
       }

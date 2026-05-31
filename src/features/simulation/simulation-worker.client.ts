@@ -16,6 +16,7 @@ type CacheEntry<T> = {
 
 const CACHE_VERSION = "simulation-worker-cache-v1";
 const MAX_CACHE_ENTRIES = 120;
+const WORKER_TIMEOUT_MS = 15000;
 const lotkaResultCache = new Map<string, CacheEntry<LotkaVolterraResult>>();
 const mdpResultCache = new Map<string, CacheEntry<MDPSimulationResult>>();
 
@@ -61,15 +62,22 @@ export function runLotkaVolterraWorker(params: LotkaVolterraParams): Promise<Lot
   return new Promise((resolve, reject) => {
     const worker = new Worker(new URL("../../workers/simulation/lotka-volterra.worker.ts", import.meta.url));
 
+    const timeoutId = globalThis.setTimeout(() => {
+      reject(new Error("worker timed out"));
+      worker.terminate();
+    }, WORKER_TIMEOUT_MS);
+
     worker.onmessage = (event: MessageEvent<LotkaVolterraResult>) => {
       const result = event.data;
+      globalThis.clearTimeout(timeoutId);
       setCached(lotkaResultCache, cacheKey, result);
       resolve(result);
       worker.terminate();
     };
 
-    worker.onerror = (error) => {
-      reject(error);
+    worker.onerror = (e) => {
+      globalThis.clearTimeout(timeoutId);
+      reject(new Error(e.message || "worker error"));
       worker.terminate();
     };
 
@@ -87,15 +95,22 @@ export function runMDPSimulationWorker(params: MDPSimulationParams): Promise<MDP
   return new Promise((resolve, reject) => {
     const worker = new Worker(new URL("../../workers/simulation/mdp-simulation.worker.ts", import.meta.url));
 
+    const timeoutId = globalThis.setTimeout(() => {
+      reject(new Error("worker timed out"));
+      worker.terminate();
+    }, WORKER_TIMEOUT_MS);
+
     worker.onmessage = (event: MessageEvent<MDPSimulationResult>) => {
       const result = event.data;
+      globalThis.clearTimeout(timeoutId);
       setCached(mdpResultCache, cacheKey, result);
       resolve(result);
       worker.terminate();
     };
 
-    worker.onerror = (error) => {
-      reject(error);
+    worker.onerror = (e) => {
+      globalThis.clearTimeout(timeoutId);
+      reject(new Error(e.message || "worker error"));
       worker.terminate();
     };
 

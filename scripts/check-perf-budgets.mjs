@@ -78,7 +78,10 @@ for (const [route, budgetBytes] of Object.entries(budgets)) {
   }, 0);
 
   if (totalBytes === 0) {
-    console.warn(`- WARN ${route}: no JS files found in manifest (key may be wrong)`);
+    console.error(
+      `- FAIL ${route}: no JS files found in manifest (entryKey "${entryKey}" or manifestPath "${manifestPath}" may have drifted)`
+    );
+    hasFailure = true;
     continue;
   }
 

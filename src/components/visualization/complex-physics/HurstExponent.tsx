@@ -11,8 +11,10 @@ function generateBrownianTimeSeries(length: number, drift: number, volatility: n
   const series: number[] = [100]; // starting price
   for (let i = 1; i < length; i++) {
     const dt = 1;
-    const dW = (Math.random() + Math.random() + Math.random() + Math.random() +
-                Math.random() + Math.random() - 3) * Math.sqrt(dt); // approx normal via CLT
+    // Box-Muller: unit-variance standard-normal increment
+    const u1 = Math.random();
+    const u2 = Math.random();
+    const dW = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2) * Math.sqrt(dt);
     series.push(series[i - 1] * Math.exp((drift - 0.5 * volatility * volatility) * dt + volatility * dW));
   }
   return series;

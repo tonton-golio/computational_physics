@@ -99,7 +99,7 @@ function SimulationToggle({
           className={cn(
             "px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
             value === opt.value
-              ? "bg-[var(--accent)] text-white shadow-sm"
+              ? "bg-[var(--accent)] text-white dark:text-[#06203f] shadow-sm"
               : "text-[var(--text-muted)] hover:text-[var(--text-strong)]",
           )}
         >
@@ -195,7 +195,7 @@ function SimulationAux({
 
 const BUTTON_VARIANTS = {
   primary:
-    "bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white",
+    "bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white dark:text-[#06203f]",
   secondary:
     "bg-[var(--surface-3)] hover:bg-[var(--border-strong)] text-[var(--text-strong)]",
   danger:

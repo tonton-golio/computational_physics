@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import type { SimulationComponent } from "@/shared/types/simulation";
 import { prefetchSimulationDefinition, resolveSimulationDefinition } from "./simulation-manifest";
 import { useFullscreen } from "@/lib/use-fullscreen";
@@ -25,6 +25,9 @@ function loadGraphComponent(): Promise<GraphComponent> {
   graphComponentPromise = import("@/components/visualization/InteractiveGraph").then(
     (module) => module.InteractiveGraph as GraphComponent
   );
+  graphComponentPromise.catch(() => {
+    graphComponentPromise = null;
+  });
   return graphComponentPromise;
 }
 
@@ -52,7 +55,7 @@ async function loadSimulation(id: string): Promise<LoadResult> {
 
   inFlightRenderCache.set(id, loadingPromise);
   const result = await loadingPromise;
-  renderCache.set(id, result);
+  if (!result.hasError) renderCache.set(id, result);
   return result;
 }
 
@@ -81,6 +84,19 @@ function SimulationError({ id }: { id: string }) {
       <span className="font-mono text-xs text-[var(--text-soft)]">[[simulation {id}]]</span>
     </div>
   );
+}
+
+class SimulationErrorBoundary extends React.Component<
+  { id: string; children: React.ReactNode },
+  { hasError: boolean }
+> {
+  state = { hasError: false };
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  render() {
+    return this.state.hasError ? <SimulationError id={this.props.id} /> : this.props.children;
+  }
 }
 
 export function SimulationHost({ id, variant }: { id: string; variant?: "embedded" }) {
@@ -303,7 +319,7 @@ export function SimulationHost({ id, variant }: { id: string; variant?: "embedde
 
       <div className={useFullscreenLayout ? "sim-fs-content" : undefined}>
         <SimulationFullscreenProvider value={useFullscreenLayout}>
-          {simContent}
+          <SimulationErrorBoundary id={id}>{simContent}</SimulationErrorBoundary>
         </SimulationFullscreenProvider>
       </div>
 

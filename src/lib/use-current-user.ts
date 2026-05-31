@@ -9,6 +9,7 @@ export function useCurrentUser(): User | null {
 
   useEffect(() => {
     const supabase = createClient();
+    if (!supabase) return; // Supabase not configured — stay logged-out.
     supabase.auth.getUser().then(({ data: { user } }) => setUser(user));
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(

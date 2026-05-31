@@ -4,7 +4,7 @@
 
 - TypeScript strict mode enabled (`tsconfig.json`, target ES2017).
 - ESLint uses Next.js core-web-vitals + TypeScript config (`eslint.config.mjs`).
-- Prettier rules (`.prettierrc`): semicolons enabled, single quotes, line width 100, tab width 2.
+- Prettier rules (`.prettierrc.json`): semicolons enabled, single quotes, line width 100, tab width 2.
 - Path alias: `@/*` maps to `src/*`.
 - Next.js 16 with Turbopack, standalone output mode.
 

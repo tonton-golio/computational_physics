@@ -20,10 +20,10 @@ function buildPowerMethodData(xArr: number[], yArr: number[]) {
       marker: { size: 4, color: xArr.map((_, i) => i) as number[], colorscale: 'Viridis' },
       name: 'Iterations',
     },
-    // True eigenvector direction
+    // True eigenvector direction: normalized dominant eigenvector of [[4,1],[2,3]] is (1,1)/sqrt(2)
     {
-      x: [-1, 1],
-      y: [-0.5, 0.5], // Approximate eigenvector direction
+      x: [-0.707, 0.707],
+      y: [-0.707, 0.707],
       type: 'scatter' as const,
       mode: 'lines' as const,
       line: { color: COLORS.tertiary, width: 2, dash: 'dash' },

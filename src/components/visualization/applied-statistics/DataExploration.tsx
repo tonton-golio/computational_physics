@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import * as math from 'mathjs';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import { Slider } from '@/components/ui/slider';
 import { SimulationPanel, SimulationConfig, SimulationResults, SimulationLabel } from '@/components/ui/simulation-panel';
 import { SimulationMain } from '@/components/ui/simulation-main';
+import { sum, mean, randUniform } from '@/lib/stats-helpers';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 
@@ -29,22 +29,22 @@ export default function AppliedStatsSim1({}: SimulationComponentProps) {
   useEffect(() => {
     const trueBeta0 = 2;
     const trueBeta1 = 1.5;
-    const x = Array.from({length: sampleSize}, () => math.random(0, 10));
+    const x = Array.from({length: sampleSize}, () => randUniform(0, 10));
     const y = x.map(xi => trueBeta0 + trueBeta1 * xi + (Math.random() - 0.5) * noise * 2);
-    const meanX = math.number(math.mean(x));
-    const meanY = math.number(math.mean(y));
-    const covXY = math.number(math.mean(x.map((xi, i) => (xi - meanX) * (y[i] - meanY))));
-    const varX = math.number(math.variance(x));
-    const beta1 = Number(covXY) / Number(varX);
+    const meanX = mean(x);
+    const meanY = mean(y);
+    const sxy = x.reduce((a, xi, i) => a + (xi - meanX) * (y[i] - meanY), 0);
+    const sxx = x.reduce((a, xi) => a + (xi - meanX) ** 2, 0);
+    const beta1 = sxy / sxx;
     const beta0 = meanY - beta1 * meanX;
     const yHat = x.map(xi => beta0 + beta1 * xi);
     const residuals = y.map((yi, i) => yi - yHat[i]);
-    const ssRes = math.number(math.sum(residuals.map(e => e * e)));
-    const ssTot = math.number(math.sum(y.map(yi => (yi - meanY) ** 2)));
+    const ssRes = sum(residuals.map(e => e * e));
+    const ssTot = sum(y.map(yi => (yi - meanY) ** 2));
     const rSquared = 1 - ssRes / ssTot;
     const sigmaHat = Math.sqrt(ssRes / (sampleSize - 2));
     const chiSquare = ssRes / (sigmaHat ** 2); // assuming constant variance
-    const sumSqX = math.number(math.sum(x.map(xi => (xi - meanX) ** 2)));
+    const sumSqX = sum(x.map(xi => (xi - meanX) ** 2));
     const t = 2; // approx for large n
     const ciUpper = x.map((xi, i) => {
       const se = sigmaHat * Math.sqrt(1 / sampleSize + (xi - meanX) ** 2 / sumSqX);

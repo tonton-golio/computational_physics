@@ -56,7 +56,7 @@ content/topics/   # Markdown lesson files organized by topic ID
 
 - Custom placeholder syntax in markdown: `[[simulation id]]`, `[[figure id]]`, `[[code-toggle python|pseudo]]`
 - `src/components/content/MarkdownContent.tsx` parses HTML and renders placeholders as React components
-- `src/features/simulation/simulation-manifest.ts` — registry-based dynamic imports, organized by topic (10 registry groups with LRU caching and per-registry error isolation)
+- `src/features/simulation/simulation-manifest.ts` — registry-based dynamic imports, organized by topic (11 registry groups with LRU caching and per-registry error isolation)
 - `src/features/simulation/SimulationHost.tsx` — lazy-loads simulations via Intersection Observer (render at 200px, prefetch at 1200px with `requestIdleCallback`); wraps simulations in `SimulationFullscreenProvider` for fullscreen support
 - 190+ simulation components in `src/components/visualization/` organized by topic subdirectory
 - Simulations use Canvas/p5.js, Three.js (@react-three/fiber), or SVG
@@ -75,7 +75,7 @@ content/topics/   # Markdown lesson files organized by topic ID
 
 - Supabase for authentication (OAuth flow)
 - Supabase clients: `src/infra/supabase/client.ts` (browser), `src/infra/supabase/server.ts` (server with cookie sync)
-- Auth middleware: `src/auth-middleware.ts` — protects `/profile`, redirects unauthenticated users
+- Auth middleware: `src/proxy.ts` (Next 16 `proxy` convention) — protects `/profile`, redirects unauthenticated users
 - Pages: `/login`, `/profile`, `/leaderboard`
 - API routes: `GET /api/auth/callback` (OAuth code exchange), `POST /api/auth/delete-account`
 - Auth is optional — the app works without Supabase credentials configured

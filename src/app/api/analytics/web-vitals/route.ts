@@ -16,26 +16,25 @@ const metricSchema = z.object({
 });
 
 export const POST = withApiHandler("/api/analytics/web-vitals", "POST", async (request, ctx) => {
-  try {
-    const payload = metricSchema.parse(await request.json());
+  const parsed = metricSchema.safeParse(await request.json());
 
-    if (process.env.NODE_ENV !== "production" || process.env.LOG_WEB_VITALS === "1") {
-      logger.info("web-vitals.metric", {
-        id: payload.id,
-        name: payload.name,
-        value: payload.value,
-        rating: payload.rating,
-        path: payload.path,
-        navigationType: payload.navigationType,
-        timestamp: payload.timestamp,
-      });
-    }
-
-    return apiSuccess(ctx, { ok: true }, 202);
-  } catch (err) {
-    if (err instanceof z.ZodError) {
-      throw new AppError("BAD_REQUEST", "Invalid metric payload", 400, err.issues);
-    }
-    throw err;
+  if (!parsed.success) {
+    throw new AppError("BAD_REQUEST", "Invalid metric payload", 400, parsed.error.issues);
   }
+
+  const payload = parsed.data;
+
+  if (process.env.NODE_ENV !== "production" || process.env.LOG_WEB_VITALS === "1") {
+    logger.info("web-vitals.metric", {
+      id: payload.id,
+      name: payload.name,
+      value: payload.value,
+      rating: payload.rating,
+      path: payload.path,
+      navigationType: payload.navigationType,
+      timestamp: payload.timestamp,
+    });
+  }
+
+  return apiSuccess(ctx, { ok: true }, 202);
 });

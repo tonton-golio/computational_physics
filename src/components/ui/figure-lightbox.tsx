@@ -20,7 +20,7 @@ export function FigureLightbox({
   onClose,
 }: FigureLightboxProps) {
   return (
-    <Modal onClose={onClose} className="bg-black/80" data-figure-lightbox>
+    <Modal onClose={onClose} className="bg-black/80" aria-label={caption ?? "Figure preview"} data-figure-lightbox>
       {/* Caption — top-left frosted glass (matches sim-fs-title) */}
       {caption && (
         <div className="pointer-events-none absolute top-12 left-12 z-10 max-w-[min(420px,60vw)] rounded-md border border-white/10 bg-black/40 px-3 py-1.5 text-xs leading-snug text-white/90 backdrop-blur-md">

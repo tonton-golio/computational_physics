@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useMemo } from 'react';
-import * as math from 'mathjs';
 import { CanvasChart } from '@/components/ui/canvas-chart';
 import RegressionAnalysis from './applied-statistics/RegressionAnalysis';
 import DataExploration from './applied-statistics/DataExploration';
@@ -27,6 +26,7 @@ import ProfileLikelihood from './applied-statistics/ProfileLikelihood';
 import OverfittingCarousel from './applied-statistics/OverfittingCarousel';
 import ROCLive from './applied-statistics/ROCLive';
 import { Slider } from '@/components/ui/slider';
+import { mean, variance, randUniform } from '@/lib/stats-helpers';
 import type { SimulationComponentProps } from '@/shared/types/simulation';
 
 
@@ -39,10 +39,10 @@ function CentralLimitTheoremSim() {
     for (let i = 0; i < numSamples; i++) {
       const sample = [];
       for (let j = 0; j < sampleSize; j++) {
-        sample.push(math.random(0, 1)); // uniform [0,1]
+        sample.push(randUniform(0, 1)); // uniform [0,1]
       }
-      const mean = math.mean(sample);
-      samples.push(mean);
+      const sampleMean = mean(sample);
+      samples.push(sampleMean);
     }
     return samples;
   }, [sampleSize, numSamples]);
@@ -105,20 +105,19 @@ function HypothesisTestingSim() {
       const g2 = group2.split(',').map(Number);
       if (g1.some(isNaN) || g2.some(isNaN)) return { tStat: 0, meanDiff: 0 };
 
-      const mean1 = math.mean(g1);
-      const mean2 = math.mean(g2);
-      const var1 = math.number(math.variance(g1));
-      const var2 = math.number(math.variance(g2));
+      const mean1 = mean(g1);
+      const mean2 = mean(g2);
+      const var1 = variance(g1);
+      const var2 = variance(g2);
       const n1 = g1.length;
       const n2 = g2.length;
 
-      const pooledVar = ((n1 - 1) * Number(var1) + (n2 - 1) * Number(var2)) / (n1 + n2 - 2);
+      const pooledVar = ((n1 - 1) * var1 + (n2 - 1) * var2) / (n1 + n2 - 2);
       const se = Math.sqrt(pooledVar * (1/n1 + 1/n2));
       const t = (mean1 - mean2) / se;
 
       return { tStat: t, meanDiff: mean1 - mean2 };
-    } catch (e) {
-      console.error(e);
+    } catch {
       return { tStat: 0, meanDiff: 0 };
     }
   }, [group1, group2]);

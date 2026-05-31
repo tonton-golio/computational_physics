@@ -105,7 +105,7 @@ export default function VicsekFlocking({}: SimulationComponentProps) {
     void seed;
     const etaVals: number[] = [];
     const phiVals: number[] = [];
-    const nSamples = 30;
+    const nSamples = 15;
     for (let i = 0; i <= nSamples; i++) {
       const etaVal = (2 * Math.PI * i) / nSamples;
       etaVals.push(etaVal);

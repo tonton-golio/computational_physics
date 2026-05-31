@@ -11,7 +11,7 @@ export function ProfileActions() {
 
   async function handleSignOut() {
     const supabase = createClient();
-    await supabase.auth.signOut();
+    await supabase?.auth.signOut();
     router.push("/");
     router.refresh();
   }
@@ -28,7 +28,7 @@ export function ProfileActions() {
       if (!res.ok) throw new Error("Failed to delete account");
 
       const supabase = createClient();
-      await supabase.auth.signOut();
+      await supabase?.auth.signOut();
       router.push("/");
       router.refresh();
     } catch {

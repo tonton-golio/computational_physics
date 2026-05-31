@@ -24,7 +24,11 @@ interface KatexLike {
 }
 
 export function escapeHtml(text: string): string {
-  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
 
 function resolveAbsoluteUrl(src: string): string {
@@ -52,6 +56,10 @@ export function markdownToHtml(
   const placeholders: Array<{ type: string; id: string; index: number }> = [];
   const figures: Array<{ id: string; src: string; caption: string; localFilename: string }> = [];
   let placeholderIndex = 0;
+
+  // Code markers extracted early so inline transforms never touch code contents.
+  // Restored to HTML at the very end. Keyed by placeholder index.
+  const codeMarkers = new Map<number, { type: "code-block" | "inline-code"; lang: string; code: string }>();
 
   // Extract and replace placeholders with temporary markers
   processed = processed.replace(
@@ -89,7 +97,8 @@ export function markdownToHtml(
             const hasExt = /\.[a-z0-9]+$/i.test(trimmedId);
             const localSrc = hasExt ? `/figures/${trimmedId}` : `/figures/${trimmedId}.png`;
             fetchableSrc = resolveAbsoluteUrl(localSrc);
-            localFilename = `${trimmedId}.${hasExt ? localSrc.split(".").pop()! : "png"}`;
+            // The id already carries its extension when hasExt — don't double it (foo.svg, not foo.svg.svg).
+            localFilename = hasExt ? trimmedId : `${trimmedId}.png`;
           }
           const displaySrc = figureBasePath ? `${figureBasePath}${localFilename}` : fetchableSrc;
           if (fModes.has("screenshot")) {
@@ -139,6 +148,24 @@ export function markdownToHtml(
       return marker;
     },
   );
+
+  // Extract fenced code blocks into opaque single-line markers BEFORE any
+  // inline/LaTeX/bold/italic/link/paragraph transforms run, so code contents
+  // (e.g. Python ** power, * mul, $, [links]) are never corrupted.
+  processed = processed.replace(/```(\w*)\n([\s\S]*?)```/g, (_match, lang: string, code: string) => {
+    const marker = `%%PLACEHOLDER_${placeholderIndex}%%`;
+    codeMarkers.set(placeholderIndex, { type: "code-block", lang, code });
+    placeholderIndex++;
+    return marker;
+  });
+
+  // Extract inline code into opaque single-line markers (same rationale).
+  processed = processed.replace(/`([^`]+)`/g, (_match, code: string) => {
+    const marker = `%%PLACEHOLDER_${placeholderIndex}%%`;
+    codeMarkers.set(placeholderIndex, { type: "inline-code", lang: "", code });
+    placeholderIndex++;
+    return marker;
+  });
 
   // Convert block LaTeX ($$...$$ or \[...\])
   processed = processed.replace(/\$\$([\s\S]*?)\$\$/g, (_, math: string) => {
@@ -193,18 +220,6 @@ export function markdownToHtml(
     '<a href="$2" class="text-blue-400 hover:underline" target="_blank" rel="noopener noreferrer">$1</a>',
   );
 
-  // Convert code blocks
-  processed = processed.replace(
-    /```(\w*)\n([\s\S]*?)```/g,
-    '<pre class="bg-[#0a0a15] text-gray-100 rounded-lg p-4 my-4 overflow-x-auto text-sm"><code>$2</code></pre>',
-  );
-
-  // Convert inline code
-  processed = processed.replace(
-    /`([^`]+)`/g,
-    '<code class="bg-[#0a0a15] px-1.5 py-0.5 rounded text-sm font-mono text-blue-300">$1</code>',
-  );
-
   // Convert unordered list items (tagged for later wrapping)
   processed = processed.replace(/^- (.+)$/gm, '<li data-list="ul" class="ml-4 text-gray-300">$1</li>');
 
@@ -247,16 +262,36 @@ export function markdownToHtml(
   // Convert horizontal rules
   processed = processed.replace(/^---$/gm, '<hr class="border-gray-700 my-8" />');
 
+  // Paragraphs consisting solely of a code-block marker must not be wrapped in
+  // <p> (a <pre> is a block element and cannot live inside <p>).
+  const isCodeBlockMarker = (text: string): boolean => {
+    const m = text.trim().match(/^%%PLACEHOLDER_(\d+)%%$/);
+    if (!m) return false;
+    return codeMarkers.get(Number(m[1]))?.type === "code-block";
+  };
+
   // Convert paragraphs (double newlines)
   processed = processed
     .split("\n\n")
     .map((para) => {
-      if (para.trim() && !para.startsWith("<")) {
+      if (para.trim() && !para.startsWith("<") && !isCodeBlockMarker(para)) {
         return `<p class="my-4 text-gray-300 leading-relaxed">${para}</p>`;
       }
       return para;
     })
     .join("\n");
+
+  // Restore extracted code markers to HTML (escaped) after all other transforms,
+  // so paragraph splitting / inline passes never injected tags into code.
+  for (const [index, marker] of codeMarkers) {
+    const token = `%%PLACEHOLDER_${index}%%`;
+    const replacement =
+      marker.type === "code-block"
+        ? `<pre class="bg-[#0a0a15] text-gray-100 rounded-lg p-4 my-4 overflow-x-auto text-sm"><code>${escapeHtml(marker.code)}</code></pre>`
+        : `<code class="bg-[#0a0a15] px-1.5 py-0.5 rounded text-sm font-mono text-blue-300">${escapeHtml(marker.code)}</code>`;
+    // Use a function replacement so `$` sequences in code are not treated specially.
+    processed = processed.replace(token, () => replacement);
+  }
 
   return { html: processed, placeholders, figures };
 }
