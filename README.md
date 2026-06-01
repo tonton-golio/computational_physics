@@ -1,6 +1,6 @@
 # Koala Brain
 
-> Computational physics you can touch — every equation runs, every model bends, every simulation is yours to break.
+> Computational physics you can touch — 150+ interactive simulations across statistics, complex systems, quantum optics, ML, and more. Ising, Mandelbrot, sandpiles, Lorenz, percolation...
 
 **Live at [koalabrain.org](https://koalabrain.org)**
 
